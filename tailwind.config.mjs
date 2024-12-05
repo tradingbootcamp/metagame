@@ -50,6 +50,25 @@ export default {
           950: "#4b0736",
         },
       },
+      keyframes: {
+        'coin-pop': {
+          '0%': { 
+            transform: 'translateY(0) translateX(-50%) scale(0.5)',
+            opacity: '0'
+          },
+          '50%': {
+            transform: 'translateY(-20px) translateX(-50%) scale(1.2)',
+            opacity: '1'
+          },
+          '100%': {
+            transform: 'translateY(-40px) translateX(-50%) scale(1)',
+            opacity: '0'
+          }
+        }
+      },
+      animation: {
+        'coin-pop': 'coin-pop 0.6s ease-out'
+      },
     },
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
