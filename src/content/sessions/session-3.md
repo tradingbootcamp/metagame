@@ -4,7 +4,7 @@ speakerId: [3]
 title: "Scaling Kubernetes: From Local to Global"
 format: talk
 duration: 45
-date: 2024-09-14
+date: 2025-09-06
 time: "14:00"
 venue: Tech Theater
 stage: 1

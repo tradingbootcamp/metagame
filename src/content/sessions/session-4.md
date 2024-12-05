@@ -4,7 +4,7 @@ speakerId: [4]
 title: "Designing for Inclusivity: Beyond Accessibility"
 format: panel
 duration: 60
-date: 2024-09-14
+date: 2025-09-06
 time: "16:00"
 venue: Design Studio
 stage: 3

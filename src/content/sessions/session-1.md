@@ -4,7 +4,7 @@ speakerId: [1]
 title: Mastering Web Performance Optimization
 format: talk
 duration: 30
-date: 2024-09-14
+date: 2025-09-05
 time: "10:00"
 venue: Main Hall
 stage: 1

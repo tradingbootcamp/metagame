@@ -4,7 +4,7 @@ speakerId: [2]
 title: "AI-Driven Development: The Future of Coding"
 format: workshop
 duration: 60
-date: 2024-09-14
+date: 2025-09-05
 time: "11:30"
 venue: Workshop Room A
 stage: 2
