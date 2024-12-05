@@ -6,5 +6,7 @@ import react from "@astrojs/react";
 
 export default defineConfig({
   site: "https://your-url.com",
-  integrations: [tailwind(), icon(), react()],
+  integrations: [tailwind(), icon(), react({
+    include: ['**/react/*'],
+  })],
 });

@@ -1,5 +1,6 @@
 ---
 import Link from "../../Link.astro";
+import MyCrossword from "../../MyCrossword.jsx";
 ---
 
 <section
@@ -61,4 +62,6 @@ import Link from "../../Link.astro";
       </div>
     </div>
   </div>
+  <MyCrossword client:only="react" />
+
 </section>

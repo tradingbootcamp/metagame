@@ -4,8 +4,8 @@ import Typer from "../../Typer.astro";
 import './Hero.css';
 
 
-const titles = ["Ready", "Set", "Play"]
-
+// const titles = ["Board games", "Card games", "Video games", "Live action", "Escape rooms", "Puzzle hunts", "Tabletop RPGs"]
+const game_names = ["chess", "poker", "crosswords", "factorio", "hanabi", "magic the gathering", "tetris", "survivor", "dungeons and dragons", "rock climbing", "escape rooms", "tag", "puzzle hunts", "wordle", "bridge"]
 ---
 
 <section
@@ -20,7 +20,7 @@ const titles = ["Ready", "Set", "Play"]
       <span class="text-white uppercase font-black outlines">
         <Typer
           blinkerClass="text-white"
-          texts={titles} 
+          texts={game_names} 
         />
       </span>
     </h1>
