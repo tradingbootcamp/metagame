@@ -1,0 +1,542 @@
+---
+import { getCollection } from "astro:content";
+import SubscribePopup from "../components/SubscribePopup.astro";
+import Layout from "../layouts/Layout.astro";
+import { format } from "date-fns";
+import Card from "../components/Card.astro";
+
+const agenda = await getCollection("agenda");
+const sessions = await getCollection("sessions");
+const speakers = await getCollection("speakers");
+const miscs = await getCollection("miscs");
+
+const mainDaySessions = sessions.filter(
+  (session) => format(session.data.date, "yyyy-MM-dd") === "2024-09-14"
+);
+
+const sessionGroupsPerStage = mainDaySessions.reduce(
+  (acc: Record<string, any>, session) => {
+    if (!acc[session.data.stage as number]) {
+      acc[session.data.stage as number] = [];
+    }
+
+    acc[session.data.stage as number].push(session);
+
+    return acc;
+  },
+  {}
+);
+
+const timeSlots = mainDaySessions.reduce((acc: string[], session) => {
+  if (!acc.includes(session.data.time)) {
+    acc.push(session.data.time);
+  }
+
+  return acc;
+}, []);
+
+const stages = Object.keys(sessionGroupsPerStage);
+const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
+---
+
+<Layout title="Agenda">
+  <div class="flex flex-col gap-10 items-center justify-center pt-20">
+    <div
+      class="hidden lg:flex flex-col items-center justify-center gap-10 w-screen"
+    >
+      <h1 class="text-2xl text-secondary-400 text-center">Agenda</h1>
+      <div class="flex items-center justify-center px-5" id="agenda-tabs">
+        {
+          sortedAgenda.map((item) => {
+            return (
+              <button
+                data-id={item.data.id}
+                role="tab"
+                class={`${item.data.id === 6 && `text-secondary-300 border-secondary-500`} tab tab-lg text-lg text-nowrap border-b pb-4 border-grey-100`}
+                aria-label={format(new Date(item.data.date), "eeee (do)")}
+              >
+                {format(new Date(item.data.date), "eeee (do)")}
+              </button>
+            );
+          })
+        }
+      </div>
+      <div>
+        {
+          sortedAgenda.map((item) => {
+            return (
+              <div
+                class={`${item.data.id !== 6 && `hidden`} p-10 w-screen flex items-center justify-center`}
+                data-tab-id={item.data.id}
+              >
+                <section
+                  class={`prose prose-xl ${item.data.date === "2024-09-14" && `max-w-full w-full`}`}
+                >
+                  <h2 class="text-center text-secondary-200 text-4xl">
+                    {item.data.name}
+                  </h2>
+                  <h3 class="text-center">Venue: {item.data.venue}</h3>
+                  <p class="text-center text-base">{item.data.description}</p>
+                  <p class="text-center">
+                    {item.data.registrationLink && (
+                      <a
+                        href={item.data.registrationLink}
+                        class="text-primary-200 font-black"
+                      >
+                        [ Register Here ]
+                      </a>
+                    )}
+                  </p>
+                  <div class="">
+                    <div class="not-prose md:py-8 py-5 md:px-16 px-5 rounded-b flex flex-col gap-5">
+                      {item.data.date === "2024-09-14" && (
+                        <div class="overflow-x-auto max-w-full">
+                          <table class="table table-lg table-pin-cols text-lg min-w-[800px]">
+                            <thead>
+                              <tr class="text-sm text-center">
+                                <th>⏰</th>
+                                {stages.map((stage) => {
+                                  return (
+                                    <td class="text-primary-200">
+                                      Stage {stage}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {timeSlots
+                                .toSorted((a, b) => {
+                                  if (!a) {
+                                    return 0;
+                                  } else {
+                                    return a.localeCompare(b);
+                                  }
+                                })
+                                .map((slot) => {
+                                  return (
+                                    <tr class="text-base">
+                                      <th class="w-[60px]">{slot}</th>
+                                      {stages.map((stage) => {
+                                        const session = sessionGroupsPerStage[
+                                          stage
+                                        ].find((session: any) => {
+                                          return session.data.time === slot;
+                                        });
+
+                                        const speaker = speakers.find(
+                                          (speaker) => {
+                                            return session?.data?.speakerId.includes(
+                                              speaker.data.id
+                                            );
+                                          }
+                                        );
+
+                                        const misc = miscs.find(
+                                          (misc) => {
+                                            return session?.data?.miscId?.includes(
+                                              misc.data.id
+                                            );
+                                          }
+                                        );
+
+                                        return (
+                                          <>
+                                            <td class="text-base text-wrap w-[540px]">
+                                              <a
+                                                href={
+                                                  session &&
+                                                  `/sessions/${session?.slug}`
+                                                }
+                                              >
+                                                <p class="text-secondary-300 font-bold">
+                                                  {session?.data?.title || " "}
+                                                </p>
+                                                <div class="mb-4">
+                                                  {session &&
+                                                    session.data?.tags.map(
+                                                      (tag: string) => {
+                                                        return (
+                                                          <span class="badge badge-sm badge-outline badge-secondary mr-2">
+                                                            {tag}
+                                                          </span>
+                                                        );
+                                                      }
+                                                    )}
+                                                </div>
+                                                <p class="text-white font-bold">
+                                                  {speaker?.data?.name || misc?.data?.name  || " "}
+                                                </p>
+                                              </a>
+                                            </td>
+                                          </>
+                                        );
+                                      })}
+                                    </tr>
+                                  );
+                                })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                      {sessions
+                        .filter((s) => {
+                          return (
+                            format(s.data.date, "yyyy-MM-dd") === item.data.date
+                          );
+                        })
+                        .toSorted((a, b) => {
+                          if (!a.data.time) {
+                            return 0;
+                          } else {
+                            return a.data.time.localeCompare(b.data.time);
+                          }
+                        })
+                        .map((session) => {
+                          if (item.data.date === "2024-09-14") {
+                            return;
+                          }
+
+                          return (
+                            <Card>
+                              <a
+                                class="flex items-center"
+                                href={session && `/sessions/${session.slug}`}
+                              >
+                                <p class="text-lg font-black text-gray-500 dark:text-gray-300 pr-10">
+                                  {session.data.time || " "}
+                                </p>
+                                <div class="flex flex-col gap-2 text-left">
+                                  <div
+                                    class={`badge ${session.data.format === "workshop" && `badge-info`} ${session.data.format === "talk" && `badge-accent`} ${session.data.format === "lightning talk" && `badge-primary`}`}
+                                  >
+                                    {session.data.format}
+                                  </div>
+                                  <p
+                                    tabindex="0"
+                                    class="text-lg font-black text-secondary-200"
+                                  >
+                                    {session.data.title}
+                                  </p>
+                                  <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    {speakers
+                                      .filter((speaker) =>
+                                        session.data.speakerId.includes(
+                                          speaker.data.id
+                                        )
+                                      )
+                                      .map((speaker) => {
+                                        return speaker.data.name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div>
+                              </a>
+                            </Card>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            );
+          })
+        }
+      </div>
+    </div>
+  </div>
+
+  <div class="block lg:hidden">
+    <div class="flex flex-col gap-3 items-center justify-center">
+      <label class="text-xl text-secondary-400" for="agenda">Agenda for:</label>
+      <select
+        id="agenda"
+        class="select select-bordered select-lg w-full max-w-xs"
+        value="6"
+      >
+        {
+          agenda
+            .toSorted((a, b) => a.data.id - b.data.id)
+            .map((item) => {
+              return (
+                <option value={item.data.id} selected={item.data.id === 6}>
+                  {format(new Date(item.data.date), "eeee (do)")}
+                </option>
+              );
+            })
+        }
+      </select>
+    </div>
+    <div class="flex items-center justify-center">
+      {
+        agenda
+          .toSorted((a, b) => a.data.id - b.data.id)
+          .map((item) => {
+            return (
+              <div
+                data-date-id={item.data.id}
+                class={`${item.data.id != 6 && `hidden`} py-8`}
+              >
+                <section class="prose prose-xl w-full max-w-full p-2">
+                  <h2 class="text-center text-secondary-200 text-2xl">
+                    {item.data.name}
+                  </h2>
+                  <h3 class="text-center text-xl">Venue: {item.data.venue}</h3>
+                  <p class="text-center text-base">{item.data.description}</p>
+                  <p class="text-center">
+                    {item.data.registrationLink && (
+                      <a
+                        href={item.data.registrationLink}
+                        class="text-primary-200 font-black"
+                      >
+                        [ Register Here ]
+                      </a>
+                    )}
+                  </p>
+                  <div class="">
+                    <div class="not-prose md:py-8 py-5 md:px-16 px-5 rounded-b flex flex-col gap-5">
+                      {item.data.date === "2024-09-14" && (
+                        <div class="w-screen overflow-x-auto">
+                          <table class="table table-lg table-pin-cols text-lg min-w-[800px]">
+                            <thead>
+                              <tr class="text-sm text-center">
+                                <th>⏰</th>
+                                {stages.map((stage) => {
+                                  return (
+                                    <td class="text-primary-200">
+                                      Stage {stage}
+                                    </td>
+                                  );
+                                })}
+                              </tr>
+                            </thead>
+                            <tbody>
+                              {timeSlots
+                                .toSorted((a, b) => {
+                                  if (!a) {
+                                    return 0;
+                                  } else {
+                                    return a.localeCompare(b);
+                                  }
+                                })
+                                .map((slot) => {
+                                  return (
+                                    <tr class="text-base">
+                                      <th class="p-1 text-center">{slot}</th>
+                                      {stages.map((stage) => {
+                                        const session = sessionGroupsPerStage[
+                                          stage
+                                        ].find((session: any) => {
+                                          return session.data.time === slot;
+                                        });
+
+                                        const speaker = speakers.find(
+                                          (speaker) => {
+                                            return session?.data?.speakerId.length > 0
+                                              ? session?.data?.speakerId.includes(
+                                                  speaker.data.id
+                                                )
+                                              : null;
+                                          }
+                                        );
+
+                                        const misc = miscs.find((m) => {
+                                          return session?.data?.miscId !==
+                                            undefined
+                                            ? (session?.data?.miscId).includes(
+                                                m.data.id
+                                              )
+                                            : null;
+                                        });
+
+                                        return (
+                                          <>
+                                            <td class="text-base text-wrap w-[540px]">
+                                              <a
+                                                href={
+                                                  session &&
+                                                  `/sessions/${session?.slug}`
+                                                }
+                                              >
+                                                <p class="text-secondary-300 font-bold">
+                                                  {session?.data?.title || " "}
+                                                </p>
+                                                <div class="mb-4">
+                                                  {session &&
+                                                    session.data?.tags.map(
+                                                      (tag: string) => {
+                                                        return (
+                                                          <span class="badge badge-xs badge-outline badge-secondary mr-2">
+                                                            {tag}
+                                                          </span>
+                                                        );
+                                                      }
+                                                    )}
+                                                </div>
+                                                {speaker && (
+                                                  <p class="text-white font-bold">
+                                                    {speaker?.data?.name || " "}
+                                                  </p>
+                                                )}
+
+                                                {misc && (
+                                                  <p class="text-white font-bold">
+                                                    {misc?.data?.name || " "}
+                                                  </p>
+                                                )}
+                                              </a>
+                                            </td>
+                                          </>
+                                        );
+                                      })}
+                                    </tr>
+                                  );
+                                })}
+                            </tbody>
+                          </table>
+                        </div>
+                      )}
+                      {sessions
+                        .filter((s) => {
+                          return (
+                            format(s.data.date, "yyyy-MM-dd") === item.data.date
+                          );
+                        })
+                        .toSorted((a, b) => {
+                          if (!a.data.time) {
+                            return 0;
+                          } else {
+                            return a.data.time.localeCompare(b.data.time);
+                          }
+                        })
+                        .map((session) => {
+                          if (item.data.date === "2024-09-14") {
+                            return;
+                          }
+
+                          return (
+                            <Card>
+                              <a
+                                class="flex items-center"
+                                href={session && `/sessions/${session.slug}`}
+                              >
+                                <p class="text-lg font-black text-gray-500 dark:text-gray-300 pr-10">
+                                  {session.data.time || " "}
+                                </p>
+                                <div class="flex flex-col gap-2 text-left">
+                                  <div
+                                    class={`badge ${session.data.format === "workshop" && `badge-info`} ${session.data.format === "talk" && `badge-accent`} ${session.data.format === "lightning talk" && `badge-primary`}`}
+                                  >
+                                    {session.data.format}
+                                  </div>
+                                  <p
+                                    tabindex="0"
+                                    class="text-lg font-black text-secondary-200"
+                                  >
+                                    {session.data.title}
+                                  </p>
+                                  <p class="text-sm text-gray-600 dark:text-gray-300">
+                                    {speakers
+                                      .filter((speaker) =>
+                                        session.data.speakerId.includes(
+                                          speaker.data.id
+                                        )
+                                      )
+                                      .map((speaker) => {
+                                        return speaker.data.name;
+                                      })
+                                      .join(", ")}
+                                  </p>
+                                </div>
+                              </a>
+                            </Card>
+                          );
+                        })}
+                    </div>
+                  </div>
+                </section>
+              </div>
+            );
+          })
+      }
+    </div>
+  </div>
+
+  <div
+    class="container mx-auto max-w-prose flex-grow h-[60vh] flex flex-col items-center justify-center"
+  >
+    <h3 class="text-lg font-bold text-center">
+      Why don't you subscribe to <button
+        class="text-primary-300 hover:text-secondary-200 hover:font-bold transition-all"
+        onclick="submodal.showModal()">[Stay in the loop]</button
+      >?
+    </h3>
+  </div>
+</Layout>
+<SubscribePopup />
+
+<script>
+  const initTabs = () => {
+    const tabs = document.querySelectorAll("[role=tab]");
+    const tabPanels = document.querySelectorAll("[data-tab-id]");
+
+    tabs.forEach((tab) => {
+      tab.addEventListener("click", (e) => {
+        const tabId = (e.target as HTMLElement).dataset.id;
+        tabs.forEach((t) => {
+          t.classList.remove("border-secondary-500");
+          t.classList.remove("text-secondary-300");
+        });
+
+        tab.classList.add("border-secondary-500");
+        tab.classList.add("text-secondary-300");
+
+        tabPanels.forEach((panel) => {
+          panel.classList.remove("block");
+          panel.classList.add("hidden");
+        });
+
+        const selectedPanel = document.querySelector(
+          `[data-tab-id="${tabId}"]`
+        );
+        selectedPanel!.classList.remove("hidden");
+        selectedPanel!.classList.add("block");
+      });
+    });
+  };
+
+  const initSelect = () => {
+    const select = document.getElementById("agenda");
+    if (select) {
+      const dateDivs = document.querySelectorAll("[data-date-id]");
+
+      select!.addEventListener("change", (e) => {
+        dateDivs.forEach((div) => {
+          div.classList.remove("block");
+          div.classList.add("hidden");
+        });
+        const selected = document.querySelector(
+          `[data-date-id="${(e!.target! as HTMLSelectElement).value}"]`
+        );
+        selected!.classList.remove("hidden");
+        selected!.classList.add("block");
+      });
+
+      const selectValue = (select as HTMLSelectElement).value;
+
+      const selected = document.querySelector(
+        `[data-date-id="${selectValue}"]`
+      );
+      selected!.classList.remove("hidden");
+      selected!.classList.add("block");
+    }
+  };
+
+  initSelect();
+  initTabs();
+
+  document.addEventListener("astro:after-swap", () => {
+    initSelect();
+    initTabs();
+  });
+</script>

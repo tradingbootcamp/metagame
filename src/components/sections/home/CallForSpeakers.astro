@@ -1,0 +1,43 @@
+---
+import { CALL_FOR_SPEAKERS } from "../../../config";
+import Button from "../../Button.astro";
+---
+
+<section
+  class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
+  id="cfs"
+>
+  <div class="p-10 font-semibold">
+    <h2 class="mb-8 text-3xl font-bold text-secondary-200">
+      Call for Speakers
+    </h2>
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2">
+      <div>
+        <h3 class="mb-4 text-2xl font-bold text-primary-200">
+          Share Your Expertise
+        </h3>
+        <p class="mb-4">
+          We're looking for passionate speakers to share their knowledge and
+          experiences with the tech community at our conference.
+        </p>
+        <p class="mb-4">
+          If you have a topic you'd like to present, we'd love to hear from you.
+          The conference aims to cover a wide range of tech subjects and we're open to all
+          sorts of talks related to our theme.
+        </p>
+      </div>
+      <div>
+        <h3 class="mb-4 text-2xl font-bold text-primary-200">
+          Submit Your Proposal
+        </h3>
+        <p class="mb-4">
+          To submit your proposal, please fill out the form linked below with
+          details about your talk, including the title, abstract, and a brief
+          bio. Our Call for Speakers is open until [CLOSING DATE].
+        </p>
+
+        <Button link={CALL_FOR_SPEAKERS}> Submit Proposal </Button>
+      </div>
+    </div>
+  </div>
+</section>

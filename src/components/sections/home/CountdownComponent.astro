@@ -1,0 +1,114 @@
+---
+interface Props {
+  endAt: string;
+}
+
+const { endAt } = Astro.props;
+---
+
+<script>
+  class CountdownTimer {
+    selector: string;
+    targetDate: any;
+    refs: any;
+
+    // setup timer values
+    constructor({
+      selector,
+      targetDate,
+    }: {
+      selector: string;
+      targetDate: any;
+    }) {
+      this.selector = selector;
+      this.targetDate = targetDate;
+      // grab divs on frontend using supplied selector ID
+      this.refs = {
+        days: document.querySelector(`${this.selector} [data-value="days"]`),
+        hours: document.querySelector(`${this.selector} [data-value="hours"]`),
+        mins: document.querySelector(`${this.selector} [data-value="minutes"]`),
+        secs: document.querySelector(`${this.selector} [data-value="seconds"]`),
+      };
+    }
+    getTimeRemaining(endtime: any) {
+      const total = Date.parse(endtime) - Date.parse(new Date().toISOString());
+      const days = Math.floor(total / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+      const mins = Math.floor((total / 1000 / 60) % 60);
+      const secs = Math.floor((total / 1000) % 60);
+      return {
+        total,
+        days,
+        hours,
+        mins,
+        secs,
+      };
+    }
+    updateTimer({
+      days,
+      hours,
+      mins,
+      secs,
+    }: {
+      days: any;
+      hours: any;
+      mins: any;
+      secs: any;
+    }) {
+      this.refs.days?.style?.setProperty("--value", days);
+      this.refs.hours?.style?.setProperty("--value", hours);
+      this.refs.mins?.style?.setProperty("--value", mins);
+      this.refs.secs?.style?.setProperty("--value", secs);
+    }
+    startTimer() {
+      const timer = this.getTimeRemaining(this.targetDate);
+      this.updateTimer(timer);
+      setInterval(() => {
+        const timer = this.getTimeRemaining(this.targetDate);
+        this.updateTimer(timer);
+      }, 1000);
+    }
+  }
+
+  const initTimer = () => {
+    const timer = new CountdownTimer({
+      selector: "#clock",
+      targetDate: (document.querySelector("#clock") as HTMLElement)?.dataset
+        ?.endAt,
+    });
+    timer.startTimer();
+  };
+
+  initTimer();
+
+  document.addEventListener("astro:after-swap", initTimer);
+</script>
+
+<div class="mb-10" id="clock" data-end-at={endAt}>
+  <div class="grid auto-cols-max grid-flow-col gap-5 text-center">
+    <div class="flex flex-col">
+      <span class="countdown font-mono text-5xl">
+        <span data-value="days" style="--value:15;"></span>
+      </span>
+      days
+    </div>
+    <div class="flex flex-col">
+      <span class="countdown font-mono text-5xl">
+        <span data-value="hours" style="--value:10;"></span>
+      </span>
+      hours
+    </div>
+    <div class="flex flex-col">
+      <span class="countdown font-mono text-5xl">
+        <span data-value="minutes" style="--value:24;"></span>
+      </span>
+      min
+    </div>
+    <div class="flex flex-col">
+      <span class="countdown font-mono text-5xl">
+        <span data-value="seconds" style="--value:${counter};"></span>
+      </span>
+      sec
+    </div>
+  </div>
+</div>

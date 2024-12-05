@@ -1,0 +1,167 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import Card from "../../components/Card.astro";
+import Filters from "../../components/Filters.astro";
+import { format } from "date-fns";
+
+let sessions = await getCollection("sessions");
+// sort by id, and then by time, and then by date.. cause reasons.
+sessions
+  .sort((a, b) => {
+    return a.data.id - b.data.id;
+  })
+  .sort((a, b) => {
+    if (!a.data.time) {
+      return 0;
+    } else {
+      return a.data.time.localeCompare(b.data.time);
+    }
+  })
+  .sort((a, b) => {
+    return (
+      new Date(`${a.data.date}`).getTime() -
+      new Date(`${b.data.date}`).getTime()
+    );
+  });
+
+const sessionDays: {
+  [key: string]: { badgeType: string; title: string; dayFilter: string };
+} = {
+  "2024-09-09": {
+    badgeType: "badge-accent",
+    title: "TBA",
+    dayFilter: "tba",
+  },
+  "2024-09-10": {
+    badgeType: "badge-secondary",
+    title: "Auth and Security Day",
+    dayFilter: "auth",
+  },
+  "2024-09-11": {
+    badgeType: "badge-accent",
+    title: "TBA",
+    dayFilter: "tba",
+  },
+  "2024-09-12": {
+    badgeType: "badge-accent",
+    title: "TBA",
+    dayFilter: "tba",
+  },
+  "2024-09-13": {
+    badgeType: "badge-secondary",
+    title: "Angular Day",
+    dayFilter: "angular-day",
+  },
+  "2024-09-14": {
+    badgeType: "badge-primary",
+    title: "Main Conference Day",
+    dayFilter: "main",
+  },
+};
+
+// Get the query parameters and filter
+const params = Astro.url.searchParams;
+const formatFilter = params.get("format");
+const dateFilter = params.get("date");
+const venueFilter = params.get("venue");
+
+if (formatFilter || dateFilter || venueFilter) {
+  sessions = sessions.filter((session) => {
+    return (
+      (formatFilter ? session.data.format === formatFilter : true) &&
+      (dateFilter
+        ? format(new Date(session.data.date), "yyyy-MM-dd").toString() ===
+          dateFilter
+        : true) &&
+      (venueFilter ? session.data.venue === venueFilter : true)
+    );
+  });
+}
+
+const speakers = await getCollection("speakers");
+
+const agenda = await getCollection("agenda");
+
+let dayTitles: {
+  [key: string]: string;
+} = {};
+agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
+---
+
+<Layout title="Sessions">
+  <main class="container mx-auto py-20">
+    <h1 class="text-4xl font-bold text-center mb-10">Sessions</h1>
+
+    <Filters />
+
+    {
+      sessions.length === 0 ? (
+        <p class="text-center text-lg font-bold pt-8 text-secondary-300">
+          No sessions found
+        </p>
+      ) : (
+        <section class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 mx-8">
+          {sessions.map((session) => {
+            const sessionSpeakers = speakers.filter((speaker) =>
+              session.data.speakerId.includes(speaker.data.id)
+            );
+            return (
+              <Card>
+                <h2 class="font-black text-2xl text-secondary-300 text-center">
+                  {session.data.title}
+                </h2>
+                <div
+                  class:list={[
+                    "badge badge-outline mx-auto mt-5 badge-lg",
+                    sessionDays[
+                      format(new Date(session.data.date), "yyyy-MM-dd")
+                    ]?.badgeType,
+                  ]}
+                >
+                  {
+                    dayTitles[
+                      format(
+                        new Date(session.data.date),
+                        "yyyy-MM-dd"
+                      ).toString()
+                    ]
+                  }
+                </div>
+                <ul class="text-lg flex-grow flex flex-col items-center justify-center min-h-[200px]">
+                  <li>Format: {session.data.format}</li>
+                  <li>Duration: {session.data.duration} minutes</li>
+                  <li>
+                    Date: {format(new Date(session.data.date), "yyyy-MM-dd")}
+                  </li>
+                  <li>Time: {session.data.time ? session.data.time : "TBA"}</li>
+                  <li>Venue: {session.data.venue}</li>
+                </ul>
+                <p class="text-lg flex flex-col items-center justify-center text-center gap-1">
+                  {sessionSpeakers.map((speaker) => {
+                    return (
+                      <a
+                        href={`/speakers/${speaker.slug}`}
+                        class="font-black flex items-center justify-center gap-4 text-primary-400"
+                      >
+                        {speaker.data.name}
+                      </a>
+                    );
+                  })}
+                </p>
+                <p class="text-lg flex items-center justify-center text-center gap-1 pt-5">
+                  <a
+                    href={`/sessions/${session.slug}`}
+                    class="font-black flex items-center justify-center gap-3 text-secondary-400"
+                  >
+                    [Details]
+                  </a>
+                </p>
+              </Card>
+            );
+          })}
+        </section>
+      )
+    }
+  </main>
+</Layout>

@@ -1,0 +1,9 @@
+{
+  "id": 5,
+  "name": "Silver Sponsor 2",
+  "logo": "/incognito.svg",
+  "wideLogo": false,
+  "website": "https://example.com",
+  "type": "sponsor",
+  "tier": "silver"
+}

@@ -1,0 +1,64 @@
+---
+import Link from "../../Link.astro";
+---
+
+<section
+  class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
+  id="location"
+>
+  <div class="p-10">
+    <h2 class="mb-8 text-2xl font-bold text-secondary-200">
+      Location and travel info
+    </h2>
+    <div class="grid grid-cols-1 gap-8 md:grid-cols-2 font-semibold">
+      <div>
+        <h3 class="mb-4 text-xl font-bold text-primary-200">Event Venues</h3>
+        <h4 class="mb-4 text-lg font-bold text-secondary-200">
+          Conference Day
+        </h4>
+        <p class="mb-4">
+          The conference will be held at [MAIN VENUE NAME]. It's located in [AREA DESCRIPTION], convenient for attendees and close to local attractions.
+        </p>
+        <p class="mb-4">Address: [MAIN VENUE ADDRESS]</p>
+        <Link
+          href="[GOOGLE MAPS LINK TO MAIN VENUE]"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          [View on Google Maps]
+        </Link>
+
+        <h4 class="mb-4 mt-10 text-lg font-bold text-secondary-200">
+          Workshops and pre-conference events
+        </h4>
+        <p class="mb-4">
+          The workshops and pre-conference events will be held at [SECONDARY VENUE NAME]. This venue is [BRIEF DESCRIPTION OF SECONDARY VENUE].
+        </p>
+        <p class="mb-4">Address: [SECONDARY VENUE ADDRESS]</p>
+        <Link
+          href="[GOOGLE MAPS LINK TO SECONDARY VENUE]"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          [View on Google Maps]
+        </Link>
+      </div>
+      <div>
+        <h3 class="mb-4 text-xl font-bold text-primary-200">Getting there</h3>
+        <p class="mb-4">
+          [CITY NAME] is well-connected to major cities, with regular flights to and from the [AIRPORT NAME].
+        </p>
+        <p class="mb-4">
+          The conference venue is easily accessible by public transportation, with several [TRANSPORTATION OPTIONS] available.
+        </p>
+        <Link
+          href="[AIRPORT WEBSITE]"
+          rel="noopener noreferrer"
+          target="_blank"
+        >
+          [[AIRPORT NAME]]
+        </Link>
+      </div>
+    </div>
+  </div>
+</section>

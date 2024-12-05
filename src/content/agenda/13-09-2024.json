@@ -1,0 +1,9 @@
+{
+  "id": 5,
+  "name": "Specialized Framework Day",
+  "venue": "Tech Training Center",
+  "date": "2024-09-13",
+  "sessions": [],
+  "description": "A dedicated workshop day focusing on a popular development framework. The workshop is divided into multiple sessions, with breaks between sessions and a lunch break midday. This event is free for all conference attendees, but registration is required due to limited capacity.",
+  "registrationLink": "https://example.com/framework-day-registration"
+}

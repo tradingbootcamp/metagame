@@ -1,0 +1,85 @@
+---
+import { getCollection } from "astro:content";
+let sessions = await getCollection("sessions");
+
+let venueOptions: string[] = [];
+sessions.forEach((session) => {
+  if (!venueOptions.includes(session.data.venue)) {
+    venueOptions.push(session.data.venue);
+  }
+});
+
+let sessionFormats: string[] = [];
+sessions.forEach((session) => {
+  if (!sessionFormats.includes(session.data.format)) {
+    sessionFormats.push(session.data.format);
+  }
+});
+
+const agenda = await getCollection("agenda");
+
+let dayTitles: {
+  [key: string]: string;
+} = {};
+agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
+---
+
+<script>
+  const initFilters = () => {
+    document.querySelector("#filters")?.addEventListener("change", (event) => {
+      event.stopPropagation();
+      const filterType = (event?.target as HTMLInputElement)?.name;
+      const filter = (event?.target as HTMLInputElement)?.value || "";
+      const urlParams = new URLSearchParams(window.location.search);
+      if (filter === "") {
+        urlParams.delete(filterType);
+      } else {
+        urlParams.set(filterType, filter);
+      }
+      window.location.search = urlParams.toString();
+    });
+
+    const params = new URLSearchParams(window.location.search);
+    params.forEach((value, key) => {
+      const element = document.querySelector(`#${key}`) as HTMLSelectElement;
+      if (element) {
+        element.value = value;
+      }
+    });
+  };
+
+  document.addEventListener("astro:after-swap", initFilters);
+
+  initFilters();
+</script>
+
+<section id="filters" class="flex flex-wrap flex-row my-5 mx-8 items-center">
+  <select
+    id="format"
+    name="format"
+    class="select select-primary w-full max-w-xs select-lg me-0 md:me-5 mb-5"
+  >
+    <option value="" selected>Format</option>
+    {sessionFormats.map((format) => <option value={format}>{format}</option>)}
+  </select>
+  <select
+    id="date"
+    name="date"
+    class="select select-primary w-full max-w-xs select-lg me-0 md:me-5 mb-5"
+  >
+    <option value="" selected>Day</option>
+    {
+      Object.keys(dayTitles).map((key) => (
+        <option value={key}>{dayTitles[key]}</option>
+      ))
+    }
+  </select>
+  <select
+    id="venue"
+    name="venue"
+    class="select select-primary w-full max-w-xs select-lg mb-5"
+  >
+    <option value="" selected>Venue</option>
+    {venueOptions.map((venue) => <option value={venue}>{venue}</option>)}
+  </select>
+</section>

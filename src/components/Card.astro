@@ -1,0 +1,66 @@
+---
+interface Props {
+  class?: string;
+  borderless?: boolean;
+}
+
+const { class: klass, borderless } = Astro.props;
+
+const rand = Math.random().toString(36).slice(2, 11);
+const id = `card-${rand}`;
+---
+
+<div
+  id={id}
+  class:list={[
+    `card rounded-md border-amber-400 hover:border-fuchsia-400 transition-all p-6 text-center flex flex-col`,
+    klass,
+    {
+      "border-0": borderless,
+      "border-2": !borderless,
+    },
+  ]}
+>
+  <slot />
+</div>
+
+<style>
+  @media (min-width: 600px) {
+    .card {
+      transform: perspective(3000px) translateZ(0) rotateX(var(--dx))
+        rotateY(var(--dy));
+      transition: all 150ms linear 0s;
+    }
+    .card:hover {
+      transform: perspective(3000px) translateZ(0) rotateX(var(--dx))
+        rotateY(var(--dy)) scale(1.05);
+    }
+  }
+</style>
+
+<script define:vars={{ id }}>
+  const setProp = (el, prop, value) => el.style.setProperty(prop, value);
+
+  const el = document.getElementById(id);
+
+  const onMouseUpdate = (e) => {
+    let width = el.offsetWidth;
+    let XRel = e.pageX - el.offsetLeft;
+    let YRel = e.pageY - el.offsetTop;
+
+    let YAngle = (0.5 - XRel / width) * 10;
+    let XAngle = -(0.5 - YRel / width) * 10;
+
+    setProp(el, "--dy", `${YAngle}deg`);
+    setProp(el, "--dx", `${XAngle}deg`);
+  };
+
+  const resetProps = () => {
+    el.style.setProperty("--dy", "0");
+    el.style.setProperty("--dx", "0");
+  };
+
+  el.addEventListener("mousemove", onMouseUpdate, false);
+  el.addEventListener("mouseenter", onMouseUpdate, false);
+  el.addEventListener("mouseleave", resetProps, false);
+</script>

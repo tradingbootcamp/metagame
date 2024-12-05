@@ -1,0 +1,69 @@
+---
+import Layout from "../layouts/Layout.astro";
+import TicketCard from "../components/TicketCard.astro";
+import Hero from "../components/sections/home/Hero.astro";
+import Organizers from "../components/sections/home/Organizers.astro";
+import Speakers from "../components/sections/home/Speakers.astro";
+import Location from "../components/sections/home/Location.astro";
+import CallForSpeakers from "../components/sections/home/CallForSpeakers.astro";
+import SubscribePopup from "../components/SubscribePopup.astro";
+---
+
+<Layout title="Home">
+  <main class="dark:text-white px-4">
+    <Hero />
+    <Speakers />
+    <Location />
+    <section class="mb-8 bg-dark-500 mt-40" id="tickets">
+      <div class="container mx-auto">
+        <h2 class="mb-8 text-3xl font-bold text-center">
+          Sounds fun? Grab a ticket!
+        </h2>
+
+        <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
+          <TicketCard
+            title="Regular"
+            price={`€ 50`}
+            regularPrice="€ 100"
+            description=""
+            features={[
+              "Full access to all stages",
+              "Access to pre-conference events and activities",
+              "Access to expo and networking areas",
+              "Access to conference party",
+              "Free swag",
+              "Refreshments",
+            ]}
+          />
+          <TicketCard
+            title="VIP"
+            price={`€ 100`}
+            regularPrice="€ 200"
+            description=""
+            features={[
+              "Everything in Regular",
+              "Access to speaker's dinner party",
+              "Access to VIP area",
+              "Premium swag",
+            ]}
+          />
+          <TicketCard
+            title="Group tickets"
+            price="Contact us"
+            description="Additional volume discounts available"
+            features={[
+              "Group regular or VIP tickets",
+              "A minimum of 5 tickets",
+              "Contact us for details",
+            ]}
+            buttonText="Contact Us"
+            href="mailto:email@example.com"
+          />
+        </div>
+      </div>
+    </section>
+    <Organizers />
+    <CallForSpeakers />
+    <SubscribePopup />
+  </main>
+</Layout>

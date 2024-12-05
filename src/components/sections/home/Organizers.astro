@@ -1,0 +1,107 @@
+---
+import { getCollection } from "astro:content";
+import Button from "../../Button.astro";
+import Card from "../../Card.astro";
+import PartnerCard from "./PartnerCard.astro";
+
+const organizers = await getCollection("partners", (entry) => {
+  return entry.data.type === "organizer";
+});
+
+const supporters = await getCollection("partners", (entry) => {
+  return entry.data.type === "supporter";
+});
+
+const media = await getCollection("partners", (entry) => {
+  return entry.data.type === "media";
+});
+
+const drinksnbytes = await getCollection("partners", (entry) => {
+  return entry.data.type === "drinks'n'bytes";
+});
+---
+
+<section class="mb-20 bg-dark-500 flex flex-col" id="organizers">
+  <div class="w-full flex flex-col items-center justify-center">
+    <h2 class="mb-8 text-3xl font-bold">Organizers</h2>
+    <div
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 content-center w-full max-w-screen"
+    >
+      {
+        organizers
+          .toSorted((a, b) => {
+            return a.data.id - b.data.id;
+          })
+          .map((o) => (
+            <PartnerCard
+              imgClass="h-auto w-full lg:w-auto lg:h-52 max-w-full object-contain"
+              organizer={o}
+            />
+          ))
+      }
+    </div>
+  </div>
+</section>
+
+<section class="mb-20 w-full bg-dark-500 flex flex-col" id="Media">
+  <div class="w-full flex flex-col items-center justify-center">
+    <h2 class="mb-8 text-3xl font-bold">Media</h2>
+    <div
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 content-center w-full"
+    >
+      {
+        media
+          .toSorted((a, b) => {
+            return a.data.id - b.data.id;
+          })
+          .map((o) => <PartnerCard imgClass={o.data.logoSize} organizer={o} />)
+      }
+    </div>
+  </div>
+</section>
+
+<section class="mb-20 w-full bg-dark-500 flex flex-col" id="Media">
+  <div class="w-full flex flex-col items-center justify-center">
+    <h2 class="mb-8 text-3xl font-bold">Bytes‘n’Beverages</h2>
+    <div
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 content-center w-full"
+    >
+      {
+        drinksnbytes
+          .toSorted((a, b) => {
+            return a.data.id - b.data.id;
+          })
+          .map((o) => <PartnerCard imgClass={o.data.logoSize} organizer={o} />)
+      }
+    </div>
+  </div>
+</section>
+
+<section class="mb-20 w-full bg-dark-500 flex flex-col" id="Supporters">
+  <div class="w-full flex flex-col items-center justify-center">
+    <h2 class="mb-8 text-3xl font-bold">Supporters</h2>
+    <div
+      class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 content-center w-full"
+    >
+      {
+        supporters
+          .toSorted((a, b) => {
+            return a.data.id - b.data.id;
+          })
+          .map((o) => <PartnerCard imgClass={o.data.logoSize} organizer={o} />)
+      }
+    </div>
+    <Card class="mt-[80px]">
+      <div class="flex flex-col items-center justify-center h-full p-4">
+        <h3 class="text-2xl font-bold">Sounds fun? Want to take part?</h3>
+        <p class="text-center mt-4">
+          Thinking about sponsoring us, or maybe partnerting with us? Something
+          else in mind?
+        </p>
+        <Button classes="mt-8 uppercase" link="mailto:email@example.com"
+          >MESSAGE US!</Button
+        >
+      </div>
+    </Card>
+  </div>
+</section>

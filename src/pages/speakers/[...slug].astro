@@ -1,0 +1,123 @@
+---
+import Layout from "../../layouts/Layout.astro";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import { Icon } from "astro-icon/components";
+
+export async function getStaticPaths() {
+  const speakerEntries = await getCollection("speakers");
+  const sessionEntries = await getCollection("sessions");
+  return speakerEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: {
+      entry,
+      sessions: (() => {
+        return sessionEntries.filter((session) =>
+          session.data.speakerId.includes(entry.data.id)
+        );
+      })(),
+    },
+  }));
+}
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/*.{jpeg,jpg,png,gif,svg}"
+);
+
+const { entry, sessions } = Astro.props;
+const { Content } = await entry.render();
+
+---
+
+<Layout title={`${entry.data.name}`}>
+  <article
+    class="flex flex-col lg:flex-row gap-8 items-center justify-center mt-[5%] mx-10 pb-20 flex-wrap"
+  >
+    <div
+      class="glitch bg-gradient-to-r from-secondary-700 w-full lg:w-[360px] lg:h-[436px] to-primary-700 text-white font-semibold rounded p-2 flex items-center justify-center"
+    >
+      <Image
+        alt={entry.data.name}
+        class="rounded-2xl object-cover w-full lg:w-[350px] lg:h-[420px]"
+        src={images[entry.data.image || "/src/assets/incognito.svg"]()}
+        width="400"
+        transition:name={`${entry.slug}-image`}
+      />
+    </div>
+    <section class="max-w-prose prose prose-xl">
+      <h2
+        class="font-black text-3xl text-secondary-300"
+        transition:name={`${entry.slug}-name`}
+      >
+        {entry.data.name}
+      </h2>
+      <div transition:animate="slide">
+        <Content />
+      </div>
+      <div class="flex gap-8 flex-wrap" transition:animate="slide">
+        {
+          entry?.data?.website && (
+            <a href={entry.data.website} class="text-primary-400">
+              <span class="flex items-center justify-center text-primary-400 gap-2 text-xl">
+                <Icon name="el:link" class="" /> Website
+              </span>
+            </a>
+          )
+        }
+        {
+          entry?.data?.github && (
+            <a href={entry.data.github} class="text-secondary-400">
+              <span class="flex items-center justify-center text-secondary-400 gap-2 text-xl">
+                <Icon name="el:github" class="" /> GitHub
+              </span>
+            </a>
+          )
+        }
+        {
+          entry?.data?.linkedin && (
+            <a href={entry.data.linkedin} class="text-primary-400">
+              <span class="flex items-center justify-center text-primary-400 gap-2 text-xl">
+                <Icon name="el:linkedin" class="" /> LinkedIn
+              </span>
+            </a>
+          )
+        }
+        {
+          entry?.data?.twitter && (
+            <a href={entry.data.twitter} class="text-secondary-400">
+              <span class="flex items-center justify-center text-secondary-400 gap-2 text-xl">
+                <Icon name="el:twitter" class="" /> Twitter
+              </span>
+            </a>
+          )
+        }
+      </div>
+    </section>
+    <section
+      class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary-200"
+    >
+      <h2 class="font-black text-3xl text-secondary-300 text-center">
+        Sessions
+      </h2>
+      <p>
+        {
+          sessions.length === 0 && (
+            <span class="font-black flex items-center justify-center gap-3 text-primary-400">
+              TBA
+            </span>
+          )
+        }
+        {
+          sessions.map((session) => (
+            <a
+              href={`/sessions/${session.slug}`}
+              class="font-black flex items-center justify-center gap-3 text-primary-400"
+            >
+              <Icon name="el:mic" class="" /> {session.data.title}
+            </a>
+          ))
+        }
+      </p>
+    </section>
+  </article>
+</Layout>

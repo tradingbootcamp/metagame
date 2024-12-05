@@ -1,0 +1,59 @@
+---
+import Button from "../../Button.astro";
+import Typer from "../../Typer.astro";
+import './Hero.css';
+
+
+const titles = ["developers", "hackers", "programmers", "designers", "webmasters", "dabblers", "engineers", "architects", "coders", "creators", "innovators"]
+
+---
+
+<section
+  class="h-screen flex flex-col items-center justify-center pb-24 px-0 md:px-12"
+  id="hero"
+>
+  <div class="flex flex-col items-center justify-center max-w-prose">
+    <h1
+      class="text-center w-full mb-10 text-4xl font-semibold tracking-wider md:text-6xl max-w-prose glitch"
+    >
+      The conference for <br />
+      <span class="text-white uppercase font-black outlines">
+        <Typer
+          blinkerClass="text-white"
+          texts={titles} 
+        />
+      </span>
+    </h1>
+    <p class="text-lg text-center md:text-xl max-w-prose mb-8 font-black">
+      <span class="text-amber-300" data-glitchies='{ "totalClones": 2 }'>
+        A tech conference by the community, for the community. Join us on [DATE] in [CITY].
+      </span>
+    </p>
+    <Button background="bg-cyan-500" link="#tickets">GET YOUR TICKET</Button>
+  </div>
+</section>
+
+<style>
+  .outlines {
+    text-shadow: -2px -2px 0 #4deeea, 2px -2px 0 #4deeea, -2px 2px 0 #4deeea, 2px 2px 0 #4deeea, 0 0 5px #fff, 0 0 10px #34e2e4, 0 0 25px #764ba2, 0 0 35px #764ba2, 0 0 55px #764ba2, 0 0 65px #764ba2;
+  }
+</style>
+
+<script>
+  const r = document.querySelector(":root")! as HTMLElement;
+
+  requestAnimationFrame(doAnimationStep);
+  let dt = 0;
+  let prevtime = 0;
+  let outrun = 0;
+  function doAnimationStep(timeStamp: DOMHighResTimeStamp) {
+    dt = 1.0 / (timeStamp - prevtime);
+    prevtime = timeStamp;
+    outrun += dt;
+    if (outrun >= 1) {
+      outrun = 0;
+    }
+    r.style.setProperty("--outrun", `${outrun}`);
+    requestAnimationFrame(doAnimationStep);
+  }
+</script>

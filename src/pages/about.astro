@@ -1,0 +1,120 @@
+---
+import Button from "../components/Button.astro";
+import Typer from "../components/Typer.astro";
+import { TICKET_URL } from "../config";
+import Layout from "../layouts/Layout.astro";
+
+const alternatively = [
+  "Let us show you around our city?",
+  "How about a guided tour of local attractions?",
+  "Would you like to join us for a local food tasting?",
+  "Let's explore some hidden gems together?",
+  "How about we introduce you to our tech community?",
+  "Want to join a coding workshop?",
+  "Interested in a local hackathon?",
+  "Let's discuss the latest tech trends over coffee?",
+  "How about a networking session with local developers?",
+  "Want to participate in a tech trivia night?",
+];
+---
+
+<Layout title="About">
+  <div class="">
+    <section
+      class="hero prose-xl h-[50vh] flex flex-col items-center justify-center py-24 px-6 md:px-12 bg-contain"
+      id="hero"
+    >
+      <div class="flex flex-col items-center justify-center"></div>
+    </section>
+
+    <div class="container mx-auto">
+      <div
+        class="prose lg:prose-xl dark:prose-invert max-w-none p-8 font-semibold"
+      >
+        <h1>About Our Conference</h1>
+
+        <p>
+          Welcome to <span class="text-primary-300">Our Tech Conference</span>, a celebration of technology, innovation, and community. We've created this event to bring together passionate individuals from all corners of the tech world.
+        </p>
+
+        <p>
+          <span class="text-primary-300">Our Tech Conference</span> is a single-day, multi-track event that aims to explore the latest trends, technologies, and best practices in the tech industry. Here's what you can expect:
+        </p>
+
+        <ul>
+          <li>
+            <span class="text-primary-300">Inspiring Talks</span> - From industry leaders and rising stars alike, sharing authentic insights and experiences.
+          </li>
+          <li>
+            <span class="text-primary-300">Networking Opportunities</span> - Connect with like-minded professionals and expand your network.
+          </li>
+          <li>
+            <span class="text-primary-300">Interactive Workshops</span> - Get hands-on experience with cutting-edge technologies.
+          </li>
+          <li>
+            <span class="text-primary-300">Local Flavors</span> - Experience the best of our local cuisine and culture.
+          </li>
+          <li>
+            <span class="text-primary-300">Community Building</span> - Be part of a vibrant, supportive tech community.
+          </li>
+        </ul>
+
+        <h2>Who We Are</h2>
+
+        <p>Our conference is organized by a collaboration of local tech communities:</p>
+
+        <ol>
+          <li>
+            <a href="#" class="text-secondary-300">Community A</a> - Dedicated to fostering tech education and community building.
+          </li>
+          <li>
+            <a href="#" class="text-secondary-300">Community B</a> - Focused on specific technology stacks and best practices.
+          </li>
+          <li>
+            <a href="#" class="text-secondary-300">Community C</a> - Promoting innovation and entrepreneurship in tech.
+          </li>
+        </ol>
+
+        <h2>What to Expect</h2>
+
+        <p>
+          Our goal is to make this conference your annual must-attend event. Here's what we promise to deliver:
+        </p>
+        <ul>
+          <li>Insightful and engaging talks from diverse speakers</li>
+          <li>Opportunities for learning, networking, and growth</li>
+          <li>A welcoming and inclusive environment for all attendees</li>
+        </ul>
+
+        <p>
+          Have questions? Reach out to us at <a href="mailto:contact@example.com">contact@example.com</a> or on our social media profiles.
+        </p>
+        <h3>
+          <u>We'd also love to:</u>
+          <Typer texts={alternatively} speed={50} />
+        </h3>
+        <p>Join us for an unforgettable experience!</p>
+
+        <div class="flex items-center justify-center p-8">
+          <Button background="bg-cyan-500" link={TICKET_URL}>
+            Get Your Tickets Now
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+<style>
+  .hero {
+    --darker: theme("colors.dark.500");
+    --lighter: rgba(11, 11, 17, 0.4);
+    background:
+      linear-gradient(
+        0deg,
+        var(--darker) 0%,
+        var(--lighter) 40%,
+        transparent 100%
+      ),
+      url("/bg.webp") no-repeat center center;
+  }
+</style>

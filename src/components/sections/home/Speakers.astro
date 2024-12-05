@@ -1,0 +1,44 @@
+---
+import SpeakerCard from "../../SpeakerCard.astro";
+import { getCollection } from 'astro:content';
+
+const speakers = await getCollection("speakers");
+---
+
+<section class="mb-[40px] pt-20" id="speakers">
+    <div class="container mx-auto">
+      <h2 class="mb-8 text-3xl font-bold text-center">Speakers</h2>
+      <div class="flex flex-row justify-center items-center gap-8 flex-wrap">
+        {
+          speakers.toSorted((a, b) => { return a.data.id - b.data.id }).map((speaker) => (
+            <SpeakerCard 
+              name={speaker.data.name}
+              title={speaker.data.title}
+              image={speaker.data.image}
+              slug={speaker.slug}
+              href={`/speakers/${speaker.slug}`}
+              buttonText="Speaker Bio"
+              descriptionClass="text-cyan-300"
+              description={""}
+            />
+          ))
+        }
+        <!-- <SpeakerCard
+          name="More Coming Soon!"
+          title="---"
+          buttonText="DETAILS COMING SOON"
+          descriptionClass="text-cyan-300"
+          description="Stay tuned!"
+        /> -->
+        <!-- <SpeakerCard
+          name="You?"
+          title="Your Title Here"
+          href="#cfs"
+          buttonText="SUBMIT YOUR TALK"
+          description="That's not you on the picture, but... You're battered, seasoned and ready to fry. We're sure you have a lot to share. We'd love to have you speak at What The Stack!"
+        /> -->
+    </div>
+    <!-- <div class="flex justify-center items-center my-48">
+      <h3 class="text-lg font-bold text-center">Agenda & more speaker reveals coming soon! <br /> <button class="text-primary-300 hover:text-secondary-200 hover:font-bold transition-all" onclick="submodal.showModal()">[Stay in the loop]</button></h3>
+    </div> -->
+  </section>

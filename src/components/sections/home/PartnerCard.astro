@@ -1,0 +1,36 @@
+---
+import type { CollectionEntry } from "astro:content";
+import Card from "../../Card.astro";
+
+type Props = {
+  organizer: CollectionEntry<"partners">;
+  imgClass?: string;
+};
+
+const { organizer, imgClass } = Astro.props;
+---
+
+<a
+  class="font-medium text-xl mt-10 flex items-center justify-center root"
+  href={organizer.data.website}
+  target="_blank"
+>
+  <Card
+    borderless
+    class="flex flex-col gap-4 items-center justify-center border-0 hover:underline"
+  >
+    <img
+      class:list={[
+        imgClass,
+        {
+          "w-60": organizer.data.wideLogo,
+        },
+      ]}
+      src={organizer.data.logo}
+      style={`${organizer.data.logoSize}`}
+    />
+    <span class="text-2xl font-bold text-primary-300 decoration-primary-300"
+      >{organizer.data.name}</span
+    >
+  </Card>
+</a>

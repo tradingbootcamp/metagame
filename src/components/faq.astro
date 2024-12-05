@@ -1,0 +1,32 @@
+---
+import { getCollection } from "astro:content";
+
+const faqs = await getCollection("faq");
+---
+
+<div class="max-w-prose py-20 flex flex-col gap-5">
+  <h1 class="text-secondary-300 text-2xl font-black text-center pb-8">
+    Frequently Asked Questions
+  </h1>
+  {
+    faqs
+      .toSorted((a, b) => a.data.id - b.data.id)
+      .map(async (faq) => {
+        const { Content } = await faq.render();
+
+        return (
+          <div class="collapse collapse-plus bg-base-200">
+            <input type="radio" name="my-accordion-1" />
+            <div class="collapse-title text-xl font-medium">
+              {faq.data.question}
+            </div>
+            <div class="collapse-content prose prose-xl">
+              <p class="">
+                <Content />
+              </p>
+            </div>
+          </div>
+        );
+      })
+  }
+</div>

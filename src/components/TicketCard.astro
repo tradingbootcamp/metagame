@@ -1,0 +1,60 @@
+---
+import { TICKET_URL } from "../config";
+import Button from "./Button.astro";
+import Card from "./Card.astro";
+
+interface Props {
+  title: string;
+  price: string;
+  regularPrice?: string;
+  description: string;
+  href?: string;
+  features: string[];
+  buttonText?: string;
+}
+
+const { href, title, price, regularPrice, description, features, buttonText } =
+  Astro.props;
+
+const numericalPrice = parseInt(price.replace("€", ""));
+const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", ""));
+---
+
+<Card class="relative group">
+  {
+    regularPrice && ((numericalRegularPrice - numericalPrice) / numericalRegularPrice > 0) && (
+      <div class="absolute right-[-38px] h-10 w-[164px] border-b-2 rotate-45 transition-all border-amber-400 group-hover:border-fuchsia-400 motion-reduce:animate-pulse">
+        <div class="mb-8 text-3xl text-secondary-300 font-bold animate-pulse">
+          {"-"}
+          {((numericalRegularPrice - numericalPrice) / numericalRegularPrice) *
+            100}
+          {"%"}
+        </div>
+      </div>
+    )
+  }
+  <h3 class="uppercase mb-4 text-2xl font-black text-primary-300">{title}</h3>
+  {
+    regularPrice && price !== regularPrice ? (
+      <div class="text-4xl text-gray-400 relative">
+        {regularPrice}
+
+        <div class="absolute left-7 right-0 mx-auto w-[65px] top-5 border-b-2 -rotate-[33deg] border-secondary-300" />
+      </div>
+    ) : (
+      <div class="text-4xl text-gray-400 h-10" />
+    )
+  }
+  <p class="my-4 text-6xl font-black text-secondary-300">{price}</p>
+  <p class="my-6 text-cyan-300 font-bold">{description}</p>
+
+  <ul class="my-16 text-lg flex-grow">
+    {features?.map((feature) => <li>{feature}</li>)}
+  </ul>
+
+  <div>
+    <Button link={href || TICKET_URL}>{buttonText || "Buy Now"}</Button>
+  </div>
+</Card>
+
+<style></style>

@@ -1,0 +1,9 @@
+{
+  "id": 2,
+  "name": "Tech Conference Day 2",
+  "venue": "Main Conference Center",
+  "date": "2024-09-10",
+  "sessions": [],
+  "description": "The second day of our tech conference focuses on advanced topics and hands-on workshops. Dive deep into specialized areas and enhance your skills. Open to all attendees, but workshop registration is required.",
+  "registrationLink": "https://example.com/workshop-registration"
+}

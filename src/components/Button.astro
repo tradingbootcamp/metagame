@@ -1,0 +1,55 @@
+---
+interface Props {
+  classes?: string;
+  link?: string;
+  background?: string;
+}
+
+const { link, classes, background } = Astro.props;
+
+const bg = background ?? `bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500`;
+
+---
+
+<a href={link} class={`${classes ?? ''} btn-container relative inline-block hover:scale-105 transition-all`}>
+  <div class={`btn-blur ${bg} absolute top-0 left-0 right-0 bottom-0 -z-10`}>
+  </div>
+  <button
+    class={`tickets-btn ${bg} position-relative transition-all duration-300  rounded-md p-0.5 font-bold z-1`}
+  >
+    <div
+      class="content uppercase transition-all duration-1000 bg-dark-500 text-white w-full h-full px-12 rounded-md py-3"
+    >
+      <slot />
+    </div>
+  </button>
+</a>
+
+<style>
+  .content {
+    color: white;
+  }
+
+  .btn-blur {
+    transition: all 0.3s;
+    opacity: 0.3;
+    filter: blur(10px);
+    transform: translateY(5%);
+    @apply rounded-md;
+  }
+
+  .btn-container:hover .btn-blur {
+    transform: scale(1.1, 1.5) translateY(5%);
+    transition: all 0.3s;
+  }
+
+
+  .btn-blur, .tickets-btn {
+    background-size: 200% 200%;
+    background-position: -100% 0;
+  }
+
+  .btn-blur:hover, .tickets-btn:hover {
+    background-position: 100% 0;
+  }
+</style>

@@ -1,0 +1,98 @@
+---
+import { getCollection } from "astro:content";
+import Organizers from "../components/sections/home/Organizers.astro";
+import PartnerCard from "../components/sections/home/PartnerCard.astro";
+import Layout from "../layouts/Layout.astro";
+
+const sponsors = await getCollection("partners", (entry) => {
+  return entry.data.type === "sponsor";
+});
+---
+
+<Layout title="Sponsors">
+  <div class="spacer" />
+  <h1 class="text-5xl text-secondary-400 text-center font-black mb-24">
+    Sponsors
+  </h1>
+
+  <div class="grid grid-cols-1 gap-8 content-center w-full mb-[160px]">
+    <h2 class="text-3xl text-center font-black col-span-full">Gold Tier</h2>
+    {
+      sponsors
+        .filter((s) => s.data.tier === "gold")
+        .toSorted((a, b) => {
+          return a.data.id - b.data.id;
+        })
+        .map((o, i) => (
+          <PartnerCard
+            imgClass={`object-contain h-auto w-full lg:w-auto lg:h-40`}
+            organizer={o}
+          />
+        ))
+    }
+  </div>
+
+  <div
+    class="grid grid-cols-1 gap-8 content-center w-full mb-[100px]"
+  >
+    <h2 class="text-3xl text-center font-black col-span-full">Silver Tier</h2>
+    {
+      sponsors
+        .filter((s) => s.data.tier === "silver")
+        .toSorted((a, b) => {
+          return a.data.id - b.data.id;
+        })
+        .map((o, i) => (
+          <PartnerCard imgClass={`h-32 w-[420px] object-cover`} organizer={o} />
+        ))
+    }
+  </div>
+
+  <div
+    class="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-3 content-center w-full mb-[80px]"
+  >
+    <h2 class="text-3xl text-center font-black col-span-full">Bronze Tier</h2>
+    {
+      sponsors
+        .filter((s) => s.data.tier === "bronze")
+        .toSorted((a, b) => {
+          return a.data.id - b.data.id;
+        })
+        .map((o, i) => (
+          <PartnerCard imgClass={`h-24 object-cover`} organizer={o} />
+        ))
+    }
+  </div>
+
+  <div class="flex items-center justify-center message-wrap mb-48">
+    <div
+      class="container mx-auto h-full max-w-prose flex-grow flex flex-col items-center justify-center"
+    >
+      <h3 class="text-2xl font-bold text-center pb-4">
+        Interested in becoming a part of this epic experience? <a
+          class="text-primary-300 hover:text-secondary-200 hover:font-bold transition-all"
+          href="https://link-to-sponsorship-form">[Click here]</a
+        >
+      </h3>
+      <h4 class="text-xl font-bold text-center">
+        Interested in our sponsorship tiers?
+        <a
+          href="/link-to-sponsorship-document"
+          class="text-secondary-300 hover:text-primary-200 hover:font-bold transition-all"
+          >[Click here]</a
+        >
+      </h4>
+    </div>
+  </div>
+  <Organizers />
+</Layout>
+
+<style>
+  .message-wrap {
+    height: 300px;
+  }
+
+  .spacer {
+    height: 100px;
+  }
+</style>

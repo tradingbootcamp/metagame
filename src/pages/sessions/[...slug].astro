@@ -1,0 +1,113 @@
+---
+import { getCollection } from "astro:content";
+import Layout from "../../layouts/Layout.astro";
+import { format } from "date-fns";
+import { Image } from "astro:assets";
+
+export async function getStaticPaths() {
+  const speakerEntries = await getCollection("speakers");
+  const miscsEntries = await getCollection("miscs");
+  const sessionEntries = await getCollection("sessions");
+  return sessionEntries.map((entry) => ({
+    params: { slug: entry.slug },
+    props: {
+      entry,
+      speakers: (() => {
+        return speakerEntries.filter((session) =>
+          entry.data.speakerId.includes(session.data.id)
+        );
+      })(),
+      miscs: (() => {
+        return miscsEntries.filter((m) =>
+          entry.data?.miscId ? entry.data.miscId.includes(m.data.id) : null
+        );
+      })(),
+    },
+  }));
+}
+
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/assets/*.{jpeg,jpg,png,gif,svg,webp}"
+);
+
+const { entry, speakers, miscs } = Astro.props;
+const { Content } = await entry.render();
+---
+
+<Layout title={`${entry.data.title}`}>
+  <article class="flex w-full flex-col items-center py-10 mb-20 px-8">
+    <section class="max-w-prose w-full prose prose-xl mb-10">
+      <h1 class="text-left w-full mb-8">
+        <span class="text-secondary-400">{entry.data.title}</span>
+      </h1>
+      <div class="flex flex-col gap-2">
+        {
+          speakers.map((speaker) => {
+            return (
+              <div>
+                <a
+                  class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
+                  href={`/speakers/${speaker.slug}`}
+                >
+                  <Image
+                    alt={speaker.data.name}
+                    class="rounded-full object-cover w-[100px] h-[100px]"
+                    src={images[speaker.data.image]()}
+                    width="100"
+                    height="100"
+                    transition:name={`${entry.slug}-image`}
+                  />
+                  {speaker.data.name}
+                </a>
+              </div>
+            );
+          })
+        }
+        <div class="flex flex-col gap-2">
+          {
+            miscs.map((misc) => {
+              return (
+                <div>
+                  <a
+                    class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
+                    href={`/miscs/${misc.slug}`}
+                  >
+                    <Image
+                      alt={misc.data.name}
+                      class="rounded-full object-cover w-[100px] h-[100px]"
+                      src={images[misc.data.image]()}
+                      width="100"
+                      height="100"
+                      transition:name={`${entry.slug}-image`}
+                    />
+                    {misc.data.name}
+                  </a>
+                </div>
+              );
+            })
+          }
+      </div>
+      <h4 class="flex flex-col">
+        <div>
+          Format: <span class="text-secondary-400">{entry.data.format}</span>
+        </div>
+        <div>
+          Date: <span class="text-secondary-400"
+            >{format(entry.data.date, "yyyy-MM-dd")}</span
+          >
+        </div>
+        <div>
+          Duration: <span class="text-secondary-400"
+            >{entry.data.duration} minutes</span
+          >
+        </div>
+        <div>
+          Venue: <span class="text-secondary-400">{entry.data.venue}</span>
+        </div>
+      </h4>
+    </section>
+    <section class="max-w-prose prose prose-xl">
+      <Content />
+    </section>
+  </article>
+</Layout>

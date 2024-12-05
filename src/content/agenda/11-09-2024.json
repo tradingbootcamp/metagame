@@ -1,0 +1,9 @@
+{
+  "id": 3,
+  "name": "Tech Conference Workshop Day",
+  "venue": "Training Center",
+  "date": "2024-09-11",
+  "sessions": [],
+  "description": "A full day dedicated to in-depth workshops and hands-on learning. Perfect for beginners and those looking to expand their skills in specific areas. The workshop is included with your conference ticket, but pre-registration is required due to limited space.",
+  "registrationLink": "https://example.com/workshop-registration"
+}
