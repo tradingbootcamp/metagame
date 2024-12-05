@@ -34,22 +34,22 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   <Image
     alt={name || "YOU?"}
     class:list={[
-      "glitch mb-4 h-[400px] w-full rounded-lg object-cover",
+      "glitch mb-2 h-[200px] w-full rounded-lg object-cover",
       image ? "object-cover" : "object-fill",
     ]}
     src={images?.[image || "/src/assets/incognito.svg"]?.()}
-    height="400"
+    height="200"
     transition:name={slug && `${slug}-image`}
   />
   <div class="flex-grow">
     <h3
-      class="mb-2 text-2xl font-bold"
+      class="mb-1 text-xl font-bold"
       transition:name={slug && `${slug}-name`}
     >
       {name}
     </h3>
     <p
-      class="mb-4 text-secondary-300 font-semibold"
+      class="mb-2 text-secondary-200 font-semibold"
       transition:name={slug && `${slug}-title`}
     >
       {title}
@@ -59,6 +59,6 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     </p>
   </div>
   <div class="glitch">
-    <Button link={href} classes="mt-4 text-sm">{buttonText}</Button>
+    <Button link={href} classes="mt-2 text-sm">{buttonText}</Button>
   </div>
 </Card>
