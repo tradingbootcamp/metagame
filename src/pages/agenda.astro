@@ -11,7 +11,7 @@ const speakers = await getCollection("speakers");
 const miscs = await getCollection("miscs");
 
 const mainDaySessions = sessions.filter(
-  (session) => format(session.data.date, "yyyy-MM-dd") === "2024-09-14"
+  (session) => format(session.data.date, "yyyy-MM-dd") === "2025-09-05"
 );
 
 const sessionGroupsPerStage = mainDaySessions.reduce(
@@ -53,9 +53,9 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                 data-id={item.data.id}
                 role="tab"
                 class={`${item.data.id === 6 && `text-secondary-300 border-secondary-500`} tab tab-lg text-lg text-nowrap border-b pb-4 border-grey-100`}
-                aria-label={format(new Date(item.data.date), "eeee (do)")}
+                aria-label={format(new Date(`${item.data.date}T00:00:00`), "eeee (do)")}
               >
-                {format(new Date(item.data.date), "eeee (do)")}
+                {format(new Date(`${item.data.date}T00:00:00`), "eeee (do)")}
               </button>
             );
           })
@@ -70,7 +70,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                 data-tab-id={item.data.id}
               >
                 <section
-                  class={`prose prose-xl ${item.data.date === "2024-09-14" && `max-w-full w-full`}`}
+                  class={`prose prose-xl ${item.data.date === "2025-09-05" && `max-w-full w-full`}`}
                 >
                   <h2 class="text-center text-secondary-200 text-4xl">
                     {item.data.name}
@@ -89,7 +89,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                   </p>
                   <div class="">
                     <div class="not-prose md:py-8 py-5 md:px-16 px-5 rounded-b flex flex-col gap-5">
-                      {item.data.date === "2024-09-14" && (
+                      {item.data.date === "2025-09-05" && (
                         <div class="overflow-x-auto max-w-full">
                           <table class="table table-lg table-pin-cols text-lg min-w-[800px]">
                             <thead>
@@ -193,7 +193,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                           }
                         })
                         .map((session) => {
-                          if (item.data.date === "2024-09-14") {
+                          if (item.data.date === "2025-09-05") {
                             return;
                           }
 
@@ -260,7 +260,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
             .map((item) => {
               return (
                 <option value={item.data.id} selected={item.data.id === 6}>
-                  {format(new Date(item.data.date), "eeee (do)")}
+                  {format(new Date(`${item.data.date}T00:00:00`), "eeee (do)")}
                 </option>
               );
             })
@@ -295,7 +295,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                   </p>
                   <div class="">
                     <div class="not-prose md:py-8 py-5 md:px-16 px-5 rounded-b flex flex-col gap-5">
-                      {item.data.date === "2024-09-14" && (
+                      {item.data.date === "2025-09-05" && (
                         <div class="w-screen overflow-x-auto">
                           <table class="table table-lg table-pin-cols text-lg min-w-[800px]">
                             <thead>
@@ -410,7 +410,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                           }
                         })
                         .map((session) => {
-                          if (item.data.date === "2024-09-14") {
+                          if (item.data.date === "2025-09-05") {
                             return;
                           }
 

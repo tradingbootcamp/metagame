@@ -22,42 +22,38 @@ import SubscribePopup from "../components/SubscribePopup.astro";
 
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
           <TicketCard
-            title="Regular"
-            price={`€ 50`}
-            regularPrice="€ 100"
-            description=""
+            title="Volunteer"
+            price={`$101`}
+            regularPrice="$404"
+            description="Subject to availability"
             features={[
-              "Full access to all stages",
-              "Access to pre-conference events and activities",
-              "Access to expo and networking areas",
-              "Access to conference party",
-              "Free swag",
-              "Refreshments",
-            ]}
-          />
-          <TicketCard
-            title="VIP"
-            price={`€ 100`}
-            regularPrice="€ 200"
-            description=""
-            features={[
-              "Everything in Regular",
-              "Access to speaker's dinner party",
-              "Access to VIP area",
               "Premium swag",
+              "OK food",
+              "Participation in a volunteer cult initiation ritual"
             ]}
           />
           <TicketCard
-            title="Group tickets"
-            price="Contact us"
-            description="Additional volume discounts available"
+            title="Early Bird"
+            price={`$404`}
+            regularPrice="$666"
+            description="Available through June 1st"
             features={[
-              "Group regular or VIP tickets",
-              "A minimum of 5 tickets",
-              "Contact us for details",
+              "Premium swag",
+              "OK food",
+              "Don't have to spend your conference staffing the volunteer desk"
+            ]}
+          />
+          <TicketCard
+            title="Supporter"
+            price="$1337"
+            description="We will name a game after you"
+            features={[
+              "Premium swag",
+              "Slightly better than OK food",
+              "The knowledge that you're supporting other people's fun"
             ]}
             buttonText="Contact Us"
-            href="mailto:email@example.com"
+            href="mailto:ricki.heicklen@gmail.com"
           />
         </div>
       </div>
