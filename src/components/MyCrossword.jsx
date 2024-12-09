@@ -132,40 +132,59 @@ const OverlaysContainer = ({ gridRef }) => {
       return;
     }
 
-    const gridElement = gridRef.current;
-    const gridRect = gridElement.getBoundingClientRect();
+    // Get the SVG element that contains the grid
+    const gridElement = gridRef.current.querySelector('.crossword.grid svg');
+    const gridRect = gridElement?.getBoundingClientRect();
+    const parentRect = gridRef.current.getBoundingClientRect();
 
-    if (gridRect.width === 0) {
-      console.log('Grid has no width yet');
+    if (!gridElement || !gridRect || gridRect.width === 0) {
+      console.log('Grid element not found or has no width');
       return;
     }
 
-    const gridSize = Math.max(gridRect.width, gridRect.height);
-    const cellSize = gridSize / 7; // Assuming 7x7 grid, adjust if needed
-    const cellPadding = 0;// cellSize * 0.1;
+    // The viewBox is "0 0 70 50" from the SVG
+    const viewBoxWidth = 70;
+    const viewBoxHeight = 50;
+    const cellWidth = 9.75; // From the rect width in the SVG
+    
+    // Calculate the actual size of cells based on the rendered grid size
+    const gridSize = gridRect.width;
+    const cellSize = gridSize * (cellWidth / viewBoxWidth);
+    const cellPadding = 0;
     const cellInner = cellSize - (2 * cellPadding);
     const cellHalf = cellInner / 2;
+    
+    // Calculate offset from the grid position
+    const offsetTop = gridRect.top - parentRect.top;
+    const offsetLeft = gridRect.left - parentRect.left;
 
     console.log('New dimensions:', {
       gridSize,
       cellSize,
       cellPadding,
       cellInner,
-      cellHalf
+      cellHalf,
+      offsetTop,
+      offsetLeft
     });
 
     setDimensions({
+      gridSize,
       cellSize,
       cellPadding,
       cellInner,
-      cellHalf
+      cellHalf,
+      offsetTop,
+      offsetLeft
     });
     setShowOverlays(true);
   }, [gridRef]);
 
   React.useEffect(() => {
-    // Initial calculation
-    calculateDimensions();
+    // Add a small delay to ensure the grid is rendered
+    const timer = setTimeout(() => {
+      calculateDimensions();
+    }, 100);
 
     // Add resize observer
     const observer = new ResizeObserver(() => {
@@ -178,6 +197,7 @@ const OverlaysContainer = ({ gridRef }) => {
 
     // Cleanup
     return () => {
+      clearTimeout(timer);
       if (gridRef.current) {
         observer.unobserve(gridRef.current);
       }
@@ -193,10 +213,10 @@ const OverlaysContainer = ({ gridRef }) => {
     <div 
       style={{
         position: 'absolute',
-        top: 0,
-        left: 0,
-        right: 0,
-        bottom: 0,
+        top: dimensions?.offsetTop || 0,
+        left: dimensions?.offsetLeft || 0,
+        width: dimensions?.gridSize, // Explicitly set width
+        height: dimensions?.gridSize, // Explicitly set height
         pointerEvents: 'none',
         zIndex: 1,
       }}
@@ -217,11 +237,11 @@ const OverlaysContainer = ({ gridRef }) => {
   );
 };
 
-const CellOverlay = ({ row, col, style, cellSize, cellInner, cellPadding, cellHalf }) => {
+const CellOverlay = ({ row, col, style, gridSize, cellSize, cellInner, cellPadding, cellHalf }) => {
   
   // Calculate position
-  const left = col * cellSize;
-  const top = row * cellSize;
+  const left = col * gridSize / 7;
+  const top = row * gridSize / 7;
 
   if (style.type === 'circle') {
     return (
@@ -353,12 +373,59 @@ const CurrentClue = () => {
   );
 };
 
+const DayLabels = () => {
+  const days = ['S', 'M', 'T', 'W', 'Th', 'F', 'S'];
+  return (
+    <div className="flex w-full mb-2">
+      {days.map((day, index) => (
+        <div key={index} className="text-center font-bold flex-1">
+          {day}
+        </div>
+      ))}
+    </div>
+  );
+};
+
 export default function MyCrossword() {
   const crosswordRef = React.useRef();
   const gridRef = React.useRef();
+  const [isCompleted, setIsCompleted] = React.useState(false);
+  const [isEscapeHeld, setIsEscapeHeld] = React.useState(false);
+  const escapeStartTime = React.useRef(null);
   
+  React.useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && !escapeStartTime.current) {
+        escapeStartTime.current = Date.now();
+        
+        // Start checking duration while key is held
+        const checkDuration = setInterval(() => {
+          const holdDuration = Date.now() - escapeStartTime.current;
+          if (holdDuration >= 2000) { // 2 seconds
+            setIsEscapeHeld(true);
+            clearInterval(checkDuration);
+          }
+        }, 100); // Check every 100ms
+
+        // Clean up interval when key is released
+        const cleanup = () => {
+          clearInterval(checkDuration);
+          escapeStartTime.current = null;
+          window.removeEventListener('keyup', cleanup);
+        };
+        window.addEventListener('keyup', cleanup);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
+
   const onCrosswordComplete = (data) => {
     console.log('Crossword completed!', data);
+    setIsCompleted(true);
   };
 
   const onAnswerCorrect = (direction, number, answer) => {
@@ -378,6 +445,7 @@ export default function MyCrossword() {
       justifyContent: 'center',
       alignItems: 'center',
     }}>
+      <div className="text-center text-5xl p-4">September 2025</div>
       <ThemeProvider theme={themeContext}>
         <CrosswordProvider 
           data={data} 
@@ -395,10 +463,21 @@ export default function MyCrossword() {
               maxWidth: '100%',
             }}
           >
+            <DayLabels />
             <CrosswordGrid />
             <OverlaysContainer gridRef={gridRef} />
           </div>
           <CurrentClue />
+          {isCompleted && (
+            <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
+              🔑 You hold the key to unlocking countless rewards... at least for a few seconds
+            </div>
+          )}
+          {isEscapeHeld && (
+            <div className="mt-2 p-4 bg-blue-100 text-blue-800 rounded-lg text-center">
+              Congratulations! Use coupon code "ESCAPEKEY" for $50 off your ticket price! 🎉
+            </div>
+          )}
         </CrosswordProvider>
       </ThemeProvider>
     </div>
