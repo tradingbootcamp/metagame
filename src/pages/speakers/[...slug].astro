@@ -2,7 +2,6 @@
 import Layout from "../../layouts/Layout.astro";
 import { getCollection } from "astro:content";
 import { Image } from "astro:assets";
-import { Icon } from "astro-icon/components";
 
 export async function getStaticPaths() {
   const speakerEntries = await getCollection("speakers");
@@ -54,44 +53,6 @@ const { Content } = await entry.render();
       <div transition:animate="slide">
         <Content />
       </div>
-      <div class="flex gap-8 flex-wrap" transition:animate="slide">
-        {
-          entry?.data?.website && (
-            <a href={entry.data.website} class="text-primary-400">
-              <span class="flex items-center justify-center text-primary-400 gap-2 text-xl">
-                <Icon name="el:link" class="" /> Website
-              </span>
-            </a>
-          )
-        }
-        {
-          entry?.data?.github && (
-            <a href={entry.data.github} class="text-secondary-400">
-              <span class="flex items-center justify-center text-secondary-400 gap-2 text-xl">
-                <Icon name="el:github" class="" /> GitHub
-              </span>
-            </a>
-          )
-        }
-        {
-          entry?.data?.linkedin && (
-            <a href={entry.data.linkedin} class="text-primary-400">
-              <span class="flex items-center justify-center text-primary-400 gap-2 text-xl">
-                <Icon name="el:linkedin" class="" /> LinkedIn
-              </span>
-            </a>
-          )
-        }
-        {
-          entry?.data?.twitter && (
-            <a href={entry.data.twitter} class="text-secondary-400">
-              <span class="flex items-center justify-center text-secondary-400 gap-2 text-xl">
-                <Icon name="el:twitter" class="" /> Twitter
-              </span>
-            </a>
-          )
-        }
-      </div>
     </section>
     <section
       class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary-200"
@@ -113,7 +74,7 @@ const { Content } = await entry.render();
               href={`/sessions/${session.slug}`}
               class="font-black flex items-center justify-center gap-3 text-primary-400"
             >
-              <Icon name="el:mic" class="" /> {session.data.title}
+             {session.data.title}
             </a>
           ))
         }
