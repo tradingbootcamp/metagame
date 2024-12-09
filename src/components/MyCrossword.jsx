@@ -1,5 +1,5 @@
 import React from 'react';
-import Crossword, { ThemeProvider, CrosswordProvider, CrosswordContext, CrosswordGrid, CrosswordSizeContext, DirectionClues } from '@jaredreisinger/react-crossword';
+import { ThemeProvider, CrosswordProvider, CrosswordContext, CrosswordGrid, CrosswordSizeContext } from '@jaredreisinger/react-crossword';
 
 const themeContext = {
   allowNonSquare: true,
