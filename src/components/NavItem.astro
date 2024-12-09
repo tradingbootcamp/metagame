@@ -4,19 +4,114 @@ type Props = {
   href?: string;
 };
 
-const { current, href } = Astro.props;
+const { href } = Astro.props;
+const currentPath = Astro.url.pathname;
+
+// Check if the href is a hash link
+const isHashLink = href?.startsWith('#') || href?.includes('/#');
+
+// For hash links, check if we're on the home page and the hash matches
+// For regular links, compare the full paths
+const isActive = isHashLink 
+  ? currentPath === '/' && Astro.url.hash === (href?.includes('/#') ? href.substring(1) : href)
+  : currentPath === href;
 ---
 
 <li>
   <a
     href={href}
-    class={`block py-2 px-3 text-white font-bold text-lg rounded md:bg-transparent hover:text-secondary-200 transition-all md:p-0`}
+    class={`block py-2 px-3 text-white font-bold text-lg rounded md:bg-transparent transition-all md:p-0`}
     class:list={[
-        {
-            'bg-fuchsia-700': current,
-        }
+      {
+        'text-yellow-300': isActive,
+        'hover:text-secondary-200': !isActive,
+      }
     ]}
   >
     [<slot />]
   </a>
 </li>
+
+<script>
+  // Only run this for hash links
+  const hashLinks = document.querySelectorAll('a[href*="#"]');
+  const navItems = [...hashLinks].filter(link => {
+    const href = link.getAttribute('href');
+    return href?.startsWith('/#') || href?.startsWith('#');
+  });
+
+  if (navItems.length > 0) {
+    // Function to update active states
+    const updateActiveState = () => {
+      // Get all sections
+      const sections = navItems.map(item => {
+        const href = item.getAttribute('href');
+        const id = href.includes('/#') ? href.substring(2) : href.substring(1);
+        const element = document.getElementById(id);
+        if (element) {
+          const rect = element.getBoundingClientRect();
+          return {
+            id,
+            element,
+            top: rect.top,
+            bottom: rect.bottom,
+            navItem: item
+          };
+        }
+        return null;
+      }).filter(Boolean);
+
+      // Find the current section
+      const viewportHeight = window.innerHeight;
+      const current = sections.find(section => {
+        const rect = section.element.getBoundingClientRect();
+        return (
+          (rect.top <= 100 && rect.bottom >= 100) || // Section top is near viewport top
+          (rect.top <= viewportHeight * 0.3 && rect.bottom >= viewportHeight * 0.7) // Section takes up most of viewport
+        );
+      });
+
+      // Update all nav items
+      navItems.forEach(item => {
+        if (current && item === current.navItem) {
+          item.classList.add('text-yellow-300');
+          item.classList.remove('hover:text-secondary-200');
+        } else {
+          item.classList.remove('text-yellow-300');
+          item.classList.add('hover:text-secondary-200');
+        }
+      });
+    };
+
+    // Add click handlers to nav items
+    navItems.forEach(item => {
+      item.addEventListener('click', (e) => {
+        // Remove active state from all items
+        navItems.forEach(navItem => {
+          navItem.classList.remove('text-yellow-300');
+          navItem.classList.add('hover:text-secondary-200');
+        });
+        // Add active state to clicked item
+        item.classList.add('text-yellow-300');
+        item.classList.remove('hover:text-secondary-200');
+        
+        // Let the scroll happen, then update states
+        setTimeout(updateActiveState, 100);
+      });
+    });
+
+    // Debounced scroll handler
+    let scrollTimeout: number;
+    const handleScroll = () => {
+      clearTimeout(scrollTimeout);
+      scrollTimeout = setTimeout(updateActiveState, 50);
+    };
+
+    // Event listeners
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    window.addEventListener('resize', handleScroll, { passive: true });
+    
+    // Initial update
+    setTimeout(updateActiveState, 100);
+  }
+</script>
