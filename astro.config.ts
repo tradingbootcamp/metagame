@@ -9,4 +9,9 @@ export default defineConfig({
   integrations: [tailwind(), icon(), react({
     include: ['**/react/*'],
   })],
+  vite: {
+    ssr: {
+      noExternal: ['astro-opengraph-images', '@resvg/resvg-js']
+    }
+  }
 });
