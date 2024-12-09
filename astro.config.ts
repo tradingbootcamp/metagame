@@ -6,7 +6,7 @@ import react from "@astrojs/react";
 
 export default defineConfig({
   site: "https://RickiHeicklen.github.io",
-  base: "/metagame",
+  base: "/",
   integrations: [tailwind(), icon(), react({
     include: ['**/react/*'],
   })],
