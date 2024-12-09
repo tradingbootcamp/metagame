@@ -1,5 +1,5 @@
 import React from 'react';
-import Crossword, { ThemeProvider, CrosswordProvider, CrosswordContext, CrosswordGrid, Cell, CrosswordSizeContext, Clue } from '@jaredreisinger/react-crossword';
+import Crossword, { ThemeProvider, CrosswordProvider, CrosswordContext, CrosswordGrid, CrosswordSizeContext, DirectionClues } from '@jaredreisinger/react-crossword';
 
 const themeContext = {
   allowNonSquare: true,
@@ -39,7 +39,6 @@ const cellOverlays = {
   '3-6': { type: 'number', value: '27' },
   '4-1': { type: 'number', value: '29' },
   '4-2': { type: 'number', value: '30' },
-
 };
 
 const data = {
@@ -117,137 +116,15 @@ const data = {
       answer: 'COPE',
       row: 1,
       col: 0,
-    },
-    // 8: {
-    //   clue: '',
-    //   answer: 'O',
-    //   row: 1,
-    //   col: 1,
-    // },
-    9: {
-      clue: '',
-      answer: 'N',
-      row: 1,
-      col: 2,
-    },
-    10: {
-      clue: '',
-      answer: 'S',
-      row: 1,
-      col: 3,
-    },
-    11: {
-      clue: '',
-      answer: 'O',
-      row: 1,
-      col: 4,
-    },
-    12: {
-      clue: '',
-      answer: 'L',
-      row: 1,
-      col: 5,
-    },
-    13: {
-      clue: '',
-      answer: 'E',
-      row: 1,
-      col: 6,
-    },
-    15: {
-      clue: '',
-      answer: 'U',
-      row: 2,
-      col: 1,
-    },
-    16: {
-      clue: '',
-      answer: 'T',
-      row: 2,
-      col: 2,
-    },
-    17: {
-      clue: '',
-      answer: 'P',
-      row: 2,
-      col: 3,
-    },
-    18: {
-      clue: '',
-      answer: 'O',
-      row: 2,
-      col: 4,
-    },
-    19: {
-      clue: '',
-      answer: 'S',
-      row: 2,
-      col: 5,
-    },
-    20: {
-      clue: '',
-      answer: 'T',
-      row: 2,
-      col: 6,
-    },
-    22: {
-      clue: '',
-      answer: 'R',
-      row: 3,
-      col: 1,
-    },
-    23: {
-      clue: '',
-      answer: 'E',
-      row: 3,
-      col: 2,
-    },
-    24: {
-      clue: '',
-      answer: 'S',
-      row: 3,
-      col: 3,
-    },
-    25: {
-      clue: '',
-      answer: 'S',
-      row: 3,
-      col: 4,
-    },
-    26: {
-      clue: '',
-      answer: 'E',
-      row: 3,
-      col: 5,
-    },
-    27: {
-      clue: '',
-      answer: 'S',
-      row: 3,
-      col: 6,
-    },
-    29: {
-      clue: '',
-      answer: 'S',
-      row: 4,
-      col: 1,
-    },
-    30: {
-      clue: '',
-      answer: 'R',
-      row: 4,
-      col: 2,
-    },
-  },
+    }
+  }
 };
 
 const OverlaysContainer = ({ gridRef }) => {
   const [showOverlays, setShowOverlays] = React.useState(false);
   const [dimensions, setDimensions] = React.useState(null);
   const crosswordContext = React.useContext(CrosswordContext);
-  console.log('CrosswordContext:', crosswordContext);
   const crosswordSizeContext = React.useContext(CrosswordSizeContext);
-  console.log('CrosswordSizeContext:', crosswordSizeContext);
 
   const calculateDimensions = React.useCallback(() => {
     if (!gridRef.current) {
@@ -257,14 +134,13 @@ const OverlaysContainer = ({ gridRef }) => {
 
     const gridElement = gridRef.current;
     const gridRect = gridElement.getBoundingClientRect();
-    console.log('Grid rect:', gridRect);
 
     if (gridRect.width === 0) {
       console.log('Grid has no width yet');
       return;
     }
 
-    const gridSize = Math.min(gridRect.width, gridRect.height);
+    const gridSize = Math.max(gridRect.width, gridRect.height);
     const cellSize = gridSize / 7; // Assuming 7x7 grid, adjust if needed
     const cellPadding = 0;// cellSize * 0.1;
     const cellInner = cellSize - (2 * cellPadding);
@@ -342,7 +218,6 @@ const OverlaysContainer = ({ gridRef }) => {
 };
 
 const CellOverlay = ({ row, col, style, cellSize, cellInner, cellPadding, cellHalf }) => {
-  console.log('CellOverlay rendering:', { row, col, style, cellSize });
   
   // Calculate position
   const left = col * cellSize;
@@ -363,10 +238,10 @@ const CellOverlay = ({ row, col, style, cellSize, cellInner, cellPadding, cellHa
         <circle
           cx={cellHalf}
           cy={cellHalf}
-          r={cellHalf - 1}
+          r={cellHalf - 2}
           fill="none"
-          stroke="black"
-          strokeWidth="1"
+          stroke="red"
+          strokeWidth="3"
         />
       </svg>
     );
@@ -385,7 +260,7 @@ const CellOverlay = ({ row, col, style, cellSize, cellInner, cellPadding, cellHa
           alignItems: 'flex-start',
           justifyContent: 'flex-start',
           fontSize: `${cellInner * 0.34}px`,
-          color: 'red',
+          color: 'black',
           pointerEvents: 'none',
           lineHeight: '1',
           paddingTop: '1px',
@@ -397,6 +272,85 @@ const CellOverlay = ({ row, col, style, cellSize, cellInner, cellPadding, cellHa
   }
 
   return null;
+};
+
+const CurrentClue = () => {
+  const { selectedDirection, selectedNumber, clues } = React.useContext(CrosswordContext);
+  const [hasInteracted, setHasInteracted] = React.useState(false);
+
+  // Add click event listener to detect real user interaction
+  React.useEffect(() => {
+    const handleClick = (event) => {
+      // Check if the clicked element or its parent is a cell
+      const isCell = event.target.closest('.clue-cell') !== null;
+      
+      // Only set interaction if it's a valid cell
+      if (isCell) {
+        console.log('Valid cell click detected!');
+        setHasInteracted(true);
+      }
+    };
+
+    const gridContainer = document.querySelector('[data-testid="grid-container"]');
+    console.log('Grid container found:', !!gridContainer);
+    
+    if (gridContainer) {
+      gridContainer.addEventListener('click', handleClick);
+    }
+
+    // Cleanup
+    return () => {
+      if (gridContainer) {
+        gridContainer.removeEventListener('click', handleClick);
+      }
+    };
+  }, []);
+
+  // Return empty message if user hasn't clicked yet
+  if (!hasInteracted) {
+    console.log('Not showing clue yet. Has interacted:', hasInteracted);
+    return <div className="text-center p-4"></div>;
+  }
+
+  const getCurrentClue = () => {
+    // Get all clues for the selected direction (across/down)
+    const cluesForDirection = clues[selectedDirection];
+    console.log('Selected direction:', selectedDirection);
+    console.log('Clues for direction:', cluesForDirection);
+    
+    if (!cluesForDirection) {
+      return null;
+    }
+
+    // Convert clues object into array of [number, clueData] pairs
+    const clueEntries = Object.entries(cluesForDirection);
+    console.log('Clue entries:', clueEntries);
+
+    // Find the entry where the clue number matches our selected number
+    const matchingClueEntry = clueEntries.find((entry) => {
+      const clueNumber = entry[1].number;  // This is the number (as string)
+      console.log('Clue number:', clueNumber);
+      return clueNumber === selectedNumber.toString();
+    });
+
+    // Return the clue data (second element of the pair) if found, otherwise null
+    return matchingClueEntry ? matchingClueEntry[1] : null;
+  };
+
+  const currentClue = getCurrentClue();
+  
+  if (!currentClue) {
+    return <div className="text-center p-4">No clue found</div>;
+  }
+
+  console.log('Current clue:', currentClue);
+
+  return (
+    <div className="text-center p-4">
+      <span className="font-bold">{selectedNumber} {selectedDirection}: </span>
+      {currentClue.clue}
+    </div>
+  );
 };
 
 export default function MyCrossword() {
@@ -420,6 +374,7 @@ export default function MyCrossword() {
       width: '100%',
       height: '100%',
       display: 'flex',
+      flexDirection: 'column',
       justifyContent: 'center',
       alignItems: 'center',
     }}>
@@ -433,16 +388,17 @@ export default function MyCrossword() {
         >
           <div
             ref={gridRef}
+            data-testid="grid-container"
             style={{
               position: 'relative',
               width: '500px',
               maxWidth: '100%',
-              aspectRatio: '1',
             }}
           >
             <CrosswordGrid />
             <OverlaysContainer gridRef={gridRef} />
           </div>
+          <CurrentClue />
         </CrosswordProvider>
       </ThemeProvider>
     </div>
