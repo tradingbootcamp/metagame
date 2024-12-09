@@ -1,0 +1,22 @@
+---
+import Link from "../../Link.astro";
+import MyCrossword from "../../MyCrossword.jsx";
+---
+<section
+  class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
+  id="games"
+>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="p-10">
+      <h2 class="mb-8 text-2xl font-bold text-secondary-200">
+        Conference Games
+      </h2>
+      <p class="mb-4 font-semibold">
+        Take a break from the technical talks and challenge yourself with our conference-themed crossword puzzle! Test your knowledge of programming concepts, conference topics, and maybe learn something new along the way.
+      </p>
+    </div>
+    <div class="p-10">
+      <MyCrossword client:only="react" />
+    </div>
+  </div>
+</section>

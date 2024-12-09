@@ -7,12 +7,14 @@ import Speakers from "../components/sections/home/Speakers.astro";
 import Location from "../components/sections/home/Location.astro";
 import CallForSpeakers from "../components/sections/home/CallForSpeakers.astro";
 import SubscribePopup from "../components/SubscribePopup.astro";
+import Games from "../components/sections/home/Games.astro";
 import MyCrossword from "../components/MyCrossword.jsx";
 ---
 
 <Layout title="Home">
   <main class="dark:text-white px-4">
     <Hero />
+    <Games />
     <Speakers />
     <Location />
     <section class="mb-8 bg-dark-500 mt-40" id="tickets">
@@ -24,10 +26,10 @@ import MyCrossword from "../components/MyCrossword.jsx";
 
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
           <TicketCard
-            title="Volunteer"
+            title="NPC"
             price={`$101`}
             regularPrice="$404"
-            description="Subject to availability"
+            description="Volunteer for 6 shifts over the weekend"
             features={[
               "Premium swag",
               "OK food",
@@ -35,10 +37,10 @@ import MyCrossword from "../components/MyCrossword.jsx";
             ]}
           />
           <TicketCard
-            title="Early Bird"
+            title="Player"
             price={`$404`}
             regularPrice="$666"
-            description="Available through June 1st"
+            description="Early bird price through June 1st, 2025"
             features={[
               "Premium swag",
               "OK food",
