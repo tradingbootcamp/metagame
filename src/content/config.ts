@@ -7,6 +7,8 @@ const speakersCollection = defineCollection({
     id: z.number(),
     name: z.string(),
     image: z.string(),
+    gameName: z.string(),
+    gameUrl: z.string(),
     title: z.string(),
     website: z.string().optional(),
     twitter: z.string().optional(),

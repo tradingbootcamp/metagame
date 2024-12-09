@@ -5,7 +5,8 @@ import icon from "astro-icon";
 import react from "@astrojs/react";
 
 export default defineConfig({
-  site: "https://your-url.com",
+  site: "https://RickiHeicklen.github.io",
+  base: "/metagame",
   integrations: [tailwind(), icon(), react({
     include: ['**/react/*'],
   })],

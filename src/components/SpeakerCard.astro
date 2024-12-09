@@ -7,24 +7,12 @@ import type { ImageMetadata } from "astro";
 interface Props {
   name: string;
   image?: string;
-  title: string;
-  description: string;
-  href?: string;
-  buttonText?: string;
+  gameName: string;
+  gameUrl: string;
   slug?: string;
-  descriptionClass?: string;
 }
 
-const {
-  name,
-  image,
-  title,
-  description,
-  href,
-  buttonText,
-  descriptionClass,
-  slug,
-} = Astro.props;
+const { name, image, gameName, gameUrl, slug } = Astro.props;
 const images = import.meta.glob<{ default: ImageMetadata }>(
   "/src/assets/*.{jpeg,jpg,png,gif,svg,webp}"
 );
@@ -39,6 +27,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     ]}
     src={images?.[image || "/src/assets/incognito.svg"]?.()}
     height="200"
+    quality={100}
     transition:name={slug && `${slug}-image`}
   />
   <div class="flex-grow">
@@ -48,17 +37,18 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     >
       {name}
     </h3>
-    <p
-      class="mb-2 text-secondary-200 font-semibold"
-      transition:name={slug && `${slug}-title`}
+    <a 
+      href={gameUrl} 
+      target="_blank" 
+      rel="noopener noreferrer" 
+      class="text-secondary-200 font-semibold hover:text-secondary-300 inline-flex items-center gap-1"
     >
-      {title}
-    </p>
-    <p class={descriptionClass}>
-      {description}
-    </p>
-  </div>
-  <div class="glitch">
-    <Button link={href} classes="mt-2 text-sm">{buttonText}</Button>
+      {gameName}
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">
+        <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
+        <polyline points="15 3 21 3 21 9"></polyline>
+        <line x1="10" y1="14" x2="21" y2="3"></line>
+      </svg>
+    </a>
   </div>
 </Card>

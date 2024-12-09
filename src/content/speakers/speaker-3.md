@@ -1,14 +1,10 @@
 ---
 id: 3
-name: Speaker Three
-image: /src/assets/incognito.svg
-title: DevOps Engineer at Cloud Solutions Ltd, Kubernetes Expert
-website: https://www.speakerthree.com
-twitter: "https://twitter.com/speakerthree"
-linkedin: "https://www.linkedin.com/in/speakerthree/"
-github: "https://github.com/speakerthree"
+name: Nolen Royalty
+image: /src/assets/nolen_royalty.jpg
+gameName: "eieio games"
+gameUrl: "https://eieio.games/"
+title: Senior Developer at Tech Corp, Expert in Web Technologies
 ---
 
-Speaker Three is a DevOps Engineer at Cloud Solutions Ltd with extensive experience in Kubernetes and cloud-native technologies. They specialize in building and maintaining scalable, containerized applications.
-
-Speaker Three is a certified Kubernetes administrator and regularly contributes to the Kubernetes community.
+Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
