@@ -44,31 +44,31 @@ const cellOverlays = {
 const data = {
   across: {
     1: {
-      clue: 'seizes',
+      clue: 'Grabs control in a gaming moment',
       answer: 'SEIZES',
       row: 0,
       col: 1,
     },
     7: {
-      clue: 'console',
+      clue: "Gaming platform's central hub",
       answer: 'CONSOLE',
       row: 1,
       col: 0,
     },
     14: {
-      clue: 'outpost',
+      clue: 'Remote base in strategy games',
       answer: 'OUTPOST',
       row: 2,
       col: 0,
     },
     21: {
-      clue: 'presses',
+      clue: "Printer's machines or controller buttons",
       answer: 'PRESSES',
       row: 3,
       col: 0,
     },
     28: {
-      clue: 'ESR',
+      clue: 'Game rating org. (abbr.)',
       answer: 'ESR',
       row: 4,
       col: 0,
@@ -76,43 +76,43 @@ const data = {
   },
   down: {
     1: {
-      clue: 'SOURS',
+      clue: 'Turns bitter, like a competitive match',
       answer: 'SOURS',
       row: 0,
       col: 1,
     },
     2: {
-      clue: 'ENTER',
+      clue: 'Key move in many game interfaces',
       answer: 'ENTER',
       row: 0,
       col: 2,
     },
     3: {
-      clue: 'isps',
+      clue: 'Web providers, for short',
       answer: 'ISPS',
       row: 0,
       col: 3,
     },
     4: {
-      clue: 'ZOOS',
+      clue: 'Animal parks with simulated habitats',
       answer: 'ZOOS',
       row: 0,
       col: 4,
     },
     5: {
-      clue: 'ELSE',
+      clue: 'Alternative option',
       answer: 'ELSE',
       row: 0,
       col: 5,
     },
     6: {
-      clue: 'sets',
+      clue: 'Arranges or game collections',
       answer: 'SETS',
       row: 0,
       col: 6,
     },
     7: {
-      clue: 'cope',
+      clue: 'Manage a tough game level',
       answer: 'COPE',
       row: 1,
       col: 0,
