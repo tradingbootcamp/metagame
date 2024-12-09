@@ -163,7 +163,7 @@ html::before {
                                                                     var(--c5) 52.5vh 57.5vh,
                                                                          transparent 57.5vh
               ), */
-      url("/metagame/kamen.svg") no-repeat 50% 30% / 90% 90%,
+      url("/kamen.svg") no-repeat 50% 30% / 90% 90%,
     /* radial-gradient(circle at center, var(--c4) min(45vh, 45vw), transparent min(45vh, 45vw)), */
       linear-gradient(var(--c5) 60%, var(--c3) 60%, var(--c2) 150%);
 }
