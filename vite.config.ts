@@ -1,5 +1,4 @@
 import { defineConfig } from 'vite';
-import astro from '@astrojs/astro';
 
 export default defineConfig({
   optimizeDeps: {
