@@ -4,7 +4,7 @@ import Nav from "../components/Nav.astro";
 import Footer from "../components/Footer.astro";
 import { ViewTransitions } from "astro:transitions";
 import { SEO } from "astro-seo";
-import { getImagePath } from "astro-opengraph-images";
+// import { getImagePath } from "astro-opengraph-images";
 
 interface Props {
   title: string;
@@ -13,7 +13,8 @@ interface Props {
 const { title } = Astro.props;
 const { url, site } = Astro;
 
-const openGraphImageUrl = getImagePath({ url, site });
+// const openGraphImageUrl = getImagePath({ url, site });
+const imageURL = "/cube.svg";
 ---
 
 <!doctype html>
@@ -24,7 +25,7 @@ const openGraphImageUrl = getImagePath({ url, site });
         basic: {
           title: `${title}`,
           type: "website",
-          image: openGraphImageUrl,
+          image: imageURL,
           url: url,
         },
         optional: {

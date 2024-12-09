@@ -20,7 +20,6 @@
     "@types/react-dom": "^18.3.2",
     "astro": "^4.16.7",
     "astro-icon": "^1.1.0",
-    "astro-opengraph-images": "^1.6.5",
     "astro-seo": "^0.8.4",
     "date-fns": "^3.6.0",
     "motion": "^10.18.0",
