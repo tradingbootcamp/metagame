@@ -33,6 +33,9 @@ const isActive = isHashLink
 </li>
 
 <script>
+  // Add type for scrollTimeout
+  let scrollTimeout: ReturnType<typeof setTimeout>;
+  
   // Only run this for hash links
   const hashLinks = document.querySelectorAll('a[href*="#"]');
   const navItems = [...hashLinks].filter(link => {
@@ -46,6 +49,9 @@ const isActive = isHashLink
       // Get all sections
       const sections = navItems.map(item => {
         const href = item.getAttribute('href');
+        // Add null check for href
+        if (!href) return null;
+        
         const id = href.includes('/#') ? href.substring(2) : href.substring(1);
         const element = document.getElementById(id);
         if (element) {
@@ -64,10 +70,12 @@ const isActive = isHashLink
       // Find the current section
       const viewportHeight = window.innerHeight;
       const current = sections.find(section => {
+        // Add null check for section
+        if (!section) return false;
         const rect = section.element.getBoundingClientRect();
         return (
-          (rect.top <= 100 && rect.bottom >= 100) || // Section top is near viewport top
-          (rect.top <= viewportHeight * 0.3 && rect.bottom >= viewportHeight * 0.7) // Section takes up most of viewport
+          (rect.top <= 100 && rect.bottom >= 100) ||
+          (rect.top <= viewportHeight * 0.3 && rect.bottom >= viewportHeight * 0.7)
         );
       });
 
@@ -101,7 +109,6 @@ const isActive = isHashLink
     });
 
     // Debounced scroll handler
-    let scrollTimeout: number;
     const handleScroll = () => {
       clearTimeout(scrollTimeout);
       scrollTimeout = setTimeout(updateActiveState, 50);
