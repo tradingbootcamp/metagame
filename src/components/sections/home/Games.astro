@@ -1,6 +1,7 @@
 ---
 import Link from "../../Link.astro";
 import MyCrossword from "../../MyCrossword.jsx";
+import Coin from "../../Coin.astro";
 ---
 <section
   class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
@@ -14,9 +15,22 @@ import MyCrossword from "../../MyCrossword.jsx";
       <p class="mb-4 font-semibold">
         This is where a description of the event should live. If Ricki knew how to unblock her creative muse, she would write a good description here. Alas, she is going to outsource this job to somebody else. 
       </p>
+      <p>
+       This is not a <span class="inline-block" id="coin-container"><Coin text="coin"/></span>cidence, because nothing is ever a <span class="inline-block" id="coin-container"><Coin text="coin"/></span>cidence.
+      </p>
     </div>
     <div class="p-10">
       <MyCrossword client:only="react" />
     </div>
   </div>
 </section>
+
+<script>
+  const audio = new Audio('/sounds_coin.wav');
+  document.querySelectorAll('#coin-container').forEach(container => {
+    container.addEventListener('mouseenter', () => {
+      audio.currentTime = 0;
+      audio.play();
+    });
+  });
+</script>
