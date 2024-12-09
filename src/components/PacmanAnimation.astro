@@ -1,0 +1,159 @@
+---
+interface Props {
+  numDots?: number;
+}
+
+const { numDots = 6 } = Astro.props;
+const ANIMATION_DURATION = 8; // Pacman's movement duration in seconds
+const OFFSET = 0.3; // Initial delay before first dot disappears
+const spacing = (ANIMATION_DURATION - OFFSET) / numDots; // Evenly space dots across animation
+
+// Add a unique ID for this instance
+const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
+---
+
+<div class="pacman-container" id={uniqueId}>
+  <div class="dots">
+    {Array.from({ length: numDots }).map((_, i) => {
+      // Calculate position-based timing instead of evenly spaced timing
+      const dotPosition = (i + 1) / (numDots + 1); // Position from 0 to 1
+      const animationDelay = ANIMATION_DURATION * dotPosition;
+      return (
+        <div 
+          class="dot" 
+          style={`animation-delay: ${animationDelay.toFixed(1)}s; left: ${dotPosition * 100}%`}
+        ></div>
+      );
+    })}
+  </div>
+  <div class="pacman"></div>
+</div>
+
+<script define:vars={{ uniqueId }}>
+  // Create intersection observer
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('animate');
+        observer.unobserve(entry.target);
+      }
+    });
+  });
+
+  // Start observing the container
+  const container = document.getElementById(uniqueId);
+  if (container) observer.observe(container);
+</script>
+
+<style>
+  .pacman-container {
+    position: relative;
+    width: 100%;
+    height: 50px;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+  }
+
+  .pacman {
+    width: 30px;
+    height: 30px;
+    position: absolute;
+    top: 10px;
+    left: 0px; /* Start position */
+  }
+
+  .pacman::before, .pacman::after {
+    content: '';
+    display: block;
+    width: 30px;
+    height: 30px;
+    background: transparent;
+    border-radius: 50%;
+    position: absolute;
+    border: 15px solid yellow;
+    border-right: 15px solid transparent;
+  }
+
+  .pacman::before {
+    animation: chomp 0.3s ease-in-out infinite;
+  }
+
+  .pacman::after {
+    animation: chomp-2 0.3s ease-in-out infinite;
+  }
+
+  /* Only apply animations when .animate class is present */
+  .animate .pacman {
+    animation: move 8s linear forwards;
+  }
+
+  .animate .dot {
+    animation: disappear 0s linear forwards;
+  }
+
+  @keyframes move {
+    0% {
+      left: -50px;
+    }
+    100% {
+      left: 100%;
+    }
+  }
+
+  @keyframes chomp {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(45deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  @keyframes chomp-2 {
+    0% {
+      transform: rotate(0deg);
+    }
+    50% {
+      transform: rotate(-45deg);
+    }
+    100% {
+      transform: rotate(0deg);
+    }
+  }
+
+  .dots {
+    position: absolute;
+    width: 100%;
+    display: flex;
+    justify-content: space-evenly;
+    padding: 0;
+  }
+
+  .dot {
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    opacity: 1;
+    position: absolute;
+    transform: translateX(-50%);
+  }
+
+  .animate .dot {
+    animation: disappear 0.1s linear forwards;
+  }
+
+  @keyframes disappear {
+    0% {
+      opacity: 1;
+    }
+    100% {
+      opacity: 0;
+    }
+  }
+
+</style>

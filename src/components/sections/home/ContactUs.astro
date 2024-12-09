@@ -1,0 +1,24 @@
+---
+import { getCollection } from "astro:content";
+import Button from "../../Button.astro";
+import Card from "../../Card.astro";
+
+
+---
+
+<section class="mb-20 w-full bg-dark-500 flex flex-col" id="Supporters">
+  <div class="w-full flex flex-col items-center justify-center">
+    <Card class="mt-[80px]">
+      <div class="flex flex-col items-center justify-center h-full p-4">
+        <h3 class="text-2xl font-bold">Sounds fun? Want to take part?</h3>
+        <p class="text-center mt-4">
+          Thinking about sponsoring us, or maybe partnerting with us? Something
+          else in mind?
+        </p>
+        <Button classes="mt-8 uppercase" link="mailto:email@example.com"
+          >MESSAGE US!</Button
+        >
+      </div>
+    </Card>
+  </div>
+</section>
