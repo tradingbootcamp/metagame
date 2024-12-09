@@ -1,0 +1,43 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 200">
+  <!-- Die body -->
+  <rect x="25" y="25" width="150" height="150" 
+        fill="white" 
+        stroke="black" 
+        stroke-width="5" 
+        rx="20" 
+        ry="20"/>
+  
+  <!-- Pip (dot) positions for each side -->
+  <!-- Side 1 (center pip) -->
+  <circle cx="100" cy="100" r="10" fill="black"/>
+  
+  <!-- Side 2 (top left and bottom right) -->
+  <circle cx="50" cy="50" r="10" fill="black"/>
+  <circle cx="150" cy="150" r="10" fill="black"/>
+  
+  <!-- Side 3 (center, top left, bottom right) -->
+  <circle cx="100" cy="100" r="10" fill="black"/>
+  <circle cx="50" cy="50" r="10" fill="black"/>
+  <circle cx="150" cy="150" r="10" fill="black"/>
+  
+  <!-- Side 4 (top left, top right, bottom left, bottom right) -->
+  <circle cx="50" cy="50" r="10" fill="black"/>
+  <circle cx="150" cy="50" r="10" fill="black"/>
+  <circle cx="50" cy="150" r="10" fill="black"/>
+  <circle cx="150" cy="150" r="10" fill="black"/>
+  
+  <!-- Side 5 (all positions except bottom right) -->
+  <circle cx="50" cy="50" r="10" fill="black"/>
+  <circle cx="150" cy="50" r="10" fill="black"/>
+  <circle cx="50" cy="150" r="10" fill="black"/>
+  <circle cx="100" cy="100" r="10" fill="black"/>
+  <circle cx="150" cy="150" r="10" fill="black"/>
+  
+  <!-- Side 6 (two columns of three pips) -->
+  <circle cx="50" cy="50" r="10" fill="black"/>
+  <circle cx="50" cy="100" r="10" fill="black"/>
+  <circle cx="50" cy="150" r="10" fill="black"/>
+  <circle cx="150" cy="50" r="10" fill="black"/>
+  <circle cx="150" cy="100" r="10" fill="black"/>
+  <circle cx="150" cy="150" r="10" fill="black"/>
+</svg>
