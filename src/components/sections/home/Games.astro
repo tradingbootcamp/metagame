@@ -1,7 +1,7 @@
 ---
 import Link from "../../Link.astro";
 import MyCrossword from "../../MyCrossword.jsx";
-import Coin from "../../Coin.astro";
+import Coincidence from "../../Coincidence.astro";
 ---
 <section
   class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
@@ -19,7 +19,7 @@ import Coin from "../../Coin.astro";
         My guess is the event will lean extremely toward the "communal, chaotic, unconferenc-y" end of the professionalism spectrum, with a lot of the [sessions? experiences? internal plot devices?] designed by attendees. 
         <br/>
         <br/>
-       <i>This is not a <span class="inline-block" id="coin-container"><Coin text="coin"/></span>cidence, because nothing is ever a <span class="inline-block" id="coin-container"><Coin text="coin"/></span>cidence.</i>
+       <i>This is not a <Coincidence />, because nothing is ever a <Coincidence />.</i>
       </p>
     </div>
     <div class="p-10">
@@ -30,7 +30,7 @@ import Coin from "../../Coin.astro";
 
 <script>
   const audio = new Audio('/sounds_coin.wav');
-  document.querySelectorAll('#coin-container').forEach(container => {
+  document.querySelectorAll('.coin-container').forEach(container => {
     container.addEventListener('mouseenter', () => {
       audio.currentTime = 0;
       audio.play();
