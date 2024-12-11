@@ -53,7 +53,7 @@ const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", "")
   </ul>
 
   <div>
-    <Button link={href || TICKET_URL}>{buttonText || "Buy Now"}</Button>
+    <Button link={href || TICKET_URL} target="_blank">{buttonText || "Buy Now"}</Button>
   </div>
 </Card>
 

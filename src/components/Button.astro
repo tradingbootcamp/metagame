@@ -3,15 +3,16 @@ interface Props {
   classes?: string;
   link?: string;
   background?: string;
+  target?: string;
 }
 
-const { link, classes, background } = Astro.props;
+const { link, classes, background, target } = Astro.props;
 
 const bg = background ?? `bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500`;
 
 ---
 
-<a href={link} class={`${classes ?? ''} btn-container relative inline-block hover:scale-105 transition-all`}>
+<a href={link} target={target} class={`${classes ?? ''} btn-container relative inline-block hover:scale-105 transition-all`}>
   <div class={`btn-blur ${bg} absolute top-0 left-0 right-0 bottom-0 -z-10`}>
   </div>
   <button
