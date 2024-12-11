@@ -27,8 +27,8 @@ const { texts, speed, delay, blinkerClass, textClass } = Astro.props;
       super();
 
       const texts = JSON.parse(this.dataset.texts!);
-      const speed = parseInt(this.dataset.speed! ?? "100");
-      const delay = parseInt(this.dataset.delay! ?? "3000");
+      const speed = parseInt(this.dataset.speed! ?? "80");
+      const delay = parseInt(this.dataset.delay! ?? "2000");
       const typer = this.querySelector<HTMLElement>(".typer")!;
       const blinker = this.querySelector<HTMLElement>(".blinker")!;
 
