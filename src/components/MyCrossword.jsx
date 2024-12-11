@@ -9,8 +9,8 @@ const themeContext = {
   cellBorder: 'black',
   textColor: 'black',
   numberColor: 'black',
-  focusBackground: '#f00',
-  highlightBackground: '#f99',
+  focusBackground: 'darkgrey',
+  highlightBackground: 'lightgrey',
   // columnBreakpoint: '768px',
 }
 
