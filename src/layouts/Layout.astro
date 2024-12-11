@@ -56,7 +56,7 @@ const imageURL = "/logo.svg";
     </div>
 
     <Footer transition:name="footer" />
-    <div id="highlighter"></div>
+    <!-- <div id="highlighter"></div> -->
     <style>
       html {
         scroll-behavior: smooth;
@@ -80,24 +80,24 @@ const imageURL = "/logo.svg";
         });
       }
 
-      const r = document.querySelector(":root")! as HTMLElement;
+      // const r = document.querySelector(":root")! as HTMLElement;
 
-      const updateHighlighter = (ev: MouseEvent) => {
-        r.style.setProperty("--hleft", `${ev.pageX - 200}px`);
-        r.style.setProperty("--htop", `${ev.pageY - 200}px`);
-      };
+      // const updateHighlighter = (ev: MouseEvent) => {
+      //   r.style.setProperty("--hleft", `${ev.pageX - 200}px`);
+      //   r.style.setProperty("--htop", `${ev.pageY - 200}px`);
+      // };
 
-      let isTicking = false;
+      // let isTicking = false;
 
-      document.addEventListener("mousemove", (ev) => {
-        if (!isTicking) {
-          window.requestAnimationFrame(() => {
-            updateHighlighter(ev);
-            isTicking = false;
-          });
-          isTicking = true;
-        }
-      });
+      // document.addEventListener("mousemove", (ev) => {
+      //   if (!isTicking) {
+      //     window.requestAnimationFrame(() => {
+      //       updateHighlighter(ev);
+      //       isTicking = false;
+      //     });
+      //     isTicking = true;
+      //   }
+      // });
 
       initToggles();
 
@@ -108,8 +108,8 @@ const imageURL = "/logo.svg";
 
     <style is:global>
       :root {
-        --hleft: 0;
-        --htop: 0;
+        /* --hleft: 0;
+        --htop: 0; */
         --dy: 1;
         --dx: 1;
         --dz: 0;
@@ -124,7 +124,7 @@ const imageURL = "/logo.svg";
         visibility: hidden;
       }
 
-      @media (min-width: 600px) {
+      /* @media (min-width: 600px) {
         #highlighter {
           width: 400px;
           height: 400px;
@@ -147,7 +147,7 @@ const imageURL = "/logo.svg";
         #highlighter {
           display: none;
         }
-      }
+      } */
     </style>
   </body>
 </html>
