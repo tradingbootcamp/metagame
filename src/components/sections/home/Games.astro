@@ -27,13 +27,3 @@ import Coincidence from "../../Coincidence.astro";
     </div>
   </div>
 </section>
-
-<script>
-  const audio = new Audio('/sounds_coin.wav');
-  document.querySelectorAll('.coin-container').forEach(container => {
-    container.addEventListener('mouseenter', () => {
-      audio.currentTime = 0;
-      audio.play();
-    });
-  });
-</script>
