@@ -3,7 +3,7 @@ import Button from "../components/Button.astro";
 import Typer from "../components/Typer.astro";
 import { TICKET_URL } from "../config";
 import Layout from "../layouts/Layout.astro";
-import Coin from "../components/Coin.astro";
+import Coincidence from "../components/Coincidence.astro";
 
 const alternatively = [
   "Let us show you around our city?",
@@ -38,7 +38,7 @@ const alternatively = [
           Welcome to <span class="text-primary-300">Our Tech Conference</span>, a celebration of technology, innovation, and community. We've created this event to bring together passionate individuals from all corners of the tech world.
         </p>
         <p>
-          It's no <span class="inline-block" id="coin-container"><Coin text="coin"/></span>cidence you're here!
+          It's no <Coincidence /> you're here!
         </p>
         <p>
           <span class="text-primary-300">Our Tech Conference</span> is a single-day, multi-track event that aims to explore the latest trends, technologies, and best practices in the tech industry. Here's what you can expect:
@@ -124,7 +124,7 @@ const alternatively = [
 
 <script>
   const audio = new Audio('/sounds_coin.wav');
-  document.querySelectorAll('#coin-container').forEach(container => {
+  document.querySelectorAll('.coin-container').forEach(container => {
     container.addEventListener('mouseenter', () => {
       audio.currentTime = 0;
       audio.play();
