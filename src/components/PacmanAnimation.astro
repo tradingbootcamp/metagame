@@ -11,6 +11,7 @@ const spacing = (ANIMATION_DURATION - OFFSET) / numDots; // Evenly space dots ac
 // Add a unique ID for this instance
 const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
 ---
+<div class="pacman-rail"></div>
 
 <div class="pacman-container" id={uniqueId}>
   <div class="dots">
@@ -28,6 +29,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
   </div>
   <div class="pacman"></div>
 </div>
+<div class="pacman-rail"></div>
 
 <script define:vars={{ uniqueId }}>
   // Create intersection observer
@@ -50,16 +52,29 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
     position: relative;
     width: 100%;
     height: 50px;
-    overflow: hidden;
+    overflow: visible;
     display: flex;
     align-items: center;
+    margin: 10px 0;
+  }
+
+  .pacman-rail {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 3px;
+    background-color: #4a9eff; /* Rail color - adjust as needed */
+    box-shadow: 
+      0 0 5px #4a9eff,
+      0 0 10px #4a9eff,
+      0 0 15px #4a9eff;
   }
 
   .pacman {
     width: 30px;
     height: 30px;
     position: absolute;
-    top: 10px;
+    top: 15px;
     left: 0px; /* Start position */
   }
 
@@ -95,9 +110,14 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
   @keyframes move {
     0% {
       left: -50px;
+      opacity: 1;
+    }
+    99% {
+      opacity: 1;
     }
     100% {
       left: 100%;
+      opacity: 0;
     }
   }
 
@@ -140,7 +160,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
     border-radius: 50%;
     opacity: 1;
     position: absolute;
-    transform: translateX(-50%);
+    transform: translate(-50%, +50%);
   }
 
   .animate .dot {
