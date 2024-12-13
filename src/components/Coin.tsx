@@ -35,6 +35,7 @@ export default function Coin({ text, className = '' }: Props) {
   }, []);
 
   const handleMouseEnter = async () => {
+    console.log('Mouse entered');
     if (!isCoinCollected && audioRef.current && isAudioEnabled) {
       try {
         audioRef.current.currentTime = 0;

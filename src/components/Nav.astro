@@ -1,5 +1,6 @@
 ---
 import NavItem from "./NavItem.astro";
+import Tag from "./Tag.tsx";
 
 ---
 
@@ -10,7 +11,7 @@ import NavItem from "./NavItem.astro";
     >
       <a href="/" class="flex items-center space-x-3 rtl:space-x-reverse">
         <img class="h-12 object-contain" src="/logo.svg" />
-        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">METAGAME 2025</span>
+        <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ME<Tag text="TAG" speed={0.005} catchDistance={50} client:load />AME 2025</span>
       </a>
       <button
         data-collapse-toggle="navbar-default"

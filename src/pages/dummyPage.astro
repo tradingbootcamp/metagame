@@ -1,13 +1,15 @@
 ---
 import Layout from "../layouts/Layout.astro";
 import Games from "../components/sections/home/Games.astro";
-
+import Tag from "../components/Tag.tsx";
 ---
 
 <Layout title="FAQ">
   <main class="flex justify-center w-full">
 
-    <Games />
+    <!-- <Games /> -->
+
+    <Tag text="Catch you!" speed={0.05} catchDistance={50} client:load />
 
   </main>
 </Layout>

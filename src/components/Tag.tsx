@@ -44,12 +44,51 @@ export default function Tag({
         if (distance < catchDistance && !isCaught) {
           setIsCaught(true);
           setIsChasing(false);
+          const cursorStyle = `
+            * {
+              cursor: none !important;
+            }
+            body::after {
+              content: 'IT!';
+              font-size: 30px;
+              font-weight: bold;
+              color: gold;
+              position: fixed;
+              left: 0;
+              top: 0;
+              pointer-events: none;
+              z-index: 9999;
+              transform: translate(calc(var(--x, 0) * 1px - 50%), calc(var(--y, 0) * 1px - 50%));
+            }
+          `;
+          const styleSheet = document.createElement('style');
+          styleSheet.textContent = cursorStyle;
+          document.head.appendChild(styleSheet);
+
+          // Set initial position immediately using current mousePosition
+          document.body.style.setProperty('--x', mousePosition.x.toString());
+          document.body.style.setProperty('--y', mousePosition.y.toString());
+
+          // Add mousemove handler to update emoji position
+          const updateCursor = (e: MouseEvent) => {
+            document.body.style.setProperty('--x', e.clientX.toString());
+            document.body.style.setProperty('--y', e.clientY.toString());
+          };
+          window.addEventListener('mousemove', updateCursor);
+          
+          // Store the event listener for cleanup
+          (tagRef.current as any).cursorCleanup = () => {
+            window.removeEventListener('mousemove', updateCursor);
+            styleSheet.remove();
+            document.body.style.cursor = 'default';
+          };
+
           return prevPosition;
         }
 
         return {
-          x: prevPosition.x + dx * speed,
-          y: prevPosition.y + dy * speed
+          x: prevPosition.x + dx * speed * 3,
+          y: prevPosition.y + dy * speed * 3
         };
       });
 
@@ -66,18 +105,32 @@ export default function Tag({
   }, [isChasing, mousePosition, speed, catchDistance, isCaught]);
 
   // Start chasing after hover
-  const handleMouseEnter = () => {
+  const handleMouseLeave = () => {
+    console.log('Mouse entered');
     if (!isChasing && !isCaught) {
       const rect = tagRef.current?.getBoundingClientRect();
       if (rect) {
         setTextPosition({ x: rect.left, y: rect.top });
       }
-      setTimeout(() => setIsChasing(true), 500);
+      setTimeout(() => setIsChasing(true), 1000);
     }
   };
 
+  // Add cleanup effect
+  useEffect(() => {
+    return () => {
+      if (tagRef.current && (tagRef.current as any).cursorCleanup) {
+        (tagRef.current as any).cursorCleanup();
+      }
+    };
+  }, []);
+
   return (
-    <div
+    <>
+    <span className={`${!isChasing ? 'hidden' : 'opacity-0'}`}>
+        {text}
+    </span>
+    <span
       ref={tagRef}
       className={`
         group 
@@ -92,12 +145,14 @@ export default function Tag({
         left: isChasing ? `${textPosition.x}px` : 'auto',
         top: isChasing ? `${textPosition.y}px` : 'auto',
         transition: isChasing ? 'none' : 'color 0.3s ease',
-        color: isCaught ? 'red' : (isChasing ? 'blue' : 'inherit'),
+        color: isChasing ? 'gold' : 'inherit',
         zIndex: 1000,
+
       }}
-      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {isCaught ? 'IT' : text}
-    </div>
+      {text}
+    </span>
+    </>
   );
 } 
