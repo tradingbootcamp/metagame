@@ -17,7 +17,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
     {Array.from({ length: numDots }).map((_, i) => {
       // Calculate position-based timing instead of evenly spaced timing
       const dotPosition = (i + 1) / (numDots + 1); // Position from 0 to 1
-      const animationDelay = ANIMATION_DURATION * dotPosition;
+      const animationDelay = (ANIMATION_DURATION * dotPosition) + 0.1;
       return (
         <div 
           class="dot" 
@@ -85,7 +85,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
 
   /* Only apply animations when .animate class is present */
   .animate .pacman {
-    animation: move 8s linear forwards;
+    animation: move 8.2s linear forwards;
   }
 
   .animate .dot {
