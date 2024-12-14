@@ -19,7 +19,7 @@ export interface SetCard {
 interface SetCardProps {
   card: SetCard;
   selected?: boolean;
-  size?: "sm" | "md" | "lg";
+  size?: "xs" | "sm" | "md" | "lg";
 }
 
 export default function SetCard({
@@ -30,9 +30,10 @@ export default function SetCard({
   const { shape, color, fill, number } = card;
 
   const sizeClasses = {
-    sm: "w-24 h-16",
-    md: "w-40 h-24",
-    lg: "w-48 h-28",
+    xs: "w-16 h-10 gap-1",
+    sm: "w-24 h-16 gap-2",
+    md: "w-40 h-24 gap-3",
+    lg: "w-48 h-28 gap-4",
   };
 
   const getShape = () => {
@@ -57,7 +58,7 @@ export default function SetCard({
                 x2="6"
                 y2="3"
                 stroke={color}
-                strokeWidth="2"
+                strokeWidth="3"
               />
             </pattern>
           </defs>
@@ -73,7 +74,7 @@ export default function SetCard({
                     ? color
                     : "none"
               }
-              strokeWidth="2"
+              strokeWidth="3"
             />
           )}
           {shape === "oval" && (
@@ -87,7 +88,7 @@ export default function SetCard({
                     ? color
                     : "none"
               }
-              strokeWidth="2"
+              strokeWidth="3"
               strokeLinecap="round"
             />
           )}
@@ -95,6 +96,7 @@ export default function SetCard({
             <path
               d="M 4.37 11.5 C 4.37 8.74 5.75 6.44 8.05 4.6 C 11.73 2.3 16.79 3.22 19.55 6.9 c 5.98 8.74 7.82 18.4 2.76 27.6 c -1.84 3.22 -0.92 5.98 1.38 8.74 c 2.76 3.22 2.3 8.28 -0.92 11.5 c -3.22 2.76 -8.28 2.3 -11.5 -0.92 C 4.37 45.54 2.99 35.88 8.05 26.68 C 9.89 23 8.51 19.32 5.75 16.1 C 4.83 14.72 4.37 12.88 4.37 11.5 z"
               stroke={color}
+              strokeWidth="3"
               fill={
                 fill === "striped"
                   ? `url(#stripe-${color})`
