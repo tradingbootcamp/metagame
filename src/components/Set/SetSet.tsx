@@ -96,18 +96,22 @@ export function refilledBoard(board: SetCard[], replacedIndices: number[]) {
     const newCardCount = 12 - replacedIndices.length;
     const newCards: SetCard[] = [];
     for (let i = 0; i < newCardCount; i++) {
-      const newCard = generateRandomCard();
-      // Ensure no duplicate cards
-      if (
-        !board.some(
-          (card) =>
-            card.shape === newCard.shape &&
-            card.color === newCard.color &&
-            card.fill === newCard.fill &&
-            card.number === newCard.number,
-        )
-      ) {
-        newCards.push(newCard);
+      let found = false;
+      while (!found) {
+        const newCard = generateRandomCard();
+        // Ensure no duplicate cards
+        if (
+          !board.some(
+            (card) =>
+              card.shape === newCard.shape &&
+              card.color === newCard.color &&
+              card.fill === newCard.fill &&
+              card.number === newCard.number,
+          )
+        ) {
+          newCards.push(newCard);
+          found = true;
+        }
       }
     }
     return newCards;
