@@ -12,6 +12,7 @@ import Markets from "../components/sections/home/Markets.astro";
 import ContactUs from "../components/sections/home/ContactUs.astro";
 import PacmanAnimation from "../components/PacmanAnimation.astro";
 import Venue from "../components/sections/home/Venue.astro";
+import SetAnimation from "../components/Set/SetAnimation.tsx";
 ---
 
 <Layout title="Home">
@@ -19,6 +20,7 @@ import Venue from "../components/sections/home/Venue.astro";
     <Hero />
     <Games />
     <Speakers />
+    <SetAnimation client:load />
     <Markets />
     <!-- <Venue /> -->
 
