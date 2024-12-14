@@ -1,8 +1,20 @@
-interface SetCard {
-  shape: "diamond" | "squiggle" | "oval";
-  color: "red" | "green" | "purple";
-  fill: "solid" | "striped" | "open";
-  number: 1 | 2 | 3;
+export const SET_PROPERTIES = {
+  shapes: ["diamond", "oval", "squiggle"],
+  colors: ["red", "green", "purple"],
+  fills: ["solid", "striped", "open"],
+  numbers: [1, 2, 3],
+} as const;
+
+export type SetShape = (typeof SET_PROPERTIES.shapes)[number];
+export type SetColor = (typeof SET_PROPERTIES.colors)[number];
+export type SetFill = (typeof SET_PROPERTIES.fills)[number];
+export type SetNumber = (typeof SET_PROPERTIES.numbers)[number];
+
+export interface SetCard {
+  shape: SetShape;
+  color: SetColor;
+  fill: SetFill;
+  number: SetNumber;
 }
 interface SetCardProps {
   card: SetCard;
