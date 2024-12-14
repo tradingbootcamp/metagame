@@ -19,7 +19,7 @@ export interface SetCard {
 interface SetCardProps {
   card: SetCard;
   selected?: boolean;
-  size?: "xs" | "sm" | "md" | "lg";
+  size?: "xxs" | "xs" | "sm" | "md" | "lg";
 }
 
 export default function SetCard({
@@ -30,10 +30,11 @@ export default function SetCard({
   const { shape, color, fill, number } = card;
 
   const sizeClasses = {
-    xs: "w-16 h-10 gap-1",
-    sm: "w-24 h-16 gap-2",
-    md: "w-40 h-24 gap-3",
-    lg: "w-48 h-28 gap-4",
+    xxs: "w-10 h-6 gap-0.5 rounded",
+    xs: "w-16 h-10 gap-1 rounded-md",
+    sm: "w-24 h-16 gap-2 rounded-lg",
+    md: "w-40 h-24 gap-3 rounded-lg",
+    lg: "w-48 h-28 gap-4 rounded-lg",
   };
 
   const getShape = () => {
@@ -112,12 +113,12 @@ export default function SetCard({
   };
 
   const selectedClasses = selected
-    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)]"
+    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)] border-blue-800"
     : "shadow-[2px_2px_4px_0_rgba(255,255,255,0.5)]";
 
   return (
     <div
-      className={`${sizeClasses[size]} flex justify-center items-center gap-2 border-2 rounded-lg ${selectedClasses} `}
+      className={`${sizeClasses[size]} flex justify-center items-center gap-2 border-2 ${selectedClasses} bg-dark-500`}
     >
       {[...Array(number)].map((_, i) => (
         <div key={i} className="flex justify-center items-center h-full">
