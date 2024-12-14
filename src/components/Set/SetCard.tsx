@@ -30,7 +30,7 @@ export default function SetCard({
   const { shape, color, fill, number } = card;
 
   const sizeClasses = {
-    sm: "w-32 h-20",
+    sm: "w-24 h-16",
     md: "w-40 h-24",
     lg: "w-48 h-28",
   };
@@ -110,7 +110,7 @@ export default function SetCard({
   };
 
   const selectedClasses = selected
-    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)] bg-slate-100 bg-opacity-10"
+    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)]"
     : "shadow-[2px_2px_4px_0_rgba(255,255,255,0.5)]";
 
   return (
