@@ -34,15 +34,18 @@ export default function SetCard({
         >
           <defs>
             <pattern
-              id={`stripe-${color}-${shape}`}
+              id={`stripe-${color}`}
               patternUnits="userSpaceOnUse"
-              width="4"
-              height="4"
+              width="6"
+              height="6"
             >
-              <path
-                d="M-1,1 l2,-2 M0,4 l4,-4 M3,5 l2,-2"
+              <line
+                x1="0"
+                y1="3"
+                x2="6"
+                y2="3"
                 stroke={color}
-                strokeWidth="1"
+                strokeWidth="2"
               />
             </pattern>
           </defs>
@@ -53,7 +56,7 @@ export default function SetCard({
               stroke={color}
               fill={
                 fill === "striped"
-                  ? `url(#stripe-${color}-${shape})`
+                  ? `url(#stripe-${color})`
                   : fill === "solid"
                     ? color
                     : "none"
@@ -62,36 +65,31 @@ export default function SetCard({
             />
           )}
           {shape === "oval" && (
-            <line
-              x1="15"
-              y1="15"
-              x2="15"
-              y2="45"
+            <path
+              d="M 5 18 v 24 a 10 10 0 0 0 20 0 v -24 a 10 10 0 0 0 -20 0"
               stroke={color}
-              strokeWidth="30"
-              strokeLinecap="round"
               fill={
                 fill === "striped"
-                  ? `url(#stripe-${color}-${shape})`
+                  ? `url(#stripe-${color})`
                   : fill === "solid"
                     ? color
                     : "none"
               }
+              strokeWidth="2"
+              strokeLinecap="round"
             />
           )}
           {shape === "squiggle" && (
             <path
-              d="M15,9 C30,25 0,35 15,51"
+              d="M 4.37 11.5 C 4.37 8.74 5.75 6.44 8.05 4.6 C 11.73 2.3 16.79 3.22 19.55 6.9 c 5.98 8.74 7.82 18.4 2.76 27.6 c -1.84 3.22 -0.92 5.98 1.38 8.74 c 2.76 3.22 2.3 8.28 -0.92 11.5 c -3.22 2.76 -8.28 2.3 -11.5 -0.92 C 4.37 45.54 2.99 35.88 8.05 26.68 C 9.89 23 8.51 19.32 5.75 16.1 C 4.83 14.72 4.37 12.88 4.37 11.5 z"
               stroke={color}
               fill={
                 fill === "striped"
-                  ? `url(#stripe-${color}-${shape})`
+                  ? `url(#stripe-${color})`
                   : fill === "solid"
                     ? color
                     : "none"
               }
-              strokeWidth="18"
-              strokeLinecap="round"
             />
           )}
         </svg>

@@ -1,8 +1,8 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import Games from "../components/sections/home/Games.astro";
+import ControlledSetCard from "../components/Set/ControlledSetCard.tsx";
 import Tag from "../components/Tag.tsx";
-import SetCard from "../components/SetCard.tsx";
+import SetExampleCards from "../components/Set/SetExampleCards.tsx";
 ---
 
 <Layout title="FAQ">
@@ -10,40 +10,9 @@ import SetCard from "../components/SetCard.tsx";
 
     <!-- <Games /> -->
 
-    <div class="flex flex-col gap-4">
-      <SetCard card={{
-        shape: "diamond",
-          color: "red",
-          fill: "open",
-          number: 2,
-        }}
-        selected={true}
-        size="lg"
-      />
-      <SetCard card={{
-        shape: "oval",
-        color: "green",
-        fill: "striped",
-        number: 3,
-      }}
-      size="md"
-      />
-      <SetCard card={{
-        shape: "squiggle",
-        color: "purple",
-        fill: "open",
-        number: 1,
-      }}
-      size="sm"
-      />
-      <SetCard card={{
-        shape: "diamond",
-        color: "blue",
-        fill: "solid",
-        number: 3,
-      }}
-      size="lg"
-      />
+    <div class="flex flex-col gap-8 items-center">
+      <ControlledSetCard client:load />
+      <SetExampleCards client:load />
     </div>
 
   </main>
