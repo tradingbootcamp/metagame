@@ -48,7 +48,7 @@ export default function AnimatedDie() {
     <button 
       onClick={animate} 
       disabled={isAnimating}
-      className="transition-transform hover:scale-110 active:scale-95"
+      className=""
     >
       <Die value={value} />
     </button>
