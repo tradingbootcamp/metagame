@@ -2,13 +2,13 @@ export const SET_PROPERTIES = {
   shapes: ["diamond", "oval", "squiggle"],
   colors: ["red", "green", "purple"],
   fills: ["solid", "striped", "open"],
-  numbers: [1, 2, 3],
+  number: [1, 2, 3],
 } as const;
 
 export type SetShape = (typeof SET_PROPERTIES.shapes)[number];
 export type SetColor = (typeof SET_PROPERTIES.colors)[number];
 export type SetFill = (typeof SET_PROPERTIES.fills)[number];
-export type SetNumber = (typeof SET_PROPERTIES.numbers)[number];
+export type SetNumber = (typeof SET_PROPERTIES.number)[number];
 
 export interface SetCard {
   shape: SetShape;
@@ -20,22 +20,26 @@ interface SetCardProps {
   card: SetCard;
   selected?: boolean;
   size?: "xxs" | "xs" | "sm" | "md" | "lg";
+  responsive?: boolean;
 }
 
 export default function SetCard({
   card,
   size = "md",
   selected = false,
+  responsive = false,
 }: SetCardProps) {
   const { shape, color, fill, number } = card;
 
-  const sizeClasses = {
-    xxs: "w-10 h-6 gap-0.5 rounded",
-    xs: "w-16 h-10 gap-1 rounded-md",
-    sm: "w-24 h-16 gap-2 rounded-lg",
-    md: "w-40 h-24 gap-3 rounded-lg",
-    lg: "w-48 h-28 gap-4 rounded-lg",
-  };
+  const sizeClass = responsive
+    ? "aspect-[5/3] w-full gap-1"
+    : {
+        xxs: "w-10 h-6 gap-0.5",
+        xs: "w-16 h-10 gap-1 ",
+        sm: "w-24 h-16 gap-2 ",
+        md: "w-40 h-24 gap-3 ",
+        lg: "w-48 h-28 gap-4 ",
+      }[size];
 
   const getShape = () => {
     return (
@@ -118,7 +122,7 @@ export default function SetCard({
 
   return (
     <div
-      className={`${sizeClasses[size]} flex justify-center items-center gap-2 border-2 ${selectedClasses} bg-dark-500`}
+      className={`${sizeClass} rounded-[8%] flex justify-center items-center border-2 ${selectedClasses} bg-dark-500`}
     >
       {[...Array(number)].map((_, i) => (
         <div key={i} className="flex justify-center items-center h-full">

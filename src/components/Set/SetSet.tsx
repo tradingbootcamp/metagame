@@ -26,8 +26,8 @@ export function generateRandomCard(): SetCard {
       Math.floor(Math.random() * SET_PROPERTIES.fills.length)
     ],
     number:
-      SET_PROPERTIES.numbers[
-        Math.floor(Math.random() * SET_PROPERTIES.numbers.length)
+      SET_PROPERTIES.number[
+        Math.floor(Math.random() * SET_PROPERTIES.number.length)
       ],
   };
 }

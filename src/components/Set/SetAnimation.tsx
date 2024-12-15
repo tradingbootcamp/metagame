@@ -85,7 +85,7 @@ export default function SetAnimation() {
 
   return (
     <div className="flex flex-col items-center gap-3 py-4" ref={containerRef}>
-      <div className="flex w-full justify-between items-center">
+      <div className="grid grid-cols-12 gap-2 w-full">
         {setBoard.map((card, index) => (
           <div
             key={`${card.shape}-${card.color}-${card.fill}-${card.number}-${index}`}
@@ -103,6 +103,7 @@ export default function SetAnimation() {
               card={card}
               size="sm"
               selected={selectedCards.includes(index)}
+              responsive
             />
           </div>
         ))}
