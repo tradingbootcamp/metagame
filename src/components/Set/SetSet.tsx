@@ -92,23 +92,32 @@ export function generateSetBoard(mode: SetBoardMode = "random"): SetCard[] {
 
 /**Refills a set board up to 12 cards with at least one set */
 export function refilledBoard(board: SetCard[], replacedIndices: number[]) {
+  // First, get the remaining cards (ones we're keeping)
+  const remainingCards = board.filter((_, i) => !replacedIndices.includes(i));
+
   const makeNewCardSet = () => {
-    const newCardCount = 12 - replacedIndices.length;
+    const newCardCount = replacedIndices.length;
     const newCards: SetCard[] = [];
     for (let i = 0; i < newCardCount; i++) {
       let found = false;
       while (!found) {
         const newCard = generateRandomCard();
-        // Ensure no duplicate cards
-        if (
-          !board.some(
-            (card) =>
-              card.shape === newCard.shape &&
-              card.color === newCard.color &&
-              card.fill === newCard.fill &&
-              card.number === newCard.number,
-          )
-        ) {
+        // Check against both remaining cards AND previously added new cards
+        const isDuplicate = remainingCards.some(
+          card =>
+            card.shape === newCard.shape &&
+            card.color === newCard.color &&
+            card.fill === newCard.fill &&
+            card.number === newCard.number
+        ) || newCards.some(
+          card =>
+            card.shape === newCard.shape &&
+            card.color === newCard.color &&
+            card.fill === newCard.fill &&
+            card.number === newCard.number
+        );
+        
+        if (!isDuplicate) {
           newCards.push(newCard);
           found = true;
         }
@@ -116,15 +125,17 @@ export function refilledBoard(board: SetCard[], replacedIndices: number[]) {
     }
     return newCards;
   };
+
   let newCards = makeNewCardSet();
   // Ensure the resulting board has at least one set
-  while (countSets(board.concat(newCards)) < 1) {
+  while (countSets([...remainingCards, ...newCards]) < 1) {
     newCards = makeNewCardSet();
   }
-  const newBoard = [...board];
-  replacedIndices.forEach((index, i) => {
-    newBoard[index] = newCards[i];
-  });
 
-  return newBoard;
+  // Reconstruct the board with new cards in the replaced positions
+  return board.map((card, i) => 
+    replacedIndices.includes(i) 
+      ? newCards[replacedIndices.indexOf(i)] 
+      : card
+  );
 }
