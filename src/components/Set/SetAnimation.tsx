@@ -82,7 +82,6 @@ export default function SetAnimation() {
       }
     }
   };
-
   return (
     <div className="flex flex-col items-center gap-3 py-4" ref={containerRef}>
       <div className="grid grid-cols-6 md:grid-cols-12 gap-1 md:gap-2 w-full auto-rows-fr">
@@ -95,7 +94,7 @@ export default function SetAnimation() {
               ${isExiting && selectedCards.includes(index) ? "animate-fade-out" : ""}
             `}
             style={{
-              animationDelay: isExiting ? "0ms" : `${index * 100}ms`,
+              animationDelay: isExiting || foundSets > 0 ? "0ms" : `${index * 100}ms`,
             }}
             onClick={() => handleCardClick(index)}
           >
