@@ -85,7 +85,7 @@ export default function SetAnimation() {
 
   return (
     <div className="flex flex-col items-center gap-3 py-4" ref={containerRef}>
-      <div className="grid grid-cols-6 md:grid-cols-12 gap-1 md:gap-2 w-full">
+      <div className="grid grid-cols-6 md:grid-cols-12 gap-1 md:gap-2 w-full auto-rows-fr">
         {setBoard.map((card, index) => (
           <div
             key={`${card.shape}-${card.color}-${card.fill}-${card.number}-${index}`}
