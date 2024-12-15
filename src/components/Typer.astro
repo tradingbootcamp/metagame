@@ -15,8 +15,8 @@ const { texts, speed, delay, blinkerClass, textClass } = Astro.props;
   data-delay={delay}
   data-speed={speed}
 >
-  <span class={`typer ${textClass}`}></span>
-  <span class={`blinker text-amber-500 ${blinkerClass ?? ""}`}>|</span>
+  <span class={`typer inline-block ${textClass}`}></span><span 
+    class={`blinker inline-block text-amber-500 ${blinkerClass ?? ""}`}>|</span>
 </wts-typer>
 
 <script>
