@@ -5,7 +5,7 @@ export default function Die({ value }: { value: DieValue }) {
     <img 
       src={`/dice/dice-${value}.svg`} 
       alt={`Dice showing ${value}`}
-      className="size-8"
+      className="size-10"
     />
   );
 }
