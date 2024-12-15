@@ -16,63 +16,65 @@ import SetAnimation from "../components/Set/SetAnimation.tsx";
 ---
 
 <Layout title="Home">
-  <main class="dark:text-white px-4">
-    <Hero />
-    <Games />
-    <Speakers />
-    <SetAnimation client:load />
-    <Markets />
-    <!-- <Venue /> -->
-
-    <!-- <Location /> -->
-    <section class="mb-8 bg-dark-500 mt-40" id="tickets">
-      <div class="container mx-auto">
-        <h2 class="mb-8 text-3xl font-bold text-center">
-          Grab a ticket!
-        </h2> 
-
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
-          <TicketCard
-            title="NPC"
-            price={`$101`}
-            regularPrice="$404"
-            description="Volunteer for 6 shifts over the weekend"
-            features={[
-              "Premium swag",
-              "OK food",
-              "Participation in a volunteer cult initiation ritual"
-            ]}
-          />
-          <TicketCard
-            title="Player"
-            price={`$404`}
-            regularPrice="$666"
-            description="Early bird price through June 1st, 2025"
-            features={[
-              "Premium swag",
-              "OK food",
-              "Don't have to spend your conference staffing the volunteer desk"
-            ]}
-          />
-          <TicketCard
-            title="Supporter"
-            price="$2048"
-            description="We will name a game after you"
-            features={[
-              "Premium swag",
-              "Slightly better than OK food",
-              "The knowledge that you're supporting other people's fun"
-            ]}
-            buttonText="Contact Us"
-            href="mailto:ricki.heicklen@gmail.com"
-          />
+  <main class="dark:text-white">
+    <div class="container mx-auto px-4">
+      <Hero />
+      <Games />
+      <Speakers />
+      <SetAnimation client:load />
+      <Markets />
+      <!-- <Venue /> -->
+      <!-- <Location /> -->
+      <section class="mb-8 bg-dark-500 mt-40" id="tickets">
+        <div class="container mx-auto">
+          <h2 class="mb-8 text-3xl font-bold text-center">
+            Grab a ticket!
+          </h2>
+          <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
+            <TicketCard
+              title="NPC"
+              price={`$101`}
+              regularPrice="$404"
+              description="Volunteer for 6 shifts over the weekend"
+              features={[
+                "Premium swag",
+                "OK food",
+                "Participation in a volunteer cult initiation ritual"
+              ]}
+            />
+            <TicketCard
+              title="Player"
+              price={`$404`}
+              regularPrice="$666"
+              description="Early bird price through June 1st, 2025"
+              features={[
+                "Premium swag",
+                "OK food",
+                "Don't have to spend your conference staffing the volunteer desk"
+              ]}
+            />
+            <TicketCard
+              title="Supporter"
+              price="$2048"
+              description="We will name a game after you"
+              features={[
+                "Premium swag",
+                "Slightly better than OK food",
+                "The knowledge that you're supporting other people's fun"
+              ]}
+              buttonText="Contact Us"
+              href="mailto:ricki.heicklen@gmail.com"
+            />
+          </div>
         </div>
-      </div>
-    </section>
+      </section>
+    </div>
     <PacmanAnimation numDots={30} />
-
-    <ContactUs />
-    <!-- <CallForSpeakers /> -->
-    <!-- <SubscribePopup /> -->
+    <div class="container mx-auto px-4">
+  
+      <ContactUs />
+      <!-- <CallForSpeakers /> -->
+      <!-- <SubscribePopup /> -->
+</div>
   </main>
 </Layout>
