@@ -51,23 +51,33 @@ export default {
         },
       },
       keyframes: {
-        'coin-pop': {
-          '0%': { 
-            transform: 'translateY(0) translateX(-50%) scale(0.5)',
-            opacity: '0'
+        "coin-pop": {
+          "0%": {
+            transform: "translateY(0) translateX(-50%) scale(0.5)",
+            opacity: "0",
           },
-          '50%': {
-            transform: 'translateY(-20px) translateX(-50%) scale(1.2)',
-            opacity: '1'
+          "50%": {
+            transform: "translateY(-20px) translateX(-50%) scale(1.2)",
+            opacity: "1",
           },
-          '100%': {
-            transform: 'translateY(-40px) translateX(-50%) scale(1)',
-            opacity: '0'
-          }
-        }
+          "100%": {
+            transform: "translateY(-40px) translateX(-50%) scale(1)",
+            opacity: "0",
+          },
+        },
+        "fade-in": {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
+        "fade-out": {
+          "0%": { opacity: "1" },
+          "100%": { opacity: "0" },
+        },
       },
       animation: {
-        'coin-pop': 'coin-pop 0.6s ease-out'
+        "coin-pop": "coin-pop 0.6s ease-out",
+        "fade-in": "fade-in 0.5s ease-in forwards",
+        "fade-out": "fade-out 0.5s linear forwards",
       },
     },
   },
