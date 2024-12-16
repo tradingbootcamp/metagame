@@ -26,7 +26,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     ]}
     src={images?.[image || "/src/assets/incognito.svg"]?.()}
     height="200"
-    quality={100}
+    width="400"
     transition:name={slug && `${slug}-image`}
   />
   <div class="flex-grow">
