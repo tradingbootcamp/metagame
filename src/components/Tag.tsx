@@ -1,4 +1,5 @@
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect, useRef } from "react";
+import { useDebounce } from "../utils/useDebounce";
 
 interface TagProps {
   text?: string;
@@ -7,11 +8,11 @@ interface TagProps {
   className?: string;
 }
 
-export default function Tag({ 
-  text = "tag", 
-  speed = 0.05, 
+export default function Tag({
+  text = "tag",
+  speed = 0.05,
   catchDistance = 50,
-  className = ''
+  className = "",
 }: TagProps) {
   const [isChasing, setIsChasing] = useState(false);
   const [isCaught, setIsCaught] = useState(false);
@@ -26,8 +27,8 @@ export default function Tag({
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
+    window.addEventListener("mousemove", handleMouseMove);
+    return () => window.removeEventListener("mousemove", handleMouseMove);
   }, []);
 
   // Animation loop
@@ -35,7 +36,7 @@ export default function Tag({
     if (!isChasing || !tagRef.current) return;
 
     const animate = () => {
-      setTextPosition(prevPosition => {
+      setTextPosition((prevPosition) => {
         const dx = mousePosition.x - prevPosition.x;
         const dy = mousePosition.y - prevPosition.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -61,26 +62,26 @@ export default function Tag({
               transform: translate(calc(var(--x, 0) * 1px - 50%), calc(var(--y, 0) * 1px - 50%));
             }
           `;
-          const styleSheet = document.createElement('style');
+          const styleSheet = document.createElement("style");
           styleSheet.textContent = cursorStyle;
           document.head.appendChild(styleSheet);
 
           // Set initial position immediately using current mousePosition
-          document.body.style.setProperty('--x', mousePosition.x.toString());
-          document.body.style.setProperty('--y', mousePosition.y.toString());
+          document.body.style.setProperty("--x", mousePosition.x.toString());
+          document.body.style.setProperty("--y", mousePosition.y.toString());
 
           // Add mousemove handler to update emoji position
           const updateCursor = (e: MouseEvent) => {
-            document.body.style.setProperty('--x', e.clientX.toString());
-            document.body.style.setProperty('--y', e.clientY.toString());
+            document.body.style.setProperty("--x", e.clientX.toString());
+            document.body.style.setProperty("--y", e.clientY.toString());
           };
-          window.addEventListener('mousemove', updateCursor);
-          
+          window.addEventListener("mousemove", updateCursor);
+
           // Store the event listener for cleanup
           (tagRef.current as any).cursorCleanup = () => {
-            window.removeEventListener('mousemove', updateCursor);
+            window.removeEventListener("mousemove", updateCursor);
             styleSheet.remove();
-            document.body.style.cursor = 'default';
+            document.body.style.cursor = "default";
           };
 
           return prevPosition;
@@ -88,7 +89,7 @@ export default function Tag({
 
         return {
           x: prevPosition.x + dx * speed * 3,
-          y: prevPosition.y + dy * speed * 3
+          y: prevPosition.y + dy * speed * 3,
         };
       });
 
@@ -104,15 +105,13 @@ export default function Tag({
     };
   }, [isChasing, mousePosition, speed, catchDistance, isCaught]);
 
-  const debouncedSetIsChasing = useDebounce(
-    () => setIsChasing(true),
-    1000,
-    { leading: false },
-  );
+  const debouncedSetIsChasing = useDebounce(() => setIsChasing(true), 1000, {
+    leading: false,
+  });
 
   // Start chasing after hover
   const handleMouseLeave = () => {
-    console.log('Mouse entered');
+    console.log("Mouse entered");
     if (!isChasing && !isCaught) {
       const rect = tagRef.current?.getBoundingClientRect();
       if (rect) {
@@ -133,12 +132,10 @@ export default function Tag({
 
   return (
     <>
-    <span className={`${!isChasing ? 'hidden' : 'opacity-0'}`}>
-        {text}
-    </span>
-    <span
-      ref={tagRef}
-      className={`
+      <span className={`${!isChasing ? "hidden" : "opacity-0"}`}>{text}</span>
+      <span
+        ref={tagRef}
+        className={`
         group 
         inline-block 
         relative 
@@ -146,20 +143,19 @@ export default function Tag({
         select-none 
         ${className}
       `}
-      style={{
-        position: isChasing ? 'fixed' : 'relative',
-        left: isChasing ? `${textPosition.x}px` : 'auto',
-        top: isChasing ? `${textPosition.y}px` : 'auto',
-        transition: isChasing ? 'none' : 'color 0.3s ease',
-        color: isChasing ? 'gold' : 'inherit',
-        zIndex: 1000,
-
-      }}
-      onMouseLeave={handleMouseLeave}
-      onMouseEnter={() => debouncedSetIsChasing.cancel()}
-    >
-      {text}
-    </span>
+        style={{
+          position: isChasing ? "fixed" : "relative",
+          left: isChasing ? `${textPosition.x}px` : "auto",
+          top: isChasing ? `${textPosition.y}px` : "auto",
+          transition: isChasing ? "none" : "color 0.3s ease",
+          color: isChasing ? "gold" : "inherit",
+          zIndex: 1000,
+        }}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => debouncedSetIsChasing.cancel()}
+      >
+        {text}
+      </span>
     </>
   );
-} 
+}
