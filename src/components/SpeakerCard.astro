@@ -17,21 +17,24 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<Card class="basis-[100%] md:basis-[46%] lg:basis-[22%] self-stretch">
+<Card class="w-48 flex flex-col items-center p-1 bg-slate-700 bg-opacity-50" padless >
   <Image
     alt={name || "YOU?"}
     class:list={[
-      "glitch mb-2 h-[200px] w-full rounded-lg object-cover",
+      "glitch mb-2 rounded aspect-square object-cover",
       image ? "object-cover" : "object-fill",
     ]}
     src={images?.[image || "/src/assets/incognito.svg"]?.()}
-    height="200"
-    width="400"
+    height="160"
+    width="160"
     transition:name={slug && `${slug}-image`}
   />
   <div class="flex-grow">
     <h3
-      class="mb-1 text-xl font-bold"
+      class:list={[
+        "font-bold",
+        name.length > 20 ? "text-sm" : "text-base",
+      ]}
       transition:name={slug && `${slug}-name`}
     >
       {name}
@@ -40,7 +43,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
       href={gameUrl} 
       target="_blank" 
       rel="noopener noreferrer" 
-      class="text-secondary-200 font-semibold hover:text-secondary-300 inline-flex items-center gap-1"
+      class="text-secondary-200 text-sm font-semibold hover:text-secondary-300 inline-flex items-center gap-1"
     >
       {gameName}
       <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">

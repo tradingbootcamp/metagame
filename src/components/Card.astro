@@ -2,9 +2,10 @@
 interface Props {
   class?: string;
   borderless?: boolean;
+  padless?: boolean;
 }
 
-const { class: klass, borderless } = Astro.props;
+const { class: klass, borderless, padless } = Astro.props;
 
 const rand = Math.random().toString(36).slice(2, 11);
 const id = `card-${rand}`;
@@ -13,11 +14,13 @@ const id = `card-${rand}`;
 <div
   id={id}
   class:list={[
-    `card rounded-md border-amber-400  transition-all p-6 text-center flex flex-col`,
+    `card rounded-md border-amber-400  transition-all text-center flex flex-col`,
     klass,
     {
       "border-0": borderless,
       "border-2": !borderless,
+      "p-6": !padless,
+      "p-0": padless,
     },
   ]}
 >
