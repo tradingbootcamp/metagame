@@ -92,6 +92,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
   /* Only apply animations when .animate class is present */
   .animate .pacman {
     animation: move 8s linear forwards;
+    animation-delay: 1s;
   }
 
   @keyframes move {
@@ -169,6 +170,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
 
   .animate .wake {
     animation: expand 8s linear forwards;
+    animation-delay: 1s;
   }
 
   @keyframes expand {
@@ -178,6 +180,17 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
     99%, 100% {
       transform: scaleX(1);  /* Match Pacman's movement ratio */
     }
+  }
+
+  /* Keep initial states during delay */
+  .animate .pacman {
+    opacity: 0;
+    animation: move 8s linear forwards 1s;
+  }
+
+  .animate .wake {
+    transform: scaleX(0);
+    animation: expand 8s linear forwards 1s;
   }
 
 </style>
