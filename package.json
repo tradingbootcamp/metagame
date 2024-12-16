@@ -23,6 +23,7 @@
     "astro-icon": "^1.1.0",
     "astro-seo": "^0.8.4",
     "date-fns": "^3.6.0",
+    "lodash": "^4.17.21",
     "motion": "^10.18.0",
     "powerglitch": "^2.3.3",
     "react": "18.2.0",
@@ -35,6 +36,7 @@
   "devDependencies": {
     "@iconify-json/el": "^1.1.8",
     "@tailwindcss/typography": "^0.5.13",
+    "@types/lodash": "^4.17.13",
     "daisyui": "^4.12.2",
     "vite": "^6.0.3"
   },

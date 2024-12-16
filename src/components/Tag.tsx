@@ -104,6 +104,12 @@ export default function Tag({
     };
   }, [isChasing, mousePosition, speed, catchDistance, isCaught]);
 
+  const debouncedSetIsChasing = useDebounce(
+    () => setIsChasing(true),
+    1000,
+    { leading: false },
+  );
+
   // Start chasing after hover
   const handleMouseLeave = () => {
     console.log('Mouse entered');
@@ -112,7 +118,7 @@ export default function Tag({
       if (rect) {
         setTextPosition({ x: rect.left, y: rect.top });
       }
-      setTimeout(() => setIsChasing(true), 1000);
+      debouncedSetIsChasing();
     }
   };
 
@@ -150,6 +156,7 @@ export default function Tag({
 
       }}
       onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => debouncedSetIsChasing.cancel()}
     >
       {text}
     </span>
