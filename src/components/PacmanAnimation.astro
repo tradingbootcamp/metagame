@@ -3,10 +3,8 @@ interface Props {
   numDots?: number;
 }
 
-const { numDots = 6 } = Astro.props;
 const ANIMATION_DURATION = 8; // Pacman's movement duration in seconds
 const OFFSET = 0.3; // Initial delay before first dot disappears
-const spacing = (ANIMATION_DURATION - OFFSET) / numDots; // Evenly space dots across animation
 
 // Add a unique ID for this instance
 const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
@@ -15,18 +13,11 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
 
 <div class="pacman-container" id={uniqueId}>
   <div class="dots">
-    {Array.from({ length: numDots }).map((_, i) => {
-      // Calculate position-based timing instead of evenly spaced timing
-      const dotPosition = (i + 1) / (numDots + 1); // Position from 0 to 1
-      const animationDelay = (ANIMATION_DURATION * dotPosition) + 0.1;
-      return (
-        <div 
-          class="dot" 
-          style={`animation-delay: ${animationDelay.toFixed(1)}s; left: ${dotPosition * 100}%`}
-        ></div>
-      );
-    })}
+    <div class="dot-row"></div>
   </div>
+  
+  <div class="wake"></div>
+  
   <div class="pacman"></div>
 </div>
 <div class="pacman-rail"></div>
@@ -75,7 +66,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
     height: 30px;
     position: absolute;
     top: 15px;
-    left: 0px; /* Start position */
+    left: -25px; /* Match wake's starting position */
   }
 
   .pacman::before, .pacman::after {
@@ -100,23 +91,20 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
 
   /* Only apply animations when .animate class is present */
   .animate .pacman {
-    animation: move 8.2s linear forwards;
-  }
-
-  .animate .dot {
-    animation: disappear 0s linear forwards;
+    animation: move 8s linear forwards;
   }
 
   @keyframes move {
     0% {
-      left: -50px;
+      left: -25px;  /* Match wake's starting position */
       opacity: 1;
     }
     99% {
+      left: calc(100% + 25px);  /* Match wake's end position */
       opacity: 1;
     }
     100% {
-      left: 100%;
+      left: calc(100% + 25px);
       opacity: 0;
     }
   }
@@ -148,31 +136,47 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
   .dots {
     position: absolute;
     width: 100%;
-    display: flex;
-    justify-content: space-evenly;
-    padding: 0;
+    height: 100%;
+    top: 25px;
   }
 
-  .dot {
-    width: 8px;
+  .dot-row {
+    width: 100%;
     height: 8px;
-    background-color: white;
-    border-radius: 50%;
-    opacity: 1;
+    background-image: radial-gradient(
+      circle at center,
+      white 0px,
+      white 4px,
+      transparent 4px,
+      transparent 100%
+    );
+    transform: translateY(2px);
+    background-size: 30px 8px;
+    background-repeat: repeat-x;
+    background-position: center;
+  }
+
+  .wake {
     position: absolute;
-    transform: translate(-50%, +50%);
+    height: 50%;
+    background: theme(colors.dark.500);
+    width: calc(100% + 50px);
+    transform: scaleX(0);
+    transform-origin: left;
+    left: -25px;
+    top: 25px;
   }
 
-  .animate .dot {
-    animation: disappear 0.1s linear forwards;
+  .animate .wake {
+    animation: expand 8s linear forwards;
   }
 
-  @keyframes disappear {
+  @keyframes expand {
     0% {
-      opacity: 1;
+      transform: scaleX(0);
     }
-    100% {
-      opacity: 0;
+    99%, 100% {
+      transform: scaleX(1);  /* Match Pacman's movement ratio */
     }
   }
 
