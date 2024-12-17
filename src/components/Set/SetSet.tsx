@@ -103,20 +103,22 @@ export function refilledBoard(board: SetCard[], replacedIndices: number[]) {
       while (!found) {
         const newCard = generateRandomCard();
         // Check against both remaining cards AND previously added new cards
-        const isDuplicate = remainingCards.some(
-          card =>
-            card.shape === newCard.shape &&
-            card.color === newCard.color &&
-            card.fill === newCard.fill &&
-            card.number === newCard.number
-        ) || newCards.some(
-          card =>
-            card.shape === newCard.shape &&
-            card.color === newCard.color &&
-            card.fill === newCard.fill &&
-            card.number === newCard.number
-        );
-        
+        const isDuplicate =
+          remainingCards.some(
+            (card) =>
+              card.shape === newCard.shape &&
+              card.color === newCard.color &&
+              card.fill === newCard.fill &&
+              card.number === newCard.number,
+          ) ||
+          newCards.some(
+            (card) =>
+              card.shape === newCard.shape &&
+              card.color === newCard.color &&
+              card.fill === newCard.fill &&
+              card.number === newCard.number,
+          );
+
         if (!isDuplicate) {
           newCards.push(newCard);
           found = true;
@@ -133,9 +135,7 @@ export function refilledBoard(board: SetCard[], replacedIndices: number[]) {
   }
 
   // Reconstruct the board with new cards in the replaced positions
-  return board.map((card, i) => 
-    replacedIndices.includes(i) 
-      ? newCards[replacedIndices.indexOf(i)] 
-      : card
+  return board.map((card, i) =>
+    replacedIndices.includes(i) ? newCards[replacedIndices.indexOf(i)] : card,
   );
 }

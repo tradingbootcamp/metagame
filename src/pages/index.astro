@@ -12,7 +12,8 @@ import Markets from "../components/sections/home/Markets.astro";
 import ContactUs from "../components/sections/home/ContactUs.astro";
 import PacmanAnimation from "../components/PacmanAnimation.astro";
 import Venue from "../components/sections/home/Venue.astro";
-import SetAnimation from "../components/Set/SetAnimation.tsx";
+import SetAnimationMin from "../components/Set/SetAnimationMin.tsx";
+import SetCardMin from "../components/Set/SetCardMin.tsx";
 ---
 
 <Layout title="Home">
@@ -21,7 +22,9 @@ import SetAnimation from "../components/Set/SetAnimation.tsx";
       <Hero />
       <Games />
       <Speakers />
-      <SetAnimation client:load />
+      <div id="set-animation">
+        <!-- <SetCardMin /> -->
+      </div>
       <Markets />
       <!-- <Venue /> -->
       <!-- <Location /> -->
