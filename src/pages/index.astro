@@ -14,6 +14,7 @@ import PacmanAnimation from "../components/PacmanAnimation.astro";
 import Venue from "../components/sections/home/Venue.astro";
 import SetAnimationMin from "../components/Set/SetAnimationMin.tsx";
 import SetCardMin from "../components/Set/SetCardMin.tsx";
+import SetAnimation from "../components/Set/SetAnimation.tsx";
 ---
 
 <Layout title="Home">
@@ -23,7 +24,7 @@ import SetCardMin from "../components/Set/SetCardMin.tsx";
       <Games />
       <Speakers />
       <div id="set-animation">
-        <!-- <SetCardMin /> -->
+        <SetAnimation client:load />
       </div>
       <Markets />
       <!-- <Venue /> -->
