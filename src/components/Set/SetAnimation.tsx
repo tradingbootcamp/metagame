@@ -18,16 +18,11 @@ export default function SetAnimation() {
   useEffect(() => {
     if (!mounted) return;
 
-    console.log("Setting up observer");
-
     const observer = new IntersectionObserver(
       ([entry]) => {
-        console.log("Intersection state:", entry.isIntersecting);
         if (entry.isIntersecting) {
-          console.log("Component is now visible!");
           setVisible(true);
           observer.disconnect();
-          console.log("Observer disconnected");
         }
       },
       { threshold: 0.1 },
@@ -35,15 +30,9 @@ export default function SetAnimation() {
 
     if (containerRef.current) {
       observer.observe(containerRef.current);
-      console.log("Started observing element");
-    } else {
-      console.log("No element to observe");
     }
 
-    return () => {
-      observer.disconnect();
-      console.log("Cleanup: observer disconnected");
-    };
+    return () => observer.disconnect();
   }, [mounted]);
 
   if (!mounted) {
@@ -94,7 +83,8 @@ export default function SetAnimation() {
               ${isExiting && selectedCards.includes(index) ? "animate-fade-out" : ""}
             `}
             style={{
-              animationDelay: isExiting || foundSets > 0 ? "0ms" : `${index * 100}ms`,
+              animationDelay:
+                isExiting || foundSets > 0 ? "0ms" : `${index * 100}ms`,
             }}
             onClick={() => handleCardClick(index)}
           >
