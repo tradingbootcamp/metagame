@@ -16,10 +16,10 @@ const bg = background ?? `bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuc
   <div class={`btn-blur ${bg} absolute top-0 left-0 right-0 bottom-0 -z-10`}>
   </div>
   <button
-    class={`tickets-btn ${bg} position-relative transition-all duration-300  rounded-md p-0.5 font-bold z-1`}
+    class={`tickets-btn ${bg} position-relative transition-all duration-300  rounded-md p-0.5 font-bold z-1 `}
   >
     <div
-      class="content uppercase transition-all duration-1000 text-white w-full h-full px-12 rounded-md py-3"
+      class="uppercase transition-all duration-1000 w-full h-full px-12 rounded-md py-3"
     >
       <slot />
     </div>
@@ -27,10 +27,6 @@ const bg = background ?? `bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuc
 </a>
 
 <style>
-  .content {
-    color: white;
-  }
-
   .btn-blur {
     transition: all 0.3s;
     opacity: 0.3;
