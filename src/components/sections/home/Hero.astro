@@ -52,19 +52,17 @@ const game_names = ["board games", "card games", "puzzle hunts", "LARPS", "video
   if (!isMobile) {
     const r = document.querySelector(":root")! as HTMLElement;
 
-    requestAnimationFrame(doAnimationStep);
     let dt = 0;
     let prevtime = 0;
     let outrun = 0;
     function doAnimationStep(timeStamp: DOMHighResTimeStamp) {
-      dt = 1.0 / (timeStamp - prevtime);
+      dt = (timeStamp - prevtime) / 1000;
       prevtime = timeStamp;
-      outrun += dt;
-      if (outrun >= 1) {
-        outrun = 0;
-      }
+      outrun = (outrun + dt) % 1;
+
       r.style.setProperty("--outrun", `${outrun}`);
       requestAnimationFrame(doAnimationStep);
     }
+    requestAnimationFrame(doAnimationStep);
   }
 </script>
