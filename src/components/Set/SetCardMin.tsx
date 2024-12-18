@@ -12,7 +12,7 @@ export default memo(function SetCardMin({ size = "md" }: SetCardMinProps) {
 
   return (
     <div
-      className={`${sizeClass} rounded-lg border-2 flex justify-center items-center bg-dark-500`}
+      className={`${sizeClass} rounded-lg border-2 flex justify-center items-center bg-base-300`}
     >
       <div className="h-[80%] aspect-[1/2]">
         <svg

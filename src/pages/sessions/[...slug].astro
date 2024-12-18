@@ -38,7 +38,7 @@ const { Content } = await entry.render();
   <article class="flex w-full flex-col items-center py-10 mb-20 px-8">
     <section class="max-w-prose w-full prose prose-xl mb-10">
       <h1 class="text-left w-full mb-8">
-        <span class="text-secondary-400">{entry.data.title}</span>
+        <span class="text-secondary">{entry.data.title}</span>
       </h1>
       <div class="flex flex-col gap-2">
         {
@@ -46,7 +46,7 @@ const { Content } = await entry.render();
             return (
               <div>
                 <a
-                  class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
+                  class="text-primary flex gap-3 h-[140px] items-center text-3xl"
                   href={`/speakers/${speaker.slug}`}
                 >
                   <Image
@@ -69,7 +69,7 @@ const { Content } = await entry.render();
               return (
                 <div>
                   <a
-                    class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
+                    class="text-primary flex gap-3 h-[140px] items-center text-3xl"
                     href={`/miscs/${misc.slug}`}
                   >
                     <Image
@@ -89,20 +89,20 @@ const { Content } = await entry.render();
       </div>
       <h4 class="flex flex-col">
         <div>
-          Format: <span class="text-secondary-400">{entry.data.format}</span>
+          Format: <span class="text-secondary">{entry.data.format}</span>
         </div>
         <div>
-          Date: <span class="text-secondary-400"
+          Date: <span class="text-secondary"
             >{format(entry.data.date, "yyyy-MM-dd")}</span
           >
         </div>
         <div>
-          Duration: <span class="text-secondary-400"
+          Duration: <span class="text-secondary"
             >{entry.data.duration} minutes</span
           >
         </div>
         <div>
-          Venue: <span class="text-secondary-400">{entry.data.venue}</span>
+          Venue: <span class="text-secondary">{entry.data.venue}</span>
         </div>
       </h4>
     </section>

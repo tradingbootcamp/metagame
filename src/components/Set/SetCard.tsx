@@ -117,12 +117,12 @@ export default function SetCard({
   };
 
   const selectedClasses = selected
-    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)] border-blue-800"
+    ? "shadow-[0_0_36px_0_rgba(255,255,255,0.7)] border-primary"
     : "shadow-[2px_2px_4px_0_rgba(255,255,255,0.5)]";
 
   return (
     <div
-      className={`${sizeClass} rounded-[8%] flex justify-center items-center border-2 ${selectedClasses} bg-dark-500`}
+      className={`${sizeClass} rounded-[8%] flex justify-center items-center border-2 ${selectedClasses} bg-base-300`}
     >
       {[...Array(number)].map((_, i) => (
         <div key={i} className="flex justify-center items-center h-full">

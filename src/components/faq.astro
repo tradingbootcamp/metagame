@@ -5,7 +5,7 @@ const faqs = await getCollection("faq");
 ---
 
 <div class="max-w-prose py-20 flex flex-col gap-5">
-  <h1 class="text-secondary-300 text-2xl font-black text-center pb-8">
+  <h1 class="text-secondary text-2xl font-black text-center pb-8">
     Frequently Asked Questions
   </h1>
   {
@@ -15,7 +15,7 @@ const faqs = await getCollection("faq");
         const { Content } = await faq.render();
 
         return (
-          <div class="collapse collapse-plus bg-base-200">
+          <div class="collapse collapse-plus bg-base-300">
             <input type="checkbox" name="my-accordion-1" />
             <div class="collapse-title text-xl font-medium">
               {faq.data.question}

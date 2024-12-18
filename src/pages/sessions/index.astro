@@ -97,7 +97,7 @@ agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
 
     {
       sessions.length === 0 ? (
-        <p class="text-center text-lg font-bold pt-8 text-secondary-300">
+        <p class="text-center text-lg font-bold pt-8 text-secondary">
           No sessions found
         </p>
       ) : (
@@ -108,7 +108,7 @@ agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
             );
             return (
               <Card>
-                <h2 class="font-black text-2xl text-secondary-300 text-center">
+                <h2 class="font-black text-2xl text-secondary text-center">
                   {session.data.title}
                 </h2>
                 <div
@@ -142,7 +142,7 @@ agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
                     return (
                       <a
                         href={`/speakers/${speaker.slug}`}
-                        class="font-black flex items-center justify-center gap-4 text-primary-400"
+                        class="font-black flex items-center justify-center gap-4 text-primary"
                       >
                         {speaker.data.name}
                       </a>
@@ -152,7 +152,7 @@ agenda.forEach((day) => (dayTitles[day.data?.date] = day.data?.name || "TBA"));
                 <p class="text-lg flex items-center justify-center text-center gap-1 pt-5">
                   <a
                     href={`/sessions/${session.slug}`}
-                    class="font-black flex items-center justify-center gap-3 text-secondary-400"
+                    class="font-black flex items-center justify-center gap-3 text-secondary"
                   >
                     [Details]
                   </a>
