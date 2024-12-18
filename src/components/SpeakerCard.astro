@@ -32,7 +32,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   <div class="flex-grow w-full flex flex-col items-center">
     <h3
       class:list={[
-        "font-bold truncate text-center w-full",
+        "font-bold text-base-content truncate text-center w-full",
         name.length > 20 ? "text-sm" : "text-base",
       ]}
       transition:name={slug && `${slug}-name`}

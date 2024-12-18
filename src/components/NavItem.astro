@@ -20,11 +20,12 @@ const isActive = isHashLink
 <li>
   <a
     href={href}
-    class={`block py-2 px-3 text-white font-bold text-lg rounded md:bg-transparent transition-all md:p-0`}
+    class={`block py-2 px-3 font-bold text-lg rounded md:bg-transparent transition-all md:p-0`}
     class:list={[
       {
-        'text-primary': isActive,
-        'hover:text-secondary': !isActive,
+        // TODO: figure out what's going on here
+        'text-error': isActive,
+        'hover:text-accent': !isActive,
       }
     ]}
   >
@@ -82,11 +83,11 @@ const isActive = isHashLink
       // Update all nav items
       navItems.forEach(item => {
         if (current && item === current.navItem) {
-          item.classList.add('text-primary');
-          item.classList.remove('hover:text-secondary');
+          item.classList.add('text-error');
+          item.classList.remove('hover:text-accent');
         } else {
-          item.classList.remove('text-primary');
-          item.classList.add('hover:text-secondary');
+          item.classList.remove('text-error');
+          item.classList.add('hover:text-accent');
         }
       });
     };
@@ -96,12 +97,12 @@ const isActive = isHashLink
       item.addEventListener('click', (e) => {
         // Remove active state from all items
         navItems.forEach(navItem => {
-          navItem.classList.remove('text-primary');
-          navItem.classList.add('hover:text-secondary');
+          navItem.classList.remove('text-error');
+          navItem.classList.add('hover:text-accent');
         });
         // Add active state to clicked item
-        item.classList.add('text-primary');
-        item.classList.remove('hover:text-secondary');
+        item.classList.add('text-error');
+        item.classList.remove('hover:text-accent');
         
         // Let the scroll happen, then update states
         setTimeout(updateActiveState, 100);
