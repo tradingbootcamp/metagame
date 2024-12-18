@@ -1,6 +1,6 @@
 ---
 import { TICKET_URL } from "../config";
-import Button from "./Button.astro";
+import ButtonCustom from "./ButtonCustom.astro";
 import Card from "./Card.astro";
 
 interface Props {
@@ -53,7 +53,7 @@ const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", "")
   </ul>
 
   <div>
-    <Button link={href || TICKET_URL} target="_blank">{buttonText || "Buy Now"}</Button>
+    <ButtonCustom link={href || TICKET_URL} target="_blank">{buttonText || "Buy Now"}</ButtonCustom>
   </div>
 </Card>
 
