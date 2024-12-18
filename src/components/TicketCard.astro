@@ -45,10 +45,10 @@ const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", "")
       <div class="text-4xl text-gray-400 h-10" />
     )
   }
-  <p class="my-4 text-6xl font-black text-secondary">{price}</p>
-  <p class="my-6 text-cyan-300 font-bold">{description}</p>
+  <p class="my-4 text-6xl font-black text-base-content">{price}</p>
+  <p class="my-6 text-secondary font-bold">{description}</p>
 
-  <ul class="my-16 text-lg flex-grow">
+  <ul class="my-6 text-lg flex-grow">
     {features?.map((feature) => <li>{feature}</li>)}
   </ul>
 
