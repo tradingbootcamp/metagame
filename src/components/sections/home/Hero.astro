@@ -1,5 +1,5 @@
 ---
-import Button from "../../Button.astro";
+import ButtonCustom from "../../ButtonCustom.astro";
 import Typer from "../../Typer.astro";
 import './Hero.css';
 
@@ -25,11 +25,11 @@ const game_names = ["board games", "card games", "puzzle hunts", "LARPS", "video
       </span>
     </h1>
     <p class="text-lg text-center md:text-xl max-w-prose mb-8 font-black">
-      <span class="text-amber-300" data-glitchies='{ "totalClones": 2 }'>
+      <span class="text-primary" data-glitchies='{ "totalClones": 2 }'>
         A conference about game design, strategy, narrative, and play. Join us September 5-7 in Berkeley, California.
       </span>
     </p>
-    <Button background="bg-cyan-500" link="#tickets">GET YOUR TICKET</Button>
+    <ButtonCustom link="#tickets">GET YOUR TICKET</ButtonCustom>
   </div>
 </section>
 
