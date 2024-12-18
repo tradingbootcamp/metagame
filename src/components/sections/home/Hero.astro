@@ -46,20 +46,23 @@ const game_names = ["board games", "card games", "puzzle hunts", "LARPS", "video
 </style>
 
 <script>
-  const r = document.querySelector(":root")! as HTMLElement;
+  // Only run animation on non-mobile devices
+  const isMobile = window.matchMedia('(max-width: 768px)').matches;
+  
+  if (!isMobile) {
+    const r = document.querySelector(":root")! as HTMLElement;
 
-  requestAnimationFrame(doAnimationStep);
-  let dt = 0;
-  let prevtime = 0;
-  let outrun = 0;
-  function doAnimationStep(timeStamp: DOMHighResTimeStamp) {
-    dt = 1.0 / (timeStamp - prevtime);
-    prevtime = timeStamp;
-    outrun += dt;
-    if (outrun >= 1) {
-      outrun = 0;
+    let dt = 0;
+    let prevtime = 0;
+    let outrun = 0;
+    function doAnimationStep(timeStamp: DOMHighResTimeStamp) {
+      dt = (timeStamp - prevtime) / 1000;
+      prevtime = timeStamp;
+      outrun = (outrun + dt) % 1;
+
+      r.style.setProperty("--outrun", `${outrun}`);
+      requestAnimationFrame(doAnimationStep);
     }
-    r.style.setProperty("--outrun", `${outrun}`);
     requestAnimationFrame(doAnimationStep);
   }
 </script>
