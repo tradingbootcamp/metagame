@@ -1,5 +1,6 @@
 import type { Action } from 'kbar';
 import { SOCIAL_LINKS } from '../config';
+import { coinCount } from '../stores/coinStore';
 
 // Define our custom action type
 interface CustomAction extends Action {
@@ -7,6 +8,36 @@ interface CustomAction extends Action {
   icon?: string;
   subtitle?: string;
 }
+
+const actionActions: CustomAction[] = [
+  {
+    id: "pay-respects",
+    name: "Pay Respects",
+    section: "Actions",
+    icon: "🫡",
+    shortcut: ["f"],
+    perform: () => {
+      const coins = coinCount.get();
+      const cost = 1;
+      if (coins >= cost) { // Assuming it costs 1 coin to pay respects
+        coinCount.set(coins - cost);
+        alert("You have paid your respects. 🫡");
+      } else {
+        alert(`Sorry, you need ${cost} coin${cost == 1 ? '' : 's'} to pay respects. You only have ${coins} coin${coins == 1 ? '' : 's'}.`);
+      }
+    }
+  },
+  {
+    id: "doubt",
+    name: "Doubt",
+    section: "Actions",
+    icon: "🤔",
+    shortcut: ["X"],
+    perform: () => {
+      alert("You have doubted.");
+    }
+  }
+]
 
 // Navigation Actions
 const navigationActions: CustomAction[] = [
@@ -41,21 +72,21 @@ const navigationActions: CustomAction[] = [
 
 // Game Actions
 const gameActions: CustomAction[] = [
-  {
-    id: "games",
-    name: "Games",
-    section: "Games",
-    icon: "🎮",
-    subtitle: "Browse all games"
-  },
-  {
-    id: "crossword",
-    name: "Play Crossword",
-    section: "Games",
-    icon: "📝",
-    shortcut: ["c"],
-    perform: () => window.location.pathname = "/games/crossword"
-  },
+  // {
+  //   id: "games",
+  //   name: "Games",
+  //   section: "Games",
+  //   icon: "🎮",
+  //   subtitle: "Browse all games"
+  // },
+  // {
+  //   id: "crossword",
+  //   name: "Play Crossword",
+  //   section: "Games",
+  //   icon: "📝",
+  //   shortcut: ["c"],
+  //   perform: () => window.location.pathname = "/games/crossword"
+  // },
   {
     id: "set",
     name: "Play Set",
@@ -88,6 +119,7 @@ const socialActions: CustomAction[] = [
 ];
 
 export const staticActions = [
+  ...actionActions,
   ...navigationActions,
   ...gameActions,
   ...socialActions
