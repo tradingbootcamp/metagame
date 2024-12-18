@@ -17,32 +17,3 @@ const bg = background ?? `bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuc
     <slot />
   </button>
 </a>
-
-<style>
-  .content {
-    color: white;
-  }
-
-  .btn-blur {
-    transition: all 0.3s;
-    opacity: 0.3;
-    filter: blur(10px);
-    transform: translateY(5%);
-    @apply rounded-md;
-  }
-
-  .btn-container:hover .btn-blur {
-    transform: scale(1.1, 1.5) translateY(5%);
-    transition: all 0.3s;
-  }
-
-
-  .btn-blur, .tickets-btn {
-    background-size: 200% 200%;
-    background-position: -100% 0;
-  }
-
-  .btn-blur:hover, .tickets-btn:hover {
-    background-position: 100% 0;
-  }
-</style>
