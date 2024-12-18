@@ -17,7 +17,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
 );
 ---
 
-<Card class="w-44 sm:w-48 flex flex-col items-center p-1 bg-slate-700 bg-opacity-50" padless >
+<Card class="w-44 sm:w-48 flex flex-col items-center p-1 bg-base-300 bg-opacity-50" lesspad >
   <Image
     alt={name || "YOU?"}
     class:list={[
@@ -29,10 +29,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     width="160"
     transition:name={slug && `${slug}-image`}
   />
-  <div class="flex-grow">
+  <div class="flex-grow w-full flex flex-col items-center">
     <h3
       class:list={[
-        "font-bold",
+        "font-bold truncate text-center w-full",
         name.length > 20 ? "text-sm" : "text-base",
       ]}
       transition:name={slug && `${slug}-name`}
@@ -43,10 +43,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
       href={gameUrl} 
       target="_blank" 
       rel="noopener noreferrer" 
-      class="text-secondary-200 text-sm font-semibold hover:text-secondary-300 inline-flex items-center gap-1"
+      class="text-secondary-200 text-sm font-semibold hover:text-secondary-300 inline-flex items-center gap-1 truncate max-w-full justify-center"
     >
-      {gameName}
-      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5">
+      <span class="truncate">{gameName}</span>
+      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mt-0.5 flex-shrink-0">
         <path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"></path>
         <polyline points="15 3 21 3 21 9"></polyline>
         <line x1="10" y1="14" x2="21" y2="3"></line>

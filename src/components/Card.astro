@@ -2,10 +2,10 @@
 interface Props {
   class?: string;
   borderless?: boolean;
-  padless?: boolean;
+  lesspad?: boolean;
 }
 
-const { class: klass, borderless, padless } = Astro.props;
+const { class: klass, borderless, lesspad } = Astro.props;
 
 const rand = Math.random().toString(36).slice(2, 11);
 const id = `card-${rand}`;
@@ -19,8 +19,8 @@ const id = `card-${rand}`;
     {
       "border-0": borderless,
       "border-2": !borderless,
-      "p-6": !padless,
-      "p-0": padless,
+      "p-6": !lesspad,
+      "p-3": lesspad,
     },
   ]}
 >
