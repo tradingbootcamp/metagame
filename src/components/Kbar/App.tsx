@@ -40,6 +40,7 @@ export function KbarApp({ children }: { children: React.ReactNode }) {
       <KBarPortal>
         <KBarPositioner>
           <KBarAnimator>
+            <KBarSearch />
             <RenderResults />
           </KBarAnimator>
         </KBarPositioner>
