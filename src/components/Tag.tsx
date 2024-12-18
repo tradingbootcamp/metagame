@@ -53,7 +53,7 @@ export default function Tag({
               content: 'IT!';
               font-size: 30px;
               font-weight: bold;
-              color: gold;
+              color: oklch(var(--p));
               position: fixed;
               left: 0;
               top: 0;
@@ -148,7 +148,7 @@ export default function Tag({
           left: isChasing ? `${textPosition.x}px` : "auto",
           top: isChasing ? `${textPosition.y}px` : "auto",
           transition: isChasing ? "none" : "color 0.3s ease",
-          color: isChasing ? "gold" : "inherit",
+          color: isChasing ? "oklch(var(--p))" : "inherit",
           zIndex: 1000,
         }}
         onMouseLeave={handleMouseLeave}
