@@ -1,5 +1,6 @@
 ---
 import Link from "./Link.astro";
+import { SOCIAL_LINKS } from '../config';
 
 const year = new Date().getFullYear();
 ---
@@ -24,10 +25,10 @@ const year = new Date().getFullYear();
         </Link>
       </div> -->
       <div class="flex space-x-4">
-        <Link href="https://x.com/your-twitter-link">
+        <Link href={SOCIAL_LINKS.TWITTER}>
           Twitter
         </Link>
-        <Link href="https://discord.gg/metagames">
+        <Link href={SOCIAL_LINKS.DISCORD}>
           Discord
         </Link>
       </div>

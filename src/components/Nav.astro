@@ -2,6 +2,7 @@
 import AnimatedDie from "./Die/AnimatedDie";
 import NavItem from "./NavItem.astro";
 import Tag from "./Tag.tsx";
+import CoinCounter from "./CoinCounter.tsx";
 
 ---
 
@@ -43,6 +44,8 @@ import Tag from "./Tag.tsx";
         <ul
           class="font-medium flex flex-col p-2 lg:p-0 mt-4 lg:flex-row lg:gap-x-5 rtl:space-x-reverse lg:mt-0"
         >
+        <CoinCounter client:load />
+
           <!-- <NavItem href="/about">About</NavItem> -->
           <NavItem href="/#speakers">Speakers</NavItem>
           <NavItem href="/#tickets">Tickets</NavItem>
