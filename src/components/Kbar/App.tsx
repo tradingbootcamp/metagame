@@ -21,7 +21,7 @@ function RenderResults() {
         // Handle section items
         if (typeof item === "string") {
           return (
-            <div className="px-4 py-2 text-sm font-bold text-primary-400 bg-base-200">
+            <div className="px-4 py-2 text-sm font-bold text-primary bg-base-200">
               {item}
             </div>
           );

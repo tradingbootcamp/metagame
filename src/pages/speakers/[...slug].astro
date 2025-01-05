@@ -33,7 +33,7 @@ const { Content } = await entry.render();
     class="flex flex-col lg:flex-row gap-8 items-center justify-center mt-[5%] mx-10 pb-20 flex-wrap"
   >
     <div
-      class="glitch bg-gradient-to-r from-secondary-700 w-full lg:w-[360px] lg:h-[436px] to-primary-700 text-white font-semibold rounded p-2 flex items-center justify-center"
+      class="glitch bg-gradient-to-r from-secondary w-full lg:w-[360px] lg:h-[436px] to-primary text-white font-semibold rounded p-2 flex items-center justify-center"
     >
       <Image
         alt={entry.data.name}
@@ -45,7 +45,7 @@ const { Content } = await entry.render();
     </div>
     <section class="max-w-prose prose prose-xl">
       <h2
-        class="font-black text-3xl text-secondary-300"
+        class="font-black text-3xl text-secondary"
         transition:name={`${entry.slug}-name`}
       >
         {entry.data.name}
@@ -55,15 +55,15 @@ const { Content } = await entry.render();
       </div>
     </section>
     <section
-      class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary-200"
+      class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary"
     >
-      <h2 class="font-black text-3xl text-secondary-300 text-center">
+      <h2 class="font-black text-3xl text-secondary text-center">
         Sessions
       </h2>
       <p>
         {
           sessions.length === 0 && (
-            <span class="font-black flex items-center justify-center gap-3 text-primary-400">
+            <span class="font-black flex items-center justify-center gap-3 text-primary">
               TBA
             </span>
           )
@@ -72,7 +72,7 @@ const { Content } = await entry.render();
           sessions.map((session) => (
             <a
               href={`/sessions/${session.slug}`}
-              class="font-black flex items-center justify-center gap-3 text-primary-400"
+              class="link link-primary font-black flex items-center justify-center gap-3"
             >
              {session.data.title}
             </a>

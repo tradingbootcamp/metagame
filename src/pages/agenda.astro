@@ -44,7 +44,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
     <div
       class="hidden lg:flex flex-col items-center justify-center gap-10 w-screen"
     >
-      <h1 class="text-2xl text-secondary-400 text-center">Agenda</h1>
+      <h1 class="text-2xl text-secondary text-center">Agenda</h1>
       <div class="flex items-center justify-center px-5" id="agenda-tabs">
         {
           sortedAgenda.map((item) => {
@@ -52,7 +52,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
               <button
                 data-id={item.data.id}
                 role="tab"
-                class={`${item.data.id === 6 && `text-secondary-300 border-secondary-500`} tab tab-lg text-lg text-nowrap border-b pb-4 border-grey-100`}
+                class={`${item.data.id === 6 && `text-secondary border-secondary`} tab tab-lg text-lg text-nowrap border-b pb-4 border-grey-100`}
                 aria-label={format(new Date(`${item.data.date}T00:00:00`), "eeee (do)")}
               >
                 {format(new Date(`${item.data.date}T00:00:00`), "eeee (do)")}
@@ -72,7 +72,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                 <section
                   class={`prose prose-xl ${item.data.date === "2025-09-05" && `max-w-full w-full`}`}
                 >
-                  <h2 class="text-center text-secondary-200 text-4xl">
+                  <h2 class="text-center text-secondary text-4xl">
                     {item.data.name}
                   </h2>
                   <h3 class="text-center">Venue: {item.data.venue}</h3>
@@ -81,7 +81,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                     {item.data.registrationLink && (
                       <a
                         href={item.data.registrationLink}
-                        class="text-primary-200 font-black"
+                        class="text-primary font-black"
                       >
                         [ Register Here ]
                       </a>
@@ -97,7 +97,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                 <th>⏰</th>
                                 {stages.map((stage) => {
                                   return (
-                                    <td class="text-primary-200">
+                                    <td class="text-primary">
                                       Stage {stage}
                                     </td>
                                   );
@@ -149,7 +149,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                                   `/sessions/${session?.slug}`
                                                 }
                                               >
-                                                <p class="text-secondary-300 font-bold">
+                                                <p class="text-secondary font-bold">
                                                   {session?.data?.title || " "}
                                                 </p>
                                                 <div class="mb-4">
@@ -214,7 +214,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                   </div>
                                   <p
                                     tabindex="0"
-                                    class="text-lg font-black text-secondary-200"
+                                    class="text-lg font-black text-secondary"
                                   >
                                     {session.data.title}
                                   </p>
@@ -248,7 +248,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
 
   <div class="block lg:hidden">
     <div class="flex flex-col gap-3 items-center justify-center">
-      <label class="text-xl text-secondary-400" for="agenda">Agenda for:</label>
+      <label class="text-xl text-secondary" for="agenda">Agenda for:</label>
       <select
         id="agenda"
         class="select select-bordered select-lg w-full max-w-xs"
@@ -278,7 +278,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                 class={`${item.data.id != 6 && `hidden`} py-8`}
               >
                 <section class="prose prose-xl w-full max-w-full p-2">
-                  <h2 class="text-center text-secondary-200 text-2xl">
+                  <h2 class="text-center text-secondary text-2xl">
                     {item.data.name}
                   </h2>
                   <h3 class="text-center text-xl">Venue: {item.data.venue}</h3>
@@ -287,7 +287,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                     {item.data.registrationLink && (
                       <a
                         href={item.data.registrationLink}
-                        class="text-primary-200 font-black"
+                        class="text-primary font-black"
                       >
                         [ Register Here ]
                       </a>
@@ -303,7 +303,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                 <th>⏰</th>
                                 {stages.map((stage) => {
                                   return (
-                                    <td class="text-primary-200">
+                                    <td class="text-primary">
                                       Stage {stage}
                                     </td>
                                   );
@@ -358,7 +358,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                                   `/sessions/${session?.slug}`
                                                 }
                                               >
-                                                <p class="text-secondary-300 font-bold">
+                                                <p class="text-secondary font-bold">
                                                   {session?.data?.title || " "}
                                                 </p>
                                                 <div class="mb-4">
@@ -431,7 +431,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
                                   </div>
                                   <p
                                     tabindex="0"
-                                    class="text-lg font-black text-secondary-200"
+                                    class="text-lg font-black text-secondary"
                                   >
                                     {session.data.title}
                                   </p>
@@ -467,7 +467,7 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
   >
     <h3 class="text-lg font-bold text-center">
       Why don't you subscribe to <button
-        class="text-primary-300 hover:text-secondary-200 hover:font-bold transition-all"
+        class="text-primary hover:text-secondary hover:font-bold transition-all"
         onclick="submodal.showModal()">[Stay in the loop]</button
       >?
     </h3>
@@ -484,12 +484,12 @@ const sortedAgenda = agenda.toSorted((a, b) => a.data.id - b.data.id);
       tab.addEventListener("click", (e) => {
         const tabId = (e.target as HTMLElement).dataset.id;
         tabs.forEach((t) => {
-          t.classList.remove("border-secondary-500");
-          t.classList.remove("text-secondary-300");
+          t.classList.remove("border-secondary");
+          t.classList.remove("text-secondary");
         });
 
-        tab.classList.add("border-secondary-500");
-        tab.classList.add("text-secondary-300");
+        tab.classList.add("border-secondary");
+        tab.classList.add("text-secondary");
 
         tabPanels.forEach((panel) => {
           panel.classList.remove("block");
