@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { coinCount, incrementCoins } from '../stores/coinStore';
 
 interface Props {
   text: string;
@@ -41,6 +42,7 @@ export default function Coin({ text, className = '' }: Props) {
         audioRef.current.currentTime = 0;
         await audioRef.current.play();
         setIsCoinCollected(true);
+        incrementCoins();
       } catch (err) {
         console.error('Error playing audio:', err);
       }

@@ -5,6 +5,8 @@ import Footer from "../components/Footer.astro";
 import { ViewTransitions } from "astro:transitions";
 import { SEO } from "astro-seo";
 // import { getImagePath } from "astro-opengraph-images";
+import { KbarApp } from "../components/Kbar/App";
+import CoinCounter from '../components/CoinCounter';
 
 interface Props {
   title: string;
@@ -63,108 +65,113 @@ const imageURL = "/logo.svg";
     <ViewTransitions />
   </head>
   <body class="relative overflow-x-hidden flex flex-col min-h-screen">
-    <Nav transition:name="nav" />
+    <KbarApp client:load>
+      <Nav transition:name="nav" />
 
-    <div
-      class="relative overflow-x-hidden flex-grow pt-[80px]"
-      transition:name="main"
-    >
-      <slot />
-    </div>
+      <div
+        class="relative overflow-x-hidden flex-grow pt-[80px]"
+        transition:name="main"
+      >
+        <slot />
+      </div>
 
-    <Footer transition:name="footer" />
-    <!-- <div id="highlighter"></div> -->
-    <style>
-      html {
-        scroll-behavior: smooth;
-      }
-    </style>
+      <Footer transition:name="footer" />
+      <!-- <div id="highlighter"></div> -->
+      <style>
+        html {
+          scroll-behavior: smooth;
+        }
+      </style>
 
-    <script>
-      function initToggles() {
-        const collapses = document.querySelectorAll<HTMLElement>(
-          "[data-collapse-toggle]"
-        );
-
-        const toggleCollapse = (target: HTMLElement) => {
-          const toggle = target.getAttribute("data-collapse-toggle")!;
-          const toggleElement = document.getElementById(toggle)!;
-          toggleElement?.classList.toggle("hidden");
-        };
-
-        collapses.forEach((el) => {
-          el.addEventListener("click", () => toggleCollapse(el));
-        });
-      }
-
-      // const r = document.querySelector(":root")! as HTMLElement;
-
-      // const updateHighlighter = (ev: MouseEvent) => {
-      //   r.style.setProperty("--hleft", `${ev.pageX - 200}px`);
-      //   r.style.setProperty("--htop", `${ev.pageY - 200}px`);
-      // };
-
-      // let isTicking = false;
-
-      // document.addEventListener("mousemove", (ev) => {
-      //   if (!isTicking) {
-      //     window.requestAnimationFrame(() => {
-      //       updateHighlighter(ev);
-      //       isTicking = false;
-      //     });
-      //     isTicking = true;
-      //   }
-      // });
-
-      initToggles();
-
-      document.addEventListener("astro:after-swap", () => {
-        initToggles();
-      });
-    </script>
-
-    <style is:global>
-      :root {
-        /* --hleft: 0;
-        --htop: 0; */
-        --dy: 1;
-        --dx: 1;
-        --dz: 0;
-        --outrun: 0;
-      }
-
-      [id]::before {
-        content: "";
-        display: block;
-        height: 75px;
-        margin-top: -75px;
-        visibility: hidden;
-      }
-
-      /* @media (min-width: 600px) {
-        #highlighter {
-          width: 400px;
-          height: 400px;
-          position: absolute;
-          transition: 0.3s all;
-          background: radial-gradient(
-            circle,
-            rgba(255, 255, 255, 1) 0%,
-            rgba(0, 0, 0, 0) 40%,
-            rgba(255, 255, 255, 0) 79%
+      <script>
+        function initToggles() {
+          const collapses = document.querySelectorAll<HTMLElement>(
+            "[data-collapse-toggle]"
           );
-          mix-blend-mode: overlay;
-          pointer-events: none;
-          z-index: 1000;
-          top: var(--htop);
-          left: var(--hleft);
+
+          const toggleCollapse = (target: HTMLElement) => {
+            const toggle = target.getAttribute("data-collapse-toggle")!;
+            const toggleElement = document.getElementById(toggle)!;
+            toggleElement?.classList.toggle("hidden");
+          };
+
+          collapses.forEach((el) => {
+            el.addEventListener("click", () => toggleCollapse(el));
+          });
         }
-      }
-      @media (max-width: 600px) {
-        #highlighter {
-          display: none;
+
+        // const r = document.querySelector(":root")! as HTMLElement;
+
+        // const updateHighlighter = (ev: MouseEvent) => {
+        //   r.style.setProperty("--hleft", `${ev.pageX - 200}px`);
+        //   r.style.setProperty("--htop", `${ev.pageY - 200}px`);
+        // };
+
+        // let isTicking = false;
+
+        // document.addEventListener("mousemove", (ev) => {
+        //   if (!isTicking) {
+        //     window.requestAnimationFrame(() => {
+        //       updateHighlighter(ev);
+        //       isTicking = false;
+        //     });
+        //     isTicking = true;
+        //   }
+        // });
+
+        initToggles();
+
+        document.addEventListener("astro:after-swap", () => {
+          initToggles();
+        });
+      </script>
+
+      <style is:global>
+        :root {
+          /* --hleft: 0;
+          --htop: 0; */
+          --dy: 1;
+          --dx: 1;
+          --dz: 0;
+          --outrun: 0;
         }
-      } */
-    </style>
+
+        /*This was originally used for something to do with kbar but was breaking kbar so we commented it out*/
+        /* [id]::before {
+          content: "";
+          display: block;
+          height: 75px;
+          margin-top: -75px;
+          visibility: hidden;
+        }
+        /*End of thing that we commented out to fix kbar*/
+
+        /*Who knows what this was for*/
+        /* @media (min-width: 600px) {
+          #highlighter {
+            width: 400px;
+            height: 400px;
+            position: absolute;
+            transition: 0.3s all;
+            background: radial-gradient(
+              circle,
+              rgba(255, 255, 255, 1) 0%,
+              rgba(0, 0, 0, 0) 40%,
+              rgba(255, 255, 255, 0) 79%
+            );
+            mix-blend-mode: overlay;
+            pointer-events: none;
+            z-index: 1000;
+            top: var(--htop);
+            left: var(--hleft);
+          }
+        }
+        @media (max-width: 600px) {
+          #highlighter {
+            display: none;
+          }
+        } */
+      </style>
+    </KbarApp>
   </body>
 </html>
