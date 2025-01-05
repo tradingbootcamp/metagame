@@ -1,8 +1,8 @@
-# MetaGame 2025
+# Metagame 2025
 
 ## Overview
 
-This is a website for the MetaGame 2025 conference. It's intended to be collaborative; anybody can insert a little game into the site! Please feel free to make a branch and submit a PR. 
+This is a website for the Metagame 2025 conference. It's intended to be collaborative; anybody can insert a little game into the site! Please feel free to make a branch and submit a PR. 
 
 If you'd like to add a coupon associated with your game, please reach out to Ricki (ricki.heicklen@gmail.com) or leave a note about that in the PR.
 
