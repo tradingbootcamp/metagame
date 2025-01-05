@@ -160,7 +160,7 @@ const uniqueId = `pacman-${Math.random().toString(36).substr(2, 9)}`;
   .wake {
     position: absolute;
     height: 50%;
-    background: theme(colors.dark.500);
+    background: oklch(var(--b1)); /* Changed to use DaisyUI's base color to match the background */
     width: calc(100% + 50px);
     transform: scaleX(0);
     transform-origin: left;

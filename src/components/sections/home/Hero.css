@@ -132,7 +132,7 @@ html::before {
     var(--c1) calc(var(--l9)) calc(var(--l9) + 2px),
     transparent calc(var(--l9) + 2px)
   );
-  --darker: theme("colors.dark.500");
+  --darker: oklch(var(--b1));
   --lighter: rgba(11, 11, 17, 0.4);
   background: linear-gradient(
       0deg,

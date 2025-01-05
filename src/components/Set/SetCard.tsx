@@ -122,7 +122,7 @@ export default function SetCard({
 
   return (
     <div
-      className={`${sizeClass} rounded-[8%] flex justify-center items-center border-2 ${selectedClasses} bg-dark-500`}
+      className={`${sizeClass} rounded-[8%] flex justify-center items-center border-2 ${selectedClasses} bg-base-100`}
     >
       {[...Array(number)].map((_, i) => (
         <div key={i} className="flex justify-center items-center h-full">

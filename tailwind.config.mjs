@@ -83,6 +83,57 @@ export default {
   },
   plugins: [require("@tailwindcss/typography"), require("daisyui")],
   daisyui: {
-    themes: ["synthwave"],
+    themes: [
+      "retro", 
+      "synthwave", 
+      "cyberpunk", 
+      "dark", 
+      "light", 
+      "forest",
+      "cupcake",
+      "acid",
+      "aqua",
+      "black",
+      "bumblebee",
+      "corporate",
+      "dracula",
+      "emerald",
+      "fantasy",
+      "garden",
+      "halloween",
+      {
+        videogames: {
+          ...require("daisyui/src/theming/themes")["synthwave"],
+          "primary": "blue",
+          "secondary": "teal",
+          "base-100": "#010020",
+          "base-200": "#010019",
+        },
+      },
+      {
+        mytheme: {
+          "primary": "#a991f7",
+          "secondary": "#f6d860",
+          "accent": "#37cdbe",
+          "neutral": "#3d4451",
+          "base-100": "#ffffff",
+        },
+      },
+      {
+        mytheme2: {
+          primary: "#000000",
+          secondary: "#000000",
+          accent: "#000000",
+          neutral: "#000000",
+          base: {
+            100: "#000000",
+            200: "#000000",
+            300: "#000000",
+            400: "#000000",
+            500: "#000000",
+          },
+        },
+      },
+    ],
   },
 };
