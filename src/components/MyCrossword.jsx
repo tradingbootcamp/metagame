@@ -16,104 +16,108 @@ const themeContext = {
 
 // Add cell overlays if not defined
 const cellOverlays = {
-  '0-5': { type: 'circle' },
-  '0-6': { type: 'circle' },
-  '1-0': { type: 'circle' },
-  '1-1': { type: 'number', value: '8' },
-  '1-2': { type: 'number', value: '9' },
-  '1-3': { type: 'number', value: '10' },
-  '1-4': { type: 'number', value: '11' },
-  '1-5': { type: 'number', value: '12' },
-  '1-6': { type: 'number', value: '13' },
-  '2-1': { type: 'number', value: '15' },
-  '2-2': { type: 'number', value: '16' },
-  '2-3': { type: 'number', value: '17' },
-  '2-4': { type: 'number', value: '18' },
-  '2-5': { type: 'number', value: '19' },
-  '2-6': { type: 'number', value: '20' },
-  '3-1': { type: 'number', value: '22' },
-  '3-2': { type: 'number', value: '23' },
-  '3-3': { type: 'number', value: '24' },
-  '3-4': { type: 'number', value: '25' },
-  '3-5': { type: 'number', value: '26' },
-  '3-6': { type: 'number', value: '27' },
-  '4-1': { type: 'number', value: '29' },
-  '4-2': { type: 'number', value: '30' },
+  '1-1': { types: [{ type: 'number', value: '8' }] },
+  '1-2': { types: [{ type: 'number', value: '9' }] },
+  '1-3': { types: [{ type: 'number', value: '10' }] },
+  '1-4': { types: [{ type: 'number', value: '11' }] },
+  '1-5': { types: [
+    { type: 'number', value: '12' },
+    { type: 'circle' }
+  ]},
+  '1-6': { types: [
+    { type: 'number', value: '13' },
+    { type: 'circle' }
+  ]},
+  '2-0': { types: [{ type: 'circle' }] },
+  '2-1': { types: [{ type: 'number', value: '15' }] },
+  '2-2': { types: [{ type: 'number', value: '16' }] },
+  '2-3': { types: [{ type: 'number', value: '17' }] },
+  '2-4': { types: [{ type: 'number', value: '18' }] },
+  '2-5': { types: [{ type: 'number', value: '19' }] },
+  '2-6': { types: [{ type: 'number', value: '20' }] },
+  '3-1': { types: [{ type: 'number', value: '22' }] },
+  '3-2': { types: [{ type: 'number', value: '23' }] },
+  '3-3': { types: [{ type: 'number', value: '24' }] },
+  '3-4': { types: [{ type: 'number', value: '25' }] },
+  '3-5': { types: [{ type: 'number', value: '26' }] },
+  '3-6': { types: [{ type: 'number', value: '27' }] },
+  '4-1': { types: [{ type: 'number', value: '29' }] },
+  '4-2': { types: [{ type: 'number', value: '30' }] },
 };
 
 const data = {
   across: {
     1: {
-      clue: 'Grabs control in a gaming moment',
-      answer: 'SEIZES',
+      clue: 'Better environment?',
+      answer: 'CASINO',
       row: 0,
       col: 1,
     },
     7: {
-      clue: "Gaming platform's central hub",
-      answer: 'CONSOLE',
+      clue: "Places to play Skee Ball",
+      answer: 'ARCADES',
       row: 1,
       col: 0,
     },
     14: {
-      clue: 'Remote base in strategy games',
-      answer: 'OUTPOST',
+      clue: 'High fashion',
+      answer: 'COUTURE',
       row: 2,
       col: 0,
     },
     21: {
-      clue: "Printer's machines or controller buttons",
-      answer: 'PRESSES',
+      clue: "Plans",
+      answer: 'INTENDS',
       row: 3,
       col: 0,
     },
     28: {
-      clue: 'Game rating org. (abbr.)',
-      answer: 'ESR',
+      clue: 'Go blue',
+      answer: 'DYE',
       row: 4,
       col: 0,
     },
   },
   down: {
     1: {
-      clue: 'Turns bitter, like a competitive match',
-      answer: 'SOURS',
+      clue: 'Side kick',
+      answer: 'CRONY',
       row: 0,
       col: 1,
     },
     2: {
-      clue: 'Key move in many game interfaces',
-      answer: 'ENTER',
+      clue: '6 degrees, maybe',
+      answer: 'ACUTE',
       row: 0,
       col: 2,
     },
     3: {
-      clue: 'Web providers, for short',
-      answer: 'ISPS',
+      clue: 'Satisfy fully',
+      answer: 'SATE',
       row: 0,
       col: 3,
     },
     4: {
-      clue: 'Animal parks with simulated habitats',
-      answer: 'ZOOS',
+      clue: 'Norse goddess of spring',
+      answer: 'IDUN',
       row: 0,
       col: 4,
     },
     5: {
-      clue: 'Alternative option',
-      answer: 'ELSE',
+      clue: 'Self description for a gamer, maybe',
+      answer: 'NERD',
       row: 0,
       col: 5,
     },
     6: {
-      clue: 'Arranges or game collections',
-      answer: 'SETS',
+      clue: 'Sweet suffixes',
+      answer: 'OSES',
       row: 0,
       col: 6,
     },
     7: {
-      clue: 'Manage a tough game level',
-      answer: 'COPE',
+      clue: 'Something taken for a trip',
+      answer: 'ACID',
       row: 1,
       col: 0,
     }
@@ -221,17 +225,17 @@ const OverlaysContainer = ({ gridRef }) => {
         zIndex: 1,
       }}
     >
-      {Object.entries(cellOverlays).map(([pos, style]) => {
+      {Object.entries(cellOverlays).map(([pos, cell]) => {
         const [row, col] = pos.split('-').map(Number);
-        return (
+        return cell.types.map((style, index) => (
           <CellOverlay
-            key={pos}
+            key={`${pos}-${index}`}
             row={row}
             col={col}
             style={style}
             {...dimensions}
           />
-        );
+        ));
       })}
     </div>
   );
