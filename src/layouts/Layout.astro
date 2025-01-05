@@ -119,14 +119,17 @@ const imageURL = "/logo.svg";
           --outrun: 0;
         }
 
-        [id]::before {
+        /*This was originally used for something to do with kbar but was breaking kbar so we commented it out*/
+        /* [id]::before {
           content: "";
           display: block;
           height: 75px;
           margin-top: -75px;
           visibility: hidden;
         }
+        /*End of thing that we commented out to fix kbar*/
 
+        /*Who knows what this was for*/
         /* @media (min-width: 600px) {
           #highlighter {
             width: 400px;
