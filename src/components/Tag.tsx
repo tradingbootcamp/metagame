@@ -18,6 +18,7 @@ export default function Tag({
 }: TagProps) {
   const [isChasing, setIsChasing] = useState(false);
   const [isCaught, setIsCaught] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [textPosition, setTextPosition] = useState({ x: 0, y: 0 });
   const tagRef = useRef<HTMLDivElement>(null);
@@ -114,10 +115,18 @@ export default function Tag({
     leading: false,
   });
 
-  // Start chasing after hover
-  const handleMouseLeave = () => {
-    console.log("Mouse entered");
-    if (!isChasing && !isCaught) {
+  // Track whether we've touched the inner span where the text is
+  const handleTextMouseover = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setHasEntered(true);
+  }
+
+  // Start chasing after leaving outer boundary area
+  const handlePaddedMouseLeave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    //if the mouse hasnt entered the trigger area, dont chase
+    if (!hasEntered || isCaught) return;
+    if (!isChasing) {
       const rect = tagRef.current?.getBoundingClientRect();
       if (rect) {
         setTextPosition({ x: rect.left, y: rect.top });
@@ -125,6 +134,11 @@ export default function Tag({
       debouncedSetIsChasing();
     }
   };
+
+  const handlePaddedMouseEnter = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    debouncedSetIsChasing.cancel();
+  }
 
   // Add cleanup effect
   useEffect(() => {
@@ -138,9 +152,9 @@ export default function Tag({
   return (
     <span className="relative">
       <div 
-        className="absolute" 
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={() => debouncedSetIsChasing.cancel()}
+        className="absolute cursor-default" 
+        onMouseLeave={handlePaddedMouseLeave}
+        onMouseEnter={handlePaddedMouseEnter}
         style={{
           top: `-${outsetDistance}px`,
           left: `-${outsetDistance}px`,
@@ -150,12 +164,12 @@ export default function Tag({
       {/* When chasing, render an invisible placeholder for spacing */}
       <span 
         className={`${isChasing ? "opacity-0" : "hidden"}`}
-        style={{ pointerEvents: 'none' }}
       >
         {text}
       </span>
       <span
         ref={tagRef}
+        onMouseEnter={handleTextMouseover}
         className={`
         group 
         inline-block 
