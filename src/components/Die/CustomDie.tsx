@@ -3,17 +3,27 @@ import type { Face } from "./DicePipPaths";
 
 interface CustomDieProps {
   dieIdentifier?: Record<Face, number>;
-  color?: string;
+  fill?: string;
+  stroke?: string;
   size?: number;
 }
 
+/**
+ * CustomDie is a component that renders a die with pips.
+ * @param dieIdentifier - The die identifier object that contains the pips for each face.
+ * @param fill - The fill (really a stroke fill; the faces are transparent) color of the die.
+ * @param stroke - The stroke color of the die.
+ * @param size - The size of the die.
+ * @returns A React component that renders a die with pips.
+ */
 export function CustomDie({
   dieIdentifier = {
     left: 3,
-    top: 2,
+    top: 1,
     right: 4,
   },
-  color = "#ff57ff",
+  fill = "#ff57ff",
+  stroke = "#aa33ff",
   size = 512,
 }: CustomDieProps) {
   const renderFacePips = (face: Face) => {
@@ -34,9 +44,9 @@ export function CustomDie({
       xmlnsXlink="http://www.w3.org/1999/xlink"
       viewBox="-10.24 -10.24 532.48 532.48"
       xmlSpace="preserve"
-      fill={color}
-      stroke="#aa33ff"
-      strokeWidth="13.824000000000002"
+      fill={fill}
+      stroke={stroke}
+      strokeWidth="13.824"
     >
       <g id="SVGRepo_bgCarrier" strokeWidth="0" />
       <g
@@ -45,7 +55,7 @@ export function CustomDie({
         strokeLinejoin="round"
       />
       <g id="SVGRepo_iconCarrier">
-        <style type="text/css">{`.st0{fill:${color};}`}</style>
+        <style type="text/css">{`.st0{fill:${fill};}`}</style>
         <g>
           <path
             className="st0"

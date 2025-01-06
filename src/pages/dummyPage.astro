@@ -4,13 +4,14 @@ import ControlledSetCard from "../components/Set/ControlledSetCard.tsx";
 import Tag from "../components/Tag.tsx";
 import SetExampleCards from "../components/Set/SetExampleCards.tsx";
 import SetAnimation from "../components/Set/SetAnimation";
+import { DieTest } from "../components/Die/DieTest";
 ---
 
 <Layout title="FAQ">
   <main class="flex justify-center w-full p-10">
 
     <!-- <Games /> -->
-
+    <DieTest client:load />
     <div class="flex flex-col gap-8 items-center">
       <ControlledSetCard client:load />
       <SetAnimation client:load />
