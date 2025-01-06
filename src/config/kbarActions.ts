@@ -36,6 +36,14 @@ const actionActions: CustomAction[] = [
     perform: () => {
       alert("You have doubted.");
     }
+  },
+  {
+    id: "theme-toggle",
+    name: "Theme Toggle",
+    section: "Actions",
+    icon: "🎨",
+    shortcut: ["t"],
+    perform: () => window.location.pathname = "/themeToggle"
   }
 ]
 

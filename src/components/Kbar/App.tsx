@@ -31,7 +31,7 @@ function RenderResults() {
         return (
           <div
             className={`px-4 py-2 flex items-center justify-between cursor-pointer ${
-              active ? "bg-primary-600 text-white" : "text-gray-200"
+              active ? "bg-primary text-primary-content" : "text-base-content"
             }`}
           >
             <div className="flex items-center gap-2">
@@ -41,6 +41,7 @@ function RenderResults() {
               <div>
                 <div className="font-medium">{item.name}</div>
                 {item.subtitle && (
+                  // TODO: decide on good colors for this
                   <span className={`text-sm ${active ? 'text-gray-200' : 'text-gray-400'}`}>
                     {item.subtitle}
                   </span>
@@ -53,7 +54,7 @@ function RenderResults() {
                   <kbd
                     key={sc}
                     className={`px-2 py-1 text-xs rounded ${
-                      active ? 'bg-primary-700' : 'bg-gray-700'
+                      active ? 'bg-secondary' : 'bg-gray-700'
                     }`}
                   >
                     {sc}
