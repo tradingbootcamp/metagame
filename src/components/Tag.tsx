@@ -40,9 +40,6 @@ export default function Tag({
 
     const animate = () => {
       setTextPosition((prevPosition) => {
-        if (isCaught) {
-          
-        }
         const dx = mousePosition.x - prevPosition.x;
         const dy = mousePosition.y - prevPosition.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
