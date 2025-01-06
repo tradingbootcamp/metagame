@@ -1,5 +1,5 @@
-import { pipPaths } from "./DicePipPaths";
-import type { Face } from "./DicePipPaths";
+import { pipPaths } from "./DiceUtils";
+import type { Face } from "./DiceUtils";
 
 interface CustomDieProps {
   dieIdentifier?: Record<Face, number>;

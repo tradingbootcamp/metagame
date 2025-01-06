@@ -1,5 +1,5 @@
 ---
-import AnimatedDie from "./Die/AnimatedDie";
+import AnimatedCustomDie from "./Die/AnimatedCustomDie";
 import NavItem from "./NavItem.astro";
 import Tag from "./Tag.tsx";
 import CoinCounter from "./CoinCounter.tsx";
@@ -12,7 +12,7 @@ import CoinCounter from "./CoinCounter.tsx";
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
     <div class="flex items-center space-x-2 rtl:space-x-reverse">
-      <AnimatedDie client:load/>
+      <AnimatedCustomDie client:load/>
         <a href="/" >
           <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ME<Tag text="TAG" speed={0.005} catchDistance={50} client:load />AME 2025</span>
         </a>

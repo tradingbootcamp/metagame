@@ -1,12 +1,50 @@
-export type Face = "left" | "top" | "right";
+type Face = "left" | "top" | "right";
 
 type PipPaths = {
-  [F in Face]: {
-    [P in number]?: string[];
-  };
+  [F in Face]: Record<number, string[]>;
 };
 
-export const pipPaths: PipPaths = {
+interface DieGenerationOptions {
+  allowRepeats?: boolean;
+  allowZero?: boolean;
+  allowSevenSum?: boolean;
+}
+
+/**
+ * Generate a random set of values for the three visible faces of a die.
+ * @param options Configuration options controlling allowing rpeated numbers, blank faces, and non-opposite faces summing to 7 (all default false)
+ * @returns A random die identifier; Record<left | top | right, number>.
+ */
+const generateRandomDieIdentifier = (options: DieGenerationOptions = {}) => {
+  const {
+    allowRepeats = false,
+    allowZero = false,
+    allowSevenSum = false,
+  } = options;
+
+  const faces: Face[] = ["left", "top", "right"];
+  const values = [1, 2, 3, 4, 5, 6];
+  if (allowZero) values.unshift(0);
+  const res: Record<Face, number> = { left: 1, top: 1, right: 1 };
+  for (const face of faces) {
+    const value = values[Math.floor(Math.random() * values.length)];
+    // Remove the value from candidate numbers if we aren't repeating
+    if (!allowRepeats) {
+      const index = values.indexOf(value);
+      values.splice(index, 1);
+    }
+    // If we want a realistic die where opposite faces sum to 7, remove the value's complement
+    if (!allowSevenSum) {
+      const complement = 7 - value;
+      const index = values.indexOf(complement);
+      values.splice(index, 1);
+    }
+    res[face] = value;
+  }
+  return res;
+};
+
+const pipPaths: PipPaths = {
   left: {
     1: [
       "M145.675,335.424c11.158,6.082,20.201,1.967,20.201-9.191c0-11.151-9.044-25.128-20.201-31.204 c-11.158-6.082-20.201-1.967-20.201,9.185C125.474,315.37,134.517,329.341,145.675,335.424z",
@@ -113,3 +151,6 @@ export const pipPaths: PipPaths = {
     ],
   },
 };
+
+export { generateRandomDieIdentifier, pipPaths };
+export type { Face, DieGenerationOptions };
