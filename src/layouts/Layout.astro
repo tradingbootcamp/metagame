@@ -22,6 +22,12 @@ const imageURL = "/logo.svg";
 <!doctype html>
 <html lang="en" class="bg-base-100 text-base-content">
   <head>
+    <script is:inline>
+      // This runs before everything else
+      const theme = localStorage.getItem('theme') || 'default';
+      console.log('🎨 Inline script - setting initial theme:', theme);
+      document.documentElement.setAttribute('data-theme', theme);
+    </script>
     <SEO
       openGraph={{
         basic: {
@@ -36,23 +42,6 @@ const imageURL = "/logo.svg";
         },
       }}
     />
-    <script is:inline>
-      // ☝️ This script prevent the FART effect.
-      if (localStorage.getItem("theme") === null) {
-        document.documentElement.setAttribute("data-theme", "light");
-      } else
-        document.documentElement.setAttribute(
-          "data-theme",
-          localStorage.getItem("theme")
-        );
-      // "theme" LocalStorage value is set by the package to remember user preference.
-      // The value is checked and applyed before rendering anything.
-    </script>
-    <script>
-      import { themeChange } from 'theme-change';
-      themeChange();
-      // 👆 you could import the CDN directly instead of these two lines
-    </script>
     <meta charset="UTF-8" />
     <meta
       name="description"
@@ -173,5 +162,26 @@ const imageURL = "/logo.svg";
         } */
       </style>
     </KbarApp>
+    <script>
+      import { themeStore } from '../stores/theme';
+      
+      console.log('🎨 Layout script - current theme:', document.documentElement.getAttribute('data-theme'));
+      
+      // Subscribe to theme changes
+      themeStore.subscribe(theme => {
+        console.log('🎨 Layout subscription - setting theme:', theme);
+        document.documentElement.setAttribute('data-theme', theme);
+        localStorage.setItem('theme', theme);
+      });
+
+      // Ensure theme is synced after navigation
+      document.addEventListener('astro:after-swap', () => {
+        const currentTheme = localStorage.getItem('theme');
+        console.log('🎨 After navigation - syncing theme:', currentTheme);
+        if (currentTheme) {
+          themeStore.set(currentTheme);
+        }
+      });
+    </script>
   </body>
 </html>

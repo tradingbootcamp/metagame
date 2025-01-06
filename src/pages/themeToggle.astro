@@ -1,17 +1,14 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import ControlledSetCard from "../components/Set/ControlledSetCard.tsx";
-import Tag from "../components/Tag.tsx";
-import SetExampleCards from "../components/Set/SetExampleCards.tsx";
-import SetAnimation from "../components/Set/SetAnimation";
 ---
 
 <Layout title="themeControl">
-  <label class="flex cursor-pointer gap-2">
+
+  <!-- <label class="flex cursor-pointer gap-2">
     <span class="label-text">Current</span>
     <input type="checkbox" data-set-theme="videogames" class="toggle theme-controller" />
     <span class="label-text">Videogames</span>
-  </label>
+  </label> -->
     
     <div class="m-5">
       <h2 class="mb-4 text-2xl text-green-700 font-bold">Buttons</h2>
@@ -29,7 +26,7 @@ import SetAnimation from "../components/Set/SetAnimation";
       <button class="btn btn-primary" data-set-theme="black">Black</button>
     </div>
     
-    <div class="m-5">
+    <!-- <div class="m-5">
       <h2 class="mb-4 text-2xl text-green-700 font-bold">Select</h2>
       <select data-choose-theme class="focus:outline-none h-10 rounded-full px-3 border">
         <option value="videogames">Videogames</option>
@@ -46,11 +43,11 @@ import SetAnimation from "../components/Set/SetAnimation";
         <option value="aqua">Aqua</option>
         <option value="black">Black</option>
       </select>
-    </div>
+    </div> -->
 
 
     <!-- Radio buttons to select themes -->
-    <div class="form-control">
+    <!-- <div class="form-control">
       <label class="label cursor-pointer gap-4">
         <span class="label-text">Default</span>
         <input type="radio" name="theme-radios" class="radio theme-controller" value="default" />
@@ -73,8 +70,19 @@ import SetAnimation from "../components/Set/SetAnimation";
         <span class="label-text">Pink</span>
         <input type="radio" name="theme-radios" class="radio theme-controller" value="pink" />
       </label>
-    </div>
+    </div> -->
 
 
 
 </Layout>
+
+<script>
+    import { setTheme } from '../stores/theme';
+    // Add click handlers to all theme buttons
+    document.querySelectorAll('[data-set-theme]').forEach(button => {
+        button.addEventListener('click', () => {
+            const theme = button.getAttribute('data-set-theme');
+            if (theme) setTheme(theme);
+        });
+    });
+</script>
