@@ -1,0 +1,80 @@
+---
+import Layout from "../layouts/Layout.astro";
+import ControlledSetCard from "../components/Set/ControlledSetCard.tsx";
+import Tag from "../components/Tag.tsx";
+import SetExampleCards from "../components/Set/SetExampleCards.tsx";
+import SetAnimation from "../components/Set/SetAnimation";
+---
+
+<Layout title="themeControl">
+  <label class="flex cursor-pointer gap-2">
+    <span class="label-text">Current</span>
+    <input type="checkbox" data-set-theme="videogames" class="toggle theme-controller" />
+    <span class="label-text">Videogames</span>
+  </label>
+    
+    <div class="m-5">
+      <h2 class="mb-4 text-2xl text-green-700 font-bold">Buttons</h2>
+      <button class="btn btn-primary" data-set-theme="videogames">Videogames</button>
+      <button class="btn btn-primary" data-set-theme="dark">Dark</button>
+      <button class="btn btn-primary" data-set-theme="pink">Pink</button>
+      <button class="btn btn-primary" data-set-theme="mytheme">My Theme</button>
+      <button class="btn btn-primary" data-set-theme="synthwave">Synthwave</button>
+      <button class="btn btn-primary" data-set-theme="retro">Retro</button>
+      <button class="btn btn-primary" data-set-theme="cyberpunk">Cyberpunk</button>
+      <button class="btn btn-primary" data-set-theme="forest">Forest</button>
+      <button class="btn btn-primary" data-set-theme="cupcake">Cupcake</button>
+      <button class="btn btn-primary" data-set-theme="acid">Acid</button>
+      <button class="btn btn-primary" data-set-theme="aqua">Aqua</button>
+      <button class="btn btn-primary" data-set-theme="black">Black</button>
+    </div>
+    
+    <div class="m-5">
+      <h2 class="mb-4 text-2xl text-green-700 font-bold">Select</h2>
+      <select data-choose-theme class="focus:outline-none h-10 rounded-full px-3 border">
+        <option value="videogames">Videogames</option>
+        <option value="">Default</option>
+        <option value="dark">Dark</option>
+        <option value="pink">Pink</option>
+        <option value="mytheme">My Theme</option>
+        <option value="synthwave">Synthwave</option>
+        <option value="retro">Retro</option>
+        <option value="cyberpunk">Cyberpunk</option>
+        <option value="forest">Forest</option>
+        <option value="cupcake">Cupcake</option>
+        <option value="acid">Acid</option>
+        <option value="aqua">Aqua</option>
+        <option value="black">Black</option>
+      </select>
+    </div>
+
+
+    <!-- Radio buttons to select themes -->
+    <div class="form-control">
+      <label class="label cursor-pointer gap-4">
+        <span class="label-text">Default</span>
+        <input type="radio" name="theme-radios" class="radio theme-controller" value="default" />
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label cursor-pointer gap-4">
+        <span class="label-text">Videogames</span>
+        <input type="radio" name="theme-radios" class="radio theme-controller" value="videogames" />
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label cursor-pointer gap-4">
+        <span class="label-text">Dark</span>
+        <input type="radio" name="theme-radios" class="radio theme-controller" value="dark" />
+      </label>
+    </div>
+    <div class="form-control">
+      <label class="label cursor-pointer gap-4">
+        <span class="label-text">Pink</span>
+        <input type="radio" name="theme-radios" class="radio theme-controller" value="pink" />
+      </label>
+    </div>
+
+
+
+</Layout>
