@@ -5,6 +5,7 @@ interface TagProps {
   text?: string;
   speed?: number;
   catchDistance?: number;
+  outsetDistance?: number;
   className?: string;
 }
 
@@ -12,6 +13,7 @@ export default function Tag({
   text = "tag",
   speed = 0.05,
   catchDistance = 50,
+  outsetDistance = 50,
   className = "",
 }: TagProps) {
   const [isChasing, setIsChasing] = useState(false);
@@ -37,6 +39,9 @@ export default function Tag({
 
     const animate = () => {
       setTextPosition((prevPosition) => {
+        if (isCaught) {
+          
+        }
         const dx = mousePosition.x - prevPosition.x;
         const dy = mousePosition.y - prevPosition.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
@@ -131,8 +136,24 @@ export default function Tag({
   }, []);
 
   return (
-    <>
-      <span className={`${!isChasing ? "hidden" : "opacity-0"}`}>{text}</span>
+    <span className="relative">
+      <div 
+        className="absolute" 
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={() => debouncedSetIsChasing.cancel()}
+        style={{
+          top: `-${outsetDistance}px`,
+          left: `-${outsetDistance}px`,
+          right: `-${outsetDistance}px`,
+          bottom: `-${outsetDistance}px`,
+        }} />
+      {/* When chasing, render an invisible placeholder for spacing */}
+      <span 
+        className={`${isChasing ? "opacity-0" : "hidden"}`}
+        style={{ pointerEvents: 'none' }}
+      >
+        {text}
+      </span>
       <span
         ref={tagRef}
         className={`
@@ -148,14 +169,12 @@ export default function Tag({
           left: isChasing ? `${textPosition.x}px` : "auto",
           top: isChasing ? `${textPosition.y}px` : "auto",
           transition: isChasing ? "none" : "color 0.3s ease",
-          color: isChasing ? "gold" : "inherit",
+          color: isChasing || isCaught ? "gold" : "inherit",
           zIndex: 1000,
         }}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={() => debouncedSetIsChasing.cancel()}
       >
         {text}
       </span>
-    </>
+    </span>
   );
 }
