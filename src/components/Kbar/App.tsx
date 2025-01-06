@@ -21,7 +21,7 @@ function RenderResults() {
         // Handle section items
         if (typeof item === "string") {
           return (
-            <div className="px-4 py-2 text-sm font-bold text-primary bg-base-200">
+            <div className="px-4 py-2 text-sm font-bold text-primary bg-base-300">
               {item}
             </div>
           );
@@ -41,8 +41,7 @@ function RenderResults() {
               <div>
                 <div className="font-medium">{item.name}</div>
                 {item.subtitle && (
-                  // TODO: decide on good colors for this
-                  <span className={`text-sm ${active ? 'text-gray-200' : 'text-gray-400'}`}>
+                  <span className={`text-sm ${active ? 'text-accent-content/70' : 'text-base-content/70'}`}>
                     {item.subtitle}
                   </span>
                 )}
@@ -54,7 +53,7 @@ function RenderResults() {
                   <kbd
                     key={sc}
                     className={`px-2 py-1 text-xs rounded ${
-                      active ? 'bg-secondary' : 'bg-gray-700'
+                      active ? 'bg-accent text-accent-content' : 'bg-base-200 text-base-content'
                     }`}
                   >
                     {sc}

@@ -10,6 +10,8 @@ export default {
         sans: ["Jura", ...defaultTheme.fontFamily.sans],
       },
       colors: {
+        'primary-bright': "hsl(var(--primary-bright) / <alpha-value>)",
+        'secondary-bright': "hsl(var(--secondary-bright) / <alpha-value>)",
         // dark: {
         //   50: "#D3D1FF",
         //   100: "#A19EFF",
@@ -105,7 +107,9 @@ export default {
         videogames: {
           ...require("daisyui/src/theming/themes")["synthwave"],
           "primary": "#f9aeea",
+          '--primary-bright': '308 85% 72%',
           "secondary": "#f9e54b",
+          '--secondary-bright': '48 89% 50%',
           "base-100": "#010020",
           "base-200": "#010019",
         },
@@ -117,21 +121,6 @@ export default {
           "accent": "#37cdbe",
           "neutral": "#3d4451",
           "base-100": "#ffffff",
-        },
-      },
-      {
-        mytheme2: {
-          primary: "#000000",
-          secondary: "#000000",
-          accent: "#000000",
-          neutral: "#000000",
-          base: {
-            100: "#000000",
-            200: "#000000",
-            300: "#000000",
-            400: "#000000",
-            500: "#000000",
-          },
         },
       },
     ],
