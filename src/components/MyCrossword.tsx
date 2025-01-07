@@ -549,23 +549,23 @@ export default function MyCrossword() {
             }}
           >
             <DayLabels />
-            <CrosswordGrid />
+            <div className="relative">
+              <CrosswordGrid />
+              {showReset && (
+                <button
+                  className="absolute right-1 bottom-1 "
+                  onClick={() => {
+                    crosswordRef.current?.reset();
+                    setShowReset(false);
+                  }}
+                >
+                  <RotateCcw className="size-4 text-foreground" />
+                </button>
+              )}
+            </div>
             <OverlaysContainer gridRef={gridRef} />
           </div>
-          <div className="relative w-full flex justify-center">
-            <CurrentClue />
-            {showReset && (
-              <button
-                className="absolute right-0 top-0 -translate-y-full"
-                onClick={() => {
-                  crosswordRef.current?.reset();
-                  setShowReset(false);
-                }}
-              >
-                <RotateCcw className="size-4 text-foreground" />
-              </button>
-            )}
-          </div>
+          <CurrentClue />
           {isCompleted && isCorrect && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
               🔑 You hold the key to unlocking countless rewards... at least for
