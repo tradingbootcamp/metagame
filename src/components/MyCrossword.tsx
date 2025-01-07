@@ -1,11 +1,19 @@
-import React from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import {
   ThemeProvider,
   CrosswordProvider,
   CrosswordContext,
   CrosswordGrid,
   CrosswordSizeContext,
+  type CrosswordProviderImperative,
 } from "@jaredreisinger/react-crossword";
+import type { Direction } from "@jaredreisinger/react-crossword/dist/types";
 const themeContext = {
   allowNonSquare: true,
   columnBreakpoint: "black",
@@ -19,29 +27,34 @@ const themeContext = {
   // columnBreakpoint: '768px',
 };
 
-// Add cell overlays if not defined
-const cellOverlays = {
-  "1-1": { types: [{ type: "number", value: "8" }] },
-  "1-2": { types: [{ type: "number", value: "9" }] },
-  "1-3": { types: [{ type: "number", value: "10" }] },
-  "1-4": { types: [{ type: "number", value: "11" }] },
-  "1-5": { types: [{ type: "number", value: "12" }, { type: "circle" }] },
-  "1-6": { types: [{ type: "number", value: "13" }, { type: "circle" }] },
-  "2-0": { types: [{ type: "circle" }] },
-  "2-1": { types: [{ type: "number", value: "15" }] },
-  "2-2": { types: [{ type: "number", value: "16" }] },
-  "2-3": { types: [{ type: "number", value: "17" }] },
-  "2-4": { types: [{ type: "number", value: "18" }] },
-  "2-5": { types: [{ type: "number", value: "19" }] },
-  "2-6": { types: [{ type: "number", value: "20" }] },
-  "3-1": { types: [{ type: "number", value: "22" }] },
-  "3-2": { types: [{ type: "number", value: "23" }] },
-  "3-3": { types: [{ type: "number", value: "24" }] },
-  "3-4": { types: [{ type: "number", value: "25" }] },
-  "3-5": { types: [{ type: "number", value: "26" }] },
-  "3-6": { types: [{ type: "number", value: "27" }] },
-  "4-1": { types: [{ type: "number", value: "29" }] },
-  "4-2": { types: [{ type: "number", value: "30" }] },
+/** Defines an overlay for a grid cell that either displays a circle or a number */
+type CellOverlay = {
+  type: "number" | "circle";
+  value?: string;
+};
+// Cell overlays for this specific grid
+const cellOverlays: Record<string, CellOverlay[]> = {
+  "1-1": [{ type: "number", value: "8" }],
+  "1-2": [{ type: "number", value: "9" }],
+  "1-3": [{ type: "number", value: "10" }],
+  "1-4": [{ type: "number", value: "11" }],
+  "1-5": [{ type: "number", value: "12" }, { type: "circle" }],
+  "1-6": [{ type: "number", value: "13" }, { type: "circle" }],
+  "2-0": [{ type: "circle" }],
+  "2-1": [{ type: "number", value: "15" }],
+  "2-2": [{ type: "number", value: "16" }],
+  "2-3": [{ type: "number", value: "17" }],
+  "2-4": [{ type: "number", value: "18" }],
+  "2-5": [{ type: "number", value: "19" }],
+  "2-6": [{ type: "number", value: "20" }],
+  "3-1": [{ type: "number", value: "22" }],
+  "3-2": [{ type: "number", value: "23" }],
+  "3-3": [{ type: "number", value: "24" }],
+  "3-4": [{ type: "number", value: "25" }],
+  "3-5": [{ type: "number", value: "26" }],
+  "3-6": [{ type: "number", value: "27" }],
+  "4-1": [{ type: "number", value: "29" }],
+  "4-2": [{ type: "number", value: "30" }],
 };
 
 const data = {
@@ -123,13 +136,27 @@ const data = {
   },
 };
 
-const OverlaysContainer = ({ gridRef }) => {
-  const [showOverlays, setShowOverlays] = React.useState(false);
-  const [dimensions, setDimensions] = React.useState(null);
-  const crosswordContext = React.useContext(CrosswordContext);
-  const crosswordSizeContext = React.useContext(CrosswordSizeContext);
+interface Dimensions {
+  gridSize: number;
+  cellSize: number;
+  cellPadding: number;
+  cellInner: number;
+  cellHalf: number;
+  offsetTop: number;
+  offsetLeft: number;
+}
 
-  const calculateDimensions = React.useCallback(() => {
+interface OverlaysContainerProps {
+  gridRef: React.RefObject<HTMLDivElement>;
+}
+
+const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
+  const [showOverlays, setShowOverlays] = useState(false);
+  const [dimensions, setDimensions] = useState<Dimensions | null>(null);
+  const crosswordContext = useContext(CrosswordContext);
+  const crosswordSizeContext = useContext(CrosswordSizeContext);
+
+  const calculateDimensions = useCallback(() => {
     if (!gridRef.current) {
       console.log("No grid ref yet");
       return;
@@ -183,7 +210,7 @@ const OverlaysContainer = ({ gridRef }) => {
     setShowOverlays(true);
   }, [gridRef]);
 
-  React.useEffect(() => {
+  useEffect(() => {
     // Add a small delay to ensure the grid is rendered
     const timer = setTimeout(() => {
       calculateDimensions();
@@ -227,14 +254,14 @@ const OverlaysContainer = ({ gridRef }) => {
         zIndex: 1,
       }}
     >
-      {Object.entries(cellOverlays).map(([pos, cell]) => {
+      {Object.entries(cellOverlays).map(([pos, overlays]) => {
         const [row, col] = pos.split("-").map(Number);
-        return cell.types.map((style, index) => (
+        return overlays.map((overlay, index) => (
           <CellOverlay
             key={`${pos}-${index}`}
             row={row}
             col={col}
-            style={style}
+            overlay={overlay}
             {...dimensions}
           />
         ));
@@ -243,21 +270,32 @@ const OverlaysContainer = ({ gridRef }) => {
   );
 };
 
+interface CellOverlayProps {
+  row: number;
+  col: number;
+  overlay: CellOverlay;
+  gridSize: number;
+  cellSize: number;
+  cellInner: number;
+  cellPadding: number;
+  cellHalf: number;
+}
+
 const CellOverlay = ({
   row,
   col,
-  style,
+  overlay,
   gridSize,
   cellSize,
   cellInner,
   cellPadding,
   cellHalf,
-}) => {
+}: CellOverlayProps) => {
   // Calculate position
   const left = (col * gridSize) / 7;
   const top = (row * gridSize) / 7;
 
-  if (style.type === "circle") {
+  if (overlay.type === "circle") {
     return (
       <svg
         style={{
@@ -281,7 +319,7 @@ const CellOverlay = ({
     );
   }
 
-  if (style.type === "number") {
+  if (overlay.type === "number") {
     return (
       <div
         style={{
@@ -302,7 +340,7 @@ const CellOverlay = ({
         }}
       >
         {" "}
-        {style.value}
+        {overlay.value}
       </div>
     );
   }
@@ -312,19 +350,17 @@ const CellOverlay = ({
 
 const CurrentClue = () => {
   const { selectedDirection, selectedNumber, clues } =
-    React.useContext(CrosswordContext);
-  const [hasInteracted, setHasInteracted] = React.useState(false);
+    useContext(CrosswordContext);
+  const [hasInteracted, setHasInteracted] = useState(false);
 
   // Add click event listener to detect real user interaction
-  React.useEffect(() => {
-    const handleClick = (event) => {
-      // Check if the clicked element or its parent is a cell
-      const isCell = event.target.closest(".clue-cell") !== null;
-
-      // Only set interaction if it's a valid cell
-      if (isCell) {
-        console.log("Valid cell click detected!");
-        setHasInteracted(true);
+  useEffect(() => {
+    const handleClick = (event: Event) => {
+      if (event.target instanceof Element) {
+        const isCell = event.target.closest(".clue-cell") !== null;
+        if (isCell) {
+          setHasInteracted(true);
+        }
       }
     };
 
@@ -353,7 +389,7 @@ const CurrentClue = () => {
 
   const getCurrentClue = () => {
     // Get all clues for the selected direction (across/down)
-    const cluesForDirection = clues[selectedDirection];
+    const cluesForDirection = clues?.[selectedDirection];
     console.log("Selected direction:", selectedDirection);
     console.log("Clues for direction:", cluesForDirection);
 
@@ -408,35 +444,35 @@ const DayLabels = () => {
 };
 
 export default function MyCrossword() {
-  const crosswordRef = React.useRef();
-  const gridRef = React.useRef();
-  const [isCompleted, setIsCompleted] = React.useState(false);
-  const [isCorrect, setIsCorrect] = React.useState(false);
-  const [escapeHoldCompleted, setEscapeHoldCompleted] = React.useState(false);
-  const escapeStartTime = React.useRef(null);
+  const crosswordRef = useRef<CrosswordProviderImperative>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+  const [isCompleted, setIsCompleted] = useState(false);
+  const [isCorrect, setIsCorrect] = useState(false);
+  const [escapeHoldCompleted, setEscapeHoldCompleted] = useState(false);
+  const escapeStartTime = useRef<number | null>(null);
 
-  React.useEffect(() => {
-    let currentCheckDuration = null; // Store interval reference in parent scope
+  useEffect(() => {
+    let currentCheckDuration: NodeJS.Timeout | null = null; // Store interval reference in parent scope
 
-    const handleKeyDown = (e) => {
+    const handleKeyDown = (e: KeyboardEvent) => {
       if (!escapeHoldCompleted) return; // until puzzle is complete, ignore the escape stuff
       if (e.key === "Escape" && !escapeStartTime.current) {
         escapeStartTime.current = Date.now();
 
         // Start checking duration while key is held
         currentCheckDuration = setInterval(() => {
-          const holdDuration = Date.now() - escapeStartTime.current;
+          const holdDuration = Date.now() - (escapeStartTime.current ?? 0);
           if (holdDuration >= 2000) {
             // 2 seconds
             setEscapeHoldCompleted(true);
-            clearInterval(currentCheckDuration);
+            currentCheckDuration && clearInterval(currentCheckDuration);
           }
         }, 100); // Check every 100ms
 
         // Clean up interval when Escape key is released
-        const cleanup = (e) => {
+        const cleanup = (e: KeyboardEvent) => {
           if (e.key === "Escape") {
-            clearInterval(currentCheckDuration);
+            currentCheckDuration && clearInterval(currentCheckDuration);
             escapeStartTime.current = null;
             window.removeEventListener("keyup", cleanup);
           }
@@ -448,22 +484,30 @@ export default function MyCrossword() {
     window.addEventListener("keydown", handleKeyDown);
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      clearInterval(currentCheckDuration); // Clean up any running interval
+      currentCheckDuration && clearInterval(currentCheckDuration); // Clean up any running interval
       // Note: we don't need to explicitly remove the keyup listener here
       // because it removes itself when triggered
     };
   }, []);
 
-  const onCrosswordComplete = (correct) => {
+  const onCrosswordComplete = (correct: boolean) => {
     setIsCompleted(true);
     setIsCorrect(correct);
   };
 
-  const onAnswerCorrect = (direction, number, answer) => {
+  const onAnswerCorrect = (
+    direction: Direction,
+    number: string,
+    answer: string
+  ) => {
     // console.log("Correct answer:", direction, number, answer);
   };
 
-  const onAnswerIncorrect = (direction, number, answer) => {
+  const onAnswerIncorrect = (
+    direction: Direction,
+    number: string,
+    answer: string
+  ) => {
     // console.log("Incorrect answer:", direction, number, answer);
   };
 
