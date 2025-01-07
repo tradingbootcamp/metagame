@@ -4,6 +4,12 @@ import NavItem from "./NavItem.astro";
 import Tag from "./Tag.tsx";
 import CoinCounter from "./CoinCounter.tsx";
 
+const STARTING_DIE_IDENTIFIER = {
+  left: 2,
+  top: 5,
+  right: 3,
+};
+
 ---
 
 <div class="fixed w-full z-10 shadow-[0px_4px_8px_0px_#8b1d6d]">
@@ -12,7 +18,7 @@ import CoinCounter from "./CoinCounter.tsx";
       class="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4"
     >
     <div class="flex items-center space-x-2 rtl:space-x-reverse">
-      <AnimatedCustomDie client:load/>
+      <AnimatedCustomDie startingDieIdentifier={STARTING_DIE_IDENTIFIER} client:load/>
         <a href="/" >
           <span class="self-center text-2xl font-semibold whitespace-nowrap dark:text-white">ME<Tag text="TAG" speed={0.005} catchDistance={50} client:load />AME 2025</span>
         </a>

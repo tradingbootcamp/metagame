@@ -2,11 +2,13 @@ import { useState } from "react";
 import {
   generateRandomDieIdentifier,
   type DieGenerationOptions,
+  type Face,
 } from "./DiceUtils";
 import { CustomDie } from "./CustomDie";
 import { cn } from "@/utils/cn";
 
 type AnimatedCustomDieProps = {
+  startingDieIdentifier?: Record<Face, number>; //default starting die if you dont want a random one on load
   dieGenerationOptions?: DieGenerationOptions; // options for generating the die; whether to allow repeats, 7 sum, zero/blank
   duration?: number; // duration of the animation
   totalFrames?: number; // number of frames (different dice)
@@ -15,6 +17,7 @@ type AnimatedCustomDieProps = {
 };
 
 export default function AnimatedCustomDie({
+  startingDieIdentifier,
   dieGenerationOptions = {},
   duration = 500,
   totalFrames = 8,
@@ -22,7 +25,7 @@ export default function AnimatedCustomDie({
   className = "",
 }: AnimatedCustomDieProps) {
   const [dieIdentifier, setDieIdentifier] = useState(
-    generateRandomDieIdentifier(dieGenerationOptions),
+    startingDieIdentifier ?? generateRandomDieIdentifier(dieGenerationOptions)
   );
   const [isAnimating, setIsAnimating] = useState(false);
 
@@ -70,7 +73,7 @@ export default function AnimatedCustomDie({
       disabled={isAnimating}
       className={cn(
         "relative inline-flex items-center justify-center size-10 transition-transform duration-500",
-        className,
+        className
       )}
       style={
         scaleAnimation
