@@ -15,6 +15,7 @@ import Venue from "../components/sections/home/Venue.astro";
 import SetAnimationMin from "../components/Set/SetAnimationMin.tsx";
 import SetCardMin from "../components/Set/SetCardMin.tsx";
 import SetAnimation from "../components/Set/SetAnimation.tsx";
+import { TICKET_URL, TICKET_EARLY_BIRD_URL, TICKET_REGULAR_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } from "../config";
 ---
 
 <Layout title="Home">
@@ -37,25 +38,26 @@ import SetAnimation from "../components/Set/SetAnimation.tsx";
           <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
             <TicketCard
               title="NPC"
-              price={`$101`}
-              regularPrice="$404"
+              price={`$150`}
               description="Volunteer for 6 shifts over the weekend"
               features={[
                 "Premium swag",
                 "OK food",
                 "Participation in a volunteer cult initiation ritual"
-              ]}
+              ]},
+              href={TICKET_VOLUNTEER_URL}
             />
             <TicketCard
               title="Player"
-              price={`$404`}
-              regularPrice="$666"
+              price={`$500`}
+              regularPrice="$650"
               description="Early bird price through June 1st, 2025"
               features={[
                 "Premium swag",
                 "OK food",
                 "Don't have to spend your conference staffing the volunteer desk"
-              ]}
+              ]},
+              href={TICKET_EARLY_BIRD_URL}
             />
             <TicketCard
               title="Supporter"
@@ -65,9 +67,8 @@ import SetAnimation from "../components/Set/SetAnimation.tsx";
                 "Premium swag",
                 "Slightly better than OK food",
                 "The knowledge that you're supporting other people's fun"
-              ]}
-              buttonText="Contact Us"
-              href="mailto:ricki.heicklen@gmail.com"
+              ]},
+              href={TICKET_SUPPORTER_URL}
             />
           </div>
         </div>
