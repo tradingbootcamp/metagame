@@ -1,127 +1,127 @@
-import React from 'react';
-import { ThemeProvider, CrosswordProvider, CrosswordContext, CrosswordGrid, CrosswordSizeContext } from '@jaredreisinger/react-crossword';
+import React from "react";
+import {
+  ThemeProvider,
+  CrosswordProvider,
+  CrosswordContext,
+  CrosswordGrid,
+  CrosswordSizeContext,
+} from "@jaredreisinger/react-crossword";
 
 const themeContext = {
   allowNonSquare: true,
-  columnBreakpoint: 'black',
-  gridBackground: 'black',
-  cellBackground: '#ffe',
-  cellBorder: 'black',
-  textColor: 'black',
-  numberColor: 'black',
-  focusBackground: 'darkgrey',
-  highlightBackground: 'lightgrey',
+  columnBreakpoint: "black",
+  gridBackground: "black",
+  cellBackground: "#ffe",
+  cellBorder: "black",
+  textColor: "black",
+  numberColor: "black",
+  focusBackground: "darkgrey",
+  highlightBackground: "lightgrey",
   // columnBreakpoint: '768px',
-}
+};
 
 // Add cell overlays if not defined
 const cellOverlays = {
-  '1-1': { types: [{ type: 'number', value: '8' }] },
-  '1-2': { types: [{ type: 'number', value: '9' }] },
-  '1-3': { types: [{ type: 'number', value: '10' }] },
-  '1-4': { types: [{ type: 'number', value: '11' }] },
-  '1-5': { types: [
-    { type: 'number', value: '12' },
-    { type: 'circle' }
-  ]},
-  '1-6': { types: [
-    { type: 'number', value: '13' },
-    { type: 'circle' }
-  ]},
-  '2-0': { types: [{ type: 'circle' }] },
-  '2-1': { types: [{ type: 'number', value: '15' }] },
-  '2-2': { types: [{ type: 'number', value: '16' }] },
-  '2-3': { types: [{ type: 'number', value: '17' }] },
-  '2-4': { types: [{ type: 'number', value: '18' }] },
-  '2-5': { types: [{ type: 'number', value: '19' }] },
-  '2-6': { types: [{ type: 'number', value: '20' }] },
-  '3-1': { types: [{ type: 'number', value: '22' }] },
-  '3-2': { types: [{ type: 'number', value: '23' }] },
-  '3-3': { types: [{ type: 'number', value: '24' }] },
-  '3-4': { types: [{ type: 'number', value: '25' }] },
-  '3-5': { types: [{ type: 'number', value: '26' }] },
-  '3-6': { types: [{ type: 'number', value: '27' }] },
-  '4-1': { types: [{ type: 'number', value: '29' }] },
-  '4-2': { types: [{ type: 'number', value: '30' }] },
+  "1-1": { types: [{ type: "number", value: "8" }] },
+  "1-2": { types: [{ type: "number", value: "9" }] },
+  "1-3": { types: [{ type: "number", value: "10" }] },
+  "1-4": { types: [{ type: "number", value: "11" }] },
+  "1-5": { types: [{ type: "number", value: "12" }, { type: "circle" }] },
+  "1-6": { types: [{ type: "number", value: "13" }, { type: "circle" }] },
+  "2-0": { types: [{ type: "circle" }] },
+  "2-1": { types: [{ type: "number", value: "15" }] },
+  "2-2": { types: [{ type: "number", value: "16" }] },
+  "2-3": { types: [{ type: "number", value: "17" }] },
+  "2-4": { types: [{ type: "number", value: "18" }] },
+  "2-5": { types: [{ type: "number", value: "19" }] },
+  "2-6": { types: [{ type: "number", value: "20" }] },
+  "3-1": { types: [{ type: "number", value: "22" }] },
+  "3-2": { types: [{ type: "number", value: "23" }] },
+  "3-3": { types: [{ type: "number", value: "24" }] },
+  "3-4": { types: [{ type: "number", value: "25" }] },
+  "3-5": { types: [{ type: "number", value: "26" }] },
+  "3-6": { types: [{ type: "number", value: "27" }] },
+  "4-1": { types: [{ type: "number", value: "29" }] },
+  "4-2": { types: [{ type: "number", value: "30" }] },
 };
 
 const data = {
   across: {
     1: {
-      clue: 'Better environment?',
-      answer: 'CASINO',
+      clue: "Better environment?",
+      answer: "CASINO",
       row: 0,
       col: 1,
     },
     7: {
       clue: "Places to play Skee Ball",
-      answer: 'ARCADES',
+      answer: "ARCADES",
       row: 1,
       col: 0,
     },
     14: {
-      clue: 'High fashion',
-      answer: 'COUTURE',
+      clue: "High fashion",
+      answer: "COUTURE",
       row: 2,
       col: 0,
     },
     21: {
       clue: "Plans",
-      answer: 'INTENDS',
+      answer: "INTENDS",
       row: 3,
       col: 0,
     },
     28: {
-      clue: 'Go blue',
-      answer: 'DYE',
+      clue: "Go blue",
+      answer: "DYE",
       row: 4,
       col: 0,
     },
   },
   down: {
     1: {
-      clue: 'Side kick',
-      answer: 'CRONY',
+      clue: "Side kick",
+      answer: "CRONY",
       row: 0,
       col: 1,
     },
     2: {
-      clue: '6 degrees, maybe',
-      answer: 'ACUTE',
+      clue: "6 degrees, maybe",
+      answer: "ACUTE",
       row: 0,
       col: 2,
     },
     3: {
-      clue: 'Satisfy fully',
-      answer: 'SATE',
+      clue: "Satisfy fully",
+      answer: "SATE",
       row: 0,
       col: 3,
     },
     4: {
-      clue: 'Norse goddess of spring',
-      answer: 'IDUN',
+      clue: "Norse goddess of spring",
+      answer: "IDUN",
       row: 0,
       col: 4,
     },
     5: {
-      clue: 'Self description for a gamer, maybe',
-      answer: 'NERD',
+      clue: "Self description for a gamer, maybe",
+      answer: "NERD",
       row: 0,
       col: 5,
     },
     6: {
-      clue: 'Sweet suffixes',
-      answer: 'OSES',
+      clue: "Sweet suffixes",
+      answer: "OSES",
       row: 0,
       col: 6,
     },
     7: {
-      clue: 'Something taken for a trip',
-      answer: 'ACID',
+      clue: "Something taken for a trip",
+      answer: "ACID",
       row: 1,
       col: 0,
-    }
-  }
+    },
+  },
 };
 
 const OverlaysContainer = ({ gridRef }) => {
@@ -132,17 +132,17 @@ const OverlaysContainer = ({ gridRef }) => {
 
   const calculateDimensions = React.useCallback(() => {
     if (!gridRef.current) {
-      console.log('No grid ref yet');
+      console.log("No grid ref yet");
       return;
     }
 
     // Get the SVG element that contains the grid
-    const gridElement = gridRef.current.querySelector('.crossword.grid svg');
+    const gridElement = gridRef.current.querySelector(".crossword.grid svg");
     const gridRect = gridElement?.getBoundingClientRect();
     const parentRect = gridRef.current.getBoundingClientRect();
 
     if (!gridElement || !gridRect || gridRect.width === 0) {
-      console.log('Grid element not found or has no width');
+      console.log("Grid element not found or has no width");
       return;
     }
 
@@ -150,26 +150,26 @@ const OverlaysContainer = ({ gridRef }) => {
     const viewBoxWidth = 70;
     const viewBoxHeight = 50;
     const cellWidth = 9.75; // From the rect width in the SVG
-    
+
     // Calculate the actual size of cells based on the rendered grid size
     const gridSize = gridRect.width;
     const cellSize = gridSize * (cellWidth / viewBoxWidth);
     const cellPadding = 0;
-    const cellInner = cellSize - (2 * cellPadding);
+    const cellInner = cellSize - 2 * cellPadding;
     const cellHalf = cellInner / 2;
-    
+
     // Calculate offset from the grid position
     const offsetTop = gridRect.top - parentRect.top;
     const offsetLeft = gridRect.left - parentRect.left;
 
-    console.log('New dimensions:', {
+    console.log("New dimensions:", {
       gridSize,
       cellSize,
       cellPadding,
       cellInner,
       cellHalf,
       offsetTop,
-      offsetLeft
+      offsetLeft,
     });
 
     setDimensions({
@@ -179,7 +179,7 @@ const OverlaysContainer = ({ gridRef }) => {
       cellInner,
       cellHalf,
       offsetTop,
-      offsetLeft
+      offsetLeft,
     });
     setShowOverlays(true);
   }, [gridRef]);
@@ -209,24 +209,27 @@ const OverlaysContainer = ({ gridRef }) => {
   }, [calculateDimensions]);
 
   if (!showOverlays || !dimensions) {
-    console.log('Not showing overlays:', { showOverlays, hasDimensions: !!dimensions });
+    console.log("Not showing overlays:", {
+      showOverlays,
+      hasDimensions: !!dimensions,
+    });
     return null;
   }
 
   return (
-    <div 
+    <div
       style={{
-        position: 'absolute',
+        position: "absolute",
         top: dimensions?.offsetTop || 0,
         left: dimensions?.offsetLeft || 0,
         width: dimensions?.gridSize, // Explicitly set width
         height: dimensions?.gridSize, // Explicitly set height
-        pointerEvents: 'none',
+        pointerEvents: "none",
         zIndex: 1,
       }}
     >
       {Object.entries(cellOverlays).map(([pos, cell]) => {
-        const [row, col] = pos.split('-').map(Number);
+        const [row, col] = pos.split("-").map(Number);
         return cell.types.map((style, index) => (
           <CellOverlay
             key={`${pos}-${index}`}
@@ -241,22 +244,30 @@ const OverlaysContainer = ({ gridRef }) => {
   );
 };
 
-const CellOverlay = ({ row, col, style, gridSize, cellSize, cellInner, cellPadding, cellHalf }) => {
-  
+const CellOverlay = ({
+  row,
+  col,
+  style,
+  gridSize,
+  cellSize,
+  cellInner,
+  cellPadding,
+  cellHalf,
+}) => {
   // Calculate position
-  const left = col * gridSize / 7;
-  const top = row * gridSize / 7;
+  const left = (col * gridSize) / 7;
+  const top = (row * gridSize) / 7;
 
-  if (style.type === 'circle') {
+  if (style.type === "circle") {
     return (
       <svg
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: left + cellPadding,
           top: top + cellPadding,
           width: cellInner,
           height: cellInner,
-          pointerEvents: 'none',
+          pointerEvents: "none",
         }}
       >
         <circle
@@ -271,26 +282,28 @@ const CellOverlay = ({ row, col, style, gridSize, cellSize, cellInner, cellPaddi
     );
   }
 
-  if (style.type === 'number') {
+  if (style.type === "number") {
     return (
       <div
         style={{
-          position: 'absolute',
+          position: "absolute",
           left: left + cellPadding,
           top: top + cellPadding,
           width: cellInner,
           height: cellInner,
-          display: 'flex',
-          alignItems: 'flex-start',
-          justifyContent: 'flex-start',
+          display: "flex",
+          alignItems: "flex-start",
+          justifyContent: "flex-start",
           fontSize: `${cellInner * 0.34}px`,
-          color: 'black',
-          pointerEvents: 'none',
-          lineHeight: '1',
-          paddingTop: '1px',
-          paddingLeft: '4px',
+          color: "black",
+          pointerEvents: "none",
+          lineHeight: "1",
+          paddingTop: "1px",
+          paddingLeft: "4px",
         }}
-      > {style.value}
+      >
+        {" "}
+        {style.value}
       </div>
     );
   }
@@ -299,61 +312,64 @@ const CellOverlay = ({ row, col, style, gridSize, cellSize, cellInner, cellPaddi
 };
 
 const CurrentClue = () => {
-  const { selectedDirection, selectedNumber, clues } = React.useContext(CrosswordContext);
+  const { selectedDirection, selectedNumber, clues } =
+    React.useContext(CrosswordContext);
   const [hasInteracted, setHasInteracted] = React.useState(false);
 
   // Add click event listener to detect real user interaction
   React.useEffect(() => {
     const handleClick = (event) => {
       // Check if the clicked element or its parent is a cell
-      const isCell = event.target.closest('.clue-cell') !== null;
-      
+      const isCell = event.target.closest(".clue-cell") !== null;
+
       // Only set interaction if it's a valid cell
       if (isCell) {
-        console.log('Valid cell click detected!');
+        console.log("Valid cell click detected!");
         setHasInteracted(true);
       }
     };
 
-    const gridContainer = document.querySelector('[data-testid="grid-container"]');
-    console.log('Grid container found:', !!gridContainer);
-    
+    const gridContainer = document.querySelector(
+      '[data-testid="grid-container"]'
+    );
+    console.log("Grid container found:", !!gridContainer);
+
     if (gridContainer) {
-      gridContainer.addEventListener('click', handleClick);
+      gridContainer.addEventListener("click", handleClick);
     }
 
     // Cleanup
     return () => {
       if (gridContainer) {
-        gridContainer.removeEventListener('click', handleClick);
+        gridContainer.removeEventListener("click", handleClick);
       }
     };
   }, []);
 
   // Return empty message if user hasn't clicked yet
   if (!hasInteracted) {
-    console.log('Not showing clue yet. Has interacted:', hasInteracted);
+    console.log("Not showing clue yet. Has interacted:", hasInteracted);
     return <div className="text-center p-4"></div>;
   }
 
   const getCurrentClue = () => {
     // Get all clues for the selected direction (across/down)
     const cluesForDirection = clues[selectedDirection];
-    console.log('Selected direction:', selectedDirection);
-    console.log('Clues for direction:', cluesForDirection);
-    
+    console.log("Selected direction:", selectedDirection);
+    console.log("Clues for direction:", cluesForDirection);
+
     if (!cluesForDirection) {
       return null;
     }
 
     // Convert clues object into array of [number, clueData] pairs
     const clueEntries = Object.entries(cluesForDirection);
-    console.log('Clue entries:', clueEntries);
+    console.log("Clue entries:", clueEntries);
 
     // Find the entry where the clue number matches our selected number
     const matchingClueEntry = clueEntries.find((entry) => {
-      const clueNumber = entry[1].number;  // This is the number (as string)
-      console.log('Clue number:', clueNumber);
+      const clueNumber = entry[1].number; // This is the number (as string)
+      console.log("Clue number:", clueNumber);
       return clueNumber === selectedNumber.toString();
     });
 
@@ -362,23 +378,25 @@ const CurrentClue = () => {
   };
 
   const currentClue = getCurrentClue();
-  
+
   if (!currentClue) {
     return <div className="text-center p-4">No clue found</div>;
   }
 
-  console.log('Current clue:', currentClue);
+  console.log("Current clue:", currentClue);
 
   return (
     <div className="text-center p-4">
-      <span className="font-bold">{selectedNumber} {selectedDirection}: </span>
+      <span className="font-bold">
+        {selectedNumber} {selectedDirection}:{" "}
+      </span>
       {currentClue.clue}
     </div>
   );
 };
 
 const DayLabels = () => {
-  const days = ['S', 'M', 'T', 'W', 'Th', 'F', 'S'];
+  const days = ["S", "M", "T", "W", "Th", "F", "S"];
   return (
     <div className="flex w-full mb-2">
       {days.map((day, index) => (
@@ -394,77 +412,87 @@ export default function MyCrossword() {
   const crosswordRef = React.useRef();
   const gridRef = React.useRef();
   const [isCompleted, setIsCompleted] = React.useState(false);
-  const [isEscapeHeld, setIsEscapeHeld] = React.useState(false);
+  const [escapeHoldCompleted, setEscapeHoldCompleted] = React.useState(false);
   const escapeStartTime = React.useRef(null);
-  
+
   React.useEffect(() => {
+    let currentCheckDuration = null; // Store interval reference in parent scope
+
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && !escapeStartTime.current) {
+      if (e.key === "Escape" && !escapeStartTime.current) {
         escapeStartTime.current = Date.now();
-        
+
         // Start checking duration while key is held
-        const checkDuration = setInterval(() => {
+        currentCheckDuration = setInterval(() => {
           const holdDuration = Date.now() - escapeStartTime.current;
-          if (holdDuration >= 2000) { // 2 seconds
-            setIsEscapeHeld(true);
-            clearInterval(checkDuration);
+          if (holdDuration >= 2000) {
+            // 2 seconds
+            setEscapeHoldCompleted(true);
+            clearInterval(currentCheckDuration);
           }
         }, 100); // Check every 100ms
 
-        // Clean up interval when key is released
-        const cleanup = () => {
-          clearInterval(checkDuration);
-          escapeStartTime.current = null;
-          window.removeEventListener('keyup', cleanup);
+        // Clean up interval when Escape key is released
+        const cleanup = (e) => {
+          if (e.key === "Escape") {
+            clearInterval(currentCheckDuration);
+            escapeStartTime.current = null;
+            window.removeEventListener("keyup", cleanup);
+          }
         };
-        window.addEventListener('keyup', cleanup);
+        window.addEventListener("keyup", cleanup);
       }
     };
 
-    window.addEventListener('keydown', handleKeyDown);
+    window.addEventListener("keydown", handleKeyDown);
     return () => {
-      window.removeEventListener('keydown', handleKeyDown);
+      window.removeEventListener("keydown", handleKeyDown);
+      clearInterval(currentCheckDuration); // Clean up any running interval
+      // Note: we don't need to explicitly remove the keyup listener here
+      // because it removes itself when triggered
     };
   }, []);
 
   const onCrosswordComplete = (data) => {
-    console.log('Crossword completed!', data);
+    // console.log("Crossword completed!", data);
     setIsCompleted(true);
   };
 
   const onAnswerCorrect = (direction, number, answer) => {
-    console.log('Correct answer:', direction, number, answer);
+    // console.log("Correct answer:", direction, number, answer);
   };
 
   const onAnswerIncorrect = (direction, number, answer) => {
-    console.log('Incorrect answer:', direction, number, answer);
+    // console.log("Incorrect answer:", direction, number, answer);
   };
-  
+
   return (
-    <div style={{
-      width: '100%',
-      height: '100%',
-      display: 'flex',
-      flexDirection: 'column',
-      justifyContent: 'center',
-      alignItems: 'center',
-    }}>
+    <div
+      style={{
+        width: "100%",
+        height: "100%",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+      }}
+    >
       <div className="text-center text-5xl p-4">September 2025</div>
       <ThemeProvider theme={themeContext}>
-        <CrosswordProvider 
-          data={data} 
-          onCrosswordComplete={onCrosswordComplete} 
-          ref={crosswordRef} 
-          onAnswerCorrect={onAnswerCorrect} 
-          onAnswerIncorrect={onAnswerIncorrect} 
+        <CrosswordProvider
+          data={data}
+          onCrosswordComplete={onCrosswordComplete}
+          ref={crosswordRef}
+          onAnswerCorrect={onAnswerCorrect}
+          onAnswerIncorrect={onAnswerIncorrect}
         >
           <div
             ref={gridRef}
             data-testid="grid-container"
             style={{
-              position: 'relative',
-              width: '500px',
-              maxWidth: '100%',
+              position: "relative",
+              width: "500px",
+              maxWidth: "100%",
             }}
           >
             <DayLabels />
@@ -474,12 +502,14 @@ export default function MyCrossword() {
           <CurrentClue />
           {isCompleted && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
-              🔑 You hold the key to unlocking countless rewards... at least for a few seconds
+              🔑 You hold the key to unlocking countless rewards... at least for
+              a few seconds
             </div>
           )}
-          {isEscapeHeld && (
+          {escapeHoldCompleted && (
             <div className="mt-2 p-4 bg-blue-100 text-blue-800 rounded-lg text-center">
-              Congratulations! Use coupon code "ESCAPEKEY" for $50 off your ticket price! 🎉
+              Congratulations! Use coupon code "ESCAPEKEY" for $50 off your
+              ticket price! 🎉
             </div>
           )}
         </CrosswordProvider>
