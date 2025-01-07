@@ -6,7 +6,6 @@ import {
   CrosswordGrid,
   CrosswordSizeContext,
 } from "@jaredreisinger/react-crossword";
-
 const themeContext = {
   allowNonSquare: true,
   columnBreakpoint: "black",
@@ -486,6 +485,7 @@ export default function MyCrossword() {
           ref={crosswordRef}
           onAnswerCorrect={onAnswerCorrect}
           onAnswerIncorrect={onAnswerIncorrect}
+          autoJumpFromClueEnd
         >
           <div
             ref={gridRef}

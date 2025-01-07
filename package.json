@@ -16,7 +16,7 @@
     "@astrojs/react": "^4.0.0",
     "@astrojs/tailwind": "^5.1.2",
     "@fontsource/jura": "^5.0.20",
-    "@jaredreisinger/react-crossword": "^5.2.0",
+    "@jaredreisinger/react-crossword": "github:briansmiley/react-crossword#dist",
     "@nanostores/react": "^0.8.4",
     "@types/react": "^18.3.14",
     "@types/react-dom": "^18.3.2",
