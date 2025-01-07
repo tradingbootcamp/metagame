@@ -454,43 +454,33 @@ export default function MyCrossword() {
   const [showReset, setShowReset] = useState(false);
 
   useEffect(() => {
-    let currentCheckDuration: NodeJS.Timeout | null = null; // Store interval reference in parent scope
+    let timeoutId: NodeJS.Timeout | null = null;
 
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (!escapeHoldCompleted) return; // until puzzle is complete, ignore the escape stuff
-      if (e.key === "Escape" && !escapeStartTime.current) {
-        escapeStartTime.current = Date.now();
+      if (!(isCompleted && isCorrect)) return;
+      if (e.key === "Escape") {
+        timeoutId = setTimeout(() => {
+          setEscapeHoldCompleted(true);
+        }, 2000);
+      }
+    };
 
-        // Start checking duration while key is held
-        currentCheckDuration = setInterval(() => {
-          const holdDuration = Date.now() - (escapeStartTime.current ?? 0);
-          if (holdDuration >= 2000) {
-            // 2 seconds
-            setEscapeHoldCompleted(true);
-            currentCheckDuration && clearInterval(currentCheckDuration);
-          }
-        }, 100); // Check every 100ms
-
-        // Clean up interval when Escape key is released
-        const cleanup = (e: KeyboardEvent) => {
-          if (e.key === "Escape") {
-            currentCheckDuration && clearInterval(currentCheckDuration);
-            escapeStartTime.current = null;
-            window.removeEventListener("keyup", cleanup);
-          }
-        };
-        window.addEventListener("keyup", cleanup);
+    const handleKeyUp = (e: KeyboardEvent) => {
+      if (e.key === "Escape" && timeoutId) {
+        clearTimeout(timeoutId);
+        timeoutId = null;
       }
     };
 
     window.addEventListener("keydown", handleKeyDown);
+    window.addEventListener("keyup", handleKeyUp);
+
     return () => {
       window.removeEventListener("keydown", handleKeyDown);
-      currentCheckDuration && clearInterval(currentCheckDuration); // Clean up any running interval
-      // Note: we don't need to explicitly remove the keyup listener here
-      // because it removes itself when triggered
+      window.removeEventListener("keyup", handleKeyUp);
+      if (timeoutId) clearTimeout(timeoutId);
     };
-  }, []);
+  }, [isCompleted, isCorrect]);
 
   const onCrosswordComplete = (correct: boolean) => {
     setIsCompleted(true);
