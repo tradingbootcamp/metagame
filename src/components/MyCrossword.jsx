@@ -419,6 +419,7 @@ export default function MyCrossword() {
     let currentCheckDuration = null; // Store interval reference in parent scope
 
     const handleKeyDown = (e) => {
+      if (!escapeHoldCompleted) return; // until puzzle is complete, ignore the escape stuff
       if (e.key === "Escape" && !escapeStartTime.current) {
         escapeStartTime.current = Date.now();
 
