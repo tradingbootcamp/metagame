@@ -13,6 +13,7 @@ import {
   CrosswordSizeContext,
   type CrosswordProviderImperative,
 } from "@jaredreisinger/react-crossword";
+import { RotateCcw } from "lucide-react";
 import type { Direction } from "@jaredreisinger/react-crossword/dist/types";
 const themeContext = {
   allowNonSquare: true,
@@ -450,6 +451,7 @@ export default function MyCrossword() {
   const [isCorrect, setIsCorrect] = useState(false);
   const [escapeHoldCompleted, setEscapeHoldCompleted] = useState(false);
   const escapeStartTime = useRef<number | null>(null);
+  const [showReset, setShowReset] = useState(false);
 
   useEffect(() => {
     let currentCheckDuration: NodeJS.Timeout | null = null; // Store interval reference in parent scope
@@ -511,6 +513,10 @@ export default function MyCrossword() {
     // console.log("Incorrect answer:", direction, number, answer);
   };
 
+  const onCellChange = (row: number, col: number, char: string) => {
+    setShowReset(true);
+  };
+
   return (
     <div
       style={{
@@ -527,6 +533,7 @@ export default function MyCrossword() {
         <CrosswordProvider
           data={data}
           onCrosswordComplete={onCrosswordComplete}
+          onCellChange={onCellChange}
           ref={crosswordRef}
           onAnswerCorrect={onAnswerCorrect}
           onAnswerIncorrect={onAnswerIncorrect}
@@ -545,7 +552,20 @@ export default function MyCrossword() {
             <CrosswordGrid />
             <OverlaysContainer gridRef={gridRef} />
           </div>
-          <CurrentClue />
+          <div className="relative w-full flex justify-center">
+            <CurrentClue />
+            {showReset && (
+              <button
+                className="absolute right-0 top-0 -translate-y-full"
+                onClick={() => {
+                  crosswordRef.current?.reset();
+                  setShowReset(false);
+                }}
+              >
+                <RotateCcw className="size-4 text-foreground" />
+              </button>
+            )}
+          </div>
           {isCompleted && isCorrect && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
               🔑 You hold the key to unlocking countless rewards... at least for
