@@ -411,6 +411,7 @@ export default function MyCrossword() {
   const crosswordRef = React.useRef();
   const gridRef = React.useRef();
   const [isCompleted, setIsCompleted] = React.useState(false);
+  const [isCorrect, setIsCorrect] = React.useState(false);
   const [escapeHoldCompleted, setEscapeHoldCompleted] = React.useState(false);
   const escapeStartTime = React.useRef(null);
 
@@ -453,9 +454,9 @@ export default function MyCrossword() {
     };
   }, []);
 
-  const onCrosswordComplete = (data) => {
-    // console.log("Crossword completed!", data);
+  const onCrosswordComplete = (correct) => {
     setIsCompleted(true);
+    setIsCorrect(correct);
   };
 
   const onAnswerCorrect = (direction, number, answer) => {
@@ -501,7 +502,7 @@ export default function MyCrossword() {
             <OverlaysContainer gridRef={gridRef} />
           </div>
           <CurrentClue />
-          {isCompleted && (
+          {isCompleted && isCorrect && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
               🔑 You hold the key to unlocking countless rewards... at least for
               a few seconds
