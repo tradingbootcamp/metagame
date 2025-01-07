@@ -5,6 +5,7 @@ interface TagProps {
   text?: string;
   speed?: number;
   catchDistance?: number;
+  outsetDistance?: number;
   className?: string;
 }
 
@@ -12,10 +13,12 @@ export default function Tag({
   text = "tag",
   speed = 0.05,
   catchDistance = 50,
+  outsetDistance = 50,
   className = "",
 }: TagProps) {
   const [isChasing, setIsChasing] = useState(false);
   const [isCaught, setIsCaught] = useState(false);
+  const [hasEntered, setHasEntered] = useState(false);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [textPosition, setTextPosition] = useState({ x: 0, y: 0 });
   const tagRef = useRef<HTMLDivElement>(null);
@@ -109,10 +112,18 @@ export default function Tag({
     leading: false,
   });
 
-  // Start chasing after hover
-  const handleMouseLeave = () => {
-    console.log("Mouse entered");
-    if (!isChasing && !isCaught) {
+  // Track whether we've touched the inner span where the text is
+  const handleTextMouseover = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    setHasEntered(true);
+  }
+
+  // Start chasing after leaving outer boundary area
+  const handlePaddedMouseLeave = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    //if the mouse hasnt entered the trigger area, dont chase
+    if (!hasEntered || isCaught) return;
+    if (!isChasing) {
       const rect = tagRef.current?.getBoundingClientRect();
       if (rect) {
         setTextPosition({ x: rect.left, y: rect.top });
@@ -120,6 +131,11 @@ export default function Tag({
       debouncedSetIsChasing();
     }
   };
+
+  const handlePaddedMouseEnter = (e: React.MouseEvent) => {
+    e.stopPropagation();
+    debouncedSetIsChasing.cancel();
+  }
 
   // Add cleanup effect
   useEffect(() => {
@@ -131,10 +147,26 @@ export default function Tag({
   }, []);
 
   return (
-    <>
-      <span className={`${!isChasing ? "hidden" : "opacity-0"}`}>{text}</span>
+    <span className="relative">
+      <div 
+        className="absolute cursor-default" 
+        onMouseLeave={handlePaddedMouseLeave}
+        onMouseEnter={handlePaddedMouseEnter}
+        style={{
+          top: `-${outsetDistance}px`,
+          left: `-${outsetDistance}px`,
+          right: `-${outsetDistance}px`,
+          bottom: `-${outsetDistance}px`,
+        }} />
+      {/* When chasing, render an invisible placeholder for spacing */}
+      <span 
+        className={`${isChasing ? "opacity-0" : "hidden"}`}
+      >
+        {text}
+      </span>
       <span
         ref={tagRef}
+        onMouseEnter={handleTextMouseover}
         className={`
         group 
         inline-block 
@@ -148,14 +180,12 @@ export default function Tag({
           left: isChasing ? `${textPosition.x}px` : "auto",
           top: isChasing ? `${textPosition.y}px` : "auto",
           transition: isChasing ? "none" : "color 0.3s ease",
-          color: isChasing ? "gold" : "inherit",
+          color: isChasing || isCaught ? "gold" : "inherit",
           zIndex: 1000,
         }}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={() => debouncedSetIsChasing.cancel()}
       >
         {text}
       </span>
-    </>
+    </span>
   );
 }
