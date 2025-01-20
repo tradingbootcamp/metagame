@@ -400,7 +400,12 @@ const CurrentClue = () => {
   }
 
   return (
-    <div>
+    <div className="w-full">
+      {hasInteracted && (
+        <div className="text-end text-sm text-gray-500 mt-2">
+          Crossword calendar concept courtesy of <a href="https://crosswordcal.com/products/2025-crossword-calendar" className="hover:underline">Adam Aaronson</a>
+        </div>
+      )}
       <div className="text-center p-4">
         {hasInteracted ? (
           <>
@@ -413,11 +418,6 @@ const CurrentClue = () => {
           ""
         )}
       </div>
-      {hasInteracted && (
-        <div className="text-center text-sm text-gray-500 mt-2">
-          Crossword calendar concept courtesy of <a href="https://crosswordcal.com/products/2025-crossword-calendar" className="hover:underline">Adam Aaronson</a>
-        </div>
-      )}
     </div>
   );
 };
