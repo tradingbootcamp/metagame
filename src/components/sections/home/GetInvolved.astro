@@ -1,0 +1,49 @@
+---
+import Link from "@/components/Link.astro";
+import MyCrossword from "@/components/MyCrossword.tsx";
+import Coincidence from "@/components/Coincidence.astro";
+import lighthaven from "@/assets/lighthaven.jpg";
+import Button from "@/components/Button.astro";
+import { Image } from "astro:assets";
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/img/*.{jpeg,jpg,png,gif,svg,webp,JPG}"
+);
+---
+<section
+  class="container rounded-xl mx-auto mb-8 bg-dark-500 border border-t border-b border-secondary-300"
+  id="games"
+>
+  <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+    <div class="p-10">
+      <Image
+        alt={"Lighthaven"}
+        class:list={[
+          "glitch mb-2 rounded object-cover",
+        ]}
+        src={images?.["/src/img/game_pieces_1.JPG"]?.()}
+        transition:name={"lighthaven"}
+      />
+    </div>
+    <div class="p-10">
+      <h2 class="mb-8 text-2xl font-bold text-secondary-200">
+        Run something
+      </h2>
+      <p class="mb-4 font-semibold">
+        We will provide the venue, the resources, and the very eager audience, and you can run whatever experimental game concept you've been toying with.
+        <br />  
+        <br />
+        Need a weirdly shaped space to build a gradient descent themed escape room? Want to run a game design tournament where you provide the board and pieces and contestants come up with the rules? Looking for hundreds of willing subjects for a social deception experiment that isn't quite ready for prime time? 
+        <br />
+        <br />
+        Metagame is the conference for you.
+        <br />
+        <br />
+        <div>
+        <Button link="/runSomething">
+            Dooooo it
+        </Button>
+      </div>
+      </p>
+    </div>
+  </div>
+</section>

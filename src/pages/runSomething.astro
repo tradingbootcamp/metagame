@@ -1,0 +1,84 @@
+---
+import Button from "../components/Button.astro";
+import Typer from "../components/Typer.astro";
+import { INTEREST_FORM_URL } from "../config";
+import Layout from "../layouts/Layout.astro";
+import Coincidence from "../components/Coincidence.astro";
+
+const alternatively = [
+  "Let us show you around our city?",
+  "How about a guided tour of local attractions?",
+  "Would you like to join us for a local food tasting?",
+  "Let's explore some hidden gems together?",
+  "How about we introduce you to our tech community?",
+  "Want to join a coding workshop?",
+  "Interested in a local hackathon?",
+  "Let's discuss the latest tech trends over coffee?",
+  "How about a networking session with local developers?",
+  "Want to participate in a tech trivia night?",
+];
+---
+
+<Layout title="About">
+  <div class="">
+    <section
+      class="hero prose-xl h-[50vh] flex flex-col items-center justify-center py-24 px-6 md:px-12 bg-contain"
+      id="hero"
+    >
+      <div class="flex flex-col items-center justify-center"></div>
+    </section>
+
+    <div class="container mx-auto">
+      <div
+        class="prose lg:prose-xl dark:prose-invert max-w-none p-8 font-semibold"
+      >
+        <h1>Run something</h1>
+
+        <p>
+          Here's a bunch of text about how you can contribute to Metagame. But basically, you should join the Discord.
+        </p>
+        <ul>
+          <li>
+            <span class="text-primary-300">Build an escape room</span> - We provide the room, you provide the means of escape
+          </li>
+          <li>
+            <span class="text-primary-300">Run a competition, tournament, or hackathon</span> - Players will be split into two teams as part of a conference-long Megagame. If you have a format for a contest/game/tournament, consider running it as part of the Megagame.
+          </li>
+          <li>
+            <span class="text-primary-300">Slip your own games into the website</span> - That's the thing you're looking at right now. There are games hidden all over, with coupon codes attached in many cases. You can add your own here.
+          </li>
+        </ul>
+        <div class="flex items-center justify-center p-8">
+          <Button background="bg-cyan-500" link={INTEREST_FORM_URL} target="_blank">
+            Get Involved
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+<style>
+  .hero {
+    --darker: theme("colors.dark.500");
+    --lighter: rgba(11, 11, 17, 0.4);
+    background:
+      linear-gradient(
+        0deg,
+        var(--darker) 0%,
+        var(--lighter) 40%,
+        transparent 100%
+      ),
+      url("imperial_game.jpg") no-repeat center center;
+    background-size: cover;
+  }
+</style>
+
+<script>
+  const audio = new Audio('/sounds_coin.wav');
+  document.querySelectorAll('.coin-container').forEach(container => {
+    container.addEventListener('mouseenter', () => {
+      audio.currentTime = 0;
+      audio.play();
+    });
+  });
+</script>
