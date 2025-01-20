@@ -14,15 +14,40 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   id="games"
 >
   <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-    <div class="p-10">
-      <Image
-        alt={"Lighthaven"}
-        class:list={[
-          "glitch mb-2 rounded object-cover",
-        ]}
-        src={images?.["/src/img/game_pieces_1.JPG"]?.()}
-        transition:name={"lighthaven"}
-      />
+    <div class="p-10 relative">
+      <div class="relative">
+        <Image
+          alt={"Lighthaven"}
+          class:list={[
+            "glitch mb-2 rounded object-cover cursor-pointer",
+          ]}
+          src={images?.["/src/img/proset_1.JPG"]?.()}
+          transition:name={"lighthaven"}
+          id="trigger-image"
+        />
+        <div 
+          id="modal-overlay"
+          class="fixed inset-0 bg-black/70 opacity-0 transition-opacity duration-300 pointer-events-none z-40"
+        >
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+            <button 
+              id="close-button"
+              class="absolute -top-4 -right-4 w-8 h-8 bg-secondary-200 text-dark-500 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300"
+              aria-label="Close modal"
+            >
+              ✕
+            </button>
+            <Image
+              alt={"Lighthaven Modal"}
+              class:list={[
+                "max-w-[80vw] max-h-[80vh] object-contain opacity-0 transition-opacity duration-300",
+              ]}
+              id="modal-image"
+              src={images?.["/src/img/proset_puzzle_tablet.png"]?.()}
+            />
+          </div>
+        </div>
+      </div>
     </div>
     <div class="p-10">
       <h2 class="mb-8 text-2xl font-bold text-secondary-200">
@@ -47,3 +72,40 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
     </div>
   </div>
 </section>
+
+<script>
+  const triggerImage = document.getElementById('trigger-image');
+  const modalOverlay = document.getElementById('modal-overlay');
+  const modalImage = document.getElementById('modal-image');
+  const closeButton = document.getElementById('close-button');
+
+  function openModal() {
+    modalOverlay.classList.add('opacity-100', 'pointer-events-auto');
+    modalImage.classList.add('opacity-100');
+    closeButton.classList.add('opacity-100');
+  }
+
+  function closeModal() {
+    modalOverlay.classList.remove('opacity-100', 'pointer-events-auto');
+    modalImage.classList.remove('opacity-100');
+    closeButton.classList.remove('opacity-100');
+  }
+
+  function handleClick(event) {
+    // Close if clicking the overlay (but not the image)
+    if (event.target === modalOverlay) {
+      closeModal();
+    }
+  }
+
+  function handleKeyDown(event) {
+    if (event.key === 'Escape') {
+      closeModal();
+    }
+  }
+
+  triggerImage?.addEventListener('click', openModal);
+  modalOverlay?.addEventListener('click', handleClick);
+  closeButton?.addEventListener('click', closeModal);
+  document.addEventListener('keydown', handleKeyDown);
+</script>

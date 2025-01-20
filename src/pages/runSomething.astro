@@ -4,6 +4,10 @@ import Typer from "../components/Typer.astro";
 import { INTEREST_FORM_URL } from "../config";
 import Layout from "../layouts/Layout.astro";
 import Coincidence from "../components/Coincidence.astro";
+import { Image } from "astro:assets";
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/img/*.{jpeg,jpg,png,gif,svg,webp,JPG}"
+);
 
 const alternatively = [
   "Let us show you around our city?",
@@ -48,6 +52,14 @@ const alternatively = [
             <span class="text-primary-300">Slip your own games into the website</span> - That's the thing you're looking at right now. There are games hidden all over, with coupon codes attached in many cases. You can add your own here.
           </li>
         </ul>
+        <!-- <Image
+          alt={"Lighthaven"}
+          class:list={[
+            "glitch mb-2 rounded object-cover",
+          ]}
+          src={images?.["/src/img/game_pieces_2.JPG"]?.()}
+          transition:name={"lighthaven"}
+        /> -->
         <div class="flex items-center justify-center p-8">
           <Button background="bg-cyan-500" link={INTEREST_FORM_URL} target="_blank">
             Get Involved
@@ -68,7 +80,7 @@ const alternatively = [
         var(--lighter) 40%,
         transparent 100%
       ),
-      url("imperial_game.jpg") no-repeat center center;
+      url("game_pieces_2_cropped.jpg") no-repeat center center;
     background-size: cover;
   }
 </style>
