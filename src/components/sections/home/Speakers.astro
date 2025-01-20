@@ -5,23 +5,23 @@ import { getCollection } from 'astro:content';
 const speakers = await getCollection("speakers");
 ---
 
-<section class="mb-[40px] pt-20" id="speakers">
+  <section class="mb-[40px] pt-10 text-center" id="speakers">
     <div class="container mx-auto">
       <h2 class="mb-8 text-3xl font-bold text-center">Speakers</h2>
-      <div class=" grid grid-cols-2 sm:grid-cols-4 gap-2 sm:gap-5 place-items-center ">
+      <div class="carousel carousel-center max-w-full rounded-box space-x-4 p-4">
         {
           speakers.toSorted((a, b) => { return a.data.id - b.data.id }).map((speaker) => (
-            <SpeakerCard 
-              name={speaker.data.name}
-              image={speaker.data.image}
-              gameName={speaker.data.gameName}
-              gameUrl={speaker.data.gameUrl}
-              slug={speaker.slug}
-            />
+            <div class="carousel-item">
+              <SpeakerCard 
+                name={speaker.data.name}
+                image={speaker.data.image}
+                gameName={speaker.data.gameName}
+                gameUrl={speaker.data.gameUrl}
+                slug={speaker.slug}
+              />
+            </div>
           ))
         }
+      </div>
     </div>
-    <!-- <div class="flex justify-center items-center my-48">
-      <h3 class="text-lg font-bold text-center">Agenda & more speaker reveals coming soon! <br /> <button class="text-primary-300 hover:text-secondary-200 hover:font-bold transition-all" onclick="submodal.showModal()">[Stay in the loop]</button></h3>
-    </div> -->
   </section>
