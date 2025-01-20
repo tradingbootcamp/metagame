@@ -1,3 +1,4 @@
+
 import React, {
   useCallback,
   useContext,
@@ -15,6 +16,7 @@ import {
 } from "@jaredreisinger/react-crossword";
 import { RotateCcw } from "lucide-react";
 import type { Direction } from "@jaredreisinger/react-crossword/dist/types";
+
 const themeContext = {
   allowNonSquare: true,
   columnBreakpoint: "black",
@@ -422,11 +424,24 @@ const CurrentClue = () => {
   console.log("Current clue:", currentClue);
 
   return (
-    <div className="text-center p-4">
-      <span className="font-bold">
-        {selectedNumber} {selectedDirection}:{" "}
-      </span>
-      {currentClue.clue}
+    <div>
+      <div className="text-center p-4">
+        {hasInteracted ? (
+          <>
+            <span className="font-bold">
+              {selectedNumber} {selectedDirection}:{" "}
+            </span>
+            {currentClue?.clue}
+          </>
+        ) : (
+          ""
+        )}
+      </div>
+      {hasInteracted && (
+        <div className="text-center text-sm text-gray-500 mt-2">
+          Crossword calendar concept courtesy of <a href="https://crosswordcal.com/products/2025-crossword-calendar" className="hover:underline">Adam Aaronson</a>
+        </div>
+      )}
     </div>
   );
 };
