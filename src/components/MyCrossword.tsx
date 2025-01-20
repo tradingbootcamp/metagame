@@ -549,7 +549,7 @@ export default function MyCrossword() {
           <CurrentClue />
           {isCompleted && isCorrect && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
-              🔑 You hold the key to unlocking countless rewards... at least for
+              You hold the key to unlock countless rewards... at least for
               a few seconds
             </div>
           )}
