@@ -80,25 +80,25 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   const closeButton = document.getElementById('close-button');
 
   function openModal() {
-    modalOverlay.classList.add('opacity-100', 'pointer-events-auto');
-    modalImage.classList.add('opacity-100');
-    closeButton.classList.add('opacity-100');
+    modalOverlay?.classList.add('opacity-100', 'pointer-events-auto');
+    modalImage?.classList.add('opacity-100');
+    closeButton?.classList.add('opacity-100');
   }
 
   function closeModal() {
-    modalOverlay.classList.remove('opacity-100', 'pointer-events-auto');
-    modalImage.classList.remove('opacity-100');
-    closeButton.classList.remove('opacity-100');
+    modalOverlay?.classList.remove('opacity-100', 'pointer-events-auto');
+    modalImage?.classList.remove('opacity-100');
+    closeButton?.classList.remove('opacity-100');
   }
 
-  function handleClick(event) {
+  function handleClick(event: MouseEvent) {
     // Close if clicking the overlay (but not the image)
     if (event.target === modalOverlay) {
       closeModal();
     }
   }
 
-  function handleKeyDown(event) {
+  function handleKeyDown(event: KeyboardEvent) {
     if (event.key === 'Escape') {
       closeModal();
     }
