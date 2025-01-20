@@ -1,0 +1,106 @@
+---
+import Button from "../components/Button.astro";
+import { INTEREST_FORM_URL } from "../config";
+import Layout from "../layouts/Layout.astro";
+import { SOCIAL_LINKS } from '../config';
+import { Image } from "astro:assets";
+const images = import.meta.glob<{ default: ImageMetadata }>(
+  "/src/img/*.{jpeg,jpg,png,gif,svg,webp,JPG}"
+);
+
+const alternatively = [
+  "Let us show you around our city?",
+  "How about a guided tour of local attractions?",
+  "Would you like to join us for a local food tasting?",
+  "Let's explore some hidden gems together?",
+  "How about we introduce you to our tech community?",
+  "Want to join a coding workshop?",
+  "Interested in a local hackathon?",
+  "Let's discuss the latest tech trends over coffee?",
+  "How about a networking session with local developers?",
+  "Want to participate in a tech trivia night?",
+];
+---
+
+<Layout title="About">
+  <div class="">
+    <section
+      class="hero prose-xl h-[50vh] flex flex-col items-center justify-center py-24 px-6 md:px-12 bg-contain"
+      id="hero"
+    >
+      <div class="flex flex-col items-center justify-center"></div>
+    </section>
+
+    <div class="container mx-auto">
+      <div
+        class="prose lg:prose-xl dark:prose-invert max-w-none p-8 font-semibold"
+      >
+        <h1>Run something</h1>
+
+        <p>
+          Some examples of the kind of things that would be very welcome at Metagame:
+        </p>
+        <ul>
+          <li>
+            <span class="text-primary-300">Gradient descent themed escape room</span> - We provide the physical space, you design and run the room over the course of the conference.
+          </li>
+          <li>
+            <span class="text-primary-300">Game design hackathon</span> - We (civilization as a whole) have the pieces for games like <a target="_blank" href="https://en.wikipedia.org/wiki/Senet">Senet</a> and <a target="_blank" href="https://en.wikipedia.org/wiki/Ludus_latrunculorum">Ludus Latrunculorum</a>, but not the rules. Want to run a hackathon where competitors come up with the rule book, and judges play each version and choose the best?
+          </li>
+          <li>
+            <span class="text-primary-300">Trading-based Survivor variant</span> - What if Survivor had live markets, with trading based rounds between tribal councils?
+          </li>
+        </ul>
+        <p>
+          The easiest way to get involved is to <a target="_blank" href={SOCIAL_LINKS.DISCORD}>join the Discord</a>.
+        </p>
+        <h2>The Megagame</h2>
+        <p>
+          Upon arrival, Players will be split into two teams as part of a conference-long Megagame. If you have a format for a contest/game/tournament, consider running it as part of the Megagame. Many more details to follow.
+        </p>
+        <h2>The Website</h2>
+        <p>
+          That's the thing you're looking at right now. There are games hidden all over, with coupon codes attached in many cases. You can add your own games, coupons, and easter eggs <a target="_blank" href="https://github.com/RickiHeicklen/metagame">here</a>.
+        </p>
+        <!-- <Image
+          alt={"Lighthaven"}
+          class:list={[
+            "glitch mb-2 rounded object-cover",
+          ]}
+          src={images?.["/src/img/game_pieces_2.JPG"]?.()}
+          transition:name={"lighthaven"}
+        /> -->
+        <div class="flex items-center justify-center p-8">
+          <Button background="bg-cyan-500" link={INTEREST_FORM_URL} target="_blank">
+            Get Involved
+          </Button>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+<style>
+  .hero {
+    --darker: theme("colors.dark.500");
+    --lighter: rgba(11, 11, 17, 0.4);
+    background:
+      linear-gradient(
+        0deg,
+        var(--darker) 0%,
+        var(--lighter) 40%,
+        transparent 100%
+      ),
+      url("game_pieces_2_cropped.jpg") no-repeat center center;
+    background-size: cover;
+  }
+</style>
+
+<script>
+  const audio = new Audio('/sounds_coin.wav');
+  document.querySelectorAll('.coin-container').forEach(container => {
+    container.addEventListener('mouseenter', () => {
+      audio.currentTime = 0;
+      audio.play();
+    });
+  });
+</script>
