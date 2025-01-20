@@ -1,3 +1,4 @@
+
 import React, {
   useCallback,
   useContext,
@@ -15,6 +16,7 @@ import {
 } from "@jaredreisinger/react-crossword";
 import { RotateCcw } from "lucide-react";
 import type { Direction } from "@jaredreisinger/react-crossword/dist/types";
+
 const themeContext = {
   allowNonSquare: true,
   columnBreakpoint: "black",
@@ -159,7 +161,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
 
   const calculateDimensions = useCallback(() => {
     if (!gridRef.current) {
-      console.log("No grid ref yet");
       return;
     }
 
@@ -169,7 +170,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
     const parentRect = gridRef.current.getBoundingClientRect();
 
     if (!gridElement || !gridRect || gridRect.width === 0) {
-      console.log("Grid element not found or has no width");
       return;
     }
 
@@ -188,16 +188,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
     // Calculate offset from the grid position
     const offsetTop = gridRect.top - parentRect.top;
     const offsetLeft = gridRect.left - parentRect.left;
-
-    console.log("New dimensions:", {
-      gridSize,
-      cellSize,
-      cellPadding,
-      cellInner,
-      cellHalf,
-      offsetTop,
-      offsetLeft,
-    });
 
     setDimensions({
       gridSize,
@@ -236,10 +226,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
   }, [calculateDimensions]);
 
   if (!showOverlays || !dimensions) {
-    console.log("Not showing overlays:", {
-      showOverlays,
-      hasDimensions: !!dimensions,
-    });
     return null;
   }
 
@@ -368,7 +354,6 @@ const CurrentClue = () => {
     const gridContainer = document.querySelector(
       '[data-testid="grid-container"]'
     );
-    console.log("Grid container found:", !!gridContainer);
 
     if (gridContainer) {
       gridContainer.addEventListener("click", handleClick);
@@ -384,15 +369,12 @@ const CurrentClue = () => {
 
   // Return empty message if user hasn't clicked yet
   if (!hasInteracted) {
-    console.log("Not showing clue yet. Has interacted:", hasInteracted);
     return <div className="text-center p-4"></div>;
   }
 
   const getCurrentClue = () => {
     // Get all clues for the selected direction (across/down)
     const cluesForDirection = clues?.[selectedDirection];
-    console.log("Selected direction:", selectedDirection);
-    console.log("Clues for direction:", cluesForDirection);
 
     if (!cluesForDirection) {
       return null;
@@ -400,12 +382,10 @@ const CurrentClue = () => {
 
     // Convert clues object into array of [number, clueData] pairs
     const clueEntries = Object.entries(cluesForDirection);
-    console.log("Clue entries:", clueEntries);
 
     // Find the entry where the clue number matches our selected number
     const matchingClueEntry = clueEntries.find((entry) => {
       const clueNumber = entry[1].number; // This is the number (as string)
-      console.log("Clue number:", clueNumber);
       return clueNumber === selectedNumber.toString();
     });
 
@@ -419,14 +399,25 @@ const CurrentClue = () => {
     return <div className="text-center p-4">No clue found</div>;
   }
 
-  console.log("Current clue:", currentClue);
-
   return (
-    <div className="text-center p-4">
-      <span className="font-bold">
-        {selectedNumber} {selectedDirection}:{" "}
-      </span>
-      {currentClue.clue}
+    <div>
+      <div className="text-center p-4">
+        {hasInteracted ? (
+          <>
+            <span className="font-bold">
+              {selectedNumber} {selectedDirection}:{" "}
+            </span>
+            {currentClue?.clue}
+          </>
+        ) : (
+          ""
+        )}
+      </div>
+      {hasInteracted && (
+        <div className="text-center text-sm text-gray-500 mt-2">
+          Crossword calendar concept courtesy of <a href="https://crosswordcal.com/products/2025-crossword-calendar" className="hover:underline">Adam Aaronson</a>
+        </div>
+      )}
     </div>
   );
 };
@@ -558,7 +549,7 @@ export default function MyCrossword() {
           <CurrentClue />
           {isCompleted && isCorrect && (
             <div className="mt-4 p-4 bg-green-100 text-green-800 rounded-lg text-center">
-              🔑 You hold the key to unlocking countless rewards... at least for
+              You hold the key to unlock countless rewards... at least for
               a few seconds
             </div>
           )}
