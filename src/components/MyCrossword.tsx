@@ -161,7 +161,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
 
   const calculateDimensions = useCallback(() => {
     if (!gridRef.current) {
-      console.log("No grid ref yet");
       return;
     }
 
@@ -171,7 +170,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
     const parentRect = gridRef.current.getBoundingClientRect();
 
     if (!gridElement || !gridRect || gridRect.width === 0) {
-      console.log("Grid element not found or has no width");
       return;
     }
 
@@ -190,16 +188,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
     // Calculate offset from the grid position
     const offsetTop = gridRect.top - parentRect.top;
     const offsetLeft = gridRect.left - parentRect.left;
-
-    console.log("New dimensions:", {
-      gridSize,
-      cellSize,
-      cellPadding,
-      cellInner,
-      cellHalf,
-      offsetTop,
-      offsetLeft,
-    });
 
     setDimensions({
       gridSize,
@@ -238,10 +226,6 @@ const OverlaysContainer = ({ gridRef }: OverlaysContainerProps) => {
   }, [calculateDimensions]);
 
   if (!showOverlays || !dimensions) {
-    console.log("Not showing overlays:", {
-      showOverlays,
-      hasDimensions: !!dimensions,
-    });
     return null;
   }
 
@@ -370,7 +354,6 @@ const CurrentClue = () => {
     const gridContainer = document.querySelector(
       '[data-testid="grid-container"]'
     );
-    console.log("Grid container found:", !!gridContainer);
 
     if (gridContainer) {
       gridContainer.addEventListener("click", handleClick);
@@ -386,15 +369,12 @@ const CurrentClue = () => {
 
   // Return empty message if user hasn't clicked yet
   if (!hasInteracted) {
-    console.log("Not showing clue yet. Has interacted:", hasInteracted);
     return <div className="text-center p-4"></div>;
   }
 
   const getCurrentClue = () => {
     // Get all clues for the selected direction (across/down)
     const cluesForDirection = clues?.[selectedDirection];
-    console.log("Selected direction:", selectedDirection);
-    console.log("Clues for direction:", cluesForDirection);
 
     if (!cluesForDirection) {
       return null;
@@ -402,12 +382,10 @@ const CurrentClue = () => {
 
     // Convert clues object into array of [number, clueData] pairs
     const clueEntries = Object.entries(cluesForDirection);
-    console.log("Clue entries:", clueEntries);
 
     // Find the entry where the clue number matches our selected number
     const matchingClueEntry = clueEntries.find((entry) => {
       const clueNumber = entry[1].number; // This is the number (as string)
-      console.log("Clue number:", clueNumber);
       return clueNumber === selectedNumber.toString();
     });
 
@@ -420,8 +398,6 @@ const CurrentClue = () => {
   if (!currentClue) {
     return <div className="text-center p-4">No clue found</div>;
   }
-
-  console.log("Current clue:", currentClue);
 
   return (
     <div>
