@@ -5,13 +5,16 @@ import { getCollection } from 'astro:content';
 const speakers = await getCollection("speakers");
 ---
 
-  <section class="mb-[40px] pt-10 text-center" id="speakers">
-    <div class="container mx-auto">
-      <h2 class="mb-8 text-3xl font-bold text-center">Speakers</h2>
-      <div class="carousel carousel-center max-w-full rounded-box space-x-4 p-4">
+<section class="mb-[40px] pt-10 text-center" id="speakers">
+  <div class="container mx-auto relative">
+    <h2 class="mb-8 text-3xl font-bold text-center">Speakers</h2>
+
+    <div id="carousel-container" class="relative flex justify-center items-center space-x-2">
+      <button class="w-10 h-10 rounded-full opacity-50 hover:opacity-100 flex items-center justify-center carousel-arrow" onclick="document.querySelector('.carousel').scrollBy({left: -300, behavior: 'smooth'})">❮</button> 
+      <div class="carousel carousel-center max-w-full space-x-4">
         {
-          speakers.toSorted((a, b) => { return a.data.id - b.data.id }).map((speaker) => (
-            <div class="carousel-item">
+          speakers.toSorted((a, b) => { return a.data.id - b.data.id }).map((speaker, index, array) => (
+            <div class={`carousel-item ${index === Math.floor(array.length / 2) ? 'carousel-center' : ''}`}>
               <SpeakerCard 
                 name={speaker.data.name}
                 image={speaker.data.image}
@@ -23,5 +26,24 @@ const speakers = await getCollection("speakers");
           ))
         }
       </div>
+      <button class="w-10 h-10 rounded-full opacity-50 hover:opacity-100 flex items-center justify-center carousel-arrow" onclick="document.querySelector('.carousel').scrollBy({left: 300, behavior: 'smooth'})">❯</button>
     </div>
-  </section>
+  </div>
+</section>
+
+<script>
+  function checkOverflow() {
+    const carousel = document.querySelector('.carousel');
+    const arrows = document.querySelectorAll('.carousel-arrow');
+    if (carousel && arrows) {
+      const hasOverflow = carousel.scrollWidth > carousel.clientWidth;
+      arrows.forEach(arrow => {
+        arrow.classList.toggle('hidden', !hasOverflow);
+      });
+    }
+  }
+
+  // Check on load and window resize
+  window.addEventListener('load', checkOverflow);
+  window.addEventListener('resize', checkOverflow);
+</script>
