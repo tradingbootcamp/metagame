@@ -9,6 +9,20 @@ export default {
       fontFamily: {
         sans: ["Jura", ...defaultTheme.fontFamily.sans],
       },
+      typography: ({ theme }) => ({
+        DEFAULT: {
+          css: {
+            a: {
+              color: theme("colors.secondary.500"),
+              textDecoration: "none",
+              "&:hover": {
+                color: theme("colors.primary.500"),
+                textDecoration: "underline",
+              },
+            },
+          },
+        },
+      }),
       colors: {
         dark: {
           50: "#D3D1FF",
