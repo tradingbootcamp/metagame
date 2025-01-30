@@ -28,10 +28,10 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
           id="modal-overlay"
           class="fixed inset-0 bg-black/70 opacity-0 transition-opacity duration-300 pointer-events-none z-40"
         >
-          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50">
+          <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 z-50 w-[85vw] max-w-4xl">
             <button 
               id="close-button"
-              class="absolute -top-4 -right-4 w-8 h-8 bg-secondary-200 text-dark-500 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300"
+              class="sm:hidden absolute -top-4 -right-4 w-8 h-8 bg-secondary-200 text-dark-500 rounded-full flex items-center justify-center opacity-0 transition-opacity duration-300"
               aria-label="Close modal"
             >
               ✕
@@ -39,7 +39,7 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
             <Image
               alt={"Lighthaven Modal"}
               class:list={[
-                "max-w-[80vw] max-h-[80vh] object-contain opacity-0 transition-opacity duration-300",
+                "object-contain w-full h-auto max-h-[80vh] opacity-0 transition-opacity duration-300",
               ]}
               id="modal-image"
               src={images?.["/src/img/proset_puzzle_tablet.png"]?.()}
@@ -91,8 +91,9 @@ const images = import.meta.glob<{ default: ImageMetadata }>(
   }
 
   function handleClick(event: MouseEvent) {
-    // Close if clicking the overlay (but not the image)
-    if (event.target === modalOverlay) {
+    // Close if clicking anything except the modal image
+    if (event.target === modalOverlay || 
+        (event.target instanceof Element && !modalImage?.contains(event.target))) {
       closeModal();
     }
   }
