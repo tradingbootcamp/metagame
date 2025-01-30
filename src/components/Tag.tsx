@@ -53,7 +53,7 @@ export default function Tag({
               cursor: none !important;
             }
             body::after {
-              content: 'IT!';
+              content: 'IT';
               font-size: 30px;
               font-weight: bold;
               color: gold;
