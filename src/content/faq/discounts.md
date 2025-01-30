@@ -1,16 +1,14 @@
 ---
-id: 6
+id: 4
 question: "Do you offer any discounts?"
 ---
 
 Yes, we offer several discount options:
 
-- **Early Bird**: We have tiered pricing that increases over time. I once tried to do an exponential pricing system based on what number ticket you purchased and it was a huge mess. So this one just has date cutoffs. 
+- **Early Bird**: We have tiered pricing that increases over time. I once tried to do <a href="https://bayesshammai.substack.com/i/147141321/weird-experimental-pricing-scheme" target="_blank"> an exponential pricing system</a> based on what number ticket you purchased and it was a huge mess. So this one just has date cutoffs. 
 
-- **Volunteer**: If you can help out over the weekend, we'll give you a free ticket.
+- **NPC (Volunteer ticket)**: Volunteers work 6 shifts over the weekend in exchange for a substantially reduced ticket price. They help staff the front desk, run the Megagame, make sure sessions are going smoothly, and do various other tasks that need to be done.
 
-- **Hidden discounts**: Games appear in surprising places. Different discount codes will get you different amounts off. Each code can only be used once.
+- **Hidden discounts**: There are plenty of easter eggs throughout the site that will unlock discounts. Each discount code will only be available a limited number of times.
 
-- **Community Partner Discount**: Look, if you want to be a major sponsor, we'll give you a free ticket. It's a weird notion of "free", but we live in weird times.
-
-We're committed to making our conference accessible to a wide range of attendees. If you have any questions about our discount options, please don't hesitate to reach out to us.
+- **Community Partner Discount**: If you want to be a major sponsor, we'll give you a free ticket, for a confusing notion of "free".

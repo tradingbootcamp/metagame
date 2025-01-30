@@ -9,7 +9,7 @@ interface Props {
   regularPrice?: string;
   description: string;
   href?: string;
-  features: string[];
+  features?: string[];
   buttonText?: string;
 }
 
@@ -33,7 +33,10 @@ const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", "")
       </div>
     )
   }
-  <h3 class="uppercase mb-4 text-2xl font-black text-primary-300">{title}</h3>
+  
+  <h3 class="uppercase text-2xl font-black text-primary-300">{title}</h3>
+  <p class="mt-3 mb-6 text-cyan-300 font-bold">{description}</p>
+
   {
     regularPrice && price !== regularPrice ? (
       <div class="text-4xl text-gray-400 relative">
@@ -46,13 +49,14 @@ const numericalRegularPrice = parseInt((regularPrice || "0")?.replace("€", "")
     )
   }
   <p class="my-4 text-6xl font-black text-secondary-300">{price}</p>
-  <p class="my-6 text-cyan-300 font-bold">{description}</p>
 
-  <ul class="my-16 text-lg flex-grow">
-    {features?.map((feature) => <li>{feature}</li>)}
-  </ul>
+  {features && features.length > 0 && (
+    <ul class="my-16 text-lg flex-grow">
+      {features.map((feature) => <li>{feature}</li>)}
+    </ul>
+  )}
 
-  <div>
+  <div class="mt-auto pt-3">
     <Button link={href || INTEREST_FORM_URL} target="_blank">{buttonText || "Buy Now"}</Button>
   </div>
 </Card>

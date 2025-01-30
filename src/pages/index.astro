@@ -7,7 +7,7 @@ import Speakers from "../components/sections/home/Speakers.astro";
 import Location from "../components/sections/home/Location.astro";
 import CallForSpeakers from "../components/sections/home/CallForSpeakers.astro";
 import SubscribePopup from "../components/SubscribePopup.astro";
-import Games from "../components/sections/home/Games.astro";
+import Calendar from "../components/sections/home/Calendar.astro";
 import GetInvolved from "../components/sections/home/GetInvolved.astro";
 import Markets from "../components/sections/home/Markets.astro";
 import ContactUs from "../components/sections/home/ContactUs.astro";
@@ -23,7 +23,7 @@ import { TICKET_EARLY_BIRD_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } fro
   <main class="dark:text-white">
     <div class="container mx-auto px-4">
       <Hero />
-      <Games />
+      <Calendar />
       <GetInvolved />
       <Speakers />
       <Markets />
@@ -42,11 +42,6 @@ import { TICKET_EARLY_BIRD_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } fro
               title="NPC"
               price={`$150`}
               description="Volunteer for 6 shifts over the weekend"
-              features={[
-                "Premium swag",
-                "OK food",
-                "Participation in a volunteer cult initiation ritual"
-              ]},
               href={TICKET_VOLUNTEER_URL}
             />
             <TicketCard
@@ -54,22 +49,12 @@ import { TICKET_EARLY_BIRD_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } fro
               price={`$500`}
               regularPrice="$650"
               description="Early bird price through June 1st, 2025"
-              features={[
-                "Premium swag",
-                "OK food",
-                "Don't have to spend your conference staffing the volunteer desk"
-              ]},
               href={TICKET_EARLY_BIRD_URL}
             />
             <TicketCard
               title="Supporter"
               price="$2048"
               description="We will name a game after you"
-              features={[
-                "Premium swag",
-                "Slightly better than OK food",
-                "The knowledge that you're supporting other people's fun"
-              ]},
               href={TICKET_SUPPORTER_URL}
             />
           </div>
