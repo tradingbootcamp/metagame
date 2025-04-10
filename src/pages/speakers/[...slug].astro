@@ -41,12 +41,44 @@ const { Content } = await entry.render();
         src={`/images/${entry.data.image.split('/').pop()}`}
         width="400"
         transition:name={`${entry.slug}-image`}
-      />
-    </div>
-
-    <div class="flex-grow">
-      <h1 class="text-4xl font-bold mb-4">{entry.data.name}</h1>
-      <p class="text-base text-gray-700">{entry.data.description}</p>
-    </div>
-  </article>
-</Layout>
+        />
+      </div>
+      <section class="max-w-prose prose prose-xl">
+        <h2
+          class="font-black text-3xl text-secondary-300"
+          transition:name={`${entry.slug}-name`}
+        >
+          {entry.data.name}
+        </h2>
+        <div transition:animate="slide">
+          <Content />
+        </div>
+      </section>
+      <section
+        class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary-200"
+      >
+        <h2 class="font-black text-3xl text-secondary-300 text-center">
+          Sessions
+        </h2>
+        <p>
+          {
+            sessions.length === 0 && (
+              <span class="font-black flex items-center justify-center gap-3 text-primary-400">
+                TBA
+              </span>
+            )
+          }
+          {
+            sessions.map((session) => (
+              <a
+                href={`/sessions/${session.slug}`}
+                class="font-black flex items-center justify-center gap-3 text-primary-400"
+              >
+               {session.data.title}
+              </a>
+            ))
+          }
+        </p>
+      </section>
+    </article>
+  </Layout>
