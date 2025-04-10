@@ -131,7 +131,7 @@ const imageURL = "/logo.svg";
             
             // Check if the clicked link is specifically the METAGAME link in the speakers section
             if (target.getAttribute('href') === '/#speakers' && 
-                target.textContent.trim() === 'METAGAME') {
+                target.textContent?.trim() === 'METAGAME') {
               // Don't prevent default - let it open in a new tab
               // Instead, set a flag in sessionStorage
               sessionStorage.setItem('metagame-trigger', 'true');
