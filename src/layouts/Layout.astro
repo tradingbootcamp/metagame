@@ -107,6 +107,129 @@ const imageURL = "/logo.svg";
         document.addEventListener("astro:after-swap", () => {
           initToggles();
         });
+
+        // Handle meta game modal for speaker-2
+        function initMetaGameModal() {
+          const metagameModal = document.getElementById('metagame-modal');
+          
+          // Check if we arrived here via METAGAME link
+          if (window.location.hash === '#speakers' && sessionStorage.getItem('metagame-trigger')) {
+            sessionStorage.removeItem('metagame-trigger');
+            
+            // Wait a brief moment for the page to scroll to the section
+            setTimeout(() => {
+              if (metagameModal) {
+                metagameModal.showModal();
+              }
+            }, 800);
+          }
+          
+          // Handle clicks on any link
+          document.addEventListener('click', (event) => {
+            const target = event.target.closest('a');
+            if (!target) return;
+            
+            // Check if the clicked link is specifically the METAGAME link in the speakers section
+            if (target.getAttribute('href') === '/#speakers' && 
+                target.textContent.trim() === 'METAGAME') {
+              // Don't prevent default - let it open in a new tab
+              // Instead, set a flag in sessionStorage
+              sessionStorage.setItem('metagame-trigger', 'true');
+            }
+          });
+        }
+
+        initMetaGameModal();
+
+        document.addEventListener("astro:after-swap", () => {
+          initToggles();
+          initMetaGameModal();
+        });
+
+        document.addEventListener('DOMContentLoaded', function() {
+          // Check for the metagame parameter in the URL
+          const urlParams = new URLSearchParams(window.location.search);
+          const showMetaModal = urlParams.get('metagame') === 'true';
+          
+          if (showMetaModal && window.location.hash === '#speakers') {
+            // First scroll to the speakers section
+            const speakersSection = document.getElementById('speakers');
+            if (speakersSection) {
+              speakersSection.scrollIntoView({ behavior: 'smooth' });
+              
+              // Wait a moment after scrolling to show the modal
+              setTimeout(() => {
+                const metagameModal = document.getElementById('metagame-modal');
+                if (metagameModal) {
+                  metagameModal.showModal();
+                  
+                  // Clean up the URL to remove the parameter without reloading
+                  const newUrl = window.location.pathname + window.location.hash;
+                  window.history.replaceState({}, document.title, newUrl);
+                }
+              }, 1000); // Longer delay to ensure scrolling completes
+            }
+          }
+        });
+
+        // Also handle the case of page transitions with Astro
+        document.addEventListener("astro:page-load", function() {
+          // Same code as above
+          const urlParams = new URLSearchParams(window.location.search);
+          const showMetaModal = urlParams.get('metagame') === 'true';
+          
+          if (showMetaModal && window.location.hash === '#speakers') {
+            const speakersSection = document.getElementById('speakers');
+            if (speakersSection) {
+              speakersSection.scrollIntoView({ behavior: 'smooth' });
+              
+              setTimeout(() => {
+                const metagameModal = document.getElementById('metagame-modal');
+                if (metagameModal) {
+                  metagameModal.showModal();
+                  
+                  const newUrl = window.location.pathname + window.location.hash;
+                  window.history.replaceState({}, document.title, newUrl);
+                }
+              }, 1000);
+            }
+          }
+        });
+
+        // Meta game modal handling
+        function checkAndShowMetaModal() {
+          const urlParams = new URLSearchParams(window.location.search);
+          const showMetaModal = urlParams.get('metagame') === 'true';
+          
+          if (showMetaModal) {
+            // First scroll to the speakers section
+            const speakersSection = document.getElementById('speakers');
+            if (speakersSection) {
+              speakersSection.scrollIntoView({ behavior: 'smooth' });
+              
+              // Wait a moment after scrolling to show the modal
+              setTimeout(() => {
+                const metagameModal = document.getElementById('metagame-modal');
+                if (metagameModal) {
+                  metagameModal.showModal();
+                  
+                  // Clean up the URL to remove the parameter without reloading
+                  const newUrl = window.location.pathname + window.location.hash;
+                  window.history.replaceState({}, document.title, newUrl);
+                }
+              }, 1500); // Delay to ensure scrolling completes
+            }
+          }
+        }
+
+        // Run the check on page load
+        document.addEventListener('DOMContentLoaded', checkAndShowMetaModal);
+        
+        // Also run after page transitions (for Astro's view transitions)
+        document.addEventListener('astro:page-load', checkAndShowMetaModal);
+        
+        // Also handle direct link clicks for browsers that don't support view transitions
+        document.addEventListener('astro:after-swap', checkAndShowMetaModal);
       </script>
 
       <style is:global>
@@ -154,7 +277,66 @@ const imageURL = "/logo.svg";
             display: none;
           }
         } */
+
+        dialog.modal {
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: rgba(0, 0, 0, 0.7);
+          padding: 1rem;
+          border: none;
+          z-index: 1000;
+        }
+
+        dialog.modal::backdrop {
+          background: rgba(0, 0, 0, 0.5);
+        }
+
+        dialog.modal .modal-box {
+          max-width: 24rem;
+          background: #2d1b69;
+          color: white;
+          border: 2px solid #4deeea;
+          box-shadow: 0 0 15px rgba(77, 238, 234, 0.5);
+          padding: 1.5rem;
+          border-radius: 0.5rem;
+        }
+
+        dialog.modal button {
+          background: #4deeea;
+          color: #2d1b69;
+          border: none;
+          padding: 0.5rem 2rem;
+          border-radius: 0.25rem;
+          cursor: pointer;
+          font-weight: bold;
+          transition: all 0.3s;
+        }
+
+        dialog.modal button:hover {
+          background: #34e2e4;
+          transform: scale(1.05);
+        }
       </style>
     </KbarApp>
+
+    <!-- Meta game modal -->
+    <dialog id="metagame-modal" class="modal">
+      <div class="modal-box relative bg-dark-500 border-2 border-secondary-300 p-6 rounded-lg shadow-lg">
+        <h3 class="font-bold text-xl text-secondary-200 mb-4">What did you think was going to happen?</h3>
+        <div class="modal-action flex justify-center">
+          <form method="dialog">
+            <button class="btn bg-secondary-300 hover:bg-secondary-400 text-dark-800 font-bold py-2 px-4 rounded transition-all hover:scale-105">
+              Okay fair
+            </button>
+          </form>
+        </div>
+      </div>
+    </dialog>
   </body>
 </html>

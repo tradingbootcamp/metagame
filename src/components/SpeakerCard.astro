@@ -42,7 +42,7 @@ const { name, image, gameName, gameUrl, slug } = Astro.props;
       {name}
     </h3>
     <a 
-      href={gameUrl} 
+      href={gameName === "METAGAME" ? `/?metagame=true#speakers` : gameUrl} 
       target="_blank" 
       rel="noopener noreferrer" 
       class="text-secondary-200 text-sm font-semibold hover:text-secondary-300 inline-flex items-center gap-1"
