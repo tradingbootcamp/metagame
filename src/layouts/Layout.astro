@@ -108,128 +108,66 @@ const imageURL = "/logo.svg";
           initToggles();
         });
 
-        // Handle meta game modal for speaker-2
+        // Replace all the metagame modal code with a unified approach
         function initMetaGameModal() {
           const metagameModal = document.getElementById('metagame-modal');
           
-          // Check if we arrived here via METAGAME link
-          if (window.location.hash === '#speakers' && sessionStorage.getItem('metagame-trigger')) {
-            sessionStorage.removeItem('metagame-trigger');
-            
-            // Wait a brief moment for the page to scroll to the section
-            setTimeout(() => {
-              if (metagameModal) {
-                (metagameModal as HTMLDialogElement).showModal();
+          // Prevent the modal from showing again immediately after closing
+          let justClosed = false;
+          
+          if (metagameModal) {
+            metagameModal.addEventListener('close', function() {
+              // Mark that we just closed the modal
+              justClosed = true;
+              
+              // Clear URL parameter if it exists
+              if (window.location.search.includes('metagame=true')) {
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({}, document.title, newUrl);
               }
-            }, 800);
+              
+              // Reset the flag after a short delay
+              setTimeout(() => {
+                justClosed = false;
+              }, 1000);
+            });
           }
           
-          // Handle clicks on any link
-          document.addEventListener('click', (event) => {
-            const target = (event.target as Element).closest('a');
-            if (!target) return;
+          // Check URL parameters to see if we should show the modal
+          function checkAndShowMetaModal() {
+            // Don't show if we just closed it
+            if (justClosed) return;
             
-            // Check if the clicked link is specifically the METAGAME link in the speakers section
-            if (target.getAttribute('href') === '/#speakers' && 
-                target.textContent?.trim() === 'METAGAME') {
-              // Don't prevent default - let it open in a new tab
-              // Instead, set a flag in sessionStorage
-              sessionStorage.setItem('metagame-trigger', 'true');
+            const urlParams = new URLSearchParams(window.location.search);
+            const showMetaModal = urlParams.get('metagame') === 'true';
+            
+            if (showMetaModal) {
+              // First scroll to the speakers section
+              const speakersSection = document.getElementById('speakers');
+              if (speakersSection) {
+                speakersSection.scrollIntoView({ behavior: 'smooth' });
+                
+                // Wait a moment after scrolling to show the modal
+                setTimeout(() => {
+                  if (metagameModal && !justClosed) {
+                    (metagameModal as HTMLDialogElement).showModal();
+                  }
+                }, 1000); // Delay to ensure scrolling completes
+              }
             }
-          });
+          }
+          
+          // Set up event listeners
+          document.addEventListener('DOMContentLoaded', checkAndShowMetaModal);
+          document.addEventListener('astro:page-load', checkAndShowMetaModal);
+          document.addEventListener('astro:after-swap', checkAndShowMetaModal);
         }
 
+        // Initialize the modal functionality
         initMetaGameModal();
 
-        document.addEventListener("astro:after-swap", () => {
-          initToggles();
-          initMetaGameModal();
-        });
-
-        document.addEventListener('DOMContentLoaded', function() {
-          // Check for the metagame parameter in the URL
-          const urlParams = new URLSearchParams(window.location.search);
-          const showMetaModal = urlParams.get('metagame') === 'true';
-          
-          if (showMetaModal && window.location.hash === '#speakers') {
-            // First scroll to the speakers section
-            const speakersSection = document.getElementById('speakers');
-            if (speakersSection) {
-              speakersSection.scrollIntoView({ behavior: 'smooth' });
-              
-              // Wait a moment after scrolling to show the modal
-              setTimeout(() => {
-                const metagameModal = document.getElementById('metagame-modal');
-                if (metagameModal) {
-                  (metagameModal as HTMLDialogElement).showModal();
-                  
-                  // Clean up the URL to remove the parameter without reloading
-                  const newUrl = window.location.pathname + window.location.hash;
-                  window.history.replaceState({}, document.title, newUrl);
-                }
-              }, 1000); // Longer delay to ensure scrolling completes
-            }
-          }
-        });
-
-        // Also handle the case of page transitions with Astro
-        document.addEventListener("astro:page-load", function() {
-          // Same code as above
-          const urlParams = new URLSearchParams(window.location.search);
-          const showMetaModal = urlParams.get('metagame') === 'true';
-          
-          if (showMetaModal && window.location.hash === '#speakers') {
-            const speakersSection = document.getElementById('speakers');
-            if (speakersSection) {
-              speakersSection.scrollIntoView({ behavior: 'smooth' });
-              
-              setTimeout(() => {
-                const metagameModal = document.getElementById('metagame-modal');
-                if (metagameModal) {
-                  (metagameModal as HTMLDialogElement).showModal();
-                  
-                  const newUrl = window.location.pathname + window.location.hash;
-                  window.history.replaceState({}, document.title, newUrl);
-                }
-              }, 1000);
-            }
-          }
-        });
-
-        // Meta game modal handling
-        function checkAndShowMetaModal() {
-          const urlParams = new URLSearchParams(window.location.search);
-          const showMetaModal = urlParams.get('metagame') === 'true';
-          
-          if (showMetaModal) {
-            // First scroll to the speakers section
-            const speakersSection = document.getElementById('speakers');
-            if (speakersSection) {
-              speakersSection.scrollIntoView({ behavior: 'smooth' });
-              
-              // Wait a moment after scrolling to show the modal
-              setTimeout(() => {
-                const metagameModal = document.getElementById('metagame-modal');
-                if (metagameModal) {
-                  (metagameModal as HTMLDialogElement).showModal();
-                  
-                  // Clean up the URL to remove the parameter without reloading
-                  const newUrl = window.location.pathname + window.location.hash;
-                  window.history.replaceState({}, document.title, newUrl);
-                }
-              }, 1500); // Delay to ensure scrolling completes
-            }
-          }
-        }
-
-        // Run the check on page load
-        document.addEventListener('DOMContentLoaded', checkAndShowMetaModal);
-        
-        // Also run after page transitions (for Astro's view transitions)
-        document.addEventListener('astro:page-load', checkAndShowMetaModal);
-        
-        // Also handle direct link clicks for browsers that don't support view transitions
-        document.addEventListener('astro:after-swap', checkAndShowMetaModal);
+        // Also re-initialize after view transitions
+        document.addEventListener("astro:after-swap", initMetaGameModal);
       </script>
 
       <style is:global>
