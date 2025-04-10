@@ -40,4 +40,13 @@ const { Content } = await entry.render();
         class="rounded-2xl object-cover w-full lg:w-[350px] lg:h-[420px]"
         src={`/images/${entry.data.image.split('/').pop()}`}
         width="400"
-        transition:name={`
+        transition:name={`${entry.slug}-image`}
+      />
+    </div>
+
+    <div class="flex-grow">
+      <h1 class="text-4xl font-bold mb-4">{entry.data.name}</h1>
+      <p class="text-base text-gray-700">{entry.data.description}</p>
+    </div>
+  </article>
+</Layout>
