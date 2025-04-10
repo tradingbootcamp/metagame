@@ -119,14 +119,14 @@ const imageURL = "/logo.svg";
             // Wait a brief moment for the page to scroll to the section
             setTimeout(() => {
               if (metagameModal) {
-                metagameModal.showModal();
+                (metagameModal as HTMLDialogElement).showModal();
               }
             }, 800);
           }
           
           // Handle clicks on any link
           document.addEventListener('click', (event) => {
-            const target = event.target.closest('a');
+            const target = (event.target as Element).closest('a');
             if (!target) return;
             
             // Check if the clicked link is specifically the METAGAME link in the speakers section
@@ -161,7 +161,7 @@ const imageURL = "/logo.svg";
               setTimeout(() => {
                 const metagameModal = document.getElementById('metagame-modal');
                 if (metagameModal) {
-                  metagameModal.showModal();
+                  (metagameModal as HTMLDialogElement).showModal();
                   
                   // Clean up the URL to remove the parameter without reloading
                   const newUrl = window.location.pathname + window.location.hash;
@@ -186,7 +186,7 @@ const imageURL = "/logo.svg";
               setTimeout(() => {
                 const metagameModal = document.getElementById('metagame-modal');
                 if (metagameModal) {
-                  metagameModal.showModal();
+                  (metagameModal as HTMLDialogElement).showModal();
                   
                   const newUrl = window.location.pathname + window.location.hash;
                   window.history.replaceState({}, document.title, newUrl);
@@ -211,7 +211,7 @@ const imageURL = "/logo.svg";
               setTimeout(() => {
                 const metagameModal = document.getElementById('metagame-modal');
                 if (metagameModal) {
-                  metagameModal.showModal();
+                  (metagameModal as HTMLDialogElement).showModal();
                   
                   // Clean up the URL to remove the parameter without reloading
                   const newUrl = window.location.pathname + window.location.hash;
