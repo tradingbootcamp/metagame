@@ -1,7 +1,7 @@
 ---
 id: 4
 name: Jacob "Conflux" Cohen 
-image: /src/assets/conflux_3.jpg
+image: /images/conflux_3.jpg
 gameName: "Puzzles for Progress"
 gameUrl: "https://www.puzzlesforprogress.net/"
 title: Senior Developer at Tech Corp, Expert in Web Technologies

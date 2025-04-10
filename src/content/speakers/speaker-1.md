@@ -1,7 +1,7 @@
 ---
 id: 1
 name: "Uri Bram"
-image: "/src/assets/uri_bram.jpg"
+image: "/images/uri_bram.jpg"
 gameName: "Person Do Thing"
 gameUrl: "https://persondothing.com/"
 title: Senior Developer at Tech Corp, Expert in Web Technologies

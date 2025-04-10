@@ -1,6 +1,7 @@
 ---
 import Card from "./Card.astro";
-import { Image } from "astro:assets";
+// Remove the Image import, we won't need it
+// import { Image } from "astro:assets";
 import type { ImageMetadata } from "astro";
 
 interface Props {
@@ -12,19 +13,20 @@ interface Props {
 }
 
 const { name, image, gameName, gameUrl, slug } = Astro.props;
-const images = import.meta.glob<{ default: ImageMetadata }>(
-  "/src/assets/*.{jpeg,jpg,png,gif,svg,webp}"
-);
+// We don't need the image metadata loader anymore
+// const images = import.meta.glob<{ default: ImageMetadata }>(
+//   "/public/assets*.{jpeg,jpg,png,gif,svg,webp}"
+// );
 ---
 
 <Card class="w-30 sm:w-48 flex flex-col items-center p-1 bg-slate-700 bg-opacity-50" padless >
-  <Image
+  <img
     alt={name || "YOU?"}
     class:list={[
       "glitch mb-2 rounded aspect-square object-cover",
       image ? "object-cover" : "object-fill",
     ]}
-    src={images?.[image || "/src/assets/incognito.svg"]?.()}
+    src={image ? `/images/${image.split('/').pop()}` : "/images/incognito.svg"}
     height="160"
     width="160"
     transition:name={slug && `${slug}-image`}

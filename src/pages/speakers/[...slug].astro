@@ -35,50 +35,9 @@ const { Content } = await entry.render();
     <div
       class="glitch bg-gradient-to-r from-secondary-700 w-full lg:w-[360px] lg:h-[436px] to-primary-700 text-white font-semibold rounded p-2 flex items-center justify-center"
     >
-      <Image
+      <img
         alt={entry.data.name}
         class="rounded-2xl object-cover w-full lg:w-[350px] lg:h-[420px]"
-        src={images[entry.data.image || "/src/assets/incognito.svg"]()}
+        src={`/images/${entry.data.image.split('/').pop()}`}
         width="400"
-        transition:name={`${entry.slug}-image`}
-      />
-    </div>
-    <section class="max-w-prose prose prose-xl">
-      <h2
-        class="font-black text-3xl text-secondary-300"
-        transition:name={`${entry.slug}-name`}
-      >
-        {entry.data.name}
-      </h2>
-      <div transition:animate="slide">
-        <Content />
-      </div>
-    </section>
-    <section
-      class="max-w-prose prose prose-xl mt-20 w-full py-8 border-t-2 border-dashed border-secondary-200"
-    >
-      <h2 class="font-black text-3xl text-secondary-300 text-center">
-        Sessions
-      </h2>
-      <p>
-        {
-          sessions.length === 0 && (
-            <span class="font-black flex items-center justify-center gap-3 text-primary-400">
-              TBA
-            </span>
-          )
-        }
-        {
-          sessions.map((session) => (
-            <a
-              href={`/sessions/${session.slug}`}
-              class="font-black flex items-center justify-center gap-3 text-primary-400"
-            >
-             {session.data.title}
-            </a>
-          ))
-        }
-      </p>
-    </section>
-  </article>
-</Layout>
+        transition:name={`

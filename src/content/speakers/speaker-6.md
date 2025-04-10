@@ -1,9 +1,9 @@
 ---
 id: 1
-name: "Patrick McKenzie"
-image: "/images/patio11.jpg"
-gameName: "Starfighter"
-gameUrl: "https://www.kalzumeus.com/2015/03/09/announcing-starfighter/"
+name: "Emmett Shear"
+image: "/images/emmett_shear.jpg"
+gameName: "Twitch"
+gameUrl: "https://www.twitch.tv/"
 title: lorem ipsum
 ---
 

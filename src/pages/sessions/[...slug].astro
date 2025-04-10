@@ -49,10 +49,10 @@ const { Content } = await entry.render();
                   class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
                   href={`/speakers/${speaker.slug}`}
                 >
-                  <Image
+                  <img
                     alt={speaker.data.name}
                     class="rounded-full object-cover w-[100px] h-[100px]"
-                    src={images[speaker.data.image]()}
+                    src={`/images/${speaker.data.image.split('/').pop()}`}
                     width="100"
                     height="100"
                     transition:name={`${entry.slug}-image`}
@@ -72,14 +72,14 @@ const { Content } = await entry.render();
                     class="text-primary-400 flex gap-3 h-[140px] items-center text-3xl"
                     href={`/miscs/${misc.slug}`}
                   >
-                    <Image
-                      alt={misc.data.name}
-                      class="rounded-full object-cover w-[100px] h-[100px]"
-                      src={images[misc.data.image]()}
-                      width="100"
-                      height="100"
-                      transition:name={`${entry.slug}-image`}
-                    />
+                  <img
+                    alt={misc.data.name}
+                    class="rounded-full object-cover w-[100px] h-[100px]"
+                    src={`/images/${misc.data.image.split('/').pop()}`}
+                    width="100"
+                    height="100"
+                    transition:name={`${entry.slug}-image`}
+                  />
                     {misc.data.name}
                   </a>
                 </div>
