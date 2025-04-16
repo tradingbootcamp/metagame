@@ -1,9 +1,9 @@
 ---
 id: 1
 name: "Emmett Shear"
-image: "/images/emmett_shear.jpg"
-gameName: "Twitch"
-gameUrl: "https://www.twitch.tv/"
+image: "/images/emmett_shear.jpeg"
+gameName: "Softmax"
+gameUrl: "https://softmax.com/"
 title: lorem ipsum
 ---
 
