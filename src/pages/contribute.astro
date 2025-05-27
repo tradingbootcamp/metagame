@@ -1,6 +1,5 @@
 ---
 import Button from "../components/Button.astro";
-import { INTEREST_FORM_URL } from "../config";
 import Layout from "../layouts/Layout.astro";
 import { SOCIAL_LINKS } from '../config';
 import { Image } from "astro:assets";
@@ -71,7 +70,7 @@ const alternatively = [
           transition:name={"lighthaven"}
         /> -->
         <div class="flex items-center justify-center p-8">
-          <Button background="bg-cyan-500" link={INTEREST_FORM_URL} target="_blank">
+          <Button background="bg-cyan-500" link={SOCIAL_LINKS.DISCORD} target="_blank">
             Get Involved
           </Button>
         </div>

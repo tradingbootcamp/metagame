@@ -1,6 +1,8 @@
 ---
 import SpeakerCard from "../../SpeakerCard.astro";
 import { getCollection } from 'astro:content';
+import Button from "../../Button.astro";
+import { CALL_FOR_SPEAKERS } from "@/config";
 
 const speakers = await getCollection("speakers");
 ---
@@ -27,6 +29,12 @@ const speakers = await getCollection("speakers");
         }
       </div>
       <button class="w-10 h-10 rounded-full opacity-50 hover:opacity-100 flex items-center justify-center carousel-arrow" onclick="document.querySelector('.carousel').scrollBy({left: 300, behavior: 'smooth'})">❯</button>
+    </div>
+
+    <div class="mt-8">
+      <Button background="bg-cyan-500" link={CALL_FOR_SPEAKERS} target="_blank">
+        Join the speaker list
+      </Button>
     </div>
   </div>
 </section>

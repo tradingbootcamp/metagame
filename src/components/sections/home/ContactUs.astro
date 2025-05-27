@@ -2,6 +2,7 @@
 import { getCollection } from "astro:content";
 import Button from "../../Button.astro";
 import Card from "../../Card.astro";
+import { CALL_FOR_SPEAKERS } from "@/config";
 
 
 ---
@@ -15,8 +16,8 @@ import Card from "../../Card.astro";
           Thinking about sponsoring us, or maybe partnerting with us? Something
           else in mind?
         </p>
-        <Button classes="mt-8 uppercase" link="mailto:ricki.heicklen@gmail.com"
-          >MESSAGE US!</Button
+        <Button classes="mt-8 uppercase" link={CALL_FOR_SPEAKERS} target="_blank"
+          >GET INVOLVED!</Button
         >
       </div>
     </Card>
