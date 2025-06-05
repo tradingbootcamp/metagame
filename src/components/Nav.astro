@@ -20,7 +20,7 @@ const STARTING_DIE_IDENTIFIER = {
     <div class="flex items-center space-x-2 rtl:space-x-reverse">
       <AnimatedCustomDie startingDieIdentifier={STARTING_DIE_IDENTIFIER} client:load/>
         <a href="/" >
-          <span class="nav-logo self-center text-2xl font-semibold whitespace-nowrap">ME<Tag text="TAG" speed={0.005} catchDistance={50} client:load />AME 2025</span>
+          <span class="nav-logo self-center text-2xl font-semibold whitespace-nowrap text-white">ME<Tag text="TAG" speed={0.005} catchDistance={50} client:load />AME 2025</span>
         </a>
     </div>
       <button
@@ -81,31 +81,31 @@ const STARTING_DIE_IDENTIFIER = {
 
 <style>
   .nav-logo {
-    /* Default state (light mode) */
-    color: #ff57ff;
-    text-shadow: 0 0 2px rgba(255, 87, 255, 0.3);
+    /* Default state (dark mode) */
+    color: white;
+    text-shadow: none;
     position: relative;
     transition: all 0.3s ease;
     font-weight: 600;
   }
 
-  /* Light mode hover effect */
-  .nav-logo:hover {
-    text-shadow: 
-      0 0 5px rgba(255, 87, 255, 0.7),
-      0 0 10px rgba(170, 51, 255, 0.5);
-  }
-
-  /* Dark mode styles */
-  :global(.dark) .nav-logo {
-    color: white;
-    text-shadow: none;
-  }
-
   /* Dark mode hover effect */
-  :global(.dark) .nav-logo:hover {
+  .nav-logo:hover {
     text-shadow: 
       0 0 5px #ff57ff,
       0 0 15px #aa33ff;
+  }
+
+  /* Light mode styles */
+  :global(.light) .nav-logo {
+    color: #ff57ff;
+    text-shadow: 0 0 2px rgba(255, 87, 255, 0.3);
+  }
+
+  /* Light mode hover effect */
+  :global(.light) .nav-logo:hover {
+    text-shadow: 
+      0 0 5px rgba(255, 87, 255, 0.7),
+      0 0 10px rgba(170, 51, 255, 0.5);
   }
 </style>
