@@ -5,9 +5,12 @@ import react from "@astrojs/react";
 
 export default defineConfig({
   site: "https://metagames.games",
-  integrations: [tailwind(), react({
-    include: ['**/react/*'],
-  })],
+  integrations: [
+    tailwind(), 
+    react({
+      include: ['**/react/*'],
+    })
+  ],
   vite: {
     ssr: {
       noExternal: ['astro-opengraph-images', '@resvg/resvg-js']
