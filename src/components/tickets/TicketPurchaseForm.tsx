@@ -164,13 +164,13 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
 
   return (
     <div className="space-y-6">
-      <div className="bg-gray-800 p-4 rounded-lg">
+      {/* <div className="bg-gray-800 p-4 rounded-lg">
         <h3 className="text-lg font-semibold text-white mb-2">Purchase Details</h3>
         <p className="text-gray-300 mb-4">
           {ticketType.title} - ${ticketType.price}
         </p>
         <p className="text-sm text-gray-400">{ticketType.description}</p>
-      </div>
+      </div> */}
 
       <TicketFormFields
         name={name}
