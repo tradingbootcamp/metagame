@@ -17,6 +17,9 @@ export default defineConfig({
     ssr: {
       noExternal: ['astro-opengraph-images', '@resvg/resvg-js']
     },
+    define: {
+      'process.env.ROLLUP_SKIP_NATIVE': JSON.stringify('true'),
+    },
     envPrefix: ['PUBLIC_', 'ROLLUP_SKIP_NATIVE'],
   }
 });
