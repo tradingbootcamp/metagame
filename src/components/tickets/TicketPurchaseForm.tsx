@@ -3,6 +3,7 @@ import { loadStripe } from '@stripe/stripe-js';
 import { Elements, CardElement, useStripe, useElements } from '@stripe/react-stripe-js';
 import { TicketFormFields } from './TicketFormFields';
 import type { TicketType } from '../../lib/types';
+import { SOCIAL_LINKS } from '../../config';
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripePromise = loadStripe(import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!);
@@ -28,6 +29,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
   const [isLoading, setIsLoading] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
+  const [showSuccess, setShowSuccess] = useState(false);
 
   const validateForm = () => {
     const newErrors: { name?: string; email?: string } = {};
@@ -124,10 +126,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
           throw new Error(confirmData.error || 'Payment confirmation failed');
         }
 
-        setMessage('Payment successful! Your ticket has been purchased.');
-        setTimeout(() => {
-          onSuccess();
-        }, 5000);
+        setMessage('Payment successful! Your ticket has been purchased. Join our Discord, where all future communication will take place!');
+        setShowSuccess(true);
       } else {
         throw new Error(`Payment was not successful. Status: ${paymentIntent?.status}`);
       }
@@ -137,6 +137,12 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
     } finally {
       setIsLoading(false);
     }
+  };
+
+  const handleCloseSuccess = () => {
+    setShowSuccess(false);
+    setMessage('');
+    onSuccess();
   };
 
   const cardElementOptions = {
@@ -185,12 +191,33 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
       </div>
 
       {message && (
-        <div className={`p-3 rounded-md ${
+        <div className={`p-3 rounded-md relative ${
           message.includes('successful') 
             ? 'bg-green-900 text-green-200 border border-green-700' 
             : 'bg-red-900 text-red-200 border border-red-700'
         }`}>
-          {message}
+          {showSuccess && (
+            <button
+              onClick={handleCloseSuccess}
+              className="absolute top-2 right-2 text-gray-300 hover:text-white transition-colors"
+              aria-label="Close success message"
+            >
+              <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+          )}
+          <div className="mb-3">{message}</div>
+          {message.includes('successful') && (
+            <a
+              href={SOCIAL_LINKS.DISCORD}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="inline-block px-4 py-2 bg-indigo-600 text-white rounded-md hover:bg-indigo-700 transition-colors text-sm font-medium"
+            >
+              Join Discord Server
+            </a>
+          )}
         </div>
       )}
 
