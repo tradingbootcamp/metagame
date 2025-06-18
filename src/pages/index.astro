@@ -1,6 +1,5 @@
 ---
 import Layout from "../layouts/Layout.astro";
-import TicketCard from "../components/TicketCard.astro";
 import Hero from "../components/sections/home/Hero.astro";
 import Organizers from "../components/sections/home/Organizers.astro";
 import Speakers from "../components/sections/home/Speakers.astro";
@@ -16,6 +15,7 @@ import Venue from "../components/sections/home/Venue.astro";
 import SetAnimationMin from "../components/Set/SetAnimationMin.tsx";
 import SetCardMin from "../components/Set/SetCardMin.tsx";
 import SetAnimation from "../components/Set/SetAnimation.tsx";
+import { TicketCard } from "../components/tickets/TicketCard.tsx";
 import { TICKET_EARLY_BIRD_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } from "../config";
 ---
 
@@ -38,25 +38,9 @@ import { TICKET_EARLY_BIRD_URL, TICKET_VOLUNTEER_URL, TICKET_SUPPORTER_URL } fro
             Grab a ticket!
           </h2>
           <div class="grid grid-cols-1 gap-8 md:grid-cols-3 pb-20">
-            <TicketCard
-              title="NPC"
-              price={`$150`}
-              description="Volunteer for 6 shifts over the weekend"
-              href={TICKET_VOLUNTEER_URL}
-            />
-            <TicketCard
-              title="Player"
-              price={`$500`}
-              regularPrice="$650"
-              description="Early bird price through July 9th, 2025"
-              href={TICKET_EARLY_BIRD_URL}
-            />
-            <TicketCard
-              title="Supporter"
-              price="$2048"
-              description="We will name a game after you"
-              href={TICKET_SUPPORTER_URL}
-            />
+            <TicketCard ticketTypeId="npc" client:load />
+            <TicketCard ticketTypeId="player" client:load />
+            <TicketCard ticketTypeId="supporter" client:load />
           </div>
         </div>
       </section>
