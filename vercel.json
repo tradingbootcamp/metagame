@@ -1,6 +1,6 @@
 {
   "functions": {
-    "dist/server/entry.mjs": {
+    "_functions/entry.mjs": {
       "maxDuration": 30
     }
   },
