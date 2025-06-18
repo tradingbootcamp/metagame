@@ -6,12 +6,5 @@
   },
   "env": {
     "ROLLUP_SKIP_NATIVE": "true"
-  },
-  "functions": {
-    "api/**/*.ts": {
-      "env": {
-        "ROLLUP_SKIP_NATIVE": "true"
-      }
-    }
   }
 } 
