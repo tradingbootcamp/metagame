@@ -5,6 +5,7 @@ import vercel from "@astrojs/vercel";
 
 export default defineConfig({
   site: "https://metagames.games",
+  output: "server",
   adapter: vercel({}),
   integrations: [
     tailwind(), 

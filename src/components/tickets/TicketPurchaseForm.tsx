@@ -58,6 +58,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
 
     try {
       // Step 1: Create payment intent
+      console.log('Creating payment intent for:', { ticketTypeId: ticketType.id, name, email });
       const paymentIntentResponse = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: {
@@ -70,12 +71,34 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
         }),
       });
 
+      console.log('Payment intent response status:', paymentIntentResponse.status);
+      console.log('Payment intent response headers:', Object.fromEntries(paymentIntentResponse.headers.entries()));
+
       if (!paymentIntentResponse.ok) {
-        const errorData = await paymentIntentResponse.json();
+        const responseText = await paymentIntentResponse.text();
+        console.error('Payment intent error response:', responseText);
+        
+        let errorData;
+        try {
+          errorData = JSON.parse(responseText);
+        } catch (e) {
+          throw new Error(`API returned HTML instead of JSON. Status: ${paymentIntentResponse.status}. Response: ${responseText.substring(0, 200)}...`);
+        }
+        
         throw new Error(errorData.error || 'Failed to create payment intent');
       }
 
-      const { clientSecret, paymentIntentId: intentId } = await paymentIntentResponse.json();
+      const responseText = await paymentIntentResponse.text();
+      console.log('Payment intent response text:', responseText);
+      
+      let responseData;
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        throw new Error(`API returned invalid JSON. Response: ${responseText.substring(0, 200)}...`);
+      }
+      
+      const { clientSecret, paymentIntentId: intentId } = responseData;
       setPaymentIntentId(intentId);
 
       // Step 2: Confirm payment with Stripe
