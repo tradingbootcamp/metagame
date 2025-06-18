@@ -24,6 +24,7 @@ export default defineConfig({
       'process.env.STRIPE_SECRET_KEY': JSON.stringify(process.env.STRIPE_SECRET_KEY),
       'process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY': JSON.stringify(process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY),
       'process.env.ROLLUP_SKIP_NATIVE': JSON.stringify('true'),
-    }
+    },
+    envPrefix: ['ROLLUP_SKIP_NATIVE'],
   }
 });

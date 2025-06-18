@@ -3,5 +3,8 @@
     "env": {
       "ROLLUP_SKIP_NATIVE": "true"
     }
+  },
+  "env": {
+    "ROLLUP_SKIP_NATIVE": "true"
   }
 } 
