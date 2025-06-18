@@ -1,0 +1,44 @@
+---
+// Server-side environment variables
+const serverEnv = {
+  hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
+  hasPublicStripeKey: !!process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+  publicStripeKey: process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'SET' : 'NOT SET',
+  nodeEnv: process.env.NODE_ENV,
+  // Add more debugging
+  allEnvKeys: Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('AIRTABLE')),
+  totalEnvKeys: Object.keys(process.env).length,
+  cwd: process.cwd(),
+};
+---
+
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>Environment Test</title>
+</head>
+<body>
+  <h1>Environment Variables Test</h1>
+  
+  <h2>Server-side Environment Variables:</h2>
+  <pre>{JSON.stringify(serverEnv, null, 2)}</pre>
+  
+  <h2>Client-side Environment Variables:</h2>
+  <div id="client-env"></div>
+  
+  <script>
+    // Client-side environment variables
+    const clientEnv = {
+      hasPublicStripeKey: !!import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      publicStripeKey: import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'SET' : 'NOT SET',
+      allKeys: Object.keys(import.meta.env),
+      publicKeys: Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')),
+    };
+    
+    const clientEnvDiv = document.getElementById('client-env');
+    if (clientEnvDiv) {
+      clientEnvDiv.innerHTML = `<pre>${JSON.stringify(clientEnv, null, 2)}</pre>`;
+    }
+  </script>
+</body>
+</html> 

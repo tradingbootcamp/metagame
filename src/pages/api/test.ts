@@ -11,6 +11,7 @@ export const GET: APIRoute = async () => {
       hasAirtableBaseId: !!process.env.AIRTABLE_BASE_ID,
       hasAirtableTableName: !!process.env.AIRTABLE_TABLE_NAME,
       hasPublicStripeKey: !!process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY,
+      publicStripeKey: process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY ? 'SET' : 'NOT SET',
       nodeEnv: process.env.NODE_ENV,
       rollupSkipNative: process.env.ROLLUP_SKIP_NATIVE,
     };

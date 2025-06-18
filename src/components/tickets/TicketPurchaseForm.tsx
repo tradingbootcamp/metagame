@@ -6,7 +6,23 @@ import type { TicketType } from '../../lib/types';
 import { SOCIAL_LINKS } from '../../config';
 
 // Load Stripe outside of component to avoid recreating on every render
-const stripePromise = loadStripe(import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripeKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY;
+console.log('Stripe publishable key:', stripeKey);
+console.log('Stripe key type:', typeof stripeKey);
+console.log('Stripe key length:', stripeKey?.length);
+
+// Debug all environment variables
+console.log('All import.meta.env keys:', Object.keys(import.meta.env));
+console.log('All PUBLIC_ env vars:', Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')));
+console.log('All STRIPE env vars:', Object.keys(import.meta.env).filter(k => k.includes('STRIPE')));
+
+if (!stripeKey) {
+  console.error('PUBLIC_STRIPE_PUBLISHABLE_KEY is not set!');
+  console.error('Available env vars:', Object.keys(import.meta.env).filter(k => k.includes('STRIPE')));
+}
+
+const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
+console.log('Stripe promise created:', !!stripePromise);
 
 interface TicketPurchaseFormProps {
   ticketType: TicketType;
@@ -23,6 +39,10 @@ interface PaymentFormProps {
 const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
+  
+  // Debug logging
+  console.log('PaymentForm rendered - Stripe:', !!stripe, 'Elements:', !!elements);
+  
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
@@ -269,6 +289,24 @@ export const TicketPurchaseForm: React.FC<TicketPurchaseFormProps> = ({
   onClose,
   onSuccess,
 }) => {
+  if (!stripePromise) {
+    return (
+      <div className="space-y-6">
+        <div className="bg-red-900 text-red-200 p-4 rounded-md border border-red-700">
+          <h3 className="text-lg font-semibold mb-2">Configuration Error</h3>
+          <p>Stripe is not properly configured. Please check your environment variables.</p>
+          <p className="text-sm mt-2">PUBLIC_STRIPE_PUBLISHABLE_KEY is missing or invalid.</p>
+        </div>
+        <button
+          onClick={onClose}
+          className="w-full px-4 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition-colors"
+        >
+          Close
+        </button>
+      </div>
+    );
+  }
+
   return (
     <Elements stripe={stripePromise}>
       <PaymentForm
