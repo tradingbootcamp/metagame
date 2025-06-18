@@ -6,7 +6,7 @@ import vercel from "@astrojs/vercel/serverless";
 export default defineConfig({
   site: "https://metagames.games",
   output: "server",
-  adapter: vercel({}),
+  adapter: vercel(),
   integrations: [
     tailwind(), 
     react({

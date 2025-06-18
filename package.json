@@ -15,7 +15,7 @@
     "@astrojs/node": "^8.3.4",
     "@astrojs/react": "^4.0.0",
     "@astrojs/tailwind": "^5.1.2",
-    "@astrojs/vercel": "^8.1.5",
+    "@astrojs/vercel": "^7.8.2",
     "@fontsource/jura": "^5.0.20",
     "@jaredreisinger/react-crossword": "github:briansmiley/react-crossword#dist",
     "@nanostores/react": "^0.8.4",
