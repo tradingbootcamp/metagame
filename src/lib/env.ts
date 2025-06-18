@@ -6,7 +6,11 @@ const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
 
 export const getEnvVar = (key: string): string => {
   const value = env[key] || process.env[key];
+  console.log(`Loading env var ${key}:`, value ? 'SET' : 'NOT SET');
   if (!value) {
+    console.error(`Environment variable ${key} is not set`);
+    console.error('Available env vars:', Object.keys(env));
+    console.error('Available process.env vars:', Object.keys(process.env).filter(k => k.includes('AIRTABLE') || k.includes('STRIPE')));
     throw new Error(`Environment variable ${key} is not set`);
   }
   return value;
