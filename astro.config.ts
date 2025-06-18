@@ -23,6 +23,7 @@ export default defineConfig({
       'process.env.AIRTABLE_TABLE_NAME': JSON.stringify(process.env.AIRTABLE_TABLE_NAME),
       'process.env.STRIPE_SECRET_KEY': JSON.stringify(process.env.STRIPE_SECRET_KEY),
       'process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY': JSON.stringify(process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY),
+      'process.env.ROLLUP_SKIP_NATIVE': JSON.stringify('true'),
     }
   }
 });

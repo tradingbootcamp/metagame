@@ -1,0 +1,12 @@
+{
+  "functions": {
+    "dist/server/entry.mjs": {
+      "maxDuration": 30
+    }
+  },
+  "build": {
+    "env": {
+      "ROLLUP_SKIP_NATIVE": "true"
+    }
+  }
+} 
