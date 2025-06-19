@@ -293,7 +293,9 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
                 </svg>
               </button>
             </div>
-            <span className="text-green-300 text-sm">-${(appliedCoupon.discountAmount / 100).toFixed(2)}</span>
+            <span className="text-green-300 text-sm">
+              -${Math.min(appliedCoupon.discountAmount / 100, ticketType.price).toFixed(2)}
+            </span>
           </div>
 
           {/* Total Price */}
