@@ -4,8 +4,8 @@ export const TICKET_TYPES: Record<string, TicketType> = {
   npc: {
     id: 'npc',
     title: 'NPC',
-    price: 150,
-    regularPrice: 150,
+    price: 1,
+    regularPrice: 1,
     description: 'Volunteer for 6 shifts over the weekend.',
     tooltipText: 'You won\'t get to participate in the megagame, but there will be other fun stuff to do, like staffing the registration desk and moving monitors from room A to room B and then back to room A again.',
     // features: [
