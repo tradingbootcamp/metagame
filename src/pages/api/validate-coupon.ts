@@ -46,6 +46,12 @@ export const POST: APIRoute = async ({ request }) => {
     console.log('Available COUPON_ env vars:', Object.keys(process.env).filter(k => k.startsWith('COUPON_')));
     console.log('All env vars:', Object.keys(process.env));
 
+    // Add this debug section
+    console.log('=== COUPON DEBUG ===');
+    console.log('COUPONS env var exists:', !!process.env.COUPONS);
+    console.log('COUPONS env var length:', process.env.COUPONS?.length || 0);
+    console.log('Individual COUPON_ vars:', Object.keys(process.env).filter(k => k.startsWith('COUPON_')));
+
     // Validate coupon
     const coupon = validateCoupon(couponCode.trim());
     console.log('Coupon validation result:', coupon);
