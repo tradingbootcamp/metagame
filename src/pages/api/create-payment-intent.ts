@@ -9,19 +9,7 @@ import { getTicketType } from '../../config/tickets';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
-    console.log('API route called: /api/create-payment-intent');
-    
-    // Check environment variables
-    console.log('Environment check:', {
-      hasStripeKey: !!process.env.STRIPE_SECRET_KEY,
-      hasAirtablePat: !!process.env.AIRTABLE_PAT,
-      hasAirtableBaseId: !!process.env.AIRTABLE_BASE_ID,
-      hasAirtableTableName: !!process.env.AIRTABLE_TABLE_NAME,
-    });
-
     const body = await request.json();
-    console.log('Request body:', body);
-    
     const { ticketTypeId, name, email } = body;
 
     // Validate required fields
@@ -71,15 +59,10 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.error('Error in create-payment-intent:', error);
-    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
-    console.error('Error message:', error instanceof Error ? error.message : 'Unknown error');
-    
     return new Response(
       JSON.stringify({ 
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
-        stack: error instanceof Error ? error.stack : undefined
+        details: error instanceof Error ? error.message : 'Unknown error'
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );

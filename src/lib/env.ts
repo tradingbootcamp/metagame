@@ -1,15 +1,10 @@
 // Environment variable loader for Astro
-import { loadEnv } from 'vite';
-
-// Load environment variables
-const env = loadEnv(process.env.NODE_ENV || 'development', process.cwd(), '');
+// Removed loadEnv import to fix Vercel deployment issues
 
 export const getEnvVar = (key: string): string => {
-  const value = env[key] || process.env[key];
-  console.log(`Loading env var ${key}:`, value ? 'SET' : 'NOT SET');
+  const value = process.env[key];
   if (!value) {
     console.error(`Environment variable ${key} is not set`);
-    console.error('Available env vars:', Object.keys(env));
     console.error('Available process.env vars:', Object.keys(process.env).filter(k => k.includes('AIRTABLE') || k.includes('STRIPE')));
     throw new Error(`Environment variable ${key} is not set`);
   }

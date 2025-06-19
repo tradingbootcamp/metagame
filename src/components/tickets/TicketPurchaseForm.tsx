@@ -7,22 +7,12 @@ import { SOCIAL_LINKS } from '../../config';
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripeKey = import.meta.env.PUBLIC_STRIPE_PUBLISHABLE_KEY;
-console.log('Stripe publishable key:', stripeKey);
-console.log('Stripe key type:', typeof stripeKey);
-console.log('Stripe key length:', stripeKey?.length);
-
-// Debug all environment variables
-console.log('All import.meta.env keys:', Object.keys(import.meta.env));
-console.log('All PUBLIC_ env vars:', Object.keys(import.meta.env).filter(k => k.startsWith('PUBLIC_')));
-console.log('All STRIPE env vars:', Object.keys(import.meta.env).filter(k => k.includes('STRIPE')));
 
 if (!stripeKey) {
-  console.error('PUBLIC_STRIPE_PUBLISHABLE_KEY is not set!');
-  console.error('Available env vars:', Object.keys(import.meta.env).filter(k => k.includes('STRIPE')));
+  throw new Error('PUBLIC_STRIPE_PUBLISHABLE_KEY is not set');
 }
 
-const stripePromise = stripeKey ? loadStripe(stripeKey) : null;
-console.log('Stripe promise created:', !!stripePromise);
+const stripePromise = loadStripe(stripeKey);
 
 interface TicketPurchaseFormProps {
   ticketType: TicketType;
@@ -39,9 +29,6 @@ interface PaymentFormProps {
 const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSuccess }) => {
   const stripe = useStripe();
   const elements = useElements();
-  
-  // Debug logging
-  console.log('PaymentForm rendered - Stripe:', !!stripe, 'Elements:', !!elements);
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -78,7 +65,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
 
     try {
       // Step 1: Create payment intent
-      console.log('Creating payment intent for:', { ticketTypeId: ticketType.id, name, email });
       const paymentIntentResponse = await fetch('/api/create-payment-intent', {
         method: 'POST',
         headers: {
@@ -91,12 +77,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
         }),
       });
 
-      console.log('Payment intent response status:', paymentIntentResponse.status);
-      console.log('Payment intent response headers:', Object.fromEntries(paymentIntentResponse.headers.entries()));
-
       if (!paymentIntentResponse.ok) {
         const responseText = await paymentIntentResponse.text();
-        console.error('Payment intent error response:', responseText);
         
         let errorData;
         try {
@@ -109,7 +91,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
       }
 
       const responseText = await paymentIntentResponse.text();
-      console.log('Payment intent response text:', responseText);
       
       let responseData;
       try {
@@ -143,7 +124,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
 
       if (paymentIntent?.status === 'succeeded') {
         // Step 3: Confirm payment and create Airtable record
-        console.log('Payment succeeded, confirming with server...');
         const confirmResponse = await fetch('/api/confirm-payment', {
           method: 'POST',
           headers: {
@@ -159,7 +139,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
         });
 
         const confirmData = await confirmResponse.json();
-        console.log('Confirm response:', confirmData);
 
         if (!confirmResponse.ok) {
           throw new Error(`Failed to confirm payment: ${confirmData.error || 'Unknown error'}`);
@@ -175,7 +154,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
         throw new Error(`Payment was not successful. Status: ${paymentIntent?.status}`);
       }
     } catch (error) {
-      console.error('Payment error:', error);
       setMessage(error instanceof Error ? error.message : 'An unexpected error occurred');
     } finally {
       setIsLoading(false);
@@ -289,24 +267,6 @@ export const TicketPurchaseForm: React.FC<TicketPurchaseFormProps> = ({
   onClose,
   onSuccess,
 }) => {
-  if (!stripePromise) {
-    return (
-      <div className="space-y-6">
-        <div className="bg-red-900 text-red-200 p-4 rounded-md border border-red-700">
-          <h3 className="text-lg font-semibold mb-2">Configuration Error</h3>
-          <p>Stripe is not properly configured. Please check your environment variables.</p>
-          <p className="text-sm mt-2">PUBLIC_STRIPE_PUBLISHABLE_KEY is missing or invalid.</p>
-        </div>
-        <button
-          onClick={onClose}
-          className="w-full px-4 py-2 border border-gray-600 text-gray-300 rounded-md hover:bg-gray-700 transition-colors"
-        >
-          Close
-        </button>
-      </div>
-    );
-  }
-
   return (
     <Elements stripe={stripePromise}>
       <PaymentForm
