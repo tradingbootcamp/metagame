@@ -32,14 +32,22 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
   
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
-  const [errors, setErrors] = useState<{ name?: string; email?: string }>({});
+  const [couponCode, setCouponCode] = useState('');
+  const [errors, setErrors] = useState<{ name?: string; email?: string; couponCode?: string }>({});
   const [isLoading, setIsLoading] = useState(false);
+  const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [paymentIntentId, setPaymentIntentId] = useState<string | null>(null);
   const [message, setMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<{
+    code: string;
+    discountAmount: number;
+    description: string;
+  } | null>(null);
+  const [finalPrice, setFinalPrice] = useState(ticketType.price);
 
   const validateForm = () => {
-    const newErrors: { name?: string; email?: string } = {};
+    const newErrors: { name?: string; email?: string; couponCode?: string } = {};
 
     if (!name.trim()) {
       newErrors.name = 'Name is required';
@@ -53,6 +61,60 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
 
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
+  };
+
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) {
+      setErrors(prev => ({ ...prev, couponCode: 'Please enter a coupon code' }));
+      return;
+    }
+
+    setIsApplyingCoupon(true);
+    setErrors(prev => ({ ...prev, couponCode: undefined }));
+
+    try {
+      console.log('Applying coupon:', couponCode.trim());
+      
+      const response = await fetch('/api/validate-coupon', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          couponCode: couponCode.trim(),
+          ticketTypeId: ticketType.id,
+        }),
+      });
+
+      const data = await response.json();
+      console.log('Coupon validation response:', data);
+
+      if (!data.valid) {
+        console.log('Coupon invalid:', data.error);
+        setErrors(prev => ({ ...prev, couponCode: data.error || 'Invalid coupon code' }));
+        setAppliedCoupon(null);
+        setFinalPrice(ticketType.price);
+        return;
+      }
+
+      // Apply the coupon
+      console.log('Coupon valid, applying...');
+      setAppliedCoupon(data.coupon);
+      setFinalPrice(data.discountedPrice / 100);
+      setCouponCode(''); // Clear the input field
+      setErrors(prev => ({ ...prev, couponCode: undefined }));
+    } catch (error) {
+      console.log('Error applying coupon:', error);
+      setErrors(prev => ({ ...prev, couponCode: 'Failed to validate coupon' }));
+    } finally {
+      setIsApplyingCoupon(false);
+    }
+  };
+
+  const handleRemoveCoupon = () => {
+    setAppliedCoupon(null);
+    setFinalPrice(ticketType.price);
+    setErrors(prev => ({ ...prev, couponCode: undefined }));
   };
 
   const handlePurchase = async () => {
@@ -74,6 +136,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
           ticketTypeId: ticketType.id,
           name,
           email,
+          couponCode: appliedCoupon?.code || '',
         }),
       });
 
@@ -196,11 +259,52 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
       <TicketFormFields
         name={name}
         email={email}
+        couponCode={couponCode}
         onNameChange={setName}
         onEmailChange={setEmail}
+        onCouponChange={setCouponCode}
+        onApplyCoupon={handleApplyCoupon}
         errors={errors}
         disabled={isLoading}
+        isApplyingCoupon={isApplyingCoupon}
       />
+
+      {/* Only show price breakdown when coupon is applied */}
+      {appliedCoupon && (
+        <div className="bg-gray-800 p-4 rounded-lg space-y-3">
+          {/* Original Price */}
+          <div className="flex justify-between items-center">
+            <span className="text-gray-300">Ticket Price:</span>
+            <span className="text-gray-300">${ticketType.price.toFixed(2)}</span>
+          </div>
+
+          {/* Applied Coupon */}
+          <div className="flex justify-between items-center py-2 border-t border-gray-700">
+            <div className="flex items-center gap-2">
+              <span className="text-green-300 text-sm">Coupon: {appliedCoupon.code}</span>
+              <button
+                type="button"
+                onClick={handleRemoveCoupon}
+                className="text-gray-400 hover:text-red-400 transition-colors"
+                title="Remove coupon"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+            </div>
+            <span className="text-green-300 text-sm">-${(appliedCoupon.discountAmount / 100).toFixed(2)}</span>
+          </div>
+
+          {/* Total Price */}
+          <div className="flex justify-between items-center pt-2 border-t border-gray-700">
+            <span className="text-white font-semibold">Total:</span>
+            <span className="text-white font-semibold text-lg">
+              ${finalPrice.toFixed(2)}
+            </span>
+          </div>
+        </div>
+      )}
 
       <div>
         <label className="block text-sm font-medium text-gray-300 mb-2">
@@ -255,7 +359,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, onSucces
           disabled={isLoading || !stripe}
           className="flex-1 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          {isLoading ? 'Processing...' : `Purchase $${ticketType.price}`}
+          {isLoading ? 'Processing...' : `Purchase $${finalPrice.toFixed(2)}`}
         </button>
       </div>
     </div>

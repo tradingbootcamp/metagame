@@ -6,11 +6,12 @@ if (!process.env.ROLLUP_SKIP_NATIVE) {
 import type { APIRoute } from 'astro';
 import { createPaymentIntent } from '../../lib/stripe';
 import { getTicketType } from '../../config/tickets';
+import { validateCoupon, applyCouponDiscount } from '../../lib/coupons';
 
 export const POST: APIRoute = async ({ request }) => {
   try {
     const body = await request.json();
-    const { ticketTypeId, name, email } = body;
+    const { ticketTypeId, name, email, couponCode } = body;
 
     // Validate required fields
     if (!ticketTypeId || !name || !email) {
@@ -38,15 +39,35 @@ export const POST: APIRoute = async ({ request }) => {
       );
     }
 
+    // Convert ticket price from dollars to cents for Stripe
+    const originalPriceInCents = ticketType.price * 100;
+
+    // Validate coupon if provided
+    let coupon = null;
+    let finalPriceInCents = originalPriceInCents;
+    if (couponCode && couponCode.trim()) {
+      coupon = validateCoupon(couponCode.trim());
+      if (!coupon) {
+        return new Response(
+          JSON.stringify({ error: 'Invalid coupon code' }),
+          { status: 400, headers: { 'Content-Type': 'application/json' } }
+        );
+      }
+      finalPriceInCents = applyCouponDiscount(originalPriceInCents, coupon);
+    }
+
     // Create payment intent
     const metadata = {
       ticketType: ticketType.title,
       customerName: name,
       customerEmail: email,
+      originalPrice: originalPriceInCents.toString(),
+      couponCode: coupon?.code || '',
+      discountAmount: coupon ? coupon.discountAmount.toString() : '0',
     };
 
     const { clientSecret, paymentIntentId } = await createPaymentIntent(
-      ticketType.price,
+      finalPriceInCents,
       metadata
     );
 
@@ -54,7 +75,13 @@ export const POST: APIRoute = async ({ request }) => {
       JSON.stringify({
         clientSecret,
         paymentIntentId,
-        amount: ticketType.price,
+        amount: finalPriceInCents,
+        originalAmount: originalPriceInCents,
+        coupon: coupon ? {
+          code: coupon.code,
+          discountAmount: coupon.discountAmount,
+          description: coupon.description,
+        } : null,
       }),
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
