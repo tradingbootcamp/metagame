@@ -15,8 +15,10 @@ interface Props {
 const { title } = Astro.props;
 const { url, site } = Astro;
 
+// Convert to absolute URL
+const imageURL = new URL("/images/metagame_website_cover.png", url).href;
+
 // const openGraphImageUrl = getImagePath({ url, site });
-const imageURL = "/images/metagame_website_cover.png";
 ---
 
 <!doctype html>
@@ -42,13 +44,12 @@ const imageURL = "/images/metagame_website_cover.png";
     <meta name="twitter:creator" content="@tradegal_" />
     <meta name="twitter:title" content={`${title}`} />
     <meta name="twitter:description" content="A conference for game design, strategy, narrative, and play" />
-    <meta name="twitter:text:title" content={`${title}`} />
-    <meta name="twitter:image" content={new URL(imageURL, url)} />
+    <meta name="twitter:image" content={imageURL} />
     <meta name="twitter:image:alt" content="METAGAME 2025 - A conference for game design, strategy, narrative, and play" />
     <meta charset="UTF-8" />
     <meta
-      name="description"
-      content="A description for your event"
+      name="Metagame 2025"
+      content="A conference for game design, strategy, narrative, and play"
     />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/logo.svg" />
