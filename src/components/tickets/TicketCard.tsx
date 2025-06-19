@@ -2,6 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { TicketPurchaseForm } from './TicketPurchaseForm';
 import { getTicketType } from '../../config/tickets';
 import type { TicketType } from '../../lib/types';
+import {
+  TICKET_EARLY_BIRD_URL,
+  TICKET_REGULAR_URL,
+  TICKET_VOLUNTEER_URL,
+  TICKET_SUPPORTER_URL
+} from '../../config';
 
 interface TicketCardProps {
   ticketTypeId: string;
@@ -59,6 +65,14 @@ export const TicketCard: React.FC<TicketCardProps> = ({
   if (!ticketType) {
     return <div>Invalid ticket type</div>;
   }
+
+  // Map ticketTypeId to Stripe URL
+  const ticketUrl =
+    ticketTypeId === 'early_bird' ? TICKET_EARLY_BIRD_URL :
+    ticketTypeId === 'volunteer' ? TICKET_VOLUNTEER_URL :
+    ticketTypeId === 'supporter' ? TICKET_SUPPORTER_URL :
+    ticketTypeId === 'regular' ? TICKET_REGULAR_URL :
+    '';
 
   const handleBuyNow = () => {
     setIsExpanded(true);
@@ -144,28 +158,20 @@ export const TicketCard: React.FC<TicketCardProps> = ({
 
         {/* Purchase Form or Buy Button */}
         <div className="mt-auto pt-3">
-          {showPurchaseForm ? (
-            <div className="border-t border-gray-700 pt-4 mt-4 text-left">
-              <TicketPurchaseForm
-                ticketType={ticketType}
-                onClose={handleClose}
-                onSuccess={handleSuccess}
-              />
+          <div className="relative inline-block hover:scale-105 transition-all">
+            <div className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-30 blur-lg transform translate-y-1 rounded-md transition-all duration-300 hover:scale-110 hover:scale-y-150">
             </div>
-          ) : (
-            <div className="relative inline-block hover:scale-105 transition-all">
-              <div className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-30 blur-lg transform translate-y-1 rounded-md transition-all duration-300 hover:scale-110 hover:scale-y-150">
+            <a
+              href={ticketUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 relative transition-all duration-300 rounded-md p-0.5 font-bold bg-[length:200%_200%] bg-[position:-100%_0] hover:bg-[position:100%_0]"
+            >
+              <div className="bg-dark-500 text-white w-full h-full px-12 rounded-md py-3 uppercase transition-all duration-1000">
+                Buy Now
               </div>
-              <button
-                onClick={handleBuyNow}
-                className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 relative transition-all duration-300 rounded-md p-0.5 font-bold bg-[length:200%_200%] bg-[position:-100%_0] hover:bg-[position:100%_0]"
-              >
-                <div className="bg-dark-500 text-white w-full h-full px-12 rounded-md py-3 uppercase transition-all duration-1000">
-                  Buy Now
-                </div>
-              </button>
-            </div>
-          )}
+            </a>
+          </div>
         </div>
       </div>
     </div>
