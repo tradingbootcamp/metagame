@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { TicketPurchaseForm } from './TicketPurchaseForm';
 import { getTicketType } from '../../config/tickets';
+import { Button } from '../Button';
 import type { TicketType } from '../../lib/types';
 import {
   TICKET_EARLY_BIRD_URL,
@@ -58,9 +58,6 @@ export const TicketCard: React.FC<TicketCardProps> = ({
   ticketTypeId, 
   onPurchaseSuccess 
 }) => {
-  const [showPurchaseForm, setShowPurchaseForm] = useState(false);
-  const [isExpanded, setIsExpanded] = useState(false);
-
   const ticketType = getTicketType(ticketTypeId);
   if (!ticketType) {
     return <div>Invalid ticket type</div>;
@@ -68,46 +65,19 @@ export const TicketCard: React.FC<TicketCardProps> = ({
 
   // Map ticketTypeId to Stripe URL
   const ticketUrl =
-    ticketTypeId === 'early_bird' ? TICKET_EARLY_BIRD_URL :
-    ticketTypeId === 'volunteer' ? TICKET_VOLUNTEER_URL :
+    ticketTypeId === 'player' ? TICKET_EARLY_BIRD_URL :
+    ticketTypeId === 'npc' ? TICKET_VOLUNTEER_URL :
     ticketTypeId === 'supporter' ? TICKET_SUPPORTER_URL :
     ticketTypeId === 'regular' ? TICKET_REGULAR_URL :
     '';
-
-  const handleBuyNow = () => {
-    setIsExpanded(true);
-    setShowPurchaseForm(true);
-  };
-
-  const handleClose = () => {
-    setShowPurchaseForm(false);
-    setIsExpanded(false);
-  };
-
-  const handleSuccess = () => {
-    setShowPurchaseForm(false);
-    setIsExpanded(false);
-    onPurchaseSuccess?.();
-  };
 
   const discountPercentage = ticketType.regularPrice 
     ? Math.round(((ticketType.regularPrice - ticketType.price) / ticketType.regularPrice) * 100)
     : 0;
 
   return (
-    <div className={`relative group transition-all duration-300 ${
-      isExpanded ? 'md:col-span-3' : ''
-    }`}>
+    <div className="relative group transition-all duration-300">
       <div className="card rounded-md border-amber-400 border-2 transition-all text-center flex flex-col p-6 h-full">
-        {/* Discount Badge
-        {ticketType.regularPrice && discountPercentage > 0 && (
-          <div className="absolute right-[-38px] h-10 w-[164px] border-b-2 rotate-45 transition-all border-amber-400 group-hover:border-fuchsia-400 motion-reduce:animate-pulse">
-            <div className="mb-8 text-3xl text-secondary-300 font-bold animate-pulse">
-              -{discountPercentage}%
-            </div>
-          </div>
-        )} */}
-
         {/* Ticket Header */}
         <div className="flex-grow flex flex-col">
           <div>
@@ -156,22 +126,11 @@ export const TicketCard: React.FC<TicketCardProps> = ({
           </div>
         </div>
 
-        {/* Purchase Form or Buy Button */}
+        {/* Buy Button */}
         <div className="mt-auto pt-3">
-          <div className="relative inline-block hover:scale-105 transition-all">
-            <div className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 absolute top-0 left-0 right-0 bottom-0 -z-10 opacity-30 blur-lg transform translate-y-1 rounded-md transition-all duration-300 hover:scale-110 hover:scale-y-150">
-            </div>
-            <a
-              href={ticketUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="bg-gradient-to-r from-fuchsia-500 via-amber-500 to-fuchsia-500 relative transition-all duration-300 rounded-md p-0.5 font-bold bg-[length:200%_200%] bg-[position:-100%_0] hover:bg-[position:100%_0]"
-            >
-              <div className="bg-dark-500 text-white w-full h-full px-12 rounded-md py-3 uppercase transition-all duration-1000">
-                Buy Now
-              </div>
-            </a>
-          </div>
+          <Button link={ticketUrl} target="_blank">
+            Buy Now
+          </Button>
         </div>
       </div>
     </div>
