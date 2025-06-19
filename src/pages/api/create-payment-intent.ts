@@ -1,3 +1,8 @@
+// Force ROLLUP_SKIP_NATIVE to prevent native module errors
+if (!process.env.ROLLUP_SKIP_NATIVE) {
+  process.env.ROLLUP_SKIP_NATIVE = 'true';
+}
+
 import type { APIRoute } from 'astro';
 import { createPaymentIntent } from '../../lib/stripe';
 import { getTicketType } from '../../config/tickets';
