@@ -7,6 +7,21 @@ export interface Coupon {
   valid: boolean;
 }
 
+// Get all coupons from environment
+const getAllCoupons = (): Record<string, Coupon> => {
+  const couponsData = getEnvVarSafe('COUPONS');
+  if (!couponsData) {
+    return {};
+  }
+
+  try {
+    return JSON.parse(couponsData);
+  } catch (error) {
+    console.error('Invalid coupons data:', error);
+    return {};
+  }
+};
+
 // Server-side only coupon validation
 export const validateCoupon = (code: string): Coupon | null => {
   // Only run on server-side
@@ -14,25 +29,42 @@ export const validateCoupon = (code: string): Coupon | null => {
     return null;
   }
 
-  const envKey = `COUPON_${code.toUpperCase()}`;
-  const couponData = getEnvVarSafe(envKey);
+  const coupons = getAllCoupons();
   
-  if (!couponData) {
+  // Search through all coupons to find one with matching code
+  for (const [name, coupon] of Object.entries(coupons)) {
+    if (coupon.code === code.toUpperCase() && coupon.valid !== false) {
+      return {
+        code: coupon.code,
+        discountAmount: coupon.discountAmount,
+        description: coupon.description,
+        valid: true,
+      };
+    }
+  }
+
+  return null;
+};
+
+// Get coupon by name (for puzzle rewards)
+export const getCouponByName = (name: string): Coupon | null => {
+  if (typeof process === 'undefined') {
     return null;
   }
 
-  try {
-    const parsed = JSON.parse(couponData);
+  const coupons = getAllCoupons();
+  const coupon = coupons[name.toUpperCase()];
+  
+  if (coupon && coupon.valid !== false) {
     return {
-      code: parsed.code,
-      discountAmount: parsed.discountAmount,
-      description: parsed.description,
-      valid: parsed.valid !== false,
+      code: coupon.code,
+      discountAmount: coupon.discountAmount,
+      description: coupon.description,
+      valid: true,
     };
-  } catch (error) {
-    console.error(`Invalid coupon data for ${code}:`, error);
-    return null;
   }
+
+  return null;
 };
 
 export const applyCouponDiscount = (originalPrice: number, coupon: Coupon): number => {

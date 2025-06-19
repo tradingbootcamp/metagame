@@ -1,4 +1,3 @@
-
 import React, {
   useCallback,
   useContext,
@@ -443,6 +442,12 @@ export default function MyCrossword() {
   const [escapeHoldCompleted, setEscapeHoldCompleted] = useState(false);
   const escapeStartTime = useRef<number | null>(null);
   const [showReset, setShowReset] = useState(false);
+  const [couponInfo, setCouponInfo] = useState<{
+    name: string;
+    code: string;
+    discount: string;
+    description: string;
+  } | null>(null);
 
   useEffect(() => {
     let timeoutId: NodeJS.Timeout | null = null;
@@ -476,6 +481,7 @@ export default function MyCrossword() {
   const onCrosswordComplete = (correct: boolean) => {
     setIsCompleted(true);
     setIsCorrect(correct);
+    fetchCouponInfo();
   };
 
   const onAnswerCorrect = (
@@ -496,6 +502,28 @@ export default function MyCrossword() {
 
   const onCellChange = (row: number, col: number, char: string) => {
     setShowReset(true);
+  };
+
+  const fetchCouponInfo = async () => {
+    try {
+      const response = await fetch('/api/get-coupon-display', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          puzzleSolved: true,
+          couponName: 'CROSSWORD'
+        }),
+      });
+
+      if (response.ok) {
+        const data = await response.json();
+        setCouponInfo(data);
+      }
+    } catch (error) {
+      console.error('Failed to fetch coupon info:', error);
+    }
   };
 
   return (
@@ -555,7 +583,7 @@ export default function MyCrossword() {
           )}
           {escapeHoldCompleted && (
             <div className="mt-2 p-4 bg-blue-100 text-blue-800 rounded-lg text-center">
-              Congratulations! Use coupon code "ESCAPEKEY" for $50 off your
+              Congratulations! Use coupon code "{couponInfo?.code}" for {couponInfo?.discount} off your
               ticket price! 🎉
             </div>
           )}
