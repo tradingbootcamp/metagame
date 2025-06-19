@@ -1,4 +1,6 @@
 {
+  "buildCommand": "npm run build",
+  "installCommand": "npm install",
   "build": {
     "env": {
       "ROLLUP_SKIP_NATIVE": "true"
