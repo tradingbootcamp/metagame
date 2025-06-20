@@ -11,6 +11,9 @@ export interface Coupon {
 const getAllCoupons = (): Record<string, Coupon> => {
 
   try {
+    console.log('COUPONS:', COUPONS);
+    console.log('COUPONS length:', COUPONS.length);
+    console.log('COUPONS toJSON:', JSON.parse(COUPONS));
     return JSON.parse(COUPONS);
   } catch (error) {
     console.error('Invalid coupons data:', error);
