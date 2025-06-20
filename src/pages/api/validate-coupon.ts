@@ -36,18 +36,9 @@ export const POST: APIRoute = async ({ request }) => {
     const originalPriceInCents = ticketType.price * 100;
 
     // Debug: Check what environment variables are available
-    const envKey = `COUPON_${couponCode.trim().toUpperCase()}`;
-    const couponData = process.env[envKey];
-    
-    console.log('Debug coupon validation:');
-    console.log('Coupon code:', couponCode.trim());
-    console.log('Environment key:', envKey);
-    console.log('Coupon data found:', !!couponData);
-    console.log('Available COUPON_ env vars:', Object.keys(process.env).filter(k => k.startsWith('COUPON_')));
-    console.log('All env vars:', Object.keys(process.env));
-
-    // Add this debug section
-    console.log('=== COUPON DEBUG ===');
+    console.log('=== ENVIRONMENT DEBUG ===');
+    console.log('NODE_ENV:', process.env.NODE_ENV);
+    console.log('Available env vars:', Object.keys(process.env).filter(k => k.includes('COUPON') || k.includes('STRIPE') || k.includes('AIRTABLE')));
     console.log('COUPONS env var exists:', !!process.env.COUPONS);
     console.log('COUPONS env var length:', process.env.COUPONS?.length || 0);
     console.log('Individual COUPON_ vars:', Object.keys(process.env).filter(k => k.startsWith('COUPON_')));
@@ -63,9 +54,11 @@ export const POST: APIRoute = async ({ request }) => {
           valid: false,
           error: 'Invalid coupon code',
           debug: {
-            envKey,
-            couponDataFound: !!couponData,
-            availableCouponVars: Object.keys(process.env).filter(k => k.startsWith('COUPON_'))
+            couponCode: couponCode.trim(),
+            availableCouponVars: Object.keys(process.env).filter(k => k.startsWith('COUPON_')),
+            hasCouponsEnvVar: !!process.env.COUPONS,
+            couponsEnvVarLength: process.env.COUPONS?.length || 0,
+            nodeEnv: process.env.NODE_ENV
           }
         }),
         { status: 200, headers: { 'Content-Type': 'application/json' } }
@@ -91,12 +84,20 @@ export const POST: APIRoute = async ({ request }) => {
       { status: 200, headers: { 'Content-Type': 'application/json' } }
     );
   } catch (error) {
-    console.log('Error in validate-coupon:', error);
+    console.error('Error in validate-coupon:', error);
+    console.error('Error stack:', error instanceof Error ? error.stack : 'No stack trace');
+    
+    // Always return a proper JSON response, even on error
     return new Response(
       JSON.stringify({ 
         valid: false,
         error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error'
+        details: error instanceof Error ? error.message : 'Unknown error',
+        debug: {
+          nodeEnv: process.env.NODE_ENV,
+          availableEnvVars: Object.keys(process.env).filter(k => k.includes('COUPON')),
+          errorType: error.constructor.name
+        }
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
     );
