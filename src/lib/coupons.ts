@@ -1,4 +1,4 @@
-import { getEnvVarSafe } from './env';
+import { COUPONS } from './env';
 
 export interface Coupon {
   code: string;
@@ -9,13 +9,9 @@ export interface Coupon {
 
 // Get all coupons from environment
 const getAllCoupons = (): Record<string, Coupon> => {
-  const couponsData = getEnvVarSafe('COUPONS');
-  if (!couponsData) {
-    return {};
-  }
 
   try {
-    return JSON.parse(couponsData);
+    return JSON.parse(COUPONS);
   } catch (error) {
     console.error('Invalid coupons data:', error);
     return {};
