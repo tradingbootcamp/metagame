@@ -18,7 +18,7 @@ export const GET: APIRoute = async () => {
       publicKeyLength: process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY?.length || 0,
       nodeEnv: process.env.NODE_ENV,
       cwd: process.cwd(),
-      allEnvKeys: Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('AIRTABLE')),
+      allEnvKeys: Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('AIRTABLE') || k.includes('COUPON')),
       totalEnvKeys: Object.keys(process.env).length,
     },
     timestamp: new Date().toISOString()
