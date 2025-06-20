@@ -96,7 +96,7 @@ export const POST: APIRoute = async ({ request }) => {
         debug: {
           nodeEnv: process.env.NODE_ENV,
           availableEnvVars: Object.keys(process.env).filter(k => k.includes('COUPON')),
-          errorType: error.constructor.name
+          errorType: error instanceof Error ? error.constructor.name : 'Unknown'
         }
       }),
       { status: 500, headers: { 'Content-Type': 'application/json' } }
