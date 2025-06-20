@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 
 export const GET: APIRoute = async () => {
   console.log('=== ENVIRONMENT VARIABLE DEBUG ===');
-  console.log('process.env keys:', Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('AIRTABLE')));
+  console.log('process.env keys:', Object.keys(process.env).filter(k => k.includes('STRIPE') || k.includes('AIRTABLE') || k.includes('COUPON')));
   console.log('STRIPE_SECRET_KEY exists:', !!process.env.STRIPE_SECRET_KEY);
   console.log('PUBLIC_STRIPE_PUBLISHABLE_KEY exists:', !!process.env.PUBLIC_STRIPE_PUBLISHABLE_KEY);
   console.log('NODE_ENV:', process.env.NODE_ENV);
