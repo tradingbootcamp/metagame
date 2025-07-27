@@ -34,7 +34,7 @@ export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   return (
-    <div className="fixed w-full z-10 shadow-[0px_4px_8px_0px_#8b1d6d]">
+    <div className="fixed w-full z-navbar shadow-[0px_4px_8px_0px_#8b1d6d]">
       <nav className="bg-dark-500">
         <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">

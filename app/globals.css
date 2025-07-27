@@ -4,6 +4,13 @@
   themes: synthwave --default, dark --prefersdark;
 }
 @theme {
+  --z-index-content: 5;
+  --z-index-sticky: 10;
+  --z-index-sticky-header: 20;
+  --z-index-dropdown: 25;
+  --z-index-modal: 40;
+  --z-index-navbar: 50;
+  --z-index-toast: 60;
   --color-dark-50: #D3D1FF;
   --color-dark-100: #A19EFF;
   --color-dark-200: #4942FF;
