@@ -1,8 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createPaymentIntent } from '../../../lib/stripe';
 import { getTicketType } from '../../../config/tickets';
-import { validateCoupon, applyCouponDiscount } from '../../../lib/coupons';
-import { isTicketTypeEligibleForCoupons } from '../../../lib/ticket-eligibility';
+import { validateCouponForPurchase } from '../../../lib/coupons';
 import { paymentIntentSchema } from '../../../lib/schemas/ticket';
 import { ZodError } from 'zod';
 
@@ -30,22 +29,17 @@ export async function POST(request: NextRequest) {
     let coupon = null;
     let finalPriceInCents = originalPriceInCents;
     if (couponCode && couponCode.trim()) {
-      // Check if this ticket type is eligible for coupons
-      if (!isTicketTypeEligibleForCoupons(ticketTypeId)) {
+      const validationResult = await validateCouponForPurchase(couponCode.trim(), email, ticketTypeId);
+      
+      if (!validationResult.valid) {
         return NextResponse.json(
-          { error: 'Coupons are not available for this ticket type' },
+          { error: validationResult.error },
           { status: 400 }
         );
       }
       
-      coupon = validateCoupon(couponCode.trim());
-      if (!coupon) {
-        return NextResponse.json(
-          { error: 'Invalid coupon code' },
-          { status: 400 }
-        );
-      }
-      finalPriceInCents = applyCouponDiscount(originalPriceInCents, coupon);
+      coupon = validationResult.coupon;
+      finalPriceInCents = validationResult.newPriceCents;
     }
 
     // Create payment intent
@@ -56,7 +50,7 @@ export async function POST(request: NextRequest) {
       customerDiscordHandle: discordHandle || '',
       originalPrice: originalPriceInCents.toString(),
       couponCode: coupon?.code || '',
-      discountAmount: coupon ? coupon.discountAmount.toString() : '0',
+      discountAmount: coupon ? coupon.discountAmountCents.toString() : '0',
     };
     let clientSecret: string;
     let paymentIntentId: string;
@@ -81,7 +75,7 @@ export async function POST(request: NextRequest) {
       originalAmount: originalPriceInCents,
       coupon: coupon ? {
         code: coupon.code,
-        discountAmount: coupon.discountAmount,
+        discountAmount: coupon.discountAmountCents,
         description: coupon.description,
       } : null,
     });

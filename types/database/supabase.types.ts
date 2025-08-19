@@ -7,13 +7,49 @@ export type Json =
   | Json[]
 
 export type Database = {
-  // Allows to automatically instanciate createClient with right options
+  // Allows to automatically instantiate createClient with right options
   // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
   __InternalSupabase: {
     PostgrestVersion: "12.2.12 (cd3cf9e)"
   }
   public: {
     Tables: {
+      coupons: {
+        Row: {
+          coupon_code: string
+          created_at: string
+          description: string | null
+          discount_amount_cents: number
+          email_for: string | null
+          enabled: boolean
+          id: number
+          max_uses: number | null
+          used_count: number
+        }
+        Insert: {
+          coupon_code: string
+          created_at?: string
+          description?: string | null
+          discount_amount_cents?: number
+          email_for?: string | null
+          enabled?: boolean
+          id?: number
+          max_uses?: number | null
+          used_count?: number
+        }
+        Update: {
+          coupon_code?: string
+          created_at?: string
+          description?: string | null
+          discount_amount_cents?: number
+          email_for?: string | null
+          enabled?: boolean
+          id?: number
+          max_uses?: number | null
+          used_count?: number
+        }
+        Relationships: []
+      }
       locations: {
         Row: {
           campus_location: string | null
@@ -89,13 +125,15 @@ export type Database = {
       profiles: {
         Row: {
           discord_handle: string | null
+          dismissed_info_request: boolean
           email: string | null
           first_name: string | null
           homepage_order: number | null
           id: string
           is_admin: boolean
           last_name: string | null
-          opted_in_to_homepage_display: boolean
+          minor: boolean | null
+          opted_in_to_homepage_display: boolean | null
           profile_pictures_url: string | null
           site_name: string | null
           site_name_2: string | null
@@ -104,13 +142,15 @@ export type Database = {
         }
         Insert: {
           discord_handle?: string | null
+          dismissed_info_request?: boolean
           email?: string | null
           first_name?: string | null
           homepage_order?: number | null
           id: string
           is_admin?: boolean
           last_name?: string | null
-          opted_in_to_homepage_display?: boolean
+          minor?: boolean | null
+          opted_in_to_homepage_display?: boolean | null
           profile_pictures_url?: string | null
           site_name?: string | null
           site_name_2?: string | null
@@ -119,13 +159,15 @@ export type Database = {
         }
         Update: {
           discord_handle?: string | null
+          dismissed_info_request?: boolean
           email?: string | null
           first_name?: string | null
           homepage_order?: number | null
           id?: string
           is_admin?: boolean
           last_name?: string | null
-          opted_in_to_homepage_display?: boolean
+          minor?: boolean | null
+          opted_in_to_homepage_display?: boolean | null
           profile_pictures_url?: string | null
           site_name?: string | null
           site_name_2?: string | null

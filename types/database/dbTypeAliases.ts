@@ -28,3 +28,7 @@ export type DbSessionRsvpView = Tables<"session_rsvps_view">;
 export type DbOpendnodeOrder = Tables<"opennode_orders">;
 export type DbOpendnodeOrderInsert = TablesInsert<"opennode_orders">;
 export type DbOpendnodeOrderUpdate = TablesUpdate<"opennode_orders">;
+
+export type DbCoupon = Tables<"coupons">;
+export type DbCouponInsert = TablesInsert<"coupons">;
+export type DbCouponUpdate = TablesUpdate<"coupons">;

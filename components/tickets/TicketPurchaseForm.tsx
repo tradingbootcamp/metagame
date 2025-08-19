@@ -14,9 +14,12 @@ import {
 } from '../../lib/schemas/ticket';
 import { ZodError } from 'zod';
 import { PaymentCurrency } from './Tickets';
-import { isTicketTypeEligibleForCoupons } from '../../lib/ticket-eligibility';
 import { getHostedCheckoutUrl } from '@/utils/opennode';
 import { getDayPassTicketType } from '@/config/tickets';
+import { isTicketTypeEligibleForCoupons, ValidatedCoupon } from '@/lib/coupons';
+import { DbTicketType } from '@/types/database/dbTypeAliases';
+import { validateCouponBodySchema } from '@/app/api/validate-coupon/reqSchema';
+import { validateCouponResultSchema } from '@/lib/coupons';
 
 // Load Stripe outside of component to avoid recreating on every render
 const stripeKey = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY;
@@ -51,15 +54,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, paymentM
   const [isApplyingCoupon, setIsApplyingCoupon] = useState(false);
   const [message, setMessage] = useState('');
   const [showSuccess, setShowSuccess] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<{
-    code: string;
-    discountAmount: number;
-    description: string;
-  } | null>(null);
+  const [appliedCoupon, setAppliedCoupon] = useState<ValidatedCoupon | null>(null);
   const [finalPrice, setFinalPrice] = useState(selectedUsdPrice ?? ticketType.price);
   const isBtc = paymentMethod === 'btc';
   const btcAmount = selectedBtcPrice ?? ticketType.priceBtc;
-  const couponsEnabled = isTicketTypeEligibleForCoupons(ticketType.id) && !isBtc;
+  const couponsEnabled = isTicketTypeEligibleForCoupons(ticketType.id as DbTicketType) && !isBtc;
   
   const validateForm = (): boolean => {
     try {
@@ -107,10 +106,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, paymentM
 
     try {
       // Prepare coupon data
-      const couponData = {
-        couponCode: formData.couponCode.trim(),
+      const couponData = validateCouponBodySchema.parse({
+        couponCode: formData.couponCode,
         ticketTypeId: ticketType.id,
-      };
+        userEmail: formData.email,
+      });
 
       const response = await fetch('/api/validate-coupon', {
         method: 'POST',
@@ -140,17 +140,17 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, paymentM
       }
 
       const data = await response.json();
-
-      if (!data.valid) {
-        setErrors(prev => ({ ...prev, couponCode: data.error || 'Invalid coupon code' }));
+      const parsedData = validateCouponResultSchema.parse(data);
+      if (!parsedData.valid) {
+        setErrors(prev => ({ ...prev, couponCode: parsedData.error || 'Invalid coupon code' }));
         setAppliedCoupon(null);
         setFinalPrice(ticketType.price);
         return;
       }
 
       // Apply the coupon
-      setAppliedCoupon(data.coupon);
-      setFinalPrice(data.discountedPrice / 100);
+      setAppliedCoupon(parsedData.coupon);
+      setFinalPrice(parsedData.newPriceCents / 100);
       setErrors(prev => ({
         ...prev,
         couponCode: ''
@@ -378,15 +378,18 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, paymentM
 
       {/* Only show price breakdown when coupon is applied (fiat only) */}
       {!isBtc && appliedCoupon && (
-        <div className="bg-gray-800 p-4 rounded-lg space-y-3">
+        <div className="bg-gray-800 p-4 rounded-lg flex flex-col">
           {/* Original Price */}
           <div className="flex justify-between items-center">
             <span className="text-gray-300">Ticket Price:</span>
             <span className="text-gray-300">${ticketType.price.toFixed(2)}</span>
           </div>
 
+          {/* Separator */}
+          <div className="border-t border-gray-700 my-1" />
+
           {/* Applied Coupon */}
-          <div className="flex justify-between items-center py-2 border-t border-gray-700">
+          <div className="flex justify-between items-center">
             <div className="flex items-center gap-2">
               <span className="text-green-300 text-sm">Coupon: {appliedCoupon.code}</span>
               <button
@@ -401,12 +404,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({ ticketType, onClose, paymentM
               </button>
             </div>
             <span className="text-green-300 text-sm">
-              -${Math.min(appliedCoupon.discountAmount / 100, ticketType.price).toFixed(2)}
+              -${Math.min(appliedCoupon.discountAmountCents / 100, ticketType.price).toFixed(2)}
             </span>
           </div>
 
+          {/* Separator */}
+          <div className="border-t border-gray-700 my-1" />
+
           {/* Total Price */}
-          <div className="flex justify-between items-center pt-2 border-t border-gray-700">
+          <div className="flex justify-between items-center">
             <span className=" font-semibold">Total:</span>
             <span className=" font-semibold text-lg">
               ${finalPrice.toFixed(2)}

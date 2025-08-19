@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { validateCoupon, applyCouponDiscount } from '../../../lib/coupons';
-import { isTicketTypeEligibleForCoupons } from '../../../lib/ticket-eligibility';
-import { getTicketType } from '../../../config/tickets';
+import { validateCouponForPurchase, ValidateCouponResult, validateCouponResultSchema } from '@/lib/coupons';
+import { validateCouponBodySchema } from './reqSchema';
 
 // Simple in-memory rate limiting (for production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
@@ -25,7 +24,7 @@ function checkRateLimit(ip: string): boolean {
   return true;
 }
 
-export async function POST(request: NextRequest) {
+export async function POST(request: NextRequest): Promise<NextResponse<ValidateCouponResult>> {
   try {
     // Basic rate limiting
     const ip = request.headers.get('x-forwarded-for') || 
@@ -34,73 +33,51 @@ export async function POST(request: NextRequest) {
     
     if (!checkRateLimit(ip)) {
       return NextResponse.json(
-        { error: 'Too many requests. Please try again later.' },
+        validateCouponResultSchema.parse({
+          valid: false,
+          error: 'Too many requests. Please try again later.'
+        }),
         { status: 429 }
       );
     }
 
-    const body = await request.json();
-    const { couponCode, ticketTypeId } = body;
-
-    if (!couponCode || !ticketTypeId) {
+    const {success, data: bodyData, error: bodyError} = validateCouponBodySchema.safeParse(await request.json());
+    if (!success) {
       return NextResponse.json(
-        { error: 'Missing required fields' },
+        validateCouponResultSchema.parse({
+          valid: false,
+          error: `Coupon validation failed: ${bodyError?.issues[0].message}`,
+          details: bodyError?.issues.map((issue) => ({
+            path: issue.path.join('.'),
+            message: issue.message,
+          }))
+        }),
         { status: 400 }
       );
     }
+    const { couponCode, ticketTypeId, userEmail } = bodyData;
 
-    // Get ticket type
-    const ticketType = getTicketType(ticketTypeId);
-    if (!ticketType) {
+    // Validate coupon using the abstracted function
+    const validationResult = await validateCouponForPurchase(couponCode, userEmail, ticketTypeId);
+
+    if (!validationResult.valid) {
       return NextResponse.json(
-        { error: 'Invalid ticket type' },
+        validationResult,
         { status: 400 }
       );
-    }
+    } 
 
-    // Check if this ticket type is eligible for coupons
-    if (!isTicketTypeEligibleForCoupons(ticketTypeId)) {
-      return NextResponse.json({
-        valid: false,
-        error: 'Coupons are not available for this ticket type'
-      });
-    }
-
-    // Convert ticket price from dollars to cents for Stripe
-    const originalPriceInCents = ticketType.price * 100;
-
-    // Validate coupon
-    const coupon = validateCoupon(couponCode.trim());
-    
-    if (!coupon) {
-      return NextResponse.json({
-        valid: false,
-        error: 'Invalid coupon code'
-      });
-    }
-
-    // Calculate discounted price (in cents)
-    const discountedPriceInCents = applyCouponDiscount(originalPriceInCents, coupon);
-
-    return NextResponse.json({
-      valid: true,
-      coupon: {
-        code: coupon.code,
-        discountAmount: coupon.discountAmount,
-        description: coupon.description,
-      },
-      originalPrice: originalPriceInCents,
-      discountedPrice: discountedPriceInCents,
-      savings: originalPriceInCents - discountedPriceInCents,
-    });
+    return NextResponse.json(
+      validationResult, 
+      { status: 200 });
   } catch (error) {
     console.error('Error in validate-coupon:', error);
     
     return NextResponse.json(
-      { 
+      validateCouponResultSchema.parse({ 
         valid: false,
         error: 'Internal server error'
-      },
+      }), 
       { status: 500 }
     );
   }

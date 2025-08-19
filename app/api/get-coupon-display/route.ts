@@ -1,5 +1,5 @@
+import { couponsService } from '@/lib/db/coupons';
 import { NextRequest, NextResponse } from 'next/server';
-import { getCouponByName } from '../../../lib/coupons';
 
 export async function POST(request: NextRequest) {
   try {
@@ -22,7 +22,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Get coupon info by name
-    const coupon = getCouponByName(couponName);
+    const coupon = await couponsService.getByCode({ couponCode: couponName });
     
     if (!coupon) {
       return NextResponse.json(
@@ -33,8 +33,8 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       name: couponName.toUpperCase(),
-      code: coupon.code,
-      discount: `$${(coupon.discountAmount / 100).toFixed(0)}`,
+      code: coupon.coupon_code,
+      discount: `$${(coupon.discount_amount_cents / 100).toFixed(0)}`,
       description: coupon.description
     });
   } catch (error) {
