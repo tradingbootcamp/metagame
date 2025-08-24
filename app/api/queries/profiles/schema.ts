@@ -21,7 +21,7 @@ export const ProfileSchema = z.object({
   is_admin: z.boolean(),
   minor: z.boolean().nullable(),
   bringing_kids: z.boolean().nullable(),
-  team: z.enum(TEAM_COLORS_ENUM).nullable(),
+  team: z.enum(TEAM_COLORS_ENUM),
 }) satisfies z.ZodType<DbProfile>
 
 export const ProfilesResponseSchema = z.array(ProfileSchema)
