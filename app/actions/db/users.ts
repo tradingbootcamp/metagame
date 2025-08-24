@@ -37,3 +37,7 @@ export const deleteCurrentUserProfilePicture = async () => {
 }
 export const fullDeleteCurrentUser = async () =>
   currentUserWrapper(usersService.fullDeleteUser)({})
+// Admin mutation for updating any user's profile
+export const adminUpdateUserProfile = adminExportWrapper(
+  usersService.updateUserProfile,
+)
