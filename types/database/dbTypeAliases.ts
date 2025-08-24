@@ -31,6 +31,10 @@ export type DbSessionRsvpInsert = TablesInsert<'session_rsvps'>
 export type DbSessionRsvpUpdate = TablesUpdate<'session_rsvps'>
 export type DbSessionRsvpView = Tables<'session_rsvps_view'>
 
+export type DbSessionBookmark = Tables<'session_bookmarks'>
+export type DbSessionBookmarkInsert = TablesInsert<'session_bookmarks'>
+export type DbSessionBookmarkUpdate = TablesUpdate<'session_bookmarks'>
+
 export type DbOpendnodeOrder = Tables<'opennode_orders'>
 export type DbOpendnodeOrderInsert = TablesInsert<'opennode_orders'>
 export type DbOpendnodeOrderUpdate = TablesUpdate<'opennode_orders'>
