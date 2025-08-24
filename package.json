@@ -13,6 +13,7 @@
     "prepare": "husky install",
     "start": "next start",
     "test": "playwright test",
+    "typecheck": "tsc --noEmit",
     "types:supabase": "npx supabase gen types typescript --project-id fkarmpoupazxnshofaeg --schema public > types/database/supabase.types.ts"
   },
   "lint-staged": {

@@ -1,6 +1,12 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+echo "✨ Running typecheck..."
+pnpm typecheck || {
+  echo "❌ typecheck failed"
+  echo "Go to command output for log"
+  exit 1
+}
 echo "✨ Running lint-staged with prettier, package.json sorting, and eslint..."
 pnpm lint-staged --verbose || {
   echo "❌ lint-staged failed"
