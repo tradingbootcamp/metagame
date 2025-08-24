@@ -10,6 +10,7 @@ import {
 
 import { createClient } from '@/utils/supabase/server'
 
+import { currentUserGetSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 // import { fetchSessions, fetchCurrentUserRsvps, fetchLocations } from "./queries"
 import { SessionResponse } from '@/app/api/queries/sessions/schema'
 
@@ -35,6 +36,10 @@ export default async function ScheduleProvider({
     queryClient.prefetchQuery({
       queryKey: ['locations'],
       queryFn: getAllLocations,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['bookmarks', 'current-user'],
+      queryFn: currentUserGetSessionBookmarks,
     }),
   ])
 

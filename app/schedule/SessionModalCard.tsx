@@ -5,13 +5,17 @@ import { useMemo, useState } from 'react'
 import { AddEventModal } from './EditEventModal'
 import { fetchCurrentUserRsvps } from './queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-import { CheckIcon, EditIcon, LinkIcon, UserIcon } from 'lucide-react'
+import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
 import { dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 
+import {
+  currentUserGetSessionBookmarks,
+  currentUserToggleSessionBookmark,
+} from '@/app/actions/db/sessionBookmarks'
 import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
@@ -20,6 +24,7 @@ import { RsvpResponse } from '@/app/api/queries/rsvps/schema'
 import { SessionResponse } from '@/app/api/queries/sessions/schema'
 
 import { useUser } from '@/hooks/dbQueries'
+import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
@@ -40,7 +45,49 @@ export default function SessionDetailsCard({
       currentUserRsvps.data?.find((rsvp) => rsvp.session_id === session.id!),
     [currentUserRsvps.data, session.id],
   )
-
+  const { data: bookmarks } = useQuery({
+    queryKey: ['bookmarks', 'current-user'],
+    queryFn: currentUserGetSessionBookmarks,
+  })
+  const sessionBookmarked = useMemo(
+    () =>
+      bookmarks?.some((bookmark) => bookmark.session_id === session.id!) ??
+      false,
+    [bookmarks, session.id],
+  )
+  const bookmarkMutation = useMutation({
+    mutationFn: () =>
+      currentUserToggleSessionBookmark({ sessionId: session.id! }),
+    onMutate: async () => {
+      await queryClient.cancelQueries({
+        queryKey: ['bookmarks', 'current-user'],
+      })
+      const previousBookmarks = queryClient.getQueryData([
+        'bookmarks',
+        'current-user',
+      ])
+      if (sessionBookmarked) {
+        queryClient.setQueryData(
+          ['bookmarks', 'current-user'],
+          (old: DbSessionBookmark[] | undefined) =>
+            old?.filter((bookmark) => bookmark.session_id !== session.id!) ||
+            [],
+        )
+      } else {
+        queryClient.setQueryData(
+          ['bookmarks', 'current-user'],
+          (old: DbSessionBookmark[] | undefined) => [
+            ...(old || []),
+            { session_id: session.id!, user_id: currentUserProfile?.id || '' },
+          ],
+        )
+      }
+      return { previousBookmarks }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
+    },
+  })
   // Check if session is at capacity
   const isSessionFull =
     session.max_capacity !== null &&
@@ -226,6 +273,16 @@ export default function SessionDetailsCard({
           <div className="space-y-1">
             {currentUserProfile?.id && (
               <div className="flex items-center gap-3">
+                <button
+                  className="group p-1 hover:cursor-pointer rounded-xs"
+                  onClick={() => bookmarkMutation.mutate()}
+                >
+                  <StarIcon
+                    fill={sessionBookmarked ? 'yellow' : 'none'}
+                    strokeWidth={1}
+                    className={`size-4 ${sessionBookmarked ? 'text-yellow-400' : 'text-gray-300 group-hover:text-yellow-400'}`}
+                  />
+                </button>
                 {!!currentUserRsvp ? (
                   <>
                     <span
