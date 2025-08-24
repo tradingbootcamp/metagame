@@ -2,6 +2,7 @@ import { DummyTool } from './DummyTool'
 import TicketsInfo from './TicketsInfo'
 import { IssueTicketForm } from './issue-tickets/IssueTicketForm'
 import UserProfileTool from './user-profile/UserProfileTool'
+import UserTeamsTool from './user-teams/UserTeamsTool'
 
 export type AdminTool = {
   label: string
@@ -38,6 +39,13 @@ export const ADMIN_TOOLS = {
     longDescription:
       'Select and view detailed information for any user profile in the system',
     component: UserProfileTool,
+  },
+  'user-teams': {
+    label: 'User Teams',
+    menuDescription: 'View and assign teams',
+    longDescription:
+      'View users by team, reassign individuals, and bulk-assign teams.',
+    component: UserTeamsTool,
   },
 } satisfies Record<string, AdminTool>
 
