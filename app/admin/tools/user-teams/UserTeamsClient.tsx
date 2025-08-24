@@ -41,7 +41,7 @@ const teamColorToBadgeClass = (team: DbTeamColor) => {
       return 'bg-purple-500'
     case 'green':
       return 'bg-green-500'
-    case 'gray':
+    case 'unassigned':
       return 'bg-gray-500'
   }
 }

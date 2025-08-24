@@ -40,7 +40,7 @@ export const TEAM_COLORS = {
   ORANGE: 'orange' as const,
   PURPLE: 'purple' as const,
   GREEN: 'green' as const,
-  GRAY: 'gray' as const,
+  UNASSIGNED: 'unassigned' as const,
 } as const satisfies Record<Uppercase<DbTeamColor>, DbTeamColor>
 
 export const TEAM_COLORS_ENUM = Object.values(TEAM_COLORS) as DbTeamColor[]

@@ -462,7 +462,7 @@ export type Database = {
         | "processing"
         | "paid"
         | "expired"
-      TEAM_COLORS: "orange" | "purple" | "green" | "gray"
+      TEAM_COLORS: "orange" | "purple" | "green" | "unassigned"
       ticket_type:
         | "volunteer"
         | "player"
@@ -606,7 +606,7 @@ export const Constants = {
         "paid",
         "expired",
       ],
-      TEAM_COLORS: ["orange", "purple", "green", "gray"],
+      TEAM_COLORS: ["orange", "purple", "green", "unassigned"],
       ticket_type: [
         "volunteer",
         "player",
