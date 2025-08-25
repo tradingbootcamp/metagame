@@ -5,7 +5,12 @@ import { useEffect, useMemo, useState } from 'react'
 import { AddEventModal } from './EditEventModal'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
-import { fetchCurrentUserRsvps, fetchLocations, fetchSessions } from './queries'
+import {
+  fetchCurrentUserRsvps,
+  fetchCurrentUserSessionBookmarks,
+  fetchLocations,
+  fetchSessions,
+} from './queries'
 import { useQuery } from '@tanstack/react-query'
 import {
   CheckIcon,
@@ -13,6 +18,7 @@ import {
   ChevronRight,
   FilterIcon,
   PlusIcon,
+  StarIcon,
   User2Icon,
   UserIcon,
 } from 'lucide-react'
@@ -151,6 +157,11 @@ export default function Schedule({
     queryFn: fetchLocations,
   })
 
+  const { data: currentUserBookmarks = [] } = useQuery({
+    queryKey: ['bookmarks', 'current-user'],
+    queryFn: fetchCurrentUserSessionBookmarks,
+  })
+
   // Filter and sort locations for schedule display
   const locations = useMemo(() => {
     return allLocations
@@ -159,6 +170,8 @@ export default function Schedule({
   }, [allLocations])
 
   const [filterForUserEvents, setFilterForUserEvents] = useState(false)
+  const [filterForBookmarkedEvents, setFilterForBookmarkedEvents] =
+    useState(false)
 
   // Group sessions by the 3 fixed conference days
   const days = useMemo(() => {
@@ -167,6 +180,7 @@ export default function Schedule({
       [], // Day 1: Saturday 9/13
       [], // Day 2: Sunday 9/14
     ] as DbSessionView[][]
+
     const filterSessionForUser = (session: DbSessionView) => {
       if (!currentUserProfile) return true
       if (currentUserRsvps.some((rsvp) => rsvp.session_id === session.id!)) {
@@ -182,7 +196,14 @@ export default function Schedule({
     const maybeFilteredSessions = filterForUserEvents
       ? sessions.filter(filterSessionForUser)
       : sessions
-    maybeFilteredSessions.forEach((session) => {
+    const maybeFurtherFilteredSessions = filterForBookmarkedEvents
+      ? maybeFilteredSessions.filter((session) =>
+          currentUserBookmarks.some(
+            (bookmark) => bookmark.session_id === session.id!,
+          ),
+        )
+      : maybeFilteredSessions
+    maybeFurtherFilteredSessions.forEach((session) => {
       const [sessionStart, sessionEnd] = [
         session.start_time,
         session.end_time,
@@ -211,7 +232,7 @@ export default function Schedule({
         (a.start_time || '').localeCompare(b.start_time || ''),
       ),
     }))
-  }, [sessions, filterForUserEvents])
+  }, [sessions, filterForUserEvents, filterForBookmarkedEvents])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
     DbSessionView['id'] | null
@@ -261,12 +282,20 @@ export default function Schedule({
     })
     setIsAddEventModalOpen(true)
   }
-
+  const handleToggleFilterForBookmarkedEvents = () => {
+    setFilterForBookmarkedEvents((prev) => {
+      const newFilter = !prev
+      toast.info(
+        `${newFilter ? 'Now' : 'No longer'} filtering for your starred sessions`,
+      )
+      return newFilter
+    })
+  }
   const handleToggleFilterForUserEvents = () => {
     setFilterForUserEvents((prev) => {
       const newFilter = !prev
       toast.info(
-        `Now displaying ${newFilter ? "only your hosted/rsvp'd events" : 'all events'}`,
+        `${newFilter ? 'Now' : 'No longer'} filtering for your hosted/rsvp'd sessions`,
       )
       return newFilter
     })
@@ -394,15 +423,37 @@ export default function Schedule({
             }}
           >
             <div className="bg-dark-600 border-secondary-300 sticky top-0 left-0 z-30 border border-b-2 p-3">
-              <div className="text-secondary-300 sticky flex size-full items-center justify-center gap-1 text-sm font-medium">
+              <div className="text-secondary-300 sticky flex flex-col gap-4 size-full items-center justify-center text-sm font-medium">
                 {currentUserProfile?.id && (
-                  <button
-                    className={`${filterForUserEvents ? 'opacity-100' : 'opacity-50'} bg-dark-200 hover:bg-dark-300 cursor-pointer rounded-sm p-2 transition-colors`}
-                    title="Filter for events I am rsvp'd to or hosting"
-                    onClick={handleToggleFilterForUserEvents}
-                  >
-                    <FilterIcon className="text-secondary-300 size-4" />
-                  </button>
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className={`${filterForUserEvents ? 'opacity-100' : 'opacity-50'} hover:bg-dark-300 cursor-pointer rounded-sm  transition-colors`}
+                        onClick={handleToggleFilterForUserEvents}
+                      >
+                        <FilterIcon className="text-secondary-300 size-4" />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>
+                      Filter for hosted/RSVP&apos;d sessions
+                    </TooltipContent>
+                  </Tooltip>
+                )}
+                {currentUserProfile?.id && (
+                  <Tooltip>
+                    <TooltipTrigger asChild>
+                      <button
+                        className={`${filterForBookmarkedEvents ? 'opacity-100' : 'opacity-50'} hover:bg-dark-300 cursor-pointer rounded-sm  transition-colors`}
+                        onClick={handleToggleFilterForBookmarkedEvents}
+                      >
+                        <StarIcon
+                          fill={filterForBookmarkedEvents ? 'yellow' : 'none'}
+                          className="text-secondary-300 size-4"
+                        />
+                      </button>
+                    </TooltipTrigger>
+                    <TooltipContent>Filter for starred sessions</TooltipContent>
+                  </Tooltip>
                 )}
               </div>
             </div>
