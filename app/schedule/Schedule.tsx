@@ -537,7 +537,12 @@ export default function Schedule({
                               <div className="font-sans text-xs">
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
-
+                              <div className="absolute left-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                                {currentUserBookmarks.some(
+                                  (bookmark) =>
+                                    bookmark.session_id === session.id!,
+                                ) && <StarIcon className="size-3" />}
+                              </div>
                               <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
                                 {session.ages === SESSION_AGES.ADULTS && (
                                   <Tooltip clickable>
