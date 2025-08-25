@@ -34,9 +34,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { SessionResponse } from '@/app/api/queries/sessions/schema'
-
 import { useUser } from '@/hooks/dbQueries'
+import { DbSessionView } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -89,7 +88,7 @@ const locationEventRSVPdColors = [
 ]
 
 // Updated slot checking - PST based
-const eventStartsInSlot = (session: SessionResponse, slotTime: string) => {
+const eventStartsInSlot = (session: DbSessionView, slotTime: string) => {
   if (!session.start_time) return false
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -104,7 +103,7 @@ const eventStartsInSlot = (session: SessionResponse, slotTime: string) => {
 }
 
 // Updated offset calculation - PST based
-const getEventOffsetMinutes = (session: SessionResponse, slotTime: string) => {
+const getEventOffsetMinutes = (session: DbSessionView, slotTime: string) => {
   if (!session.start_time) return 0
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -115,7 +114,7 @@ const getEventOffsetMinutes = (session: SessionResponse, slotTime: string) => {
 }
 
 // Updated duration calculation - PST based
-const getEventDurationMinutes = (session: SessionResponse) => {
+const getEventDurationMinutes = (session: DbSessionView) => {
   if (!session.start_time || !session.end_time) return 30
 
   const startMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -167,8 +166,8 @@ export default function Schedule({
       [], // Day 0: Friday 9/12
       [], // Day 1: Saturday 9/13
       [], // Day 2: Sunday 9/14
-    ] as SessionResponse[][]
-    const filterSessionForUser = (session: SessionResponse) => {
+    ] as DbSessionView[][]
+    const filterSessionForUser = (session: DbSessionView) => {
       if (!currentUserProfile) return true
       if (currentUserRsvps.some((rsvp) => rsvp.session_id === session.id!)) {
         return true
@@ -215,7 +214,7 @@ export default function Schedule({
   }, [sessions, filterForUserEvents])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
-    SessionResponse['id'] | null
+    DbSessionView['id'] | null
   >(sessionId ?? null)
   const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false)
   const [addEventPrefill, setAddEventPrefill] = useState<{
@@ -273,7 +272,7 @@ export default function Schedule({
     })
   }
   // Helper function to get event color
-  const getEventColor = (session: SessionResponse) => {
+  const getEventColor = (session: DbSessionView) => {
     const userIsRsvpd = currentUserRsvps.some(
       (rsvp) => rsvp.session_id === session.id!,
     )

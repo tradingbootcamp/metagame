@@ -1,4 +1,3 @@
-import { LocationsResponseSchema } from './schema'
 import { NextResponse } from 'next/server'
 
 import { getOrderedScheduleLocations } from '@/app/actions/db/locations'
@@ -7,10 +6,7 @@ export async function GET() {
   try {
     const locations = await getOrderedScheduleLocations()
 
-    // Validate the response data
-    const validatedLocations = LocationsResponseSchema.parse(locations)
-
-    return NextResponse.json(validatedLocations)
+    return NextResponse.json(locations)
   } catch (error) {
     console.error('Error fetching locations:', error)
 

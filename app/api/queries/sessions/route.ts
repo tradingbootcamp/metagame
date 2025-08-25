@@ -1,4 +1,3 @@
-import { SessionsResponseSchema } from './schema'
 import { NextResponse } from 'next/server'
 
 import { getAllSessions } from '@/app/actions/db/sessions'
@@ -7,10 +6,7 @@ export async function GET() {
   try {
     const sessions = await getAllSessions()
 
-    // Validate the response data
-    const validatedSessions = SessionsResponseSchema.parse(sessions)
-
-    return NextResponse.json(validatedSessions)
+    return NextResponse.json(sessions)
   } catch (error) {
     console.error('Error fetching sessions:', error)
 

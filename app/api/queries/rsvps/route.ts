@@ -1,16 +1,12 @@
-import { RsvpsResponseSchema } from './schema'
 import { NextResponse } from 'next/server'
 
-import { getCurrentUserRsvps } from '@/app/actions/db/sessions'
+import { adminGetAllRsvps } from '@/app/actions/db/sessions'
 
 export async function GET() {
   try {
-    const rsvps = await getCurrentUserRsvps()
+    const rsvps = await adminGetAllRsvps()
 
-    // Validate the response data
-    const validatedRsvps = RsvpsResponseSchema.parse(rsvps)
-
-    return NextResponse.json(validatedRsvps)
+    return NextResponse.json(rsvps)
   } catch (error) {
     console.error('Error fetching RSVPs:', error)
 

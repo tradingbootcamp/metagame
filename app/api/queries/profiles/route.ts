@@ -1,4 +1,3 @@
-import { ProfilesResponseSchema } from './schema'
 import { NextResponse } from 'next/server'
 
 import { adminGetAllProfiles } from '@/app/actions/db/users'
@@ -7,10 +6,7 @@ export async function GET() {
   try {
     const profiles = await adminGetAllProfiles()
 
-    // Validate the response data
-    const validatedProfiles = ProfilesResponseSchema.parse(profiles)
-
-    return NextResponse.json(validatedProfiles)
+    return NextResponse.json(profiles)
   } catch (error) {
     console.error('Error fetching profiles:', error)
 

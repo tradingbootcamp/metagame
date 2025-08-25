@@ -28,7 +28,7 @@ export default function AccountButton({
 
   const { data: profile } = useQuery({
     queryKey: ['users', 'profiles', user?.id],
-    queryFn: () => getCurrentUserProfile({ userId: user?.id }),
+    queryFn: () => getCurrentUserProfile(),
     enabled: !!user?.id,
   })
   if (!userLoading && !user) {

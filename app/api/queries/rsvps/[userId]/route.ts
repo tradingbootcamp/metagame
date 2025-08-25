@@ -3,9 +3,9 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
 import {
-  adminGetUserSessionBookmarks,
-  currentUserGetSessionBookmarks,
-} from '@/app/actions/db/sessionBookmarks'
+  adminGetUserRsvps,
+  getCurrentUserRsvps,
+} from '@/app/actions/db/sessions'
 
 export async function GET(
   request: Request,
@@ -24,19 +24,19 @@ export async function GET(
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
-    let bookmarks
+    let rsvps
 
     // If requesting their own data, allow it using current user wrapper
     if (userId === user.id) {
-      bookmarks = await currentUserGetSessionBookmarks()
+      rsvps = await getCurrentUserRsvps()
     } else {
       // Otherwise, require admin privileges
-      bookmarks = await adminGetUserSessionBookmarks({ userId })
+      rsvps = await adminGetUserRsvps({ userId })
     }
 
-    return NextResponse.json(bookmarks)
+    return NextResponse.json(rsvps)
   } catch (error) {
-    console.error('Error fetching user session bookmarks:', error)
+    console.error('Error fetching user RSVPs:', error)
 
     // Return more detailed error information
     const errorMessage =
@@ -45,7 +45,7 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: 'Failed to fetch session bookmarks',
+        error: 'Failed to fetch RSVPs',
         message: errorMessage,
         details: errorDetails,
         timestamp: new Date().toISOString(),

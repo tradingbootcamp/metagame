@@ -1,25 +1,10 @@
 import {
-  LocationsResponse,
-  LocationsResponseSchema,
-} from '@/app/api/queries/locations/schema'
-import {
-  ProfilesResponse,
-  ProfilesResponseSchema,
-} from '@/app/api/queries/profiles/schema'
-import {
-  RsvpsResponse,
-  RsvpsResponseSchema,
-} from '@/app/api/queries/rsvps/schema'
-import {
-  SessionsResponse,
-  SessionsResponseSchema,
-} from '@/app/api/queries/sessions/schema'
-import {
-  SessionResponse,
-  SessionSchema,
-} from '@/app/api/queries/sessions/schema'
-
-import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
+  DbLocation,
+  DbProfile,
+  DbSessionBookmark,
+  DbSessionRsvp,
+  DbSessionView,
+} from '@/types/database/dbTypeAliases'
 
 // Utility function to handle API errors with detailed information
 const handleApiError = async (
@@ -40,56 +25,42 @@ const handleApiError = async (
   throw new Error(errorDetails)
 }
 
-export const fetchSessions = async (): Promise<SessionsResponse> => {
+export const fetchSessions = async (): Promise<DbSessionView[]> => {
   const response = await fetch('/api/queries/sessions')
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch sessions')
   }
 
-  const data = await response.json()
-  return SessionsResponseSchema.parse(data)
+  return (await response.json()) as DbSessionView[]
 }
 
-export const fetchCurrentUserRsvps = async (): Promise<RsvpsResponse> => {
-  const response = await fetch('/api/queries/rsvps')
-  if (!response.ok) {
-    await handleApiError(response, 'Failed to fetch RSVPs')
-  }
-
-  const data = await response.json()
-  return RsvpsResponseSchema.parse(data)
-}
-
-export const fetchLocations = async (): Promise<LocationsResponse> => {
+export const fetchLocations = async (): Promise<DbLocation[]> => {
   const response = await fetch('/api/queries/locations')
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch locations')
   }
 
-  const data = await response.json()
-  return LocationsResponseSchema.parse(data)
+  return (await response.json()) as DbLocation[]
 }
 
-export const fetchProfiles = async (): Promise<ProfilesResponse> => {
+export const fetchProfiles = async (): Promise<DbProfile[]> => {
   const response = await fetch('/api/queries/profiles')
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch profiles')
   }
 
-  const data = await response.json()
-  return ProfilesResponseSchema.parse(data)
+  return (await response.json()) as DbProfile[]
 }
 
 export const fetchSessionById = async (
   sessionId: string,
-): Promise<SessionResponse> => {
+): Promise<DbSessionView> => {
   const response = await fetch(`/api/queries/sessions/${sessionId}`)
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch session')
   }
 
-  const data = await response.json()
-  return SessionSchema.parse(data)
+  return (await response.json()) as DbSessionView
 }
 
 export const fetchCurrentUserSessionBookmarks = async (): Promise<
@@ -123,4 +94,52 @@ export const fetchAllSessionBookmarks = async (): Promise<
   }
 
   return (await response.json()) as DbSessionBookmark[]
+}
+
+export const fetchCurrentUserProfile = async (): Promise<DbProfile> => {
+  const response = await fetch('/api/queries/profiles/current')
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch current user profile')
+  }
+
+  return (await response.json()) as DbProfile
+}
+
+export const fetchUserProfile = async (userId: string): Promise<DbProfile> => {
+  const response = await fetch(`/api/queries/profiles/${userId}`)
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch user profile')
+  }
+
+  return (await response.json()) as DbProfile
+}
+
+export const fetchAllRsvps = async (): Promise<DbSessionRsvp[]> => {
+  const response = await fetch('/api/queries/rsvps')
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch all RSVPs')
+  }
+
+  return (await response.json()) as DbSessionRsvp[]
+}
+
+export const fetchUserRsvps = async (
+  userId: string,
+): Promise<DbSessionRsvp[]> => {
+  const response = await fetch(`/api/queries/rsvps/${userId}`)
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch user RSVPs')
+  }
+
+  return (await response.json()) as DbSessionRsvp[]
+}
+
+// Update existing fetchCurrentUserRsvps to use the new current endpoint
+export const fetchCurrentUserRsvps = async (): Promise<DbSessionRsvp[]> => {
+  const response = await fetch('/api/queries/rsvps/current')
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch current user RSVPs')
+  }
+
+  return (await response.json()) as DbSessionRsvp[]
 }

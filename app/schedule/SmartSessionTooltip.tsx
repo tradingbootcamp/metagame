@@ -10,10 +10,10 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { SessionResponse } from '@/app/api/queries/sessions/schema'
+import { DbSessionView } from '@/types/database/dbTypeAliases'
 
 interface SmartSessionTooltipProps {
-  session: SessionResponse
+  session: DbSessionView
   children: React.ReactNode
 }
 

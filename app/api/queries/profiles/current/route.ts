@@ -1,17 +1,14 @@
 import { NextResponse } from 'next/server'
 
-import { getSessionById } from '@/app/actions/db/sessions'
+import { getCurrentUserProfile } from '@/app/actions/db/users'
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET() {
   try {
-    const session = await getSessionById({ sessionId: (await params).id })
+    const profile = await getCurrentUserProfile()
 
-    return NextResponse.json(session)
+    return NextResponse.json(profile)
   } catch (error) {
-    console.error('Error fetching session:', error)
+    console.error('Error fetching current user profile:', error)
 
     // Return more detailed error information
     const errorMessage =
@@ -20,7 +17,7 @@ export async function GET(
 
     return NextResponse.json(
       {
-        error: 'Failed to fetch session',
+        error: 'Failed to fetch profile',
         message: errorMessage,
         details: errorDetails,
         timestamp: new Date().toISOString(),

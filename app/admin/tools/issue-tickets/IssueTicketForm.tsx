@@ -29,7 +29,6 @@ import {
   AdminIssueTicketInput,
   adminIssueTicket,
 } from '@/app/admin/tools/issue-tickets/actions'
-import { ProfilesResponseSchema } from '@/app/api/queries/profiles/schema'
 
 import { DbProfile } from '@/types/database/dbTypeAliases'
 
@@ -63,10 +62,12 @@ export function IssueTicketForm({}: {
     const loadUsers = async () => {
       setLoadingUsers(true)
       try {
-        const users = ProfilesResponseSchema.parse(
-          await fetch('/api/queries/profiles').then((res) => res.json()),
-        )
-        setExistingUsers(users || [])
+        const userProfiles = await fetch('/api/queries/profiles')
+        if (!userProfiles.ok) {
+          throw new Error('Failed to load users')
+        }
+        const users = (await userProfiles.json()) as DbProfile[]
+        setExistingUsers(users)
       } catch (err) {
         console.error('Failed to load users:', err)
       } finally {

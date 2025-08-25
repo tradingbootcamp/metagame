@@ -29,9 +29,8 @@ import {
 } from '@/components/ui/table'
 
 import { adminUpdateUserProfile } from '@/app/actions/db/users'
-import { ProfilesResponseSchema } from '@/app/api/queries/profiles/schema'
 
-import { DbTeamColor } from '@/types/database/dbTypeAliases'
+import { DbProfile, DbTeamColor } from '@/types/database/dbTypeAliases'
 
 const teamColorToBadgeClass = (team: DbTeamColor) => {
   switch (team) {
@@ -49,10 +48,13 @@ export default function UserTeamsClient() {
   const queryClient = useQueryClient()
   const { data: profiles = [], isLoading } = useQuery({
     queryKey: ['profiles'],
-    queryFn: async () =>
-      ProfilesResponseSchema.parse(
-        await fetch('/api/queries/profiles').then((res) => res.json()),
-      ),
+    queryFn: async () => {
+      const profiles = await fetch('/api/queries/profiles')
+      if (!profiles.ok) {
+        throw new Error('Failed to load users')
+      }
+      return (await profiles.json()) as DbProfile[]
+    },
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())
   const [filterTeam, setFilterTeam] = useState<DbTeamColor | 'all'>('all')

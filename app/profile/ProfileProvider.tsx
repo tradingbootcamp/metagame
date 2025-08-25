@@ -26,7 +26,7 @@ export default async function ProfileProvider() {
       }),
       queryClient.prefetchQuery({
         queryKey: ['users', 'profile', user.id],
-        queryFn: () => getCurrentUserProfile({}),
+        queryFn: () => getCurrentUserProfile(),
       }),
     ])
   }

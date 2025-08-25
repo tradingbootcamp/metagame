@@ -54,7 +54,7 @@ export default function Profile() {
 
   const { data: currentUserProfile } = useQuery({
     queryKey: ['users', 'profile', currentUser?.id],
-    queryFn: () => getCurrentUserProfile({}),
+    queryFn: () => getCurrentUserProfile(),
     enabled: !!currentUser?.id,
   })
   const [isEditMode, setIsEditMode] = useState(false)

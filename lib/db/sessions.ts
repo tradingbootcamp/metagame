@@ -170,8 +170,17 @@ export const sessionsService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('session_rsvps')
-      .select()
+      .select('*')
       .eq('user_id', userId)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
+
+  getAllRsvps: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.from('session_rsvps').select('*')
     if (error) {
       throw new Error(error.message)
     }
@@ -182,7 +191,7 @@ export const sessionsService = {
     const userRsvps = await sessionsService.getUserRsvps({ userId })
     for (const rsvp of userRsvps) {
       await sessionsService.unrsvpUserFromSession({
-        sessionId: rsvp.session_id,
+        sessionId: rsvp.session_id!,
         userId,
       })
     }

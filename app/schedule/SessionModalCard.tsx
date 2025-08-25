@@ -20,17 +20,20 @@ import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
 } from '@/app/actions/db/sessions'
-import { RsvpResponse } from '@/app/api/queries/rsvps/schema'
-import { SessionResponse } from '@/app/api/queries/sessions/schema'
 
 import { useUser } from '@/hooks/dbQueries'
-import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
+import {
+  DbSessionBookmark,
+  DbSessionRsvpInsert,
+  DbSessionRsvpView,
+  DbSessionView,
+} from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
   canEdit = false,
 }: {
-  session: SessionResponse
+  session: DbSessionView
   canEdit?: boolean
 }) {
   const [showCopiedMessage, setShowCopiedMessage] = useState(false)
@@ -107,14 +110,14 @@ export default function SessionDetailsCard({
       // Optimistically update RSVPs
       queryClient.setQueryData(
         ['rsvps', 'current-user'],
-        (old: RsvpResponse[] | undefined) =>
+        (old: DbSessionRsvpView[] | undefined) =>
           old?.filter((rsvp) => rsvp.session_id !== sessionId) || [],
       )
 
       // Optimistically update sessions (decrease RSVP count)
       queryClient.setQueryData(
         ['sessions'],
-        (old: SessionResponse[] | undefined) =>
+        (old: DbSessionView[] | undefined) =>
           old?.map((s) =>
             s.id === sessionId
               ? { ...s, rsvp_count: Math.max(0, (s.rsvp_count || 0) - 1) }
@@ -155,7 +158,7 @@ export default function SessionDetailsCard({
       const previousSessions = queryClient.getQueryData(['sessions'])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
-      const newRsvp: RsvpResponse = {
+      const newRsvp: DbSessionRsvpInsert = {
         session_id: sessionId,
         user_id: currentUserProfile?.id || '',
         on_waitlist: false, // Let server handle waitlist logic
@@ -164,13 +167,13 @@ export default function SessionDetailsCard({
 
       queryClient.setQueryData(
         ['rsvps', 'current-user'],
-        (old: RsvpResponse[] | undefined) => [...(old || []), newRsvp],
+        (old: DbSessionRsvpView[] | undefined) => [...(old || []), newRsvp],
       )
 
       // Optimistically update sessions (increase RSVP count)
       queryClient.setQueryData(
         ['sessions'],
-        (old: SessionResponse[] | undefined) =>
+        (old: DbSessionView[] | undefined) =>
           old?.map((s) =>
             s.id === sessionId
               ? { ...s, rsvp_count: (s.rsvp_count || 0) + 1 }

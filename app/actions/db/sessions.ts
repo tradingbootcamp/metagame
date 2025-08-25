@@ -41,3 +41,9 @@ export const getCurrentUserRsvps = async () => {
 export const getCurrentUserHostedSessions = currentUserWrapper(
   sessionsService.getUsersHostedSessions,
 )
+
+export const adminGetAllRsvps = adminExportWrapper(sessionsService.getAllRsvps)
+
+export const adminGetUserRsvps = adminExportWrapper(
+  sessionsService.getUserRsvps,
+)
