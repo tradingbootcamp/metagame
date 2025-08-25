@@ -12,6 +12,14 @@ export const sessionBookmarkService = {
     }
     return data
   },
+  getAllSessionBookmarks: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.from('session_bookmarks').select('*')
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
   bookmarkSessionForUser: async ({
     userId,
     sessionId,

@@ -19,6 +19,8 @@ import {
   SessionSchema,
 } from '@/app/api/queries/sessions/schema'
 
+import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
+
 // Utility function to handle API errors with detailed information
 const handleApiError = async (
   response: Response,
@@ -88,4 +90,37 @@ export const fetchSessionById = async (
 
   const data = await response.json()
   return SessionSchema.parse(data)
+}
+
+export const fetchCurrentUserSessionBookmarks = async (): Promise<
+  DbSessionBookmark[]
+> => {
+  const response = await fetch('/api/queries/session-bookmarks/current')
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch session bookmarks')
+  }
+
+  return (await response.json()) as DbSessionBookmark[]
+}
+
+export const fetchUserSessionBookmarks = async (
+  userId: string,
+): Promise<DbSessionBookmark[]> => {
+  const response = await fetch(`/api/queries/session-bookmarks/${userId}`)
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch user session bookmarks')
+  }
+
+  return (await response.json()) as DbSessionBookmark[]
+}
+
+export const fetchAllSessionBookmarks = async (): Promise<
+  DbSessionBookmark[]
+> => {
+  const response = await fetch('/api/queries/session-bookmarks')
+  if (!response.ok) {
+    await handleApiError(response, 'Failed to fetch all session bookmarks')
+  }
+
+  return (await response.json()) as DbSessionBookmark[]
 }

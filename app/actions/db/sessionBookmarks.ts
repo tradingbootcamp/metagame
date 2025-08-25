@@ -14,10 +14,13 @@ export const currentUserToggleSessionBookmark = currentUserWrapper(
   sessionBookmarkService.toggleBookmarkSessionForUser,
 )
 
-export const currentUserGetSessionBookmarks = currentUserWrapper(
-  sessionBookmarkService.getUserSessionBookmarks,
-)
+export const currentUserGetSessionBookmarks = async () =>
+  currentUserWrapper(sessionBookmarkService.getUserSessionBookmarks)({})
 
 export const adminGetUserSessionBookmarks = adminExportWrapper(
   sessionBookmarkService.getUserSessionBookmarks,
+)
+
+export const adminGetAllSessionBookmarks = adminExportWrapper(
+  sessionBookmarkService.getAllSessionBookmarks,
 )

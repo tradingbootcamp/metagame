@@ -3,7 +3,10 @@
 import { useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
-import { fetchCurrentUserRsvps } from './queries'
+import {
+  fetchCurrentUserRsvps,
+  fetchCurrentUserSessionBookmarks,
+} from './queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
@@ -12,10 +15,7 @@ import { dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 
-import {
-  currentUserGetSessionBookmarks,
-  currentUserToggleSessionBookmark,
-} from '@/app/actions/db/sessionBookmarks'
+import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookmarks'
 import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
@@ -47,7 +47,7 @@ export default function SessionDetailsCard({
   )
   const { data: bookmarks } = useQuery({
     queryKey: ['bookmarks', 'current-user'],
-    queryFn: currentUserGetSessionBookmarks,
+    queryFn: fetchCurrentUserSessionBookmarks,
   })
   const sessionBookmarked = useMemo(
     () =>
