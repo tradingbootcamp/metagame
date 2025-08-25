@@ -140,7 +140,7 @@ function TooltipTrigger({
   if (clickable && setOpen && hoverTimeoutRef) {
     const handleClick = (e: React.MouseEvent<HTMLButtonElement>) => {
       e.stopPropagation()
-      if (onClick) onClick(e);
+      if (onClick) onClick(e)
       // Clear any pending close timeout when clicking
       if (hoverTimeoutRef.current) {
         clearTimeout(hoverTimeoutRef.current)
