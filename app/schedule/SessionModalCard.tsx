@@ -33,6 +33,7 @@ export default function SessionDetailsCard({
   session: DbSessionView
   canEdit?: boolean
 }) {
+  const { currentUserProfile } = useUser()
   const [showCopiedMessage, setShowCopiedMessage] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -51,9 +52,12 @@ export default function SessionDetailsCard({
     queryKey: ['rsvps'],
     queryFn: fetchAllRsvps,
   })
-  const currentUserRsvp = useMemo(() => {
-    return allRsvps.find((rsvp) => rsvp.session_id === session.id!)
+  const sessionRsvps = useMemo(() => {
+    return allRsvps.filter((rsvp) => rsvp.session_id === session.id)
   }, [allRsvps, session.id])
+  const currentUserRsvp = useMemo(() => {
+    return sessionRsvps.find((rsvp) => rsvp.user_id === currentUserProfile?.id)
+  }, [sessionRsvps, currentUserProfile?.id])
   const bookmarkMutation = useMutation({
     mutationFn: () =>
       currentUserToggleSessionBookmark({ sessionId: session.id! }),
@@ -210,7 +214,6 @@ export default function SessionDetailsCard({
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
-  const { currentUserProfile } = useUser()
 
   const handleToggleRsvp = () => {
     if (!!currentUserRsvp) {
@@ -218,14 +221,6 @@ export default function SessionDetailsCard({
     } else {
       rsvpMutation.mutate({ sessionId: session.id! })
     }
-  }
-
-  // Helper function to get team counts for a megagame session
-  const getTeamCounts = (sessionId: string) => {
-    const sessionRsvps = allRsvps.filter(
-      (rsvp) => rsvp.session_id === sessionId,
-    )
-    return countRsvpsByTeamColor(sessionRsvps)
   }
 
   const copyLink = () => {
@@ -367,7 +362,7 @@ export default function SessionDetailsCard({
                 {/* NEW: Purple/Orange counts for megagames */}
                 {session.megagame &&
                   (() => {
-                    const teamCounts = getTeamCounts(session.id!)
+                    const teamCounts = countRsvpsByTeamColor(sessionRsvps)
                     return (
                       <div className="flex items-center gap-1 text-sm">
                         <span className="text-purple-400 font-bold">
@@ -389,7 +384,7 @@ export default function SessionDetailsCard({
                     />
                   )}
                   <UserIcon className="mr-1 inline-block size-4" />{' '}
-                  {session.rsvp_count} / {session.max_capacity}
+                  {sessionRsvps.length} / {session.max_capacity}
                 </div>
               </div>
             </div>
