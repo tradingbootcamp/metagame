@@ -3,15 +3,12 @@
 import { useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
-import {
-  fetchCurrentUserRsvps,
-  fetchCurrentUserSessionBookmarks,
-} from './queries'
+import { fetchAllRsvps, fetchCurrentUserSessionBookmarks } from './queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { dbGetHostsFromSession } from '@/utils/dbUtils'
+import { countRsvpsByTeamColor, dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 
@@ -19,13 +16,13 @@ import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookma
 import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
-} from '@/app/actions/db/sessions'
+} from '@/app/actions/db/sessionRsvps'
 
 import { useUser } from '@/hooks/dbQueries'
 import {
   DbSessionBookmark,
-  DbSessionRsvpInsert,
   DbSessionRsvpView,
+  DbSessionRsvpWithTeam,
   DbSessionView,
 } from '@/types/database/dbTypeAliases'
 
@@ -39,15 +36,6 @@ export default function SessionDetailsCard({
   const [showCopiedMessage, setShowCopiedMessage] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
-  const currentUserRsvps = useQuery({
-    queryKey: ['rsvps', 'current-user'],
-    queryFn: fetchCurrentUserRsvps,
-  })
-  const currentUserRsvp = useMemo(
-    () =>
-      currentUserRsvps.data?.find((rsvp) => rsvp.session_id === session.id!),
-    [currentUserRsvps.data, session.id],
-  )
   const { data: bookmarks } = useQuery({
     queryKey: ['bookmarks', 'current-user'],
     queryFn: fetchCurrentUserSessionBookmarks,
@@ -58,6 +46,14 @@ export default function SessionDetailsCard({
       false,
     [bookmarks, session.id],
   )
+
+  const { data: allRsvps = [] } = useQuery({
+    queryKey: ['rsvps'],
+    queryFn: fetchAllRsvps,
+  })
+  const currentUserRsvp = useMemo(() => {
+    return allRsvps.find((rsvp) => rsvp.session_id === session.id!)
+  }, [allRsvps, session.id])
   const bookmarkMutation = useMutation({
     mutationFn: () =>
       currentUserToggleSessionBookmark({ sessionId: session.id! }),
@@ -100,18 +96,26 @@ export default function SessionDetailsCard({
     mutationFn: unrsvpCurrentUserFromSession,
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps', 'current-user'] })
+      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
+      await queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      await queryClient.invalidateQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps', 'current-user'])
+      const previousRsvps = queryClient.getQueryData(['rsvps'])
       const previousSessions = queryClient.getQueryData(['sessions'])
 
       // Optimistically update RSVPs
       queryClient.setQueryData(
-        ['rsvps', 'current-user'],
+        ['rsvps'],
         (old: DbSessionRsvpView[] | undefined) =>
-          old?.filter((rsvp) => rsvp.session_id !== sessionId) || [],
+          old?.filter(
+            (rsvp) =>
+              !(
+                rsvp.session_id === sessionId &&
+                rsvp.user_id === currentUserProfile?.id
+              ),
+          ) || [],
       )
 
       // Optimistically update sessions (decrease RSVP count)
@@ -148,25 +152,30 @@ export default function SessionDetailsCard({
 
   const rsvpMutation = useMutation({
     mutationFn: rsvpCurrentUserToSession,
-    onMutate: async ({ sessionId }) => {
+    onMutate: async () => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps', 'current-user'] })
+      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
+      await queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      await queryClient.invalidateQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps', 'current-user'])
+      const previousRsvps = queryClient.getQueryData(['rsvps'])
       const previousSessions = queryClient.getQueryData(['sessions'])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
-      const newRsvp: DbSessionRsvpInsert = {
-        session_id: sessionId,
+      const newRsvp: DbSessionRsvpWithTeam = {
+        session_id: session.id!,
         user_id: currentUserProfile?.id || '',
         on_waitlist: false, // Let server handle waitlist logic
         created_at: new Date().toISOString(),
+        profiles: {
+          team: currentUserProfile?.team || 'unassigned',
+        },
       }
 
       queryClient.setQueryData(
-        ['rsvps', 'current-user'],
+        ['rsvps'],
         (old: DbSessionRsvpView[] | undefined) => [...(old || []), newRsvp],
       )
 
@@ -175,7 +184,7 @@ export default function SessionDetailsCard({
         ['sessions'],
         (old: DbSessionView[] | undefined) =>
           old?.map((s) =>
-            s.id === sessionId
+            s.id === session.id!
               ? { ...s, rsvp_count: (s.rsvp_count || 0) + 1 }
               : s,
           ) || [],
@@ -209,6 +218,14 @@ export default function SessionDetailsCard({
     } else {
       rsvpMutation.mutate({ sessionId: session.id! })
     }
+  }
+
+  // Helper function to get team counts for a megagame session
+  const getTeamCounts = (sessionId: string) => {
+    const sessionRsvps = allRsvps.filter(
+      (rsvp) => rsvp.session_id === sessionId,
+    )
+    return countRsvpsByTeamColor(sessionRsvps)
   }
 
   const copyLink = () => {
@@ -346,14 +363,35 @@ export default function SessionDetailsCard({
           </div>
           {session.max_capacity && (
             <div className="text-secondary-300">
-              {currentUserRsvp && (
-                <CheckIcon
-                  className={`mr-1 inline-block size-4 ${currentUserRsvp.on_waitlist ? 'bg-gray-600 text-yellow-600' : 'bg-white text-green-600'} rounded-full p-0.5`}
-                  strokeWidth={3}
-                />
-              )}
-              <UserIcon className="mr-1 inline-block size-4" />{' '}
-              {session.rsvp_count} / {session.max_capacity}
+              <div className="flex flex-col items-end gap-1">
+                {/* NEW: Purple/Orange counts for megagames */}
+                {session.megagame &&
+                  (() => {
+                    const teamCounts = getTeamCounts(session.id!)
+                    return (
+                      <div className="flex items-center gap-1 text-sm">
+                        <span className="text-purple-400 font-bold">
+                          {teamCounts.purple}
+                        </span>
+                        <span className="text-black font-bold">|</span>
+                        <span className="text-orange-400 font-bold">
+                          {teamCounts.orange}
+                        </span>
+                      </div>
+                    )
+                  })()}
+                {/* EXISTING: Current RSVP display */}
+                <div className="flex items-center">
+                  {currentUserRsvp && (
+                    <CheckIcon
+                      className={`mr-1 inline-block size-4 ${currentUserRsvp.on_waitlist ? 'bg-gray-600 text-yellow-600' : 'bg-white text-green-600'} rounded-full p-0.5`}
+                      strokeWidth={3}
+                    />
+                  )}
+                  <UserIcon className="mr-1 inline-block size-4" />{' '}
+                  {session.rsvp_count} / {session.max_capacity}
+                </div>
+              </div>
             </div>
           )}
         </div>

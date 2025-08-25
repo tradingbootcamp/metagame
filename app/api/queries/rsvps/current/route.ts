@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server'
 
-import { getCurrentUserRsvps } from '@/app/actions/db/sessions'
+import { getCurrentUserRsvps } from '@/app/actions/db/sessionRsvps'
 
 export async function GET() {
   try {

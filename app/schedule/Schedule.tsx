@@ -6,7 +6,7 @@ import { AddEventModal } from './EditEventModal'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import {
-  fetchCurrentUserRsvps,
+  fetchAllRsvps,
   fetchCurrentUserSessionBookmarks,
   fetchLocations,
   fetchSessions,
@@ -28,7 +28,11 @@ import { usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
+import {
+  SESSION_AGES,
+  countRsvpsByTeamColor,
+  dbGetHostsFromSession,
+} from '@/utils/dbUtils'
 
 import { BloodDrippingFrame } from '@/components/BloodDrippingFrame'
 import { Modal } from '@/components/Modal'
@@ -147,11 +151,6 @@ export default function Schedule({
     queryFn: fetchSessions,
   })
 
-  const { data: currentUserRsvps = [] } = useQuery({
-    queryKey: ['rsvps', 'current-user'],
-    queryFn: fetchCurrentUserRsvps,
-  })
-
   const { data: allLocations = [] } = useQuery({
     queryKey: ['locations'],
     queryFn: fetchLocations,
@@ -161,6 +160,17 @@ export default function Schedule({
     queryKey: ['bookmarks', 'current-user'],
     queryFn: fetchCurrentUserSessionBookmarks,
   })
+
+  const { data: allRsvps = [] } = useQuery({
+    queryKey: ['rsvps'],
+    queryFn: () => {
+      console.log('refetching rsvps')
+      return fetchAllRsvps()
+    },
+  })
+  const currentUserRsvps = useMemo(() => {
+    return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile?.id)
+  }, [allRsvps, currentUserProfile])
 
   // Filter and sort locations for schedule display
   const locations = useMemo(() => {
@@ -318,6 +328,15 @@ export default function Schedule({
           locationIndex % locationEventRSVPdColors.length
         ]
       : locationEventColors[locationIndex % locationEventColors.length]
+  }
+
+  // Helper function to get team counts for a megagame session
+  const getTeamCounts = (sessionId: string) => {
+    const sessionRsvps = allRsvps.filter(
+      (rsvp) => rsvp.session_id === sessionId,
+    )
+    if (!sessionRsvps) return { purple: 0, orange: 0 }
+    return countRsvpsByTeamColor(sessionRsvps)
   }
 
   return (
@@ -543,45 +562,71 @@ export default function Schedule({
                                     bookmark.session_id === session.id!,
                                 ) && <StarIcon className="size-3" />}
                               </div>
-                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
-                                {session.ages === SESSION_AGES.ADULTS && (
-                                  <Tooltip clickable>
-                                    <TooltipTrigger>
-                                      <span className="text-lg z-10">🔞</span>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Adults only</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                )}
-                                {session.ages === SESSION_AGES.KIDS && (
-                                  <Tooltip clickable>
-                                    <TooltipTrigger>
-                                      <Badge className=" bg-blue-600 text-base z-10 rounded-full p-0.5 aspect-square">
-                                        🐥
-                                      </Badge>
-                                    </TooltipTrigger>
-                                    <TooltipContent>
-                                      <p>Kid friendly</p>
-                                    </TooltipContent>
-                                  </Tooltip>
-                                )}
-                                {currentUserRsvps.some(
-                                  (rsvp) => rsvp.session_id === session.id!,
-                                ) && (
-                                  <CheckIcon
-                                    className="size-4 rounded-full bg-white p-0.5 text-green-600"
-                                    strokeWidth={3}
-                                  />
-                                )}
-                                <UserIcon className="size-3" />
-                                {currentUserProfile?.id
-                                  ? session.max_capacity
-                                    ? `${session.rsvp_count ?? '0'} / ${session.max_capacity}`
-                                    : `${session.rsvp_count ?? '0'}`
-                                  : session.min_capacity && session.max_capacity
-                                    ? `${session.min_capacity} - ${session.max_capacity}`
-                                    : null}
+                              <div className="absolute right-0 bottom-0">
+                                <div className="flex flex-col items-end gap-0.5">
+                                  {session.megagame &&
+                                    (() => {
+                                      const teamCounts = getTeamCounts(
+                                        session.id!,
+                                      )
+                                      return (
+                                        <div className="flex items-center gap-1 font-sans text-xs bg-green-300 rounded-md p-1">
+                                          <span className="text-purple-500 font-bold">
+                                            {teamCounts.purple}
+                                          </span>
+                                          <span className="text-black font-bold">
+                                            |
+                                          </span>
+                                          <span className="text-orange-400 font-bold">
+                                            {teamCounts.orange}
+                                          </span>
+                                        </div>
+                                      )
+                                    })()}
+                                  <div className="flex items-center gap-1 font-sans text-xs opacity-80">
+                                    {session.ages === SESSION_AGES.ADULTS && (
+                                      <Tooltip clickable>
+                                        <TooltipTrigger>
+                                          <span className="text-lg z-10">
+                                            🔞
+                                          </span>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Adults only</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                    {session.ages === SESSION_AGES.KIDS && (
+                                      <Tooltip clickable>
+                                        <TooltipTrigger>
+                                          <Badge className=" bg-blue-600 text-base z-10 rounded-full p-0.5 aspect-square">
+                                            🐥
+                                          </Badge>
+                                        </TooltipTrigger>
+                                        <TooltipContent>
+                                          <p>Kid friendly</p>
+                                        </TooltipContent>
+                                      </Tooltip>
+                                    )}
+                                    {currentUserRsvps.some(
+                                      (rsvp) => rsvp.session_id === session.id!,
+                                    ) && (
+                                      <CheckIcon
+                                        className="size-4 rounded-full bg-white p-0.5 text-green-600"
+                                        strokeWidth={3}
+                                      />
+                                    )}
+                                    <UserIcon className="size-3" />
+                                    {currentUserProfile?.id
+                                      ? session.max_capacity
+                                        ? `${session.rsvp_count ?? '0'} / ${session.max_capacity}`
+                                        : `${session.rsvp_count ?? '0'}`
+                                      : session.min_capacity &&
+                                          session.max_capacity
+                                        ? `${session.min_capacity} - ${session.max_capacity}`
+                                        : null}
+                                  </div>
+                                </div>
                               </div>
                             </div>
                           </div>

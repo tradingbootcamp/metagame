@@ -5,7 +5,7 @@ import { createClient } from '@/utils/supabase/server'
 import {
   adminGetUserRsvps,
   getCurrentUserRsvps,
-} from '@/app/actions/db/sessions'
+} from '@/app/actions/db/sessionRsvps'
 
 export async function GET(
   request: Request,

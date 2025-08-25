@@ -27,6 +27,9 @@ export type DbProfileUpdate = TablesUpdate<'profiles'>
 export type DbTeamColor = Enums<'TEAM_COLORS'>
 
 export type DbSessionRsvp = Tables<'session_rsvps'>
+export type DbSessionRsvpWithTeam = DbSessionRsvp & {
+  profiles: { team: DbProfile['team'] }
+}
 export type DbSessionRsvpInsert = TablesInsert<'session_rsvps'>
 export type DbSessionRsvpUpdate = TablesUpdate<'session_rsvps'>
 export type DbSessionRsvpView = Tables<'session_rsvps_view'>

@@ -1,5 +1,6 @@
 import { getAllLocations } from '../actions/db/locations'
-import { getAllSessions, getCurrentUserRsvps } from '../actions/db/sessions'
+import { adminGetAllRsvps } from '../actions/db/sessionRsvps'
+import { getAllSessions } from '../actions/db/sessions'
 import Schedule from './Schedule'
 import { getUserEditPermissionsForSessions } from './actions'
 import {
@@ -32,16 +33,16 @@ export default async function ScheduleProvider({
       queryFn: getAllSessions,
     }),
     queryClient.prefetchQuery({
-      queryKey: ['rsvps', 'current-user'],
-      queryFn: getCurrentUserRsvps,
-    }),
-    queryClient.prefetchQuery({
       queryKey: ['locations'],
       queryFn: getAllLocations,
     }),
     queryClient.prefetchQuery({
       queryKey: ['bookmarks', 'current-user'],
       queryFn: currentUserGetSessionBookmarks,
+    }),
+    queryClient.prefetchQuery({
+      queryKey: ['rsvps', 'all'],
+      queryFn: adminGetAllRsvps,
     }),
   ])
 

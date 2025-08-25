@@ -281,6 +281,13 @@ export type Database = {
             referencedRelation: "sessions_view"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "session_rsvps_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
       sessions: {
@@ -442,6 +449,13 @@ export type Database = {
             columns: ["session_id"]
             isOneToOne: false
             referencedRelation: "sessions_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_rsvps_user_id_fkey1"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
             referencedColumns: ["id"]
           },
         ]

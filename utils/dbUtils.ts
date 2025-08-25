@@ -1,5 +1,6 @@
 import {
   DbSessionAges,
+  DbSessionRsvpWithTeam,
   DbSessionView,
   DbTeamColor,
   DbTicketType,
@@ -56,3 +57,21 @@ export const TICKET_TYPES = {
 } as const satisfies Record<Uppercase<DbTicketType>, DbTicketType>
 
 export const TICKET_TYPES_ENUM = Object.values(TICKET_TYPES) as DbTicketType[]
+
+export const countRsvpsByTeamColor = (rsvps: DbSessionRsvpWithTeam[]) => {
+  const counts = {
+    purple: 0,
+    orange: 0,
+  }
+
+  rsvps.forEach((rsvp) => {
+    const team = rsvp.profiles?.team
+    if (team === 'purple') {
+      counts.purple++
+    } else if (team === 'orange') {
+      counts.orange++
+    }
+  })
+
+  return counts
+}

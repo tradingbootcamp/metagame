@@ -180,7 +180,12 @@ export const sessionsService = {
 
   getAllRsvps: async () => {
     const supabase = createServiceClient()
-    const { data, error } = await supabase.from('session_rsvps').select('*')
+    const { data, error } = await supabase.from('session_rsvps').select(`
+        *,
+        profiles (
+          team
+        )
+      `)
     if (error) {
       throw new Error(error.message)
     }
@@ -225,7 +230,14 @@ export const sessionsService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('session_rsvps')
-      .select('*')
+      .select(
+        `
+        *,
+        profiles!user_id (
+          team
+        )
+      `,
+      )
       .eq('session_id', sessionId)
     if (error) {
       throw new Error(error.message)
