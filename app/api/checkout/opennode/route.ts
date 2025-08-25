@@ -60,14 +60,8 @@ function sendChargeCreationEmail(
   return resend.emails.send({
     from: 'Metagame 2025 <tickets@mail.metagame.games>',
     to: ticketDetails.purchaserEmail,
-    bcc: [
-      'ricki.heicklen+metagame@gmail.com',
-      'briantsmiley42+metagame@gmail.com',
-    ],
-    replyTo: [
-      'ricki.heicklen+metagame@gmail.com',
-      'briantsmiley42+metagame@gmail.com',
-    ],
+    bcc: ['team@metagame.games'],
+    replyTo: ['team@metagame.games'],
     subject: 'Complete your Metagame 2025 ticket payment',
     html: `
       <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">

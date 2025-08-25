@@ -42,14 +42,8 @@ export async function sendTicketConfirmationEmail({
     const { data, error } = await resend.emails.send({
       from: 'Metagame 2025 <tickets@mail.metagame.games>',
       to,
-      bcc: [
-        'ricki.heicklen+metagame@gmail.com',
-        'briantsmiley42+metagame@gmail.com',
-      ],
-      replyTo: [
-        'ricki.heicklen+metagame@gmail.com',
-        'briantsmiley42+metagame@gmail.com',
-      ],
+      bcc: ['team@metagame.games'],
+      replyTo: ['team@metagame.games'],
       subject: adminIssued
         ? `${testSubject}Action required: Your Metagame 2025 ticket has been issued; claim your profile`
         : `${testSubject}Action required: Claim your Metagame 2025 ticket and register your profile`,
@@ -163,10 +157,7 @@ This is not a puzzle.
 export const sendAdminErrorEmail = async (errorMessage: string) => {
   await resend.emails.send({
     from: 'Metagame 2025 <tickets@mail.metagame.games>',
-    to: [
-      'ricki.heicklen+metagame@gmail.com',
-      'briantsmiley42+metagame@gmail.com',
-    ],
+    to: ['team@metagame.games'],
     subject: '**URGENT** METAGAME Admin Error',
     html: `<p>An error occurred: ${errorMessage}</p>`,
   })

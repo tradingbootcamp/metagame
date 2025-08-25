@@ -153,7 +153,7 @@ const faqs: FAQ[] = [
         September 1st. After that point, we will not be able to issue refunds.
         Tickets purchased in Bitcoin are not refundable. You can also transfer
         your ticket to someone else by September 1st by emailing{' '}
-        <a href="mailto:metagame@arbor.tech">ricki.heicklen@gmail.com</a>.
+        <a href="mailto:team@metagame.games">team@metagame.games</a>.
       </p>
     ),
   },

@@ -101,10 +101,7 @@ export default async function SignupSuccess({
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   <strong>Didn&apos;t receive the email?</strong> Check your
                   spam folder or{' '}
-                  <a
-                    className="underline"
-                    href="mailto:ricki.heicklen+metagame@gmail.com, briantsmiley42+metagame@gmail.com"
-                  >
+                  <a className="underline" href="mailto:team@metagame.games">
                     contact us
                   </a>{' '}
                   if you need help.

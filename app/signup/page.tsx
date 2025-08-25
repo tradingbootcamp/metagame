@@ -173,7 +173,7 @@ function SignupForm() {
                     confirmation email. If you didn&apos;t get one but believe
                     you should be able to make an account,{' '}
                     <a
-                      href="mailto:ricki.heicklen+metagame@gmail.com, briantsmiley42+metagame@gmail.com"
+                      href="mailto:team@metagame.games"
                       className="font-bold underline"
                     >
                       contact us
