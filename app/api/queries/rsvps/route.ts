@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import { adminGetAllRsvps } from '@/app/actions/db/sessionRsvps'
+import { getAllRsvps } from '@/app/actions/db/sessionRsvps'
 
 export async function GET() {
   try {
-    const rsvps = await adminGetAllRsvps()
+    const rsvps = await getAllRsvps()
 
     return NextResponse.json(rsvps)
   } catch (error) {

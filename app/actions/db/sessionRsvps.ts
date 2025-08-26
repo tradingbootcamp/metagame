@@ -4,10 +4,7 @@ import { adminExportWrapper, currentUserWrapper } from './auth'
 
 import { sessionsService } from '@/lib/db/sessions'
 
-import { DbSessionRsvpWithTeam } from '@/types/database/dbTypeAliases'
-
-export const adminGetAllRsvps: () => Promise<DbSessionRsvpWithTeam[]> =
-  adminExportWrapper(sessionsService.getAllRsvps)
+export const getAllRsvps = sessionsService.getAllRsvps
 
 export const adminGetUserRsvps = adminExportWrapper(
   sessionsService.getUserRsvps,

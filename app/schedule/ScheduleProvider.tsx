@@ -1,5 +1,5 @@
 import { getAllLocations } from '../actions/db/locations'
-import { adminGetAllRsvps } from '../actions/db/sessionRsvps'
+import { getAllRsvps } from '../actions/db/sessionRsvps'
 import { getAllSessions } from '../actions/db/sessions'
 import { getCurrentUserProfile } from '../actions/db/users'
 import Schedule from './Schedule'
@@ -43,7 +43,7 @@ export default async function ScheduleProvider({
     }),
     queryClient.prefetchQuery({
       queryKey: ['rsvps', 'all'],
-      queryFn: adminGetAllRsvps,
+      queryFn: getAllRsvps,
     }),
     queryClient.prefetchQuery({
       queryKey: ['users', 'profile', 'current-user'],
