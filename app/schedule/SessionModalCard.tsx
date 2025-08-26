@@ -3,12 +3,13 @@
 import { useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import { AttendanceDisplay } from './Schedule'
 import { fetchAllRsvps, fetchCurrentUserSessionBookmarks } from './queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { countRsvpsByTeamColor, dbGetHostsFromSession } from '@/utils/dbUtils'
+import { dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 
@@ -359,23 +360,6 @@ export default function SessionDetailsCard({
           {session.max_capacity && (
             <div className="text-secondary-300">
               <div className="flex flex-col items-end gap-1">
-                {/* NEW: Purple/Orange counts for megagames */}
-                {session.megagame &&
-                  (() => {
-                    const teamCounts = countRsvpsByTeamColor(sessionRsvps)
-                    return (
-                      <div className="flex items-center gap-1 text-sm">
-                        <span className="text-purple-400 font-bold">
-                          {teamCounts.purple}
-                        </span>
-                        <span className="text-black font-bold">|</span>
-                        <span className="text-orange-400 font-bold">
-                          {teamCounts.orange}
-                        </span>
-                      </div>
-                    )
-                  })()}
-                {/* EXISTING: Current RSVP display */}
                 <div className="flex items-center">
                   {currentUserRsvp && (
                     <CheckIcon
@@ -384,7 +368,11 @@ export default function SessionDetailsCard({
                     />
                   )}
                   <UserIcon className="mr-1 inline-block size-4" />{' '}
-                  {sessionRsvps.length} / {session.max_capacity}
+                  <AttendanceDisplay
+                    session={session}
+                    sessionRsvps={sessionRsvps}
+                    currentUserProfile={currentUserProfile ?? null}
+                  />
                 </div>
               </div>
             </div>

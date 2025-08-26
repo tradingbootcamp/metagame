@@ -45,7 +45,11 @@ import {
 } from '@/components/ui/tooltip'
 
 import { useUser } from '@/hooks/dbQueries'
-import { DbSessionView } from '@/types/database/dbTypeAliases'
+import {
+  DbProfile,
+  DbSessionRsvpWithTeam,
+  DbSessionView,
+} from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -330,15 +334,6 @@ export default function Schedule({
       : locationEventColors[locationIndex % locationEventColors.length]
   }
 
-  // Helper function to get team counts for a megagame session
-  const getTeamCounts = (sessionId: string) => {
-    const sessionRsvps = allRsvps.filter(
-      (rsvp) => rsvp.session_id === sessionId,
-    )
-    if (!sessionRsvps) return { purple: 0, orange: 0 }
-    return countRsvpsByTeamColor(sessionRsvps)
-  }
-
   return (
     <div className="bg-dark-500 flex flex-col rounded-2xl font-serif">
       {/* Day Navigator - Fixed on desktop, scrollable on mobile */}
@@ -564,25 +559,6 @@ export default function Schedule({
                               </div>
                               <div className="absolute right-0 bottom-0">
                                 <div className="flex flex-col items-end gap-0.5">
-                                  {session.megagame &&
-                                    (() => {
-                                      const teamCounts = getTeamCounts(
-                                        session.id!,
-                                      )
-                                      return (
-                                        <div className="flex items-center gap-1 font-sans text-xs bg-green-300 rounded-md p-1">
-                                          <span className="text-purple-500 font-bold">
-                                            {teamCounts.purple}
-                                          </span>
-                                          <span className="text-black font-bold">
-                                            |
-                                          </span>
-                                          <span className="text-orange-400 font-bold">
-                                            {teamCounts.orange}
-                                          </span>
-                                        </div>
-                                      )
-                                    })()}
                                   <div className="flex items-center gap-1 font-sans text-xs opacity-80">
                                     {session.ages === SESSION_AGES.ADULTS && (
                                       <Tooltip clickable>
@@ -617,14 +593,16 @@ export default function Schedule({
                                       />
                                     )}
                                     <UserIcon className="size-3" />
-                                    {currentUserProfile?.id
-                                      ? session.max_capacity
-                                        ? `${session.rsvp_count ?? '0'} / ${session.max_capacity}`
-                                        : `${session.rsvp_count ?? '0'}`
-                                      : session.min_capacity &&
-                                          session.max_capacity
-                                        ? `${session.min_capacity} - ${session.max_capacity}`
-                                        : null}
+                                    <AttendanceDisplay
+                                      session={session}
+                                      sessionRsvps={allRsvps.filter(
+                                        (rsvp) =>
+                                          rsvp.session_id === session.id!,
+                                      )}
+                                      currentUserProfile={
+                                        currentUserProfile ?? null
+                                      }
+                                    />
                                   </div>
                                 </div>
                               </div>
@@ -697,5 +675,43 @@ export default function Schedule({
         </button>
       )}
     </div>
+  )
+}
+
+export const AttendanceDisplay = ({
+  session,
+  sessionRsvps,
+  currentUserProfile,
+}: {
+  session: DbSessionView
+  sessionRsvps: DbSessionRsvpWithTeam[]
+  currentUserProfile: DbProfile | null
+}) => {
+  const teamCounts = countRsvpsByTeamColor(sessionRsvps)
+  if (!currentUserProfile) {
+    return (
+      <div>
+        {session.min_capacity && session.max_capacity
+          ? `${session.min_capacity} 
+        - ${session.max_capacity}`
+          : null}
+      </div>
+    )
+  }
+  if (session.megagame) {
+    return (
+      <div className="flex items-center gap-1 font-sans text-xs bg-gray-200 rounded-md px-1 py-0.5">
+        <span className="text-purple-500 font-bold">{teamCounts.purple}</span>
+        <span className="text-black font-bold">|</span>
+        <span className="text-orange-400 font-bold">{teamCounts.orange}</span>
+      </div>
+    )
+  }
+  return (
+    <span>
+      {session.max_capacity
+        ? `${session.rsvp_count ?? '0'} / ${session.max_capacity}`
+        : `${session.rsvp_count ?? '0'}`}
+    </span>
   )
 }

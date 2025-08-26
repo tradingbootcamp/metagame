@@ -15,9 +15,8 @@ export const useUser = () => {
     refetchOnWindowFocus: true,
     retry: 1,
   })
-
   const { data: currentUserProfile } = useQuery({
-    queryKey: ['users', 'profile', currentUser?.id],
+    queryKey: ['users', 'profile', 'current-user'],
     queryFn: () => getCurrentUserProfile(),
     enabled: !!currentUser?.id,
     staleTime: 1000 * 60 * 5,
