@@ -530,7 +530,8 @@ export default function Schedule({
                           tooltip={
                             <SessionDetailsCard
                               session={session}
-                              canEdit={editPermissions[session.id!] || false}
+                              canEdit={false}
+                              showButtons={false}
                             />
                           }
                         >
@@ -648,6 +649,7 @@ export default function Schedule({
           <SessionDetailsCard
             session={sessions.find((s) => s.id === openedSessionId)!}
             canEdit={editPermissions[openedSessionId!] || false}
+            showButtons={true}
           />
         </Modal>
       )}

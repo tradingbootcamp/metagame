@@ -112,7 +112,11 @@ export function SmartSessionTooltip({
         className="border-none bg-transparent p-0 shadow-none"
         sideOffset={8}
       >
-        <SessionDetailsCard session={session} />
+        <SessionDetailsCard
+          session={session}
+          showButtons={false}
+          canEdit={false}
+        />
       </TooltipContent>
     </Tooltip>
   )

@@ -29,9 +29,11 @@ import {
 
 export default function SessionDetailsCard({
   session,
+  showButtons,
   canEdit = false,
 }: {
   session: DbSessionView
+  showButtons: boolean
   canEdit?: boolean
 }) {
   const { currentUserProfile } = useUser()
@@ -251,31 +253,33 @@ export default function SessionDetailsCard({
             <h2 className="text-secondary-200 text-xl leading-tight font-bold">
               <SessionTitle title={session.title || 'Untitled Session'} />
             </h2>
-            <div className="flex w-fit gap-1 self-start">
-              {showCopiedMessage ? (
-                <span className="text-light p-1 text-green-400">✓</span>
-              ) : (
-                <button
-                  onClick={copyLink}
-                  className="hover:bg-dark-400 cursor-pointer rounded-md p-1 transition-colors"
-                >
-                  <LinkIcon
-                    className={`size-4 ${copyError ? 'text-red-500' : 'text-secondary-300'}`}
-                  />
-                </button>
-              )}
+            {showButtons && (
+              <div className="flex w-fit gap-1 self-start">
+                {showCopiedMessage ? (
+                  <span className="text-light p-1 text-green-400">✓</span>
+                ) : (
+                  <button
+                    onClick={copyLink}
+                    className="hover:bg-dark-400 cursor-pointer rounded-md p-1 transition-colors"
+                  >
+                    <LinkIcon
+                      className={`size-4 ${copyError ? 'text-red-500' : 'text-secondary-300'}`}
+                    />
+                  </button>
+                )}
 
-              {/* Edit button for admins */}
-              {canEdit && (
-                <button
-                  onClick={() => setShowEditModal(true)}
-                  className="hover:bg-dark-400 cursor-pointer rounded-md p-1 transition-colors"
-                  title="Edit Event"
-                >
-                  <EditIcon className="text-secondary-300 size-4" />
-                </button>
-              )}
-            </div>
+                {/* Edit button for admins */}
+                {canEdit && (
+                  <button
+                    onClick={() => setShowEditModal(true)}
+                    className="hover:bg-dark-400 cursor-pointer rounded-md p-1 transition-colors"
+                    title="Edit Event"
+                  >
+                    <EditIcon className="text-secondary-300 size-4" />
+                  </button>
+                )}
+              </div>
+            )}
           </div>
 
           {/* Hosts */}
@@ -287,7 +291,7 @@ export default function SessionDetailsCard({
         {/* Time & Date */}
         {session.start_time && (
           <div className="space-y-1">
-            {currentUserProfile?.id && (
+            {currentUserProfile?.id && showButtons && (
               <div className="flex items-center gap-3">
                 <button
                   className="group p-1 hover:cursor-pointer rounded-xs"

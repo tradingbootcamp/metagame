@@ -9,86 +9,58 @@ import {
 export const SessionTooltip = ({
   children,
   tooltip,
-  tooltipWidth = 480,
+  tooltipMaxWidth = 480,
   margin = 20,
 }: {
   children: React.ReactNode
   tooltip: React.ReactNode
-  tooltipWidth?: number
+  tooltipMaxWidth?: number
   margin?: number
 }) => {
-  const [side, setSide] = useState<'top' | 'right' | 'bottom' | 'left'>('right')
-  const [align, setAlign] = useState<'start' | 'center' | 'end'>('start')
+  // Keep this tooltip purely hover-based and not hoverable itself.
+  // disableHoverableContent ensures it closes immediately when leaving the trigger.
+  // Choose left/right based on available space and clamp width to prevent overlap.
+  const [side, setSide] = useState<'right' | 'left'>('right')
+  const [maxWidth, setMaxWidth] = useState<number | undefined>(undefined)
   const triggerRef = useRef<HTMLDivElement>(null)
-
-  const updatePosition = () => {
-    if (!triggerRef.current) return
-
-    const rect = triggerRef.current.getBoundingClientRect()
+  const handleMouseEnter = () => {
+    const el = triggerRef.current
+    if (!el) return
+    const rect = el.getBoundingClientRect()
     const viewportWidth = window.innerWidth
-    const viewportHeight = window.innerHeight
-
-    // Calculate available space on each side
-    const spaceRight = viewportWidth - rect.right - margin
     const spaceLeft = rect.left - margin
-    const spaceTop = rect.top - margin
-    const spaceBottom = viewportHeight - rect.bottom - margin
+    const spaceRight = viewportWidth - rect.right - margin
 
-    // Determine horizontal side (left/right)
-    let newSide: 'top' | 'right' | 'bottom' | 'left'
-    if (spaceRight >= tooltipWidth) {
-      newSide = 'right'
-    } else if (spaceLeft >= tooltipWidth) {
-      newSide = 'left'
+    // Pick a side that can fit the preferred width; otherwise pick the roomier side
+    if (spaceRight >= tooltipMaxWidth) {
+      setSide('right')
+      setMaxWidth(Math.min(tooltipMaxWidth, spaceRight))
+    } else if (spaceLeft >= tooltipMaxWidth) {
+      setSide('left')
+      setMaxWidth(Math.min(tooltipMaxWidth, spaceLeft))
+    } else if (spaceRight >= spaceLeft) {
+      setSide('right')
+      setMaxWidth(Math.max(0, spaceRight))
     } else {
-      // If neither side has enough space, choose the side with more space
-      newSide = spaceRight > spaceLeft ? 'right' : 'left'
+      setSide('left')
+      setMaxWidth(Math.max(0, spaceLeft))
     }
-
-    // Determine vertical alignment
-    let newAlign: 'start' | 'center' | 'end'
-    const tooltipHeight = 400 // Approximate height
-
-    if (newSide === 'right' || newSide === 'left') {
-      // For left/right positioning, check vertical space
-      if (spaceTop >= tooltipHeight) {
-        newAlign = 'start'
-      } else if (spaceBottom >= tooltipHeight) {
-        newAlign = 'end'
-      } else {
-        newAlign = 'center'
-      }
-    } else {
-      // For top/bottom positioning, check horizontal space
-      if (spaceLeft >= tooltipWidth / 2) {
-        newAlign = 'start'
-      } else if (spaceRight >= tooltipWidth / 2) {
-        newAlign = 'end'
-      } else {
-        newAlign = 'center'
-      }
-    }
-
-    setSide(newSide)
-    setAlign(newAlign)
   }
-
   return (
-    <Tooltip clickable showArrow={false}>
+    <Tooltip disableHoverableContent showArrow={false}>
       <TooltipTrigger asChild>
-        <div ref={triggerRef} onMouseEnter={updatePosition}>
+        <div ref={triggerRef} onMouseEnter={handleMouseEnter}>
           {children}
         </div>
       </TooltipTrigger>
       <TooltipContent
         side={side}
-        align={align}
+        align="start"
+        avoidCollisions
+        collisionPadding={margin}
         sideOffset={margin}
-        className="z-[100] max-w-none border-none bg-transparent p-0 text-left shadow-none"
-        style={{
-          width: `${tooltipWidth}px`,
-          maxHeight: 'calc(100vh - 100px)',
-        }}
+        className="z-[100] border-none bg-transparent p-0 text-left shadow-none pointer-events-none"
+        style={{ maxWidth: maxWidth ? `${maxWidth}px` : undefined }}
       >
         {tooltip}
       </TooltipContent>
