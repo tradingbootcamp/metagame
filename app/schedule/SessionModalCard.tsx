@@ -7,9 +7,10 @@ import { AttendanceDisplay } from './Schedule'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { dbGetHostsFromSession } from '@/utils/dbUtils'
+import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
+import { Badge } from '@/components/ui/badge'
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
@@ -182,19 +183,33 @@ export default function SessionDetailsCard({
           {session.max_capacity && (
             <div className="text-secondary-300">
               <div className="flex flex-col items-end gap-1">
-                <div className="flex items-center">
-                  {currentUserRsvp && (
-                    <CheckIcon
-                      className={`mr-1 inline-block size-4 ${currentUserRsvp.on_waitlist ? 'bg-gray-600 text-yellow-600' : 'bg-white text-green-600'} rounded-full p-0.5`}
-                      strokeWidth={3}
-                    />
+                <div className="flex items-center gap-2">
+                  {session.ages === SESSION_AGES.ADULTS && (
+                    <Badge className="flex items-center gap-1 rounded-full bg-rose-300 px-2 py-0">
+                      <span className="z-10 text-lg">🔞</span>
+                      <span className="text-sm">Adults Only</span>
+                    </Badge>
                   )}
-                  <UserIcon className="mr-1 inline-block size-4" />{' '}
-                  <AttendanceDisplay
-                    session={session}
-                    sessionRsvps={sessionRsvps}
-                    userLoggedIn={!!currentUser}
-                  />
+                  {session.ages === SESSION_AGES.KIDS && (
+                    <Badge className="z-10 rounded-full bg-blue-600 px-2 py-0.5 text-base">
+                      🐥
+                      <span className="text-gray-100">Kid Friendly</span>
+                    </Badge>
+                  )}
+                  <div className="flex items-center">
+                    {currentUserRsvp && (
+                      <CheckIcon
+                        className={`mr-1 inline-block size-4 ${currentUserRsvp.on_waitlist ? 'bg-gray-600 text-yellow-600' : 'bg-white text-green-600'} rounded-full p-0.5`}
+                        strokeWidth={3}
+                      />
+                    )}
+                    <UserIcon className="mr-1 inline-block size-4" />{' '}
+                    <AttendanceDisplay
+                      session={session}
+                      sessionRsvps={sessionRsvps}
+                      userLoggedIn={!!currentUser}
+                    />
+                  </div>
                 </div>
               </div>
             </div>
