@@ -6,7 +6,6 @@ import { AddEventModal } from './EditEventModal'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import {
-  fetchAllRsvps,
   fetchCurrentUserSessionBookmarks,
   fetchLocations,
   fetchSessions,
@@ -45,6 +44,7 @@ import {
 } from '@/components/ui/tooltip'
 
 import { useUser } from '@/hooks/dbQueries'
+import { useSessionRsvp } from '@/hooks/useSessionRsvp'
 import {
   DbProfile,
   DbSessionRsvpWithTeam,
@@ -165,17 +165,6 @@ export default function Schedule({
     queryFn: fetchCurrentUserSessionBookmarks,
   })
 
-  const { data: allRsvps = [] } = useQuery({
-    queryKey: ['rsvps'],
-    queryFn: () => {
-      console.log('refetching rsvps')
-      return fetchAllRsvps()
-    },
-  })
-  const currentUserRsvps = useMemo(() => {
-    return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile?.id)
-  }, [allRsvps, currentUserProfile])
-
   // Filter and sort locations for schedule display
   const locations = useMemo(() => {
     return allLocations
@@ -197,7 +186,7 @@ export default function Schedule({
 
     const filterSessionForUser = (session: DbSessionView) => {
       if (!currentUserProfile) return true
-      if (currentUserRsvps.some((rsvp) => rsvp.session_id === session.id!)) {
+      if (isUserRsvpd(session.id!)) {
         return true
       }
       const sessionHostIds = [
@@ -314,11 +303,12 @@ export default function Schedule({
       return newFilter
     })
   }
+
+  // Use the RSVP hook
+  const { isUserRsvpd, toggleRsvp, rsvpsBySessionId } = useSessionRsvp()
   // Helper function to get event color
   const getEventColor = (session: DbSessionView) => {
-    const userIsRsvpd = currentUserRsvps.some(
-      (rsvp) => rsvp.session_id === session.id!,
-    )
+    const userIsRsvpd = isUserRsvpd(session.id!)
     if (session.megagame) {
       return userIsRsvpd
         ? 'bg-[repeating-linear-gradient(45deg,#f97316,#f97316_10px,#a855f7_10px,#a855f7_20px)]'
@@ -335,18 +325,18 @@ export default function Schedule({
   }
 
   return (
-    <div className="bg-dark-500 flex flex-col rounded-2xl font-serif">
+    <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
       {/* Day Navigator - Fixed on desktop, scrollable on mobile */}
-      <div className="bg-dark-600 border-secondary-300 hidden flex-shrink-0 items-center justify-between border-b p-4 lg:flex">
+      <div className="hidden flex-shrink-0 items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:flex">
         <button
           onClick={prevDay}
           className="cursor-pointer rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === 0}
         >
-          <ChevronLeft className="text-secondary-300 h-5 w-5" />
+          <ChevronLeft className="h-5 w-5 text-secondary-300" />
         </button>
 
-        <h2 className="text-secondary-200 text-center text-xl font-bold">
+        <h2 className="text-center text-xl font-bold text-secondary-200">
           {currentDay.displayName}
         </h2>
 
@@ -355,23 +345,23 @@ export default function Schedule({
           className="cursor-pointer rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === days.length - 1}
         >
-          <ChevronRight className="text-secondary-300 h-5 w-5" />
+          <ChevronRight className="h-5 w-5 text-secondary-300" />
         </button>
       </div>
 
       {/* Scrollable Schedule Content */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
         {/* Day Navigator - Mobile only, inside scrollable area, sticky left */}
-        <div className="bg-dark-600 border-secondary-300 sticky left-0 z-30 flex items-center justify-between border-b p-4 lg:hidden">
+        <div className="sticky left-0 z-30 flex items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:hidden">
           <button
             onClick={prevDay}
             className="rounded-md p-2 transition-colors disabled:opacity-50"
             disabled={currentDayIndex === 0}
           >
-            <ChevronLeft className="text-secondary-300 h-5 w-5" />
+            <ChevronLeft className="h-5 w-5 text-secondary-300" />
           </button>
 
-          <h2 className="text-secondary-200 text-center text-xl font-bold">
+          <h2 className="text-center text-xl font-bold text-secondary-200">
             {currentDay.displayName}
           </h2>
 
@@ -380,25 +370,25 @@ export default function Schedule({
             className="rounded-md p-2 transition-colors disabled:opacity-50"
             disabled={currentDayIndex === days.length - 1}
           >
-            <ChevronRight className="text-secondary-300 h-5 w-5" />
+            <ChevronRight className="h-5 w-5 text-secondary-300" />
           </button>
         </div>
 
         <div className="h-fit min-w-fit">
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
-            className="bg-dark-400 grid lg:top-0 lg:z-30"
+            className="grid bg-dark-400 lg:top-0 lg:z-30"
             style={{
               gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
             }}
           >
-            <div className="bg-dark-600 border-secondary-300 sticky left-0 z-30 border p-3">
+            <div className="sticky left-0 z-30 border border-secondary-300 bg-dark-600 p-3">
               {/* Empty space above time column */}
             </div>
             {locations.map((location) => (
               <div
                 key={location.id}
-                className="bg-dark-600 border-secondary-300 border p-3"
+                className="border border-secondary-300 bg-dark-600 p-3"
               >
                 {location.name === 'The Clocktower' ? (
                   <BloodDrippingFrame className="z-1 h-24 w-full">
@@ -411,7 +401,7 @@ export default function Schedule({
                         className="h-24 w-full object-cover"
                       />
                     ) : (
-                      <div className="bg-dark-500 h-24 w-full" />
+                      <div className="h-24 w-full bg-dark-500" />
                     )}
                   </BloodDrippingFrame>
                 ) : location.thumbnail_url ? (
@@ -423,7 +413,7 @@ export default function Schedule({
                     className="h-24 w-full object-cover"
                   />
                 ) : (
-                  <div className="bg-dark-500 h-24 w-full" />
+                  <div className="h-24 w-full bg-dark-500" />
                 )}
               </div>
             ))}
@@ -431,21 +421,21 @@ export default function Schedule({
 
           {/* Names Row - Always sticky, with day nav on mobile */}
           <div
-            className="bg-dark-400 sticky top-0 z-20 grid"
+            className="sticky top-0 z-20 grid bg-dark-400"
             style={{
               gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
             }}
           >
-            <div className="bg-dark-600 border-secondary-300 sticky top-0 left-0 z-30 border border-b-2 p-3">
-              <div className="text-secondary-300 sticky flex flex-col gap-4 size-full items-center justify-center text-sm font-medium">
+            <div className="sticky top-0 left-0 z-30 border border-b-2 border-secondary-300 bg-dark-600 p-3">
+              <div className="sticky flex size-full flex-col items-center justify-center gap-4 text-sm font-medium text-secondary-300">
                 {currentUserProfile?.id && (
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
-                        className={`${filterForUserEvents ? 'opacity-100' : 'opacity-50'} hover:bg-dark-300 cursor-pointer rounded-sm  transition-colors`}
+                        className={`${filterForUserEvents ? 'opacity-100' : 'opacity-50'} cursor-pointer rounded-sm transition-colors hover:bg-dark-300`}
                         onClick={handleToggleFilterForUserEvents}
                       >
-                        <FilterIcon className="text-secondary-300 size-4" />
+                        <FilterIcon className="size-4 text-secondary-300" />
                       </button>
                     </TooltipTrigger>
                     <TooltipContent>
@@ -457,12 +447,12 @@ export default function Schedule({
                   <Tooltip>
                     <TooltipTrigger asChild>
                       <button
-                        className={`${filterForBookmarkedEvents ? 'opacity-100' : 'opacity-50'} hover:bg-dark-300 cursor-pointer rounded-sm  transition-colors`}
+                        className={`${filterForBookmarkedEvents ? 'opacity-100' : 'opacity-50'} cursor-pointer rounded-sm transition-colors hover:bg-dark-300`}
                         onClick={handleToggleFilterForBookmarkedEvents}
                       >
                         <StarIcon
                           fill={filterForBookmarkedEvents ? 'yellow' : 'none'}
-                          className="text-secondary-300 size-4"
+                          className="size-4 text-secondary-300"
                         />
                       </button>
                     </TooltipTrigger>
@@ -474,19 +464,19 @@ export default function Schedule({
             {locations.map((venue) => (
               <div
                 key={venue.id}
-                className="bg-dark-600 border-secondary-300 border border-b-2 p-3"
+                className="border border-b-2 border-secondary-300 bg-dark-600 p-3"
               >
-                <div className="text-secondary-200 flex size-full flex-col items-start justify-start">
+                <div className="flex size-full flex-col items-start justify-start text-secondary-200">
                   <span className="font-serif text-base font-bold">
                     {venue.name}
                   </span>
                   {venue.campus_location && (
-                    <span className="text-secondary-400 font-sans text-xs font-normal">
+                    <span className="font-sans text-xs font-normal text-secondary-400">
                       {venue.campus_location}
                     </span>
                   )}
                   {venue.capacity && (
-                    <span className="text-secondary-400 flex items-center gap-1 font-sans text-xs font-normal">
+                    <span className="flex items-center gap-1 font-sans text-xs font-normal text-secondary-400">
                       Max {venue.capacity}
                       <User2Icon className="size-3" />
                     </span>
@@ -498,7 +488,7 @@ export default function Schedule({
 
           {/* Time Slots Grid */}
           <div
-            className="bg-dark-400 grid"
+            className="grid bg-dark-400"
             style={{
               gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
             }}
@@ -506,8 +496,8 @@ export default function Schedule({
             {generateTimeSlots(currentDayIndex).map((time) => (
               <div key={time} className="contents">
                 {/* Time Cell - Sticky Left */}
-                <div className="bg-dark-500 border-r-secondary-300 border-dark-400 z-sticky sticky top-0 left-0 flex w-full justify-center border">
-                  <div className="text-secondary-300 text-sm font-medium">
+                <div className="sticky top-0 left-0 z-sticky flex w-full justify-center border border-dark-400 border-r-secondary-300 bg-dark-500">
+                  <div className="text-sm font-medium text-secondary-300">
                     {time}
                   </div>
                 </div>
@@ -522,7 +512,7 @@ export default function Schedule({
                   return (
                     <div
                       key={venue.id}
-                      className="bg-dark-500 border-dark-400 relative min-h-[60px] overflow-visible border"
+                      className="relative min-h-[60px] overflow-visible border border-dark-400 bg-dark-500"
                     >
                       {eventsInSlot.map((session) => (
                         <SessionTooltip
@@ -537,7 +527,7 @@ export default function Schedule({
                         >
                           <div
                             onClick={() => handleOpenSessionModal(session.id!)}
-                            className={`z-content absolute m-0.5 rounded-md border-2 p-1 ${getEventColor(session)} font-semibold text-black`}
+                            className={`group absolute z-content m-0.5 rounded-md border-2 p-1 ${getEventColor(session)} font-semibold text-black`}
                             style={{
                               top: `${getEventOffsetMinutes(session, time) * 2}px`, // 2px per minute
                               height: `${getEventDurationMinutes(session) * 2}px`, // 2px per minute
@@ -552,60 +542,60 @@ export default function Schedule({
                               <div className="font-sans text-xs">
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
-                              <div className="absolute left-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                              <div className="absolute bottom-0 left-0 flex items-center gap-1 font-sans text-xs opacity-80">
                                 {currentUserBookmarks.some(
                                   (bookmark) =>
                                     bookmark.session_id === session.id!,
                                 ) && <StarIcon className="size-3" />}
                               </div>
-                              <div className="absolute right-0 bottom-0">
-                                <div className="flex flex-col items-end gap-0.5">
-                                  <div className="flex items-center gap-1 font-sans text-xs opacity-80">
-                                    {session.ages === SESSION_AGES.ADULTS && (
-                                      <Tooltip clickable>
-                                        <TooltipTrigger>
-                                          <span className="text-lg z-10">
-                                            🔞
-                                          </span>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>Adults only</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    )}
-                                    {session.ages === SESSION_AGES.KIDS && (
-                                      <Tooltip clickable>
-                                        <TooltipTrigger>
-                                          <Badge className=" bg-blue-600 text-base z-10 rounded-full p-0.5 aspect-square">
-                                            🐥
-                                          </Badge>
-                                        </TooltipTrigger>
-                                        <TooltipContent>
-                                          <p>Kid friendly</p>
-                                        </TooltipContent>
-                                      </Tooltip>
-                                    )}
-                                    {currentUserRsvps.some(
-                                      (rsvp) => rsvp.session_id === session.id!,
-                                    ) && (
-                                      <CheckIcon
-                                        className="size-4 rounded-full bg-white p-0.5 text-green-600"
-                                        strokeWidth={3}
-                                      />
-                                    )}
-                                    <UserIcon className="size-3" />
-                                    <AttendanceDisplay
-                                      session={session}
-                                      sessionRsvps={allRsvps.filter(
-                                        (rsvp) =>
-                                          rsvp.session_id === session.id!,
-                                      )}
-                                      currentUserProfile={
-                                        currentUserProfile ?? null
-                                      }
+                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                                {session.ages === SESSION_AGES.ADULTS && (
+                                  <Tooltip clickable>
+                                    <TooltipTrigger>
+                                      <span className="z-10 text-lg">🔞</span>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Adults only</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                                {session.ages === SESSION_AGES.KIDS && (
+                                  <Tooltip clickable>
+                                    <TooltipTrigger>
+                                      <Badge className="z-10 aspect-square rounded-full bg-blue-600 p-0.5 text-base">
+                                        🐥
+                                      </Badge>
+                                    </TooltipTrigger>
+                                    <TooltipContent>
+                                      <p>Kid friendly</p>
+                                    </TooltipContent>
+                                  </Tooltip>
+                                )}
+                                <div id="test">
+                                  <button
+                                    onClick={() => toggleRsvp(session.id!)}
+                                    className={`hidden cursor-pointer group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                  >
+                                    {isUserRsvpd(session.id!)
+                                      ? 'UnRSVP'
+                                      : 'RSVP'}
+                                  </button>
+                                  {isUserRsvpd(session.id!) && (
+                                    <CheckIcon
+                                      className="size-4 rounded-full bg-white text-green-600"
+                                      strokeWidth={3}
                                     />
-                                  </div>
+                                  )}
                                 </div>
+
+                                <UserIcon className="size-3" />
+                                <AttendanceDisplay
+                                  session={session}
+                                  sessionRsvps={rsvpsBySessionId(session.id!)}
+                                  currentUserProfile={
+                                    currentUserProfile ?? null
+                                  }
+                                />
                               </div>
                             </div>
                           </div>
@@ -617,10 +607,10 @@ export default function Schedule({
                         eventsInSlot.length === 0 && (
                           <div
                             onClick={() => handleEmptySlotClick(time, venue.id)}
-                            className="hover:bg-dark-400 hover:bg-opacity-20 group absolute inset-0 cursor-pointer transition-colors duration-200"
+                            className="hover:bg-opacity-20 group absolute inset-0 cursor-pointer transition-colors duration-200 hover:bg-dark-400"
                             title={`Add event at ${time} in ${venue.name}`}
                           >
-                            <div className="text-secondary-400 hidden h-full items-center justify-center text-xs group-hover:flex">
+                            <div className="hidden h-full items-center justify-center text-xs text-secondary-400 group-hover:flex">
                               <PlusIcon className="size-6" />
                             </div>
                           </div>
@@ -669,7 +659,7 @@ export default function Schedule({
       {/* Floating Action Button - Admin Only - Only on /schedule route */}
       {currentUserProfile?.is_admin && pathname.startsWith('/schedule') && (
         <button
-          className="bg-primary-500 hover:bg-primary-600 fixed right-6 bottom-6 z-[9999] rounded-full p-3 text-white shadow-lg transition-all duration-200 hover:shadow-xl"
+          className="fixed right-6 bottom-6 z-[9999] rounded-full bg-primary-500 p-3 text-white shadow-lg transition-all duration-200 hover:bg-primary-600 hover:shadow-xl"
           title="Add new event"
           onClick={() => setIsAddEventModalOpen(true)}
         >
@@ -702,10 +692,10 @@ export const AttendanceDisplay = ({
   }
   if (session.megagame) {
     return (
-      <div className="flex items-center gap-1 font-sans text-xs bg-gray-200 rounded-md px-1 py-0.5">
-        <span className="text-purple-500 font-bold">{teamCounts.purple}</span>
-        <span className="text-black font-bold">|</span>
-        <span className="text-orange-400 font-bold">{teamCounts.orange}</span>
+      <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
+        <span className="font-bold text-purple-500">{teamCounts.purple}</span>
+        <span className="font-bold text-black">|</span>
+        <span className="font-bold text-orange-400">{teamCounts.orange}</span>
       </div>
     )
   }
