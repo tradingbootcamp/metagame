@@ -70,9 +70,16 @@ export function useScheduleStuff() {
       | DbSessionView[]
       | undefined
     const session = sessions?.find((s) => s.id === sessionId)
+    const sessionRsvps = allRsvps.filter(
+      (rsvp) => rsvp.session_id === sessionId,
+    )
+    const confirmedRsvps = sessionRsvps.filter(
+      (rsvp) => !rsvp.on_waitlist,
+    ).length
+
     return (
       session?.max_capacity !== null &&
-      (session?.rsvp_count || 0) >= (session?.max_capacity || 0)
+      confirmedRsvps >= (session?.max_capacity || 0)
     )
   }
 
@@ -82,11 +89,9 @@ export function useScheduleStuff() {
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
-      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
       const previousRsvps = queryClient.getQueryData(['rsvps'])
-      const previousSessions = queryClient.getQueryData(['sessions'])
 
       // Optimistically update RSVPs
       queryClient.setQueryData(
@@ -101,26 +106,12 @@ export function useScheduleStuff() {
           ) || [],
       )
 
-      // Optimistically update sessions (decrease RSVP count)
-      queryClient.setQueryData(
-        ['sessions'],
-        (old: DbSessionView[] | undefined) =>
-          old?.map((s) =>
-            s.id === sessionId
-              ? { ...s, rsvp_count: Math.max(0, (s.rsvp_count || 0) - 1) }
-              : s,
-          ) || [],
-      )
-
-      return { previousRsvps, previousSessions }
+      return { previousRsvps }
     },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousRsvps) {
         queryClient.setQueryData(['rsvps'], context.previousRsvps)
-      }
-      if (context?.previousSessions) {
-        queryClient.setQueryData(['sessions'], context.previousSessions)
       }
       toast.error(err.message)
     },
@@ -130,7 +121,6 @@ export function useScheduleStuff() {
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['rsvps'] })
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -140,11 +130,9 @@ export function useScheduleStuff() {
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
-      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
       const previousRsvps = queryClient.getQueryData(['rsvps'])
-      const previousSessions = queryClient.getQueryData(['sessions'])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
       const newRsvp: DbSessionRsvpWithTeam = {
@@ -162,26 +150,12 @@ export function useScheduleStuff() {
         (old: DbSessionRsvpView[] | undefined) => [...(old || []), newRsvp],
       )
 
-      // Optimistically update sessions (increase RSVP count)
-      queryClient.setQueryData(
-        ['sessions'],
-        (old: DbSessionView[] | undefined) =>
-          old?.map((s) =>
-            s.id === sessionId
-              ? { ...s, rsvp_count: (s.rsvp_count || 0) + 1 }
-              : s,
-          ) || [],
-      )
-
-      return { previousRsvps, previousSessions }
+      return { previousRsvps }
     },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousRsvps) {
         queryClient.setQueryData(['rsvps'], context.previousRsvps)
-      }
-      if (context?.previousSessions) {
-        queryClient.setQueryData(['sessions'], context.previousSessions)
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
@@ -191,7 +165,6 @@ export function useScheduleStuff() {
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
       queryClient.invalidateQueries({ queryKey: ['rsvps'] })
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 

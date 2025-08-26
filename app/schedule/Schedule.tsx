@@ -25,6 +25,7 @@ import { dateUtils } from '@/utils/dateUtils'
 import {
   SESSION_AGES,
   countRsvpsByTeamColor,
+  countRsvpsForSession,
   dbGetHostsFromSession,
 } from '@/utils/dbUtils'
 
@@ -677,9 +678,9 @@ export const AttendanceDisplay = ({
     )
   }
 
-  // For regular sessions, use the server-calculated rsvp_count for consistency
-  // This prevents the flashing issue where client-side counts briefly differ
-  const displayCount = session.rsvp_count ?? 0
+  // Use client-side RSVP data for consistent counting
+  const rsvpCounts = countRsvpsForSession(sessionRsvps)
+  const displayCount = rsvpCounts.confirmed // Show confirmed RSVPs (not waitlist)
 
   if (!currentUserProfile) {
     return (

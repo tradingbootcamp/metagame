@@ -75,3 +75,11 @@ export const countRsvpsByTeamColor = (rsvps: DbSessionRsvpWithTeam[]) => {
 
   return counts
 }
+
+export const countRsvpsForSession = (rsvps: DbSessionRsvpWithTeam[]) => {
+  return {
+    total: rsvps.length,
+    confirmed: rsvps.filter((rsvp) => !rsvp.on_waitlist).length,
+    waitlist: rsvps.filter((rsvp) => rsvp.on_waitlist).length,
+  }
+}
