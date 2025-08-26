@@ -70,9 +70,7 @@ export function useScheduleStuff() {
       | DbSessionView[]
       | undefined
     const session = sessions?.find((s) => s.id === sessionId)
-    const sessionRsvps = allRsvps.filter(
-      (rsvp) => rsvp.session_id === sessionId,
-    )
+    const sessionRsvps = rsvpsBySessionId(sessionId)
     const confirmedRsvps = sessionRsvps.filter(
       (rsvp) => !rsvp.on_waitlist,
     ).length

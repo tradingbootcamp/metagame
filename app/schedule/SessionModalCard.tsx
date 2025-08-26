@@ -24,7 +24,7 @@ export default function SessionDetailsCard({
   showButtons: boolean
   canEdit?: boolean
 }) {
-  const { currentUserProfile } = useUser()
+  const { currentUserProfile, currentUser } = useUser()
   const [showCopiedMessage, setShowCopiedMessage] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
@@ -193,7 +193,7 @@ export default function SessionDetailsCard({
                   <AttendanceDisplay
                     session={session}
                     sessionRsvps={sessionRsvps}
-                    currentUserProfile={currentUserProfile ?? null}
+                    userLoggedIn={!!currentUser}
                   />
                 </div>
               </div>

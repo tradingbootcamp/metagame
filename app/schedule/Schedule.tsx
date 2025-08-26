@@ -42,7 +42,6 @@ import {
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
 import {
-  DbProfile,
   DbSessionRsvpWithTeam,
   DbSessionView,
 } from '@/types/database/dbTypeAliases'
@@ -143,7 +142,7 @@ export default function Schedule({
 }) {
   const pathname = usePathname()
   const router = useRouter()
-  const { currentUserProfile } = useUser()
+  const { currentUserProfile, currentUser } = useUser()
   const {
     isUserRsvpd,
     toggleRsvp,
@@ -513,7 +512,7 @@ export default function Schedule({
                               <div className="font-sans text-xs">
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
-                              <div className="absolute bottom-0 left-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                              <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
                                 <button
                                   onClick={(e) => {
                                     e.stopPropagation()
@@ -533,6 +532,25 @@ export default function Schedule({
                                 </button>
                               </div>
                               <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                                <div className="flex min-h-[20px] items-center gap-1">
+                                  <button
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      toggleRsvp(session.id!)
+                                    }}
+                                    className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                  >
+                                    {isUserRsvpd(session.id!)
+                                      ? 'UnRSVP'
+                                      : 'RSVP'}
+                                  </button>
+                                  {isUserRsvpd(session.id!) && (
+                                    <CheckIcon
+                                      className="size-4 rounded-full bg-white text-green-600"
+                                      strokeWidth={3}
+                                    />
+                                  )}
+                                </div>
                                 {session.ages === SESSION_AGES.ADULTS && (
                                   <Tooltip clickable>
                                     <TooltipTrigger>
@@ -555,33 +573,11 @@ export default function Schedule({
                                     </TooltipContent>
                                   </Tooltip>
                                 )}
-                                <div className="flex min-h-[20px] items-center gap-1">
-                                  <button
-                                    onClick={(e) => {
-                                      e.stopPropagation()
-                                      toggleRsvp(session.id!)
-                                    }}
-                                    className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
-                                  >
-                                    {isUserRsvpd(session.id!)
-                                      ? 'UnRSVP'
-                                      : 'RSVP'}
-                                  </button>
-                                  {isUserRsvpd(session.id!) && (
-                                    <CheckIcon
-                                      className="size-4 rounded-full bg-white text-green-600"
-                                      strokeWidth={3}
-                                    />
-                                  )}
-                                </div>
-
                                 <UserIcon className="size-3" />
                                 <AttendanceDisplay
                                   session={session}
                                   sessionRsvps={rsvpsBySessionId(session.id!)}
-                                  currentUserProfile={
-                                    currentUserProfile ?? null
-                                  }
+                                  userLoggedIn={!!currentUser}
                                 />
                               </div>
                             </div>
@@ -660,11 +656,11 @@ export default function Schedule({
 export const AttendanceDisplay = ({
   session,
   sessionRsvps,
-  currentUserProfile,
+  userLoggedIn,
 }: {
   session: DbSessionView
   sessionRsvps: DbSessionRsvpWithTeam[]
-  currentUserProfile: DbProfile | null
+  userLoggedIn: boolean
 }) => {
   // For megagames, we need the team breakdown from client-side RSVP data
   if (session.megagame) {
@@ -682,7 +678,7 @@ export const AttendanceDisplay = ({
   const rsvpCounts = countRsvpsForSession(sessionRsvps)
   const displayCount = rsvpCounts.confirmed // Show confirmed RSVPs (not waitlist)
 
-  if (!currentUserProfile) {
+  if (!userLoggedIn) {
     return (
       <div>
         {session.min_capacity && session.max_capacity
