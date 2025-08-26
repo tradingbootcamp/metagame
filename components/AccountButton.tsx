@@ -42,7 +42,7 @@ export default function AccountButton({
   const dropdownTriggerElement = () => {
     if (userLoading || !user) {
       return (
-        <div className="bg-dark-400 size-[32px] animate-pulse rounded-full" />
+        <div className="size-[32px] animate-pulse rounded-full bg-dark-400" />
       )
     }
 
@@ -61,7 +61,7 @@ export default function AccountButton({
         className="aspect-square rounded-full object-cover"
       />
     ) : (
-      <div className="bg-dark-300 flex size-[32px] items-center justify-center rounded-full text-sm font-bold text-white">
+      <div className="flex size-[32px] items-center justify-center rounded-full bg-dark-300 text-sm font-bold text-white">
         {initial}
       </div>
     )

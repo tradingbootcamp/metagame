@@ -20,7 +20,7 @@ function ErrorMessage() {
 export default function AuthErrorPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
-      <div className="bg-dark-400 w-full max-w-md rounded-lg p-8 text-center shadow-lg">
+      <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 text-center shadow-lg">
         <div className="mb-4 flex justify-center">
           <AlertCircle className="size-12 text-red-500" />
         </div>

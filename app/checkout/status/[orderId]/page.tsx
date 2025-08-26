@@ -34,7 +34,7 @@ export default function CheckoutStatusPage() {
   if (error) {
     return (
       <div className="mx-auto max-w-2xl p-6">
-        <div className="border-base-300 bg-base-200 rounded-xl border p-6">
+        <div className="rounded-xl border border-base-300 bg-base-200 p-6">
           <div className="alert alert-error">
             <span>Failed to load order: {error.message}</span>
           </div>
@@ -46,11 +46,11 @@ export default function CheckoutStatusPage() {
   if (isLoading || !orderStatus) {
     return (
       <div className="mx-auto max-w-2xl p-6">
-        <div className="border-base-300 bg-base-200 rounded-xl border p-6">
+        <div className="rounded-xl border border-base-300 bg-base-200 p-6">
           <div className="animate-pulse">
-            <div className="bg-base-300 mb-4 h-8 rounded"></div>
-            <div className="bg-base-300 mb-2 h-4 rounded"></div>
-            <div className="bg-base-300 h-6 rounded"></div>
+            <div className="mb-4 h-8 rounded bg-base-300"></div>
+            <div className="mb-2 h-4 rounded bg-base-300"></div>
+            <div className="h-6 rounded bg-base-300"></div>
           </div>
         </div>
       </div>
@@ -62,7 +62,7 @@ export default function CheckoutStatusPage() {
       case 'unpaid':
         return (
           <a
-            className="btn btn-primary flex w-fit items-center gap-2"
+            className="btn flex w-fit items-center gap-2 btn-primary"
             href={orderStatus.hostedUrl}
           >
             Complete payment <ExternalLinkIcon className="h-4 w-4" />
@@ -70,7 +70,7 @@ export default function CheckoutStatusPage() {
         )
       case 'expired':
         return (
-          <div className="alert alert-error mt-4 w-fit">
+          <div className="mt-4 alert w-fit alert-error">
             <span>
               Payment expired. Please start a new ticket purchase and try again.
             </span>
@@ -78,13 +78,13 @@ export default function CheckoutStatusPage() {
         )
       case 'processing':
         return (
-          <div className="alert alert-info mt-4 w-fit">
+          <div className="mt-4 alert w-fit alert-info">
             <span>Payment sent and being processed!</span>
           </div>
         )
       case 'paid':
         return (
-          <div className="alert alert-success mt-4 w-fit">
+          <div className="mt-4 alert w-fit alert-success">
             <span>Payment received! Check your email for your ticket!</span>
           </div>
         )
@@ -110,13 +110,13 @@ export default function CheckoutStatusPage() {
 
   return (
     <div className="mx-auto max-w-2xl p-6">
-      <div className="border-base-300 bg-base-200 rounded-xl border p-6">
+      <div className="rounded-xl border border-base-300 bg-base-200 p-6">
         <div className="mb-2 flex items-center justify-between">
           <h1 className="text-2xl font-bold">Bitcoin Checkout Status</h1>
           {orderStatus.status !== 'paid' &&
             orderStatus.status !== 'expired' && (
               <div className="flex items-center gap-2 text-sm opacity-70">
-                <div className="loading loading-spinner loading-xs"></div>
+                <div className="loading loading-xs loading-spinner"></div>
                 Auto-refreshing...
               </div>
             )}

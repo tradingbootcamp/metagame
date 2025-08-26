@@ -384,13 +384,13 @@ export function IssueTicketForm({}: {
       </div>
 
       {error && (
-        <div className="bg-red-500/10 border border-red-500/20 rounded-md p-4">
+        <div className="rounded-md border border-red-500/20 bg-red-500/10 p-4">
           <p className="text-red-400">{error}</p>
         </div>
       )}
 
       {success && (
-        <div className="bg-green-500/10 border border-green-500/20 rounded-md p-4">
+        <div className="rounded-md border border-green-500/20 bg-green-500/10 p-4">
           <Textarea className="text-green-400" value={success} readOnly />
         </div>
       )}

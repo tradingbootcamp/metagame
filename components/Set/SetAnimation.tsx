@@ -94,7 +94,7 @@ export default function SetAnimation() {
         ))}
       </div>
       {foundSets > 0 && (
-        <div className="animate-fade-in flex min-h-[4px] items-center justify-center gap-2">
+        <div className="flex min-h-[4px] animate-fade-in items-center justify-center gap-2">
           {Array.from({ length: Math.max(5, foundSets) }).map((_, index) => (
             <div
               key={index}
@@ -106,7 +106,7 @@ export default function SetAnimation() {
       {foundSets >= 5 && (
         <Link
           href="/proset-puzzle"
-          className="animate-fade-in max-w-48 rounded-md bg-blue-300 px-2 py-1 text-center font-semibold text-black md:max-w-full"
+          className="max-w-48 animate-fade-in rounded-md bg-blue-300 px-2 py-1 text-center font-semibold text-black md:max-w-full"
         >
           Want something trickier and more rewarding?
         </Link>

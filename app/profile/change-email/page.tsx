@@ -70,14 +70,14 @@ export default function ChangeEmail() {
       <div className="mb-6">
         <Link
           href="/profile"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition-colors"
+          className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Profile
         </Link>
       </div>
 
-      <div className="bg-card border-border-primary rounded-lg border p-6">
+      <div className="rounded-lg border border-border-primary bg-card p-6">
         <h1 className="mb-6 text-2xl font-bold">Change Email</h1>
 
         <form onSubmit={handleSubmit} className="space-y-4">
@@ -151,8 +151,8 @@ export default function ChangeEmail() {
           </div>
         </form>
 
-        <div className="bg-muted mt-6 rounded-lg p-4">
-          <p className="text-muted-foreground text-sm">
+        <div className="mt-6 rounded-lg bg-muted p-4">
+          <p className="text-sm text-muted-foreground">
             After submitting, you will receive a confirmation email at your
             current and new email addresses. Click the links in each email to
             confirm the email change.

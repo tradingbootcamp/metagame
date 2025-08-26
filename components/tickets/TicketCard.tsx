@@ -136,7 +136,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
           {/* Ticket Header */}
           <div className="flex flex-grow flex-col justify-between">
             <div>
-              <h3 className="text-primary-300 text-5xl font-black uppercase md:text-3xl">
+              <h3 className="text-5xl font-black text-primary-300 uppercase md:text-3xl">
                 {displayTicketType.title}
               </h3>
 
@@ -189,13 +189,13 @@ export const TicketCard: React.FC<TicketCardProps> = ({
               displayTicketType.priceUSD !== displayTicketType.regularPrice ? (
                 <div className="relative text-4xl text-gray-400">
                   ${displayTicketType.regularPrice}
-                  <div className="border-secondary-300 absolute top-5 right-0 left-7 mx-auto w-[65px] -rotate-[33deg] border-b-2" />
+                  <div className="absolute top-5 right-0 left-7 mx-auto w-[65px] -rotate-[33deg] border-b-2 border-secondary-300" />
                 </div>
               ) : (
                 <div className="h-0 text-4xl text-gray-400" />
               )}
 
-              <p className="text-secondary-300 my-4 text-6xl font-black md:text-3xl lg:text-6xl">
+              <p className="my-4 text-6xl font-black text-secondary-300 md:text-3xl lg:text-6xl">
                 {isBTC ? (
                   isDayPass && !selectedDayPass ? (
                     <span className="">{priceRangeBTC}</span>
@@ -236,7 +236,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                     : ''
                 }`}
               >
-                <div className="bg-dark-500 h-full w-full rounded-md px-12 py-3 whitespace-nowrap text-white uppercase transition-all duration-1000">
+                <div className="h-full w-full rounded-md bg-dark-500 px-12 py-3 whitespace-nowrap text-white uppercase transition-all duration-1000">
                   {ticketType.live
                     ? ticketType.applicationBased
                       ? 'Apply'
@@ -254,7 +254,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
       {/* Purchase Modal */}
       {showModal && (
         <Modal onClose={handleCloseModal} className="w-full max-w-2xl">
-          <div className="bg-dark-500 max-h-[90vh] overflow-y-auto rounded-lg border border-gray-700 p-6">
+          <div className="max-h-[90vh] overflow-y-auto rounded-lg border border-gray-700 bg-dark-500 p-6">
             <TicketPurchaseForm
               ticketType={
                 selectedDayPass

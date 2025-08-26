@@ -175,16 +175,16 @@ const faqs: FAQ[] = [
 export default function FAQ() {
   return (
     <div className="flex max-w-prose flex-col gap-5 py-20">
-      <h1 className="text-secondary-300 pb-8 text-center text-2xl font-black">
+      <h1 className="pb-8 text-center text-2xl font-black text-secondary-300">
         Frequently Asked Questions
       </h1>
       {faqs.map((faq) => (
-        <div key={faq.id} className="collapse-plus bg-base-200 collapse">
+        <div key={faq.id} className="collapse-plus collapse bg-base-200">
           <input type="checkbox" name={`accordion-${faq.id}`} />
           <div className="collapse-title text-xl font-medium">
             {faq.question}
           </div>
-          <div className="collapse-content prose prose-xl">
+          <div className="prose-xl collapse-content prose">
             <article className="prose">{faq.contentHtml}</article>
           </div>
         </div>

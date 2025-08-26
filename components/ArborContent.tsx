@@ -13,7 +13,7 @@ export default function ArborContent() {
       <div className="container mx-auto px-4 py-16">
         {/* Hero Section */}
         <section className="mb-8 text-center">
-          <h1 className="text-secondary-200 mb-6 text-5xl font-bold">Arbor</h1>
+          <h1 className="mb-6 text-5xl font-bold text-secondary-200">Arbor</h1>
         </section>
 
         {/* Projects Section */}
@@ -35,7 +35,7 @@ export default function ArborContent() {
             Some projects of ours include:
             <ul className="mt-6 space-y-6 text-lg leading-relaxed text-gray-300">
               <li className="flex items-start">
-                <span className="text-secondary-200 mr-3">•</span>
+                <span className="mr-3 text-secondary-200">•</span>
                 <span>
                   A{' '}
                   <a
@@ -51,7 +51,7 @@ export default function ArborContent() {
                 </span>
               </li>
               <li className="flex items-start">
-                <span className="text-secondary-200 mr-3">•</span>
+                <span className="mr-3 text-secondary-200">•</span>
                 <span>
                   A{' '}
                   <a
@@ -67,7 +67,7 @@ export default function ArborContent() {
                 </span>
               </li>
               <li className="flex items-start">
-                <span className="text-secondary-200 mr-3">•</span>
+                <span className="mr-3 text-secondary-200">•</span>
                 <span>
                   A{' '}
                   <Link

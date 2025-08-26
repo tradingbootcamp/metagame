@@ -401,7 +401,7 @@ export function AddEventModal({
   if (isEditMode && sessionLoading) {
     return (
       <Modal onClose={onClose}>
-        <div className="bg-dark-400 w-full max-w-md rounded-lg p-8 shadow-lg">
+        <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 shadow-lg">
           <div className="text-center">
             <div className="mb-2 text-lg font-semibold">
               Loading event data...
@@ -417,7 +417,7 @@ export function AddEventModal({
 
   return (
     <Modal onClose={onClose}>
-      <div className="bg-dark-400 max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg p-8 shadow-lg">
+      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-dark-400 p-8 shadow-lg">
         <h2 className="mb-6 text-2xl font-bold">
           {isEditMode ? 'Edit Event' : 'Add New Event'}
         </h2>

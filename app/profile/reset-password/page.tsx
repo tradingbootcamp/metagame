@@ -90,7 +90,7 @@ export default function ResetPasswordPage() {
 
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
-      <div className="bg-dark-400 w-full max-w-md rounded-lg p-8 shadow-lg">
+      <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 shadow-lg">
         <h1 className="mb-6 text-center text-2xl font-bold">
           Set Your Password
         </h1>

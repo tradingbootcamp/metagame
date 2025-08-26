@@ -31,8 +31,8 @@ export function ProfileDataCollapsible({
 
   return (
     <Collapsible open={isOpen} onOpenChange={setIsOpen}>
-      <div className="border border-gray-300 rounded-md">
-        <CollapsibleTrigger className="w-full flex items-center justify-between p-3 text-lef rounded-md">
+      <div className="rounded-md border border-gray-300">
+        <CollapsibleTrigger className="text-lef flex w-full items-center justify-between rounded-md p-3">
           <span className="text-sm font-medium">Raw Profile Data</span>
           {isOpen ? (
             <ChevronDownIcon className="h-4 w-4" />

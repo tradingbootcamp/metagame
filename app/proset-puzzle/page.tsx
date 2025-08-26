@@ -31,7 +31,7 @@ export default function ProsetPuzzlePage() {
           </h1>
 
           {/* Subtitle */}
-          <h2 className="text-secondary-500 text-2xl md:text-3xl">
+          <h2 className="text-2xl text-secondary-500 md:text-3xl">
             By Eric Neyman
           </h2>
 

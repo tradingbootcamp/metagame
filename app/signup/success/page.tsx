@@ -30,14 +30,14 @@ export default async function SignupSuccess({
       <div className="mb-6">
         <Link
           href="/"
-          className="text-muted-foreground hover:text-foreground inline-flex items-center gap-2 transition-colors"
+          className="inline-flex items-center gap-2 text-muted-foreground transition-colors hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
           Back to Home
         </Link>
       </div>
 
-      <div className="bg-card border-border-primary rounded-lg border p-6 text-center">
+      <div className="rounded-lg border border-border-primary bg-card p-6 text-center">
         <div className="mb-4">
           {isConfirmed ? (
             <CheckCircle className="mx-auto h-12 w-12 text-green-500" />
@@ -56,23 +56,23 @@ export default async function SignupSuccess({
                 set to join us at Metagame 2025!
               </p>
 
-              <div className="bg-muted rounded-lg p-4">
+              <div className="rounded-lg bg-muted p-4">
                 <p className="text-center font-medium">
                   {user?.email || email}
                 </p>
               </div>
 
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 You can now manage your profile, RSVP to sessions, and probably
                 some other stuff.
               </p>
             </div>
 
             <div className="mt-6 space-y-3">
-              <Link href="/profile" className="btn btn-primary w-full">
+              <Link href="/profile" className="btn w-full btn-primary">
                 Manage Profile <ArrowRightIcon className="h-4 w-4" />
               </Link>
-              <Link href="/schedule" className="btn btn-primary w-full">
+              <Link href="/schedule" className="btn w-full btn-primary">
                 Browse Schedule <ArrowRightIcon className="h-4 w-4" />
               </Link>
             </div>
@@ -86,13 +86,13 @@ export default async function SignupSuccess({
                 Thanks for signing up! We&apos;ve sent a confirmation email to:
               </p>
 
-              <div className="bg-muted rounded-lg p-4">
+              <div className="rounded-lg bg-muted p-4">
                 <p className="text-center font-medium">
                   {user?.email || email}
                 </p>
               </div>
 
-              <p className="text-muted-foreground text-sm">
+              <p className="text-sm text-muted-foreground">
                 Click the confirmation link in your email to activate your
                 account.
               </p>
@@ -110,7 +110,7 @@ export default async function SignupSuccess({
             </div>
 
             <div className="mt-6">
-              <Link href="/" className="btn btn-primary w-full">
+              <Link href="/" className="btn w-full btn-primary">
                 Return to Home
               </Link>
             </div>

@@ -43,11 +43,11 @@ export default function ContributeContent() {
           className="object-cover"
           priority
         />
-        <div className="from-dark-500 absolute inset-0 bg-gradient-to-t to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-dark-500 to-transparent" />
       </section>
 
       <div className="container mx-auto">
-        <div className="prose lg:prose-xl dark:prose-invert max-w-none p-8 font-semibold">
+        <div className="lg:prose-xl dark:prose-invert prose max-w-none p-8 font-semibold">
           <h1>Run something</h1>
 
           <p>

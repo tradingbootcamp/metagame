@@ -59,7 +59,7 @@ export const SessionTooltip = ({
         avoidCollisions
         collisionPadding={margin}
         sideOffset={margin}
-        className="z-[100] border-none bg-transparent p-0 text-left shadow-none pointer-events-none"
+        className="pointer-events-none z-[100] border-none bg-transparent p-0 text-left shadow-none"
         style={{ maxWidth: maxWidth ? `${maxWidth}px` : undefined }}
       >
         {tooltip}

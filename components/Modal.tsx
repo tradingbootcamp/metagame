@@ -20,7 +20,7 @@ export function Modal({
 
   return (
     <div
-      className="z-modal fixed inset-0 flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
+      className="fixed inset-0 z-modal flex items-center justify-center bg-black/60 p-4 backdrop-blur-sm"
       onClick={onClose}
     >
       {/* Prevent clicks on content from closing modal */}

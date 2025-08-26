@@ -41,8 +41,8 @@ export function UserSelector({ users, selectedUserId }: UserSelectorProps) {
 
   return (
     <div>
-      <label className="block text-sm font-medium mb-2">Select User</label>
-      <div className="flex gap-2 items-center">
+      <label className="mb-2 block text-sm font-medium">Select User</label>
+      <div className="flex items-center gap-2">
         <Select value={selectedUserId || ''} onValueChange={handleUserSelect}>
           <SelectTrigger className="flex-1">
             <SelectValue placeholder="Choose a user to view their profile" />
@@ -58,7 +58,7 @@ export function UserSelector({ users, selectedUserId }: UserSelectorProps) {
         {selectedUserId && (
           <button
             onClick={clearSelection}
-            className="px-3 py-2 text-sm border border-gray-300 rounded-md bg-white hover:bg-gray-50 text-gray-700"
+            className="rounded-md border border-gray-300 bg-white px-3 py-2 text-sm text-gray-700 hover:bg-gray-50"
           >
             Clear
           </button>

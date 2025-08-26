@@ -5,7 +5,7 @@ import { buttonVariants } from '@/components/ui/button'
 export default function ResetPasswordSuccessPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
-      <div className="bg-dark-400 w-full max-w-md rounded-lg p-8 text-center shadow-lg">
+      <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 text-center shadow-lg">
         <div className="flex flex-col items-center gap-4">
           <div className="mb-2 rounded-full bg-green-600 p-3">
             <svg

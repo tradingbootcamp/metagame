@@ -54,9 +54,9 @@ export function ProfileInfoModal({
 
   return (
     <Modal onClose={onClose}>
-      <div className="bg-card mx-4 w-full max-w-md rounded-lg p-6">
+      <div className="mx-4 w-full max-w-md rounded-lg bg-card p-6">
         <h2 className="mb-1 text-2xl font-bold">Complete Your Profile</h2>
-        <p className="text-muted-foreground mb-6">
+        <p className="mb-6 text-muted-foreground">
           We need some basic profile information
         </p>
 

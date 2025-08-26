@@ -31,7 +31,7 @@ export const Button: React.FC<ButtonProps> = ({
       <div
         className={`tickets-btn ${bg} relative rounded-md p-0.5 font-bold transition-all duration-300`}
       >
-        <div className="content bg-bg-primary h-full w-full rounded-md px-12 py-3 uppercase transition-all duration-1000">
+        <div className="content h-full w-full rounded-md bg-bg-primary px-12 py-3 uppercase transition-all duration-1000">
           {children}
         </div>
       </div>

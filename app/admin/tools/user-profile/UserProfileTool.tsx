@@ -49,28 +49,28 @@ export default async function UserProfileTool({
         {selectedProfile && (
           <div className="p-6">
             <div className="space-y-4">
-              <div className="flex items-center gap-2 mb-4">
+              <div className="mb-4 flex items-center gap-2">
                 <h3 className="text-lg font-semibold">Profile Details</h3>
                 <div className="flex gap-2">
                   {selectedProfile.is_admin && (
-                    <span className="px-2 py-1 text-xs bg-red-100 text-red-800 rounded-md">
+                    <span className="rounded-md bg-red-100 px-2 py-1 text-xs text-red-800">
                       Admin
                     </span>
                   )}
                   {selectedProfile.minor && (
-                    <span className="px-2 py-1 text-xs bg-gray-100 text-gray-800 rounded-md">
+                    <span className="rounded-md bg-gray-100 px-2 py-1 text-xs text-gray-800">
                       Minor
                     </span>
                   )}
                   {selectedProfile.bringing_kids && (
-                    <span className="px-2 py-1 text-xs bg-blue-100 text-blue-800 rounded-md">
+                    <span className="rounded-md bg-blue-100 px-2 py-1 text-xs text-blue-800">
                       Bringing Kids
                     </span>
                   )}
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="grid grid-cols-1 gap-4 text-left md:grid-cols-2">
                 <div>
                   <strong>Name:</strong>
                   <p>
@@ -105,7 +105,7 @@ export default async function UserProfileTool({
                     <Image
                       src={selectedProfile.profile_pictures_url}
                       alt="Profile"
-                      className="mt-1 w-16 h-16 object-cover rounded-full"
+                      className="mt-1 h-16 w-16 rounded-full object-cover"
                       width={64}
                       height={64}
                     />
@@ -116,14 +116,14 @@ export default async function UserProfileTool({
               {(selectedProfile.site_name || selectedProfile.site_url) && (
                 <div>
                   <strong>Website 1:</strong>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     <p>{selectedProfile.site_name || 'Unnamed'}</p>
                     {selectedProfile.site_url && (
                       <a
                         href={selectedProfile.site_url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 underline text-sm"
+                        className="text-sm text-blue-400 underline hover:text-blue-300"
                       >
                         Visit
                       </a>
@@ -135,14 +135,14 @@ export default async function UserProfileTool({
               {(selectedProfile.site_name_2 || selectedProfile.site_url_2) && (
                 <div>
                   <strong>Website 2:</strong>
-                  <div className="flex gap-2 items-center">
+                  <div className="flex items-center gap-2">
                     <p>{selectedProfile.site_name_2 || 'Unnamed'}</p>
                     {selectedProfile.site_url_2 && (
                       <a
                         href={selectedProfile.site_url_2}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="text-blue-400 hover:text-blue-300 underline text-sm"
+                        className="text-sm text-blue-400 underline hover:text-blue-300"
                       >
                         Visit
                       </a>
@@ -151,10 +151,10 @@ export default async function UserProfileTool({
                 </div>
               )}
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+              <div className="grid grid-cols-1 gap-4 text-left md:grid-cols-2">
                 <div>
                   <strong>Status:</strong>
-                  <div className="flex gap-4 mt-1">
+                  <div className="mt-1 flex gap-4">
                     <div className="flex items-center gap-1">
                       <span className="text-xs">Homepage:</span>
                       {renderTrueFalseNull(
@@ -171,10 +171,10 @@ export default async function UserProfileTool({
                     </div>
                   </div>
                 </div>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-left">
+                <div className="grid grid-cols-1 gap-4 text-left md:grid-cols-2">
                   <div>
                     <strong>Profile Status:</strong>
-                    <div className="flex items-center gap-1 mt-1">
+                    <div className="mt-1 flex items-center gap-1">
                       {profileIsIncomplete(selectedProfile) ? (
                         <>
                           <span className="text-xs">Incomplete:</span>

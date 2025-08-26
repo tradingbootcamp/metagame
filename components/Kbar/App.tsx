@@ -24,7 +24,7 @@ function RenderResults() {
         // Handle section items
         if (typeof item === 'string') {
           return (
-            <div className="text-primary-400 bg-dark-600 px-4 py-2 text-sm font-bold">
+            <div className="bg-dark-600 px-4 py-2 text-sm font-bold text-primary-400">
               {item}
             </div>
           )
@@ -113,7 +113,7 @@ export function KbarApp({ children }: { children: React.ReactNode }) {
     <KBarProvider actions={actions}>
       <KBarPortal>
         <KBarPositioner className="fixed inset-0 z-50 bg-black/60">
-          <KBarAnimator className="bg-bg-secondary w-full max-w-xl overflow-hidden rounded-lg shadow-lg">
+          <KBarAnimator className="w-full max-w-xl overflow-hidden rounded-lg bg-bg-secondary shadow-lg">
             <KBarSearch
               className="w-full border-b border-gray-700 bg-transparent px-4 py-3 text-lg text-white placeholder-gray-400 focus:outline-none"
               placeholder="Type a command or search..."

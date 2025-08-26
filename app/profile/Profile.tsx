@@ -240,7 +240,7 @@ export default function Profile() {
           )}
         </div>
 
-        <div className="bg-card border-border-primary w-full rounded-lg border p-6">
+        <div className="w-full rounded-lg border border-border-primary bg-card p-6">
           <div className="flex flex-col items-center gap-8 md:flex-row">
             {/* Profile Picture Section */}
             <div className="flex flex-col items-center space-y-4">
@@ -254,8 +254,8 @@ export default function Profile() {
                     className="aspect-square rounded-full object-cover"
                   />
                 ) : (
-                  <div className="bg-muted flex h-32 w-32 items-center justify-center rounded-full">
-                    <span className="text-muted-foreground text-2xl">
+                  <div className="flex h-32 w-32 items-center justify-center rounded-full bg-muted">
+                    <span className="text-2xl text-muted-foreground">
                       {currentUserProfile?.first_name
                         ?.charAt(0)
                         ?.toUpperCase() ||

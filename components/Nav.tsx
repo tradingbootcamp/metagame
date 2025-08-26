@@ -26,7 +26,7 @@ export function NavItem({ href, children, closeMenu }: NavItemProps) {
       <Link
         href={href}
         onClick={closeMenu}
-        className="hover:text-secondary-200 block rounded px-3 py-2 text-lg font-bold transition-all md:bg-transparent md:p-0"
+        className="block rounded px-3 py-2 text-lg font-bold transition-all hover:text-secondary-200 md:bg-transparent md:p-0"
       >
         [{children}]
       </Link>
@@ -38,7 +38,7 @@ export default function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const closeMenu = () => setIsMenuOpen(false)
   return (
-    <div className="z-navbar fixed w-full shadow-[0px_4px_8px_0px_#8b1d6d]">
+    <div className="fixed z-navbar w-full shadow-[0px_4px_8px_0px_#8b1d6d]">
       <nav className="bg-bg-primary">
         <div className="mx-auto flex max-w-screen-xl flex-wrap items-center justify-between p-4">
           <div className="flex items-center space-x-2 rtl:space-x-reverse">

@@ -19,8 +19,8 @@ export default async function ScheduleDemo({
       ? parsedDayIndex.data
       : undefined
   return (
-    <div className="bg-dark-500 h-fit w-full p-4">
-      <div className="border-secondary-300 container mx-auto flex max-w-7xl flex-col overflow-hidden rounded-2xl border">
+    <div className="h-fit w-full bg-dark-500 p-4">
+      <div className="container mx-auto flex max-w-7xl flex-col overflow-hidden rounded-2xl border border-secondary-300">
         <ScheduleProvider
           dayIndex={dayIndex}
           sessionId={parsedSessionId.success ? parsedSessionId.data : undefined}

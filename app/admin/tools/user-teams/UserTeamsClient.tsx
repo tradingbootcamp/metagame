@@ -167,7 +167,7 @@ export default function UserTeamsClient() {
       <div className="flex flex-wrap gap-6">
         {TEAM_COLORS_ENUM.map((t) => (
           <div key={t} className="text-center">
-            <div className="font-bold text-lg capitalize">{t}</div>
+            <div className="text-lg font-bold capitalize">{t}</div>
             <div>{counts[t] || 0}</div>
           </div>
         ))}
@@ -237,7 +237,7 @@ export default function UserTeamsClient() {
                   <CheckboxPrimitive.Root
                     checked={headerState}
                     onCheckedChange={handleHeaderToggle}
-                    className="peer border-input dark:bg-input/30 data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:data-[state=checked]:bg-primary data-[state=checked]:border-primary focus-visible:border-ring focus-visible:ring-ring/50 aria-invalid:ring-destructive/20 dark:aria-invalid:ring-destructive/40 aria-invalid:border-destructive size-4 shrink-0 rounded-[4px] border shadow-xs transition-shadow outline-none focus-visible:ring-[3px] disabled:cursor-not-allowed disabled:opacity-50"
+                    className="peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary"
                   >
                     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current transition-none">
                       {headerState === 'indeterminate' ? (

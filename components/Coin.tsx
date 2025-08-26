@@ -60,7 +60,7 @@ export default function Coin({ text, className = '' }: Props) {
       className={`group relative inline-block ${className}`}
       onMouseEnter={handleMouseEnter}
     >
-      <span className="group-hover:animate-coin-pop absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:opacity-100">
+      <span className="absolute -top-6 left-1/2 -translate-x-1/2 opacity-0 transition-all duration-300 group-hover:animate-coin-pop group-hover:opacity-100">
         🟡
       </span>
       <span

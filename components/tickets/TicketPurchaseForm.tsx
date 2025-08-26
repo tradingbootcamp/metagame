@@ -423,7 +423,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   return (
     <div className="flex flex-col gap-6">
       <div className="mb-2 flex flex-col items-center gap-2">
-        <span className="text-primary-300 text-center text-3xl font-bold">
+        <span className="text-center text-3xl font-bold text-primary-300">
           {headerTicketType.title}
         </span>
         <span className="text-center text-sm text-gray-400">
@@ -577,7 +577,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           <button
             onClick={handlePurchaseBtc}
             disabled={isLoading}
-            className="bg-primary-600 hover:bg-primary-700 flex-1 rounded-md px-4 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-md bg-primary-600 px-4 py-2 transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? 'Processing...' : `Continue`}
           </button>
@@ -585,7 +585,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           <button
             onClick={handlePurchaseFiat}
             disabled={isLoading || !stripe}
-            className="bg-primary-600 hover:bg-primary-700 flex-1 rounded-md px-4 py-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex-1 rounded-md bg-primary-600 px-4 py-2 transition-colors hover:bg-primary-700 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {isLoading ? 'Processing...' : `Purchase $${finalPrice.toFixed(2)}`}
           </button>

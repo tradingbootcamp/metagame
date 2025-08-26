@@ -573,7 +573,7 @@ export default function MyCrossword() {
                     setShowReset(false)
                   }}
                 >
-                  <RotateCcw className="text-foreground size-4" />
+                  <RotateCcw className="size-4 text-foreground" />
                 </button>
               )}
             </div>

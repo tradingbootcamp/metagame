@@ -16,9 +16,9 @@ export function AdminToolCard({ toolId, searchParams }: AdminToolCardProps) {
   const tool = ADMIN_TOOLS[toolId]
 
   return (
-    <div className="bg-bg-secondary border border-gray-600 rounded-lg p-6">
+    <div className="rounded-lg border border-gray-600 bg-bg-secondary p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">{tool.label}</h2>
+        <h2 className="mb-2 text-xl font-semibold">{tool.label}</h2>
         <p className="text-muted-foreground">{tool.longDescription}</p>
       </div>
       <tool.component searchParams={searchParams} />

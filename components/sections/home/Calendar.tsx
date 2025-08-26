@@ -4,12 +4,12 @@ import MyCrossword from '@/components/MyCrossword'
 export default function Calendar() {
   return (
     <section
-      className="border-secondary-300 container mx-auto mb-8 rounded-xl border border-t border-b"
+      className="container mx-auto mb-8 rounded-xl border border-t border-b border-secondary-300"
       id="calendar"
     >
       <div className="grid grid-cols-1 gap-8 p-10 md:grid-cols-2">
         <div>
-          <h2 className="text-secondary-200 mb-8 text-2xl font-bold">
+          <h2 className="mb-8 text-2xl font-bold text-secondary-200">
             What is Metagame?
           </h2>
           <p className="mb-4 font-semibold">

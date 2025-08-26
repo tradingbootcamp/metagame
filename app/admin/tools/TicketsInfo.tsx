@@ -43,10 +43,10 @@ const TicketsStats = ({ tickets }: { tickets: DbTicket[] }) => {
   )
 
   return (
-    <div className="flex justify-around mb-8">
+    <div className="mb-8 flex justify-around">
       {TICKET_TYPES_ENUM.map((ticketType) => (
         <div key={ticketType} className="text-center">
-          <div className="font-bold text-lg">{ticketType}</div>
+          <div className="text-lg font-bold">{ticketType}</div>
           <div>{ticketTypeCounts[ticketType] || 0}</div>
         </div>
       ))}
@@ -83,8 +83,8 @@ const TicketsTable = ({ tickets }: { tickets: DbTicket[] }) => {
       render: (ticket) =>
         ticket.owner_id ? (
           <Tooltip>
-            <TooltipTrigger className="flex items-center justify-center size-full">
-              <CheckIcon className="w-4 h-4" />
+            <TooltipTrigger className="flex size-full items-center justify-center">
+              <CheckIcon className="h-4 w-4" />
             </TooltipTrigger>
             <TooltipContent>{ticket.owner_id}</TooltipContent>
           </Tooltip>
@@ -109,7 +109,7 @@ const TicketsTable = ({ tickets }: { tickets: DbTicket[] }) => {
       header: 'Admin Issued',
       render: (ticket) =>
         ticket.admin_issued ? (
-          <div className="flex items-center justify-center size-full">
+          <div className="flex size-full items-center justify-center">
             <CheckIcon className="size-4" />
           </div>
         ) : null,
@@ -124,7 +124,7 @@ const TicketsTable = ({ tickets }: { tickets: DbTicket[] }) => {
       header: 'Test',
       render: (ticket) =>
         ticket.is_test ? (
-          <div className="flex items-center justify-center size-full">
+          <div className="flex size-full items-center justify-center">
             <CheckIcon className="size-4" />
           </div>
         ) : null,

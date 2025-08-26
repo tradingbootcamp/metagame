@@ -46,7 +46,7 @@ export const TicketFormFields: React.FC<TicketFormFieldsProps> = ({
           value={formData.name}
           onChange={(e) => onFormDataChange('name', e.target.value)}
           disabled={disabled}
-          className={`bg-bg-secondary focus:border-primary-300 focus:ring-primary-300 w-full rounded-md border border-gray-600 px-3 py-2 transition-colors focus:ring-1 focus:outline-none ${
+          className={`w-full rounded-md border border-gray-600 bg-bg-secondary px-3 py-2 transition-colors focus:border-primary-300 focus:ring-1 focus:ring-primary-300 focus:outline-none ${
             errors.name ? 'border-red-500' : ''
           } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
           placeholder="Enter your full name"
@@ -69,7 +69,7 @@ export const TicketFormFields: React.FC<TicketFormFieldsProps> = ({
           value={formData.email}
           onChange={(e) => onFormDataChange('email', e.target.value)}
           disabled={disabled}
-          className={`bg-bg-secondary focus:border-primary-300 focus:ring-primary-300 w-full rounded-md border border-gray-600 px-3 py-2 transition-colors focus:ring-1 focus:outline-none ${
+          className={`w-full rounded-md border border-gray-600 bg-bg-secondary px-3 py-2 transition-colors focus:border-primary-300 focus:ring-1 focus:ring-primary-300 focus:outline-none ${
             errors.email ? 'border-red-500' : ''
           } ${disabled ? 'cursor-not-allowed opacity-50' : ''}`}
           placeholder="Enter your email address"
@@ -95,7 +95,7 @@ export const TicketFormFields: React.FC<TicketFormFieldsProps> = ({
                 onFormDataChange('couponCode', e.target.value.toUpperCase())
               }
               disabled={disabled || isApplyingCoupon}
-              className={`focus:border-primary-300 focus:ring-primary-300 flex-1 rounded-md border border-gray-600 bg-gray-800 px-3 py-2 transition-colors focus:ring-1 focus:outline-none ${
+              className={`flex-1 rounded-md border border-gray-600 bg-gray-800 px-3 py-2 transition-colors focus:border-primary-300 focus:ring-1 focus:ring-primary-300 focus:outline-none ${
                 errors.couponCode ? 'border-red-500' : ''
               } ${disabled || isApplyingCoupon ? 'cursor-not-allowed opacity-50' : ''}`}
               placeholder="Enter coupon code"
