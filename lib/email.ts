@@ -89,7 +89,6 @@ export async function sendTicketConfirmationEmail({
             <p><strong>Lodging:</strong> Rooms at and near the venue can be booked via <a href="https://www.havenbookings.space/events/metagame">Haven Bookings</a>. You can also coordinate with others in the <a href="https://discord.gg/GsT3yRrxR9">#housing</a> Discord channel.</p>
             <p><strong>Food:</strong> Snacks are available and included with your ticket, but meals are not. There will be food trucks on site with meals available for purchase.</p>
             <p><strong>Schedule:</strong> A preliminary schedule is available <a href="https://metagame.games/schedule">here</a> but highly subject to chage.</p>
-            <p><strong>Speaking of which:</strong> If you want to speak or run something, submit a proposal <a href="https://airtable.com/appTvPARUssZp4qiB/pagVuzTEXODlUwoi0/form">here</a> by August 25th.</p>
             <p><strong>Children:</strong> Metagame is free for children under 13, and free childcare for kids ages 5-12 is available for much of the weekend! If you are planning to bring children of any age or are a child yourself, please fill out <a href="https://airtable.com/appTvPARUssZp4qiB/pagZ9WbXLji0eBqDU/form">this form</a> as soon as possible, and no later than Monday, September 1st to help us plan accordingly.</p>
             <p><strong>Contact:</strong> <a href="${discordUrl}">Join our Discord!</a></p>
           </div>
