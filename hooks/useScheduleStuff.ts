@@ -1,6 +1,7 @@
 import { useMemo } from 'react'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookmarks'
 import {
@@ -121,6 +122,10 @@ export function useScheduleStuff() {
       if (context?.previousSessions) {
         queryClient.setQueryData(['sessions'], context.previousSessions)
       }
+      toast.error(err.message)
+    },
+    onSuccess: () => {
+      toast.success('RSVP removed')
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
@@ -178,6 +183,10 @@ export function useScheduleStuff() {
       if (context?.previousSessions) {
         queryClient.setQueryData(['sessions'], context.previousSessions)
       }
+      toast.error(`RSVP failed: ${err.message}`)
+    },
+    onSuccess: () => {
+      toast.success('RSVP successful!')
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
