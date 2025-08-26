@@ -30,6 +30,7 @@ export default function Page() {
 function ResetPasswordRequestPage() {
   const searchParams = useSearchParams()
   const initialEmail = (searchParams.get('email') ?? '').trim()
+  const firstLogin = searchParams.get('firstLogin') === 'true'
   const [formData, setFormData] = useState({
     email: initialEmail,
   })
@@ -111,10 +112,12 @@ function ResetPasswordRequestPage() {
   return (
     <div className="flex min-h-[80vh] items-center justify-center">
       <div className="bg-dark-400 w-full max-w-md rounded-lg p-8 shadow-lg">
-        <h1 className="mb-6 text-center text-2xl font-bold">Reset Password</h1>
+        <h1 className="mb-6 text-center text-2xl font-bold">
+          {firstLogin ? 'Set Password' : 'Reset Password'}
+        </h1>
         <p className="mb-6 text-center text-gray-300">
-          Enter your email address and we&apos;ll send you a link to reset your
-          password.
+          Enter your email address and we&apos;ll send you a link to{' '}
+          {firstLogin ? 'set your password' : 'reset your password'}.
         </p>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col">
