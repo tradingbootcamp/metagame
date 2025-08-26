@@ -580,10 +580,13 @@ export default function Schedule({
                                     </TooltipContent>
                                   </Tooltip>
                                 )}
-                                <div id="test">
+                                <div className="flex min-h-[20px] items-center gap-1">
                                   <button
-                                    onClick={() => toggleRsvp(session.id!)}
-                                    className={`hidden cursor-pointer group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                    onClick={(e) => {
+                                      e.stopPropagation()
+                                      toggleRsvp(session.id!)
+                                    }}
+                                    className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
                                   >
                                     {isUserRsvpd(session.id!)
                                       ? 'UnRSVP'

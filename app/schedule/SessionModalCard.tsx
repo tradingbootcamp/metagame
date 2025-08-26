@@ -127,17 +127,17 @@ export default function SessionDetailsCard({
                 </button>
                 {isRsvpd ? (
                   <>
-                    <span
-                      className={`font-semibold ${currentUserRsvp?.on_waitlist ? 'text-yellow-400' : 'text-green-400'}`}
-                    >
-                      {currentUserRsvp?.on_waitlist ? 'Waitlist' : "RSVP'D"}
-                    </span>
                     <button
                       className="cursor-pointer text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                       onClick={() => toggleRsvp(session.id!)}
                       disabled={isPending}
                     >
                       {isUnrsvpPending ? 'Un-RSVPing...' : 'Un-RSVP'}
+                      {currentUserRsvp?.on_waitlist && (
+                        <span className="ml-1 text-yellow-400">
+                          (On Waitlist)
+                        </span>
+                      )}
                     </button>
                   </>
                 ) : (

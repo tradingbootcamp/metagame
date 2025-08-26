@@ -82,8 +82,6 @@ export function useScheduleStuff() {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
-      await queryClient.invalidateQueries({ queryKey: ['rsvps'] })
-      await queryClient.invalidateQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
       const previousRsvps = queryClient.getQueryData(['rsvps'])
@@ -138,8 +136,6 @@ export function useScheduleStuff() {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
-      await queryClient.invalidateQueries({ queryKey: ['rsvps'] })
-      await queryClient.invalidateQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
       const previousRsvps = queryClient.getQueryData(['rsvps'])
