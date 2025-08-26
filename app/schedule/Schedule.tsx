@@ -8,6 +8,8 @@ import { SessionTooltip } from './SessionTooltip'
 import { fetchLocations, fetchSessions } from './queries'
 import { useQuery } from '@tanstack/react-query'
 import {
+  ArrowLeftIcon,
+  ArrowRightIcon,
   CheckIcon,
   ChevronLeft,
   ChevronRight,
@@ -315,10 +317,19 @@ export default function Schedule({
       <div className="hidden flex-shrink-0 items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:flex">
         <button
           onClick={prevDay}
-          className="cursor-pointer rounded-md p-2 transition-colors disabled:opacity-50"
+          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === 0}
         >
-          <ChevronLeft className="h-5 w-5 text-secondary-300" />
+          <ArrowLeftIcon className="h-5 w-5 text-secondary-300" />
+          {
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
+              {currentDayIndex === 1
+                ? 'Friday'
+                : currentDayIndex === 2
+                  ? 'Saturday'
+                  : ''}
+            </span>
+          }
         </button>
 
         <h2 className="text-center text-xl font-bold text-secondary-200">
@@ -327,10 +338,19 @@ export default function Schedule({
 
         <button
           onClick={nextDay}
-          className="cursor-pointer rounded-md p-2 transition-colors disabled:opacity-50"
+          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === days.length - 1}
         >
-          <ChevronRight className="h-5 w-5 text-secondary-300" />
+          {
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
+              {currentDayIndex === 0
+                ? 'Saturday'
+                : currentDayIndex === 1
+                  ? 'Sunday'
+                  : ''}
+            </span>
+          }
+          <ArrowRightIcon className="h-5 w-5 text-secondary-300" />
         </button>
       </div>
 
