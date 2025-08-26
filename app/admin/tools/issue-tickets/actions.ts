@@ -73,6 +73,7 @@ export const adminIssueTicket = adminExportWrapper(
       admin_issued: true,
       coupons_used: couponCodes,
       price_paid: usdPaid || null,
+      purchaser_name: purchaserName,
       satoshis_paid: btcPaid ? btcPaid * 100_000_000 : null,
       opennode_order: opennodeOrderId || null,
       owner_id: ownerId || null,
