@@ -45,8 +45,8 @@ export async function sendTicketConfirmationEmail({
       bcc: ['team@metagame.games'],
       replyTo: ['team@metagame.games'],
       subject: adminIssued
-        ? `${testSubject}Action required: Your Metagame 2025 ticket has been issued; claim your profile`
-        : `${testSubject}Action required: Claim your Metagame 2025 ticket and register your profile`,
+        ? `${testSubject}Actions required: Your Metagame 2025 ticket has been issued; claim your profile`
+        : `${testSubject}Actions required: Claim your Metagame 2025 ticket and register your profile`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
           <h1 style="color: #333;">${adminIssued ? 'Your ticket has been issued; please complete registration' : 'Claim your ticket and complete registration'}</h1>
