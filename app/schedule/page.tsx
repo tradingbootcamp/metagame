@@ -20,7 +20,7 @@ export default async function ScheduleDemo({
       : undefined
   return (
     <div className="h-fit w-full bg-dark-500 p-4">
-      <div className="container mx-auto flex max-w-7xl flex-col overflow-hidden rounded-2xl border border-secondary-300">
+      <div className="flex w-full flex-col overflow-hidden rounded-2xl border border-secondary-300">
         <ScheduleProvider
           dayIndex={dayIndex}
           sessionId={parsedSessionId.success ? parsedSessionId.data : undefined}
