@@ -10,6 +10,8 @@ interface TagProps {
   className?: string
 }
 
+const IT_DURATION = 5000
+
 export default function Tag({
   text = 'tag',
   speed = 0.05,
@@ -24,7 +26,32 @@ export default function Tag({
   const [textPosition, setTextPosition] = useState({ x: 0, y: 0 })
   const tagRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<number>(null)
+  const styleIdRef = useRef<string>(
+    `tag-cursor-${Math.random().toString(36).substr(2, 9)}`,
+  )
+  const updateCursorRef = useRef<((e: MouseEvent) => void) | null>(null)
 
+  // Add a reset function
+  const resetCursor = () => {
+    // Remove the style tag by ID
+    const existingStyle = document.getElementById(styleIdRef.current)
+    if (existingStyle) {
+      existingStyle.remove()
+    }
+
+    // Remove the mousemove listener
+    if (updateCursorRef.current) {
+      window.removeEventListener('mousemove', updateCursorRef.current)
+      updateCursorRef.current = null
+    }
+
+    // Reset cursor
+    document.body.style.cursor = 'default'
+
+    setIsCaught(false)
+    setHasEntered(false)
+    setIsChasing(false)
+  }
   // Track mouse position
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -46,7 +73,7 @@ export default function Tag({
         const distance = Math.sqrt(dx * dx + dy * dy)
 
         // Check if caught
-        if (distance < catchDistance && !isCaught) {
+        if (isChasing && distance < catchDistance) {
           setIsCaught(true)
           setIsChasing(false)
           const cursorStyle = `
@@ -67,6 +94,7 @@ export default function Tag({
             }
           `
           const styleSheet = document.createElement('style')
+          styleSheet.id = styleIdRef.current
           styleSheet.textContent = cursorStyle
           document.head.appendChild(styleSheet)
 
@@ -81,14 +109,12 @@ export default function Tag({
           }
           window.addEventListener('mousemove', updateCursor)
 
-          // Store the event listener for cleanup
-          // eslint-disable-next-line @typescript-eslint/no-explicit-any
-          ;(tagRef.current as any).cursorCleanup = () => {
-            window.removeEventListener('mousemove', updateCursor)
-            styleSheet.remove()
-            document.body.style.cursor = 'default'
-          }
+          // Store the event listener reference for cleanup
+          updateCursorRef.current = updateCursor
 
+          setTimeout(() => {
+            resetCursor()
+          }, IT_DURATION)
           return prevPosition
         }
 
@@ -97,7 +123,7 @@ export default function Tag({
           y: prevPosition.y + dy * speed * 3,
         }
       })
-
+      if (isCaught) return
       frameRef.current = requestAnimationFrame(animate)
     }
 
@@ -142,11 +168,7 @@ export default function Tag({
   // Add cleanup effect
   useEffect(() => {
     return () => {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      if (tagRef.current && (tagRef.current as any).cursorCleanup) {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        ;(tagRef.current as any).cursorCleanup()
-      }
+      resetCursor()
     }
   }, [])
 
