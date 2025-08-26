@@ -2,20 +2,25 @@ import { useMemo } from 'react'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
+import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookmarks'
 import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
 } from '@/app/actions/db/sessionRsvps'
-import { fetchAllRsvps } from '@/app/schedule/queries'
+import {
+  fetchAllRsvps,
+  fetchCurrentUserSessionBookmarks,
+} from '@/app/schedule/queries'
 
 import { useUser } from '@/hooks/dbQueries'
 import {
+  DbSessionBookmark,
   DbSessionRsvpView,
   DbSessionRsvpWithTeam,
   DbSessionView,
 } from '@/types/database/dbTypeAliases'
 
-export function useSessionRsvp() {
+export function useScheduleStuff() {
   const { currentUserProfile } = useUser()
   const queryClient = useQueryClient()
 
@@ -23,6 +28,12 @@ export function useSessionRsvp() {
   const { data: allRsvps = [] } = useQuery({
     queryKey: ['rsvps'],
     queryFn: fetchAllRsvps,
+  })
+
+  // Fetch user bookmarks
+  const { data: bookmarks = [] } = useQuery({
+    queryKey: ['bookmarks', 'current-user'],
+    queryFn: fetchCurrentUserSessionBookmarks,
   })
 
   // Get current user's RSVPs
@@ -45,6 +56,11 @@ export function useSessionRsvp() {
   // Helper function to check if user is RSVP'd for a specific session
   const isUserRsvpd = (sessionId: string) => {
     return currentUserRsvps.some((rsvp) => rsvp.session_id === sessionId)
+  }
+
+  // Helper function to check if a session is bookmarked by current user
+  const isSessionBookmarked = (sessionId: string) => {
+    return bookmarks.some((bookmark) => bookmark.session_id === sessionId)
   }
 
   // Helper function to check if a session is at capacity
@@ -174,6 +190,42 @@ export function useSessionRsvp() {
     },
   })
 
+  // Bookmark mutation
+  const bookmarkMutation = useMutation({
+    mutationFn: currentUserToggleSessionBookmark,
+    onMutate: async ({ sessionId }) => {
+      await queryClient.cancelQueries({
+        queryKey: ['bookmarks', 'current-user'],
+      })
+      const previousBookmarks = queryClient.getQueryData([
+        'bookmarks',
+        'current-user',
+      ])
+
+      const isBookmarked = isSessionBookmarked(sessionId)
+
+      if (isBookmarked) {
+        queryClient.setQueryData(
+          ['bookmarks', 'current-user'],
+          (old: DbSessionBookmark[] | undefined) =>
+            old?.filter((bookmark) => bookmark.session_id !== sessionId) || [],
+        )
+      } else {
+        queryClient.setQueryData(
+          ['bookmarks', 'current-user'],
+          (old: DbSessionBookmark[] | undefined) => [
+            ...(old || []),
+            { session_id: sessionId, user_id: currentUserProfile?.id || '' },
+          ],
+        )
+      }
+      return { previousBookmarks }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
+    },
+  })
+
   // Toggle RSVP function
   const toggleRsvp = (sessionId: string) => {
     if (isUserRsvpd(sessionId)) {
@@ -183,27 +235,37 @@ export function useSessionRsvp() {
     }
   }
 
+  // Toggle bookmark function
+  const toggleBookmark = (sessionId: string) => {
+    bookmarkMutation.mutate({ sessionId })
+  }
+
   return {
     // Data
     allRsvps,
     currentUserRsvps,
+    bookmarks,
 
     // Helper functions
     rsvpsBySessionId,
     getCurrentUserRsvp,
     isUserRsvpd,
+    isSessionBookmarked,
     isSessionFull,
 
     // Mutations
     rsvpMutation,
     unrsvpMutation,
+    bookmarkMutation,
 
     // Actions
     toggleRsvp,
+    toggleBookmark,
 
     // Computed states
     isPending: rsvpMutation.isPending || unrsvpMutation.isPending,
     isRsvpPending: rsvpMutation.isPending,
     isUnrsvpPending: unrsvpMutation.isPending,
+    isBookmarkPending: bookmarkMutation.isPending,
   }
 }

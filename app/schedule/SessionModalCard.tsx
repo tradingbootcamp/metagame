@@ -4,8 +4,6 @@ import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './Schedule'
-import { fetchCurrentUserSessionBookmarks } from './queries'
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
@@ -13,14 +11,9 @@ import { dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 
-import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookmarks'
-
 import { useUser } from '@/hooks/dbQueries'
-import { useSessionRsvp } from '@/hooks/useSessionRsvp'
-import {
-  DbSessionBookmark,
-  DbSessionView,
-} from '@/types/database/dbTypeAliases'
+import { useScheduleStuff } from '@/hooks/useScheduleStuff'
+import { DbSessionView } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
@@ -36,62 +29,24 @@ export default function SessionDetailsCard({
   const [copyError, setCopyError] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
 
-  // Use the RSVP hook
+  // Use the comprehensive schedule hook
   const {
     rsvpsBySessionId,
     getCurrentUserRsvp,
     isSessionFull,
     toggleRsvp,
     isUserRsvpd,
+    isSessionBookmarked,
+    toggleBookmark,
     isPending,
     isRsvpPending,
     isUnrsvpPending,
-  } = useSessionRsvp()
+  } = useScheduleStuff()
 
   const sessionRsvps = rsvpsBySessionId(session.id!)
   const currentUserRsvp = getCurrentUserRsvp(session.id!)
   const isRsvpd = isUserRsvpd(session.id!)
-
-  const { data: bookmarks } = useQuery({
-    queryKey: ['bookmarks', 'current-user'],
-    queryFn: fetchCurrentUserSessionBookmarks,
-  })
-  const sessionBookmarked =
-    bookmarks?.some((bookmark) => bookmark.session_id === session.id!) ?? false
-  const queryClient = useQueryClient()
-  const bookmarkMutation = useMutation({
-    mutationFn: () =>
-      currentUserToggleSessionBookmark({ sessionId: session.id! }),
-    onMutate: async () => {
-      await queryClient.cancelQueries({
-        queryKey: ['bookmarks', 'current-user'],
-      })
-      const previousBookmarks = queryClient.getQueryData([
-        'bookmarks',
-        'current-user',
-      ])
-      if (sessionBookmarked) {
-        queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
-          (old: DbSessionBookmark[] | undefined) =>
-            old?.filter((bookmark) => bookmark.session_id !== session.id!) ||
-            [],
-        )
-      } else {
-        queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
-          (old: DbSessionBookmark[] | undefined) => [
-            ...(old || []),
-            { session_id: session.id!, user_id: currentUserProfile?.id || '' },
-          ],
-        )
-      }
-      return { previousBookmarks }
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
-    },
-  })
+  const sessionBookmarked = isSessionBookmarked(session.id!)
 
   const copyLink = () => {
     const base = window.location.origin
@@ -162,7 +117,7 @@ export default function SessionDetailsCard({
               <div className="flex items-center gap-3">
                 <button
                   className="group rounded-xs p-1 hover:cursor-pointer"
-                  onClick={() => bookmarkMutation.mutate()}
+                  onClick={() => toggleBookmark(session.id!)}
                 >
                   <StarIcon
                     fill={sessionBookmarked ? 'yellow' : 'none'}

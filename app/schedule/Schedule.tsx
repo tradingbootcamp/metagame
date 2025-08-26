@@ -5,11 +5,7 @@ import { useEffect, useMemo, useState } from 'react'
 import { AddEventModal } from './EditEventModal'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
-import {
-  fetchCurrentUserSessionBookmarks,
-  fetchLocations,
-  fetchSessions,
-} from './queries'
+import { fetchLocations, fetchSessions } from './queries'
 import { useQuery } from '@tanstack/react-query'
 import {
   CheckIcon,
@@ -44,7 +40,7 @@ import {
 } from '@/components/ui/tooltip'
 
 import { useUser } from '@/hooks/dbQueries'
-import { useSessionRsvp } from '@/hooks/useSessionRsvp'
+import { useScheduleStuff } from '@/hooks/useScheduleStuff'
 import {
   DbProfile,
   DbSessionRsvpWithTeam,
@@ -160,11 +156,6 @@ export default function Schedule({
     queryFn: fetchLocations,
   })
 
-  const { data: currentUserBookmarks = [] } = useQuery({
-    queryKey: ['bookmarks', 'current-user'],
-    queryFn: fetchCurrentUserSessionBookmarks,
-  })
-
   // Filter and sort locations for schedule display
   const locations = useMemo(() => {
     return allLocations
@@ -201,9 +192,7 @@ export default function Schedule({
       : sessions
     const maybeFurtherFilteredSessions = filterForBookmarkedEvents
       ? maybeFilteredSessions.filter((session) =>
-          currentUserBookmarks.some(
-            (bookmark) => bookmark.session_id === session.id!,
-          ),
+          bookmarks.some((bookmark) => bookmark.session_id === session.id!),
         )
       : maybeFilteredSessions
     maybeFurtherFilteredSessions.forEach((session) => {
@@ -304,8 +293,15 @@ export default function Schedule({
     })
   }
 
-  // Use the RSVP hook
-  const { isUserRsvpd, toggleRsvp, rsvpsBySessionId } = useSessionRsvp()
+  // Use the comprehensive schedule hook
+  const {
+    isUserRsvpd,
+    toggleRsvp,
+    rsvpsBySessionId,
+    isSessionBookmarked,
+    toggleBookmark,
+    bookmarks,
+  } = useScheduleStuff()
   // Helper function to get event color
   const getEventColor = (session: DbSessionView) => {
     const userIsRsvpd = isUserRsvpd(session.id!)
@@ -543,10 +539,23 @@ export default function Schedule({
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
                               <div className="absolute bottom-0 left-0 flex items-center gap-1 font-sans text-xs opacity-80">
-                                {currentUserBookmarks.some(
-                                  (bookmark) =>
-                                    bookmark.session_id === session.id!,
-                                ) && <StarIcon className="size-3" />}
+                                <button
+                                  onClick={(e) => {
+                                    e.stopPropagation()
+                                    toggleBookmark(session.id!)
+                                  }}
+                                  className="group rounded-xs p-0.5 hover:cursor-pointer"
+                                >
+                                  <StarIcon
+                                    fill={
+                                      isSessionBookmarked(session.id!)
+                                        ? 'yellow'
+                                        : 'none'
+                                    }
+                                    strokeWidth={2}
+                                    className={`size-3 ${isSessionBookmarked(session.id!) ? 'block' : 'hidden'} text-black group-hover:block`}
+                                  />
+                                </button>
                               </div>
                               <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
                                 {session.ages === SESSION_AGES.ADULTS && (
