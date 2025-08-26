@@ -11,7 +11,6 @@ import {
   CheckIcon,
   ChevronLeft,
   ChevronRight,
-  FilterIcon,
   PlusIcon,
   StarIcon,
   User2Icon,
@@ -144,8 +143,15 @@ export default function Schedule({
   const pathname = usePathname()
   const router = useRouter()
   const { currentUserProfile } = useUser()
+  const {
+    isUserRsvpd,
+    toggleRsvp,
+    rsvpsBySessionId,
+    isSessionBookmarked,
+    toggleBookmark,
+    bookmarks,
+  } = useScheduleStuff()
 
-  // Use queries to fetch data
   const { data: sessions = [] } = useQuery({
     queryKey: ['sessions'],
     queryFn: fetchSessions,
@@ -164,8 +170,6 @@ export default function Schedule({
   }, [allLocations])
 
   const [filterForUserEvents, setFilterForUserEvents] = useState(false)
-  const [filterForBookmarkedEvents, setFilterForBookmarkedEvents] =
-    useState(false)
 
   // Group sessions by the 3 fixed conference days
   const days = useMemo(() => {
@@ -175,7 +179,7 @@ export default function Schedule({
       [], // Day 2: Sunday 9/14
     ] as DbSessionView[][]
 
-    const filterSessionForUser = (session: DbSessionView) => {
+    const userRsvpOrHostingSession = (session: DbSessionView) => {
       if (!currentUserProfile) return true
       if (isUserRsvpd(session.id!)) {
         return true
@@ -187,15 +191,14 @@ export default function Schedule({
       ].filter(Boolean)
       return sessionHostIds.some((hostId) => currentUserProfile?.id === hostId)
     }
-    const maybeFilteredSessions = filterForUserEvents
-      ? sessions.filter(filterSessionForUser)
-      : sessions
-    const maybeFurtherFilteredSessions = filterForBookmarkedEvents
-      ? maybeFilteredSessions.filter((session) =>
-          bookmarks.some((bookmark) => bookmark.session_id === session.id!),
+    const filteredSessions = filterForUserEvents
+      ? sessions.filter(
+          (session) =>
+            userRsvpOrHostingSession(session) ||
+            isSessionBookmarked(session.id!),
         )
-      : maybeFilteredSessions
-    maybeFurtherFilteredSessions.forEach((session) => {
+      : sessions
+    filteredSessions.forEach((session) => {
       const [sessionStart, sessionEnd] = [
         session.start_time,
         session.end_time,
@@ -224,7 +227,7 @@ export default function Schedule({
         (a.start_time || '').localeCompare(b.start_time || ''),
       ),
     }))
-  }, [sessions, filterForUserEvents, filterForBookmarkedEvents])
+  }, [sessions, filterForUserEvents, bookmarks])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
     DbSessionView['id'] | null
@@ -274,34 +277,20 @@ export default function Schedule({
     })
     setIsAddEventModalOpen(true)
   }
-  const handleToggleFilterForBookmarkedEvents = () => {
-    setFilterForBookmarkedEvents((prev) => {
-      const newFilter = !prev
-      toast.info(
-        `${newFilter ? 'Now' : 'No longer'} filtering for your starred sessions`,
-      )
-      return newFilter
-    })
-  }
+
   const handleToggleFilterForUserEvents = () => {
     setFilterForUserEvents((prev) => {
       const newFilter = !prev
       toast.info(
-        `${newFilter ? 'Now' : 'No longer'} filtering for your hosted/rsvp'd sessions`,
+        `${newFilter ? 'Now' : 'No longer'} filtering to only show sessions you have starred or are attending or hosting.`,
+        {
+          duration: 5000,
+        },
       )
       return newFilter
     })
   }
 
-  // Use the comprehensive schedule hook
-  const {
-    isUserRsvpd,
-    toggleRsvp,
-    rsvpsBySessionId,
-    isSessionBookmarked,
-    toggleBookmark,
-    bookmarks,
-  } = useScheduleStuff()
   // Helper function to get event color
   const getEventColor = (session: DbSessionView) => {
     const userIsRsvpd = isUserRsvpd(session.id!)
@@ -431,28 +420,13 @@ export default function Schedule({
                         className={`${filterForUserEvents ? 'opacity-100' : 'opacity-50'} cursor-pointer rounded-sm transition-colors hover:bg-dark-300`}
                         onClick={handleToggleFilterForUserEvents}
                       >
-                        <FilterIcon className="size-4 text-secondary-300" />
-                      </button>
-                    </TooltipTrigger>
-                    <TooltipContent>
-                      Filter for hosted/RSVP&apos;d sessions
-                    </TooltipContent>
-                  </Tooltip>
-                )}
-                {currentUserProfile?.id && (
-                  <Tooltip>
-                    <TooltipTrigger asChild>
-                      <button
-                        className={`${filterForBookmarkedEvents ? 'opacity-100' : 'opacity-50'} cursor-pointer rounded-sm transition-colors hover:bg-dark-300`}
-                        onClick={handleToggleFilterForBookmarkedEvents}
-                      >
                         <StarIcon
-                          fill={filterForBookmarkedEvents ? 'yellow' : 'none'}
+                          fill={filterForUserEvents ? 'yellow' : 'none'}
                           className="size-4 text-secondary-300"
                         />
                       </button>
                     </TooltipTrigger>
-                    <TooltipContent>Filter for starred sessions</TooltipContent>
+                    <TooltipContent>Filter for your sessions</TooltipContent>
                   </Tooltip>
                 )}
               </div>
@@ -691,18 +665,9 @@ export const AttendanceDisplay = ({
   sessionRsvps: DbSessionRsvpWithTeam[]
   currentUserProfile: DbProfile | null
 }) => {
-  const teamCounts = countRsvpsByTeamColor(sessionRsvps)
-  if (!currentUserProfile) {
-    return (
-      <div>
-        {session.min_capacity && session.max_capacity
-          ? `${session.min_capacity} 
-        - ${session.max_capacity}`
-          : null}
-      </div>
-    )
-  }
+  // For megagames, we need the team breakdown from client-side RSVP data
   if (session.megagame) {
+    const teamCounts = countRsvpsByTeamColor(sessionRsvps)
     return (
       <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
         <span className="font-bold text-purple-500">{teamCounts.purple}</span>
@@ -711,11 +676,26 @@ export const AttendanceDisplay = ({
       </div>
     )
   }
+
+  // For regular sessions, use the server-calculated rsvp_count for consistency
+  // This prevents the flashing issue where client-side counts briefly differ
+  const displayCount = session.rsvp_count ?? 0
+
+  if (!currentUserProfile) {
+    return (
+      <div>
+        {session.min_capacity && session.max_capacity
+          ? `${session.min_capacity} - ${session.max_capacity}`
+          : null}
+      </div>
+    )
+  }
+
   return (
     <span>
       {session.max_capacity
-        ? `${session.rsvp_count ?? '0'} / ${session.max_capacity}`
-        : `${session.rsvp_count ?? '0'}`}
+        ? `${displayCount} / ${session.max_capacity}`
+        : `${displayCount}`}
     </span>
   )
 }
