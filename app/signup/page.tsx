@@ -92,7 +92,10 @@ function SignupForm() {
         return
       }
       if (res.error === 'rate_limit') {
-        setErrors({ submit: 'Rate limit problem; try again in a bit' })
+        setErrors({
+          submit:
+            "Rate limit problem; try again in a bit (it's not you, it's us)",
+        })
         return
       }
 
