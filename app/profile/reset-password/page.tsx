@@ -115,8 +115,7 @@ export default function ResetPasswordPage() {
               }`}
             />
             <div className="mt-1 text-xs text-gray-500">
-              Must be at least 10 characters with uppercase, lowercase, number,
-              and symbol
+              Must be at least 12 characters with a number and a letter
             </div>
             {errors.password && (
               <div className="mt-1 text-xs text-red-500">
