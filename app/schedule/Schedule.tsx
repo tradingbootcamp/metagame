@@ -550,7 +550,7 @@ export default function Schedule({
                                     <StarIcon
                                       fill={
                                         isSessionBookmarked(session.id!)
-                                          ? 'yellow'
+                                          ? 'black'
                                           : 'none'
                                       }
                                       strokeWidth={2}
