@@ -80,7 +80,7 @@ const locationEventColors = [
   'bg-orange-200 border-orange-300',
   'bg-cyan-100 border-cyan-200',
   'bg-pink-200 border-pink-300',
-  'bg-yellow-200 border-yellow-300',
+  'bg-green-200 border-green-300',
   'bg-red-200 border-red-300',
   'bg-indigo-200 border-indigo-300',
   'bg-teal-200 border-teal-300',
@@ -92,7 +92,7 @@ const locationEventRSVPdColors = [
   'bg-orange-500 border-orange-600',
   'bg-cyan-400 border-cyan-500',
   'bg-pink-500 border-pink-600',
-  'bg-yellow-500 border-yellow-600',
+  'bg-green-500 border-green-600',
   'bg-red-500 border-red-600',
   'bg-indigo-500 border-indigo-600',
   'bg-teal-500 border-teal-600',
@@ -299,22 +299,35 @@ export default function Schedule({
     })
   }
 
-  // Helper function to get event color
+  // Helper function to get event color based on session properties
   const getEventColor = (session: DbSessionView) => {
     const userIsRsvpd = isUserRsvpd(session.id!)
-    if (session.megagame) {
-      return userIsRsvpd
-        ? 'bg-[repeating-linear-gradient(45deg,#f97316,#f97316_10px,#a855f7_10px,#a855f7_20px)]'
-        : 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#c084fc_10px,#c084fc_20px)]'
+
+    // Switch based on session properties for specific styling
+    switch (true) {
+      // Megagames get special striped pattern
+      case session.megagame:
+        return userIsRsvpd
+          ? 'bg-[repeating-linear-gradient(45deg,#f97316,#f97316_10px,#a855f7_10px,#a855f7_20px)]'
+          : 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#c084fc_10px,#c084fc_20px)]'
+
+      // Kids sessions get yellow background
+      case session.ages === SESSION_AGES.KIDS:
+        return userIsRsvpd
+          ? 'bg-yellow-500 border-yellow-600'
+          : 'bg-yellow-200 border-yellow-300'
+
+      // Default: location-based coloring
+      default:
+        const locationIndex = locations.findIndex(
+          (l) => l.id === session.location_id,
+        )
+        return userIsRsvpd
+          ? locationEventRSVPdColors[
+              locationIndex % locationEventRSVPdColors.length
+            ]
+          : locationEventColors[locationIndex % locationEventColors.length]
     }
-    const locationIndex = locations.findIndex(
-      (l) => l.id === session.location_id,
-    )
-    return userIsRsvpd
-      ? locationEventRSVPdColors[
-          locationIndex % locationEventRSVPdColors.length
-        ]
-      : locationEventColors[locationIndex % locationEventColors.length]
   }
 
   return (
