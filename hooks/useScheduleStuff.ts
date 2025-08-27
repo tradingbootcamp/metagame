@@ -35,11 +35,13 @@ export function useScheduleStuff() {
   const { data: bookmarks = [] } = useQuery({
     queryKey: ['bookmarks', 'current-user'],
     queryFn: fetchCurrentUserSessionBookmarks,
+    enabled: !!currentUserProfile?.id,
   })
 
   // Get current user's RSVPs
   const currentUserRsvps = useMemo(() => {
-    return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile?.id)
+    if (!currentUserProfile?.id) return []
+    return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile.id)
   }, [allRsvps, currentUserProfile?.id])
 
   // Helper function to get RSVPs for a specific session
