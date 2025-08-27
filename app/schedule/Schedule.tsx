@@ -538,38 +538,42 @@ export default function Schedule({
                               <div className="font-sans text-xs">
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
-                              <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    toggleBookmark(session.id!)
-                                  }}
-                                  className="group rounded-xs p-0.5 hover:cursor-pointer"
-                                >
-                                  <StarIcon
-                                    fill={
-                                      isSessionBookmarked(session.id!)
-                                        ? 'yellow'
-                                        : 'none'
-                                    }
-                                    strokeWidth={2}
-                                    className={`size-3 ${isSessionBookmarked(session.id!) ? 'block' : 'hidden'} text-black group-hover:block`}
-                                  />
-                                </button>
-                              </div>
-                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
-                                <div className="flex min-h-[20px] items-center gap-1">
+                              {currentUser && (
+                                <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
-                                      toggleRsvp(session.id!)
+                                      toggleBookmark(session.id!)
                                     }}
-                                    className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                    className="rounded-xs p-0.5 hover:cursor-pointer"
                                   >
-                                    {isUserRsvpd(session.id!)
-                                      ? 'UnRSVP'
-                                      : 'RSVP'}
+                                    <StarIcon
+                                      fill={
+                                        isSessionBookmarked(session.id!)
+                                          ? 'yellow'
+                                          : 'none'
+                                      }
+                                      strokeWidth={2}
+                                      className={`size-3 ${isSessionBookmarked(session.id!) ? 'block' : 'hidden'} text-black group-hover:block`}
+                                    />
                                   </button>
+                                </div>
+                              )}
+                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                                <div className="flex min-h-[20px] items-center gap-1">
+                                  {currentUser && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        toggleRsvp(session.id!)
+                                      }}
+                                      className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                    >
+                                      {isUserRsvpd(session.id!)
+                                        ? 'UnRSVP'
+                                        : 'RSVP'}
+                                    </button>
+                                  )}
                                   {isUserRsvpd(session.id!) && (
                                     <CheckIcon
                                       className="size-4 rounded-full bg-white text-green-600"
