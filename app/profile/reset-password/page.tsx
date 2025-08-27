@@ -42,13 +42,10 @@ export default function ResetPasswordPage() {
       const validatedData = passwordSchema.parse(formData)
       const supabase = createClient()
 
-      const { data, error } = await supabase.auth.updateUser({
+      const { error } = await supabase.auth.updateUser({
         password: validatedData.password,
         nonce: nonce ?? undefined,
       })
-      console.log(`"data": ${JSON.stringify(data)}`)
-      console.log(`"error": ${JSON.stringify(error)}`)
-      console.log(`"nonce": ${nonce}`)
       if (error) {
         if (
           error.code === 'needs_reauthentication' ||
@@ -56,6 +53,8 @@ export default function ResetPasswordPage() {
         ) {
           setReauthNeeded(true)
           await supabase.auth.reauthenticate()
+        } else if (error.code?.includes('rate_limit')) {
+          setErrors({ submit: 'Rate limit problem; try again in a bit' })
         } else {
           setErrors({ submit: error.message })
         }
