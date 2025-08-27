@@ -817,13 +817,20 @@ export function AddEventModal({
             </button>
           </div>
 
-          {isEditMode && (
+          {isEditMode && currentUserProfile?.is_admin && (
             <div className="border-t border-gray-600 pt-4">
               <button
                 type="button"
                 onClick={handleDelete}
-                disabled={deleteEventMutation.isPending}
-                className="w-full rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+                disabled={
+                  !currentUserProfile?.is_admin || deleteEventMutation.isPending
+                }
+                title={
+                  !currentUserProfile?.is_admin
+                    ? 'You must be an admin to delete an event'
+                    : 'Delete Event'
+                }
+                className="w-full rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-red-600"
               >
                 {deleteEventMutation.isPending ? 'Deleting...' : 'Delete Event'}
               </button>
