@@ -91,6 +91,10 @@ function SignupForm() {
         setShowResetPasswordLink(true)
         return
       }
+      if (res.error === 'rate_limit') {
+        setErrors({ submit: 'Rate limit problem; try again in a bit' })
+        return
+      }
 
       router.push(`/signup/success?email=${validatedData.email}`)
     } catch (error) {

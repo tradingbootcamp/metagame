@@ -45,6 +45,11 @@ export const signupByTicketCode = async ({
       email,
       password,
     })
+    if (error) {
+      if (error.code?.includes('rate_limit')) {
+        return { success: false, error: 'rate_limit', ticket: null }
+      }
+    }
     if (!user || error) {
       throw new Error('Error signing up new user: ' + error?.message)
     }
