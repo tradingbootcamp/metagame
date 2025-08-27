@@ -463,9 +463,12 @@ export function AddEventModal({
                 required
                 value={formData.day}
                 disabled={!currentUserProfile?.is_admin}
-                onValueChange={(value) =>
+                onValueChange={(value) => {
+                  if (!value) {
+                    return
+                  }
                   setFormData((prev) => ({ ...prev, day: value }))
-                }
+                }}
               >
                 <SelectTrigger>
                   <SelectValue placeholder="Select a day" />
