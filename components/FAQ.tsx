@@ -18,6 +18,7 @@ const faqs: FAQ[] = [
       </p>
     ),
   },
+
   {
     id: 2,
     question: 'Where will it be?',
@@ -168,6 +169,55 @@ const faqs: FAQ[] = [
         </a>
         !
       </p>
+    ),
+  },
+  {
+    id: 8,
+    question: 'How do I play??', // Editable placeholder
+    contentHtml: (
+      <div className="not-prose text-lg">
+        <div className="mb-2 text-xl text-white">
+          If you want to play at this conference, get a ticket.
+        </div>
+        <div className="mb-2 text-xl text-white">
+          If you want to get a discount,{' '}
+          <span className="text-white italic">
+            keep your ears open while you play:
+          </span>
+        </div>
+        <div className="mb-4 text-xl text-white">
+          The{' '}
+          <span className="mr-2 ml-2 rounded bg-green-300 px-2 py-1 text-green-900">
+            _______
+          </span>{' '}
+          games are about{' '}
+          <span className="ml-2 font-bold text-red-500">1 </span>{' '}
+          <span className="ml-2 font-bold text-red-500">2</span>ary{' '}
+          <span className="ml-1 font-bold text-red-500">4</span>s that fight. It
+          has nothing to do with{' '}
+          <span className="font-bold text-red-500">3</span>.
+        </div>
+        <div className="mb-2">
+          <span className="font-bold text-red-500">_____</span>{' '}
+          <span className="ml-4">_____</span> <span className="ml-4">____</span>
+          <div className="ml-5 text-xs font-bold text-red-500">1</div>
+        </div>
+        <div className="mb-2">
+          <span className="text-white">___</span>{' '}
+          <span className="ml-2 font-bold text-red-500">______</span>{' '}
+          <span className="ml-2">__</span> <span className="ml-2">_____</span>
+          <div className="ml-14 text-xs font-bold text-red-500">2</div>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold text-red-500">______</span>
+          <div className="ml-5 text-xs font-bold text-red-500">3</div>
+        </div>
+        <div className="mb-2">
+          <span className="font-bold text-red-500">______</span>{' '}
+          <span className="ml-4">________</span>
+          <div className="ml-5 text-xs font-bold text-red-500">4</div>
+        </div>
+      </div>
     ),
   },
 ]
