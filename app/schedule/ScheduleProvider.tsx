@@ -26,36 +26,47 @@ export default async function ScheduleProvider({
   dayIndex?: number
 }) {
   const queryClient = new QueryClient()
-
-  // Prefetch all the data server-side
-  await Promise.all([
-    queryClient.prefetchQuery({
-      queryKey: ['sessions'],
-      queryFn: getAllSessions,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['locations'],
-      queryFn: getAllLocations,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['bookmarks', 'current-user'],
-      queryFn: currentUserGetSessionBookmarks,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['rsvps', 'all'],
-      queryFn: getAllRsvps,
-    }),
-    queryClient.prefetchQuery({
-      queryKey: ['users', 'profile', 'current-user'],
-      queryFn: () => getCurrentUserProfile(),
-    }),
-  ])
-
   // Get current user for edit permissions
   const supabase = await createClient()
   const {
     data: { user },
   } = await supabase.auth.getUser()
+
+  // Prefetch all the data server-side
+  const userPrefetchQueries = [
+    () =>
+      queryClient.prefetchQuery({
+        queryKey: ['users', 'profile', 'current-user'],
+        queryFn: () => getCurrentUserProfile(),
+      }),
+    () =>
+      queryClient.prefetchQuery({
+        queryKey: ['bookmarks', 'current-user'],
+        queryFn: currentUserGetSessionBookmarks,
+      }),
+  ]
+  const generalPrefetchQueries = [
+    () =>
+      queryClient.prefetchQuery({
+        queryKey: ['sessions'],
+        queryFn: getAllSessions,
+      }),
+    () =>
+      queryClient.prefetchQuery({
+        queryKey: ['locations'],
+        queryFn: getAllLocations,
+      }),
+
+    () =>
+      queryClient.prefetchQuery({
+        queryKey: ['rsvps', 'all'],
+        queryFn: getAllRsvps,
+      }),
+  ]
+  await Promise.all(generalPrefetchQueries.map((query) => query()))
+  if (user?.id) {
+    await Promise.all(userPrefetchQueries.map((query) => query()))
+  }
 
   // Fetch edit permissions if user is logged in
   let editPermissions: Record<string, boolean> = {}
