@@ -259,7 +259,7 @@ export function IssueTicketForm({}: {
         <Collapsible open={extraFieldsOpen} onOpenChange={setExtraFieldsOpen}>
           <div className="flex items-center">
             Extra Fields
-            <CollapsibleTrigger>
+            <CollapsibleTrigger asChild>
               <Button variant="ghost" size="icon">
                 {extraFieldsOpen ? <ChevronDownIcon /> : <ChevronRightIcon />}
               </Button>
