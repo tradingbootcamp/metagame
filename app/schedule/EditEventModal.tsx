@@ -290,13 +290,28 @@ export function AddEventModal({
 
   const deleteEventMutation = useMutation({
     mutationFn: adminDeleteSession,
+    onMutate: (data) => {
+      const oldData = queryClient.getQueryData(['sessions'])
+      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+        if (!old) return old
+        return old.filter(
+          (session: DbSessionView) => session.id !== data.sessionId,
+        )
+      })
+      return { oldData }
+    },
+    onError: (error, variables, context) => {
+      if (context?.oldData) {
+        queryClient.setQueryData(['sessions'], context.oldData)
+      }
+      toast.error(`Failed to delete event: ${error.message}`)
+    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
       toast.success('Event deleted successfully!')
       onClose()
     },
-    onError: (error) => {
-      toast.error(`Failed to delete event: ${error.message}`)
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
