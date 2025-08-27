@@ -13,6 +13,8 @@ import { dateUtils } from '@/utils/dateUtils'
 import { SESSION_AGES, getAgesDisplayText } from '@/utils/dbUtils'
 
 import { Modal } from '@/components/Modal'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
 import {
   Select,
   SelectContent,
@@ -55,6 +57,7 @@ type FormData = {
   host_1_id: string | null
   host_2_id: string | null
   host_3_id: string | null
+  megagame: boolean
 }
 export function AddEventModal({
   isOpen,
@@ -80,6 +83,7 @@ export function AddEventModal({
     host_1_id: null,
     host_2_id: null,
     host_3_id: null,
+    megagame: false,
   }
   const {
     data: profiles,
@@ -142,6 +146,7 @@ export function AddEventModal({
         host_1_id: validateHostId(existingSession.host_1_id),
         host_2_id: validateHostId(existingSession.host_2_id),
         host_3_id: validateHostId(existingSession.host_3_id),
+        megagame: existingSession.megagame || false,
       }
       setFormData(newFormData)
     } else if (prefillData) {
@@ -241,13 +246,12 @@ export function AddEventModal({
       }
       toast.error(`Failed to update event: ${error.message}`)
     },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
-    },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
       toast.success('Event updated successfully!')
       onClose()
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -344,6 +348,7 @@ export function AddEventModal({
       host_2_id: formData.host_2_id,
       host_3_id: formData.host_3_id,
       ages: formData.ages,
+      megagame: formData.megagame,
     }
 
     if (isEditMode && existingSessionId) {
@@ -492,7 +497,7 @@ export function AddEventModal({
               className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
             />
           </div>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="flex w-full justify-between">
             <div>
               <label htmlFor="day" className="mb-1 block text-sm font-medium">
                 Day <span className="text-red-500">*</span>
@@ -563,6 +568,23 @@ export function AddEventModal({
                 </SelectContent>
               </Select>
             </div>
+            {currentUserProfile?.is_admin && (
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="megagame"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Megagame
+                </Label>
+                <Checkbox
+                  id="megagame"
+                  checked={formData.megagame}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, megagame: !!checked }))
+                  }
+                />
+              </div>
+            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
