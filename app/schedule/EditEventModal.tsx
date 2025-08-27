@@ -28,7 +28,7 @@ import {
 } from '@/app/actions/db/sessions'
 
 import { useUser } from '@/hooks/dbQueries'
-import { DbSessionAges } from '@/types/database/dbTypeAliases'
+import { DbSessionAges, DbSessionView } from '@/types/database/dbTypeAliases'
 
 interface AddEventModalProps {
   isOpen: boolean
@@ -223,25 +223,64 @@ export function AddEventModal({
 
   const userEditSessionMutation = useMutation({
     mutationFn: userEditSession,
+    onMutate: (data) => {
+      const oldData = queryClient.getQueryData(['sessions'])
+      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+        if (!old) return old
+        return old.map((session: DbSessionView) =>
+          session.id === data.sessionId
+            ? { ...session, ...data.sessionUpdate }
+            : session,
+        )
+      })
+      return { oldData }
+    },
+    onError: (error, variables, context) => {
+      if (context?.oldData) {
+        queryClient.setQueryData(['sessions'], context.oldData)
+      }
+      toast.error(`Failed to update event: ${error.message}`)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+    },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['sessions'] })
       toast.success('Event updated successfully!')
       onClose()
-    },
-    onError: (error) => {
-      toast.error(`Failed to update event: ${error.message}`)
     },
   })
 
   const updateEventMutation = useMutation({
     mutationFn: adminUpdateSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
       toast.success('Event updated successfully!')
       onClose()
     },
-    onError: (error) => {
+    onMutate: (data) => {
+      // Optimistically update the session in the cache
+      const oldData = queryClient.getQueryData(['sessions'])
+      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+        if (!old) return old
+        return old.map((session: DbSessionView) =>
+          session.id === data.sessionId
+            ? { ...session, ...data.payload }
+            : session,
+        )
+      })
+
+      // Return context for rollback
+      return { oldData }
+    },
+    onError: (error, variables, context) => {
+      // Rollback to previous state on error
+      if (context?.oldData) {
+        queryClient.setQueryData(['sessions'], context.oldData)
+      }
       toast.error(`Failed to update event: ${error.message}`)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
