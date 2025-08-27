@@ -70,7 +70,11 @@ function ResetPasswordRequestPage() {
       )
 
       if (error) {
-        setErrors({ submit: error.message })
+        if (error.code?.includes('rate_limit')) {
+          setErrors({ submit: 'Rate limit problem; try again in a bit' })
+        } else {
+          setErrors({ submit: error.message })
+        }
       } else {
         setIsSuccess(true)
       }
