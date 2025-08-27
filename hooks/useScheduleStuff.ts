@@ -197,9 +197,19 @@ export function useScheduleStuff() {
           ],
         )
       }
-      return { previousBookmarks }
+      return { previousBookmarks, isBookmarked }
     },
-    onSuccess: () => {
+    onSuccess: (_, __, context) => {
+      if (context?.isBookmarked) {
+        toast.info('Bookmark removed')
+      } else {
+        toast.success('Bookmarked')
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    },
+    onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
     },
   })
