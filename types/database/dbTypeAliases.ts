@@ -54,3 +54,6 @@ export type DbOpendnodeOrderUpdate = TablesUpdate<'opennode_orders'>
 export type DbCoupon = Tables<'coupons'>
 export type DbCouponInsert = TablesInsert<'coupons'>
 export type DbCouponUpdate = TablesUpdate<'coupons'>
+export type DbCouponEmail = Tables<'coupon_emails'>
+export type DbCouponEmailInsert = TablesInsert<'coupon_emails'>
+export type DbCouponEmailUpdate = TablesUpdate<'coupon_emails'>
