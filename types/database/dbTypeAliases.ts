@@ -20,6 +20,7 @@ export type FullDbSession = Tables<'sessions'> & {
   location: Pick<DbLocation, 'name'> | null
 }
 
+export type DbSessionCategory = Enums<'SESSION_CATEGORY'>
 export type DbSessionAges = Enums<'AGES'>
 export type DbTicketType = Enums<'ticket_type'>
 
