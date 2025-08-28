@@ -10,7 +10,11 @@ import { XIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { SESSION_AGES, getAgesDisplayText } from '@/utils/dbUtils'
+import {
+  SESSION_AGES,
+  SESSION_CATEGORIES_ENUM,
+  getAgesDisplayText,
+} from '@/utils/dbUtils'
 
 import { Modal } from '@/components/Modal'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -30,7 +34,11 @@ import {
 } from '@/app/actions/db/sessions'
 
 import { useUser } from '@/hooks/dbQueries'
-import { DbSessionAges, FullDbSession } from '@/types/database/dbTypeAliases'
+import {
+  DbSessionAges,
+  DbSessionCategory,
+  FullDbSession,
+} from '@/types/database/dbTypeAliases'
 
 interface AddEventModalProps {
   isOpen: boolean
@@ -58,6 +66,7 @@ type FormData = {
   host_2_id: string | null
   host_3_id: string | null
   megagame: boolean
+  category: DbSessionCategory | null
 }
 export function AddEventModal({
   isOpen,
@@ -84,6 +93,7 @@ export function AddEventModal({
     host_2_id: null,
     host_3_id: null,
     megagame: false,
+    category: null,
   }
   const {
     data: profiles,
@@ -147,6 +157,7 @@ export function AddEventModal({
         host_2_id: validateHostId(existingSession.host_2_id),
         host_3_id: validateHostId(existingSession.host_3_id),
         megagame: existingSession.megagame || false,
+        category: existingSession.category || null,
       }
       setFormData(newFormData)
     } else if (prefillData) {
@@ -365,6 +376,7 @@ export function AddEventModal({
       host_3_id: formData.host_3_id,
       ages: formData.ages,
       megagame: formData.megagame,
+      category: formData.category,
     }
 
     if (isEditMode && existingSessionId) {
@@ -584,23 +596,6 @@ export function AddEventModal({
                 </SelectContent>
               </Select>
             </div>
-            {currentUserProfile?.is_admin && (
-              <div className="flex items-center gap-2">
-                <Label
-                  htmlFor="megagame"
-                  className="mb-1 block text-sm font-medium"
-                >
-                  Megagame
-                </Label>
-                <Checkbox
-                  id="megagame"
-                  checked={formData.megagame}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({ ...prev, megagame: !!checked }))
-                  }
-                />
-              </div>
-            )}
           </div>
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -828,6 +823,59 @@ export function AddEventModal({
                 </SelectContent>
               </Select>
             </div>
+          </div>
+          <div className="flex w-full justify-between">
+            <div className="flex flex-col items-start">
+              <Label
+                htmlFor="category"
+                className="mb-1 block text-sm font-medium"
+              >
+                Category
+              </Label>
+              <Select
+                name="category"
+                value={formData.category || ''}
+                onValueChange={(value) => {
+                  if (!value) return
+                  setFormData((prev) => ({
+                    ...prev,
+                    category: value as DbSessionCategory,
+                  }))
+                }}
+              >
+                <SelectTrigger className="capitalize">
+                  <SelectValue placeholder="Select..." />
+                </SelectTrigger>
+                <SelectContent className="z-[70]">
+                  {Object.values(SESSION_CATEGORIES_ENUM).map((category) => (
+                    <SelectItem
+                      key={category}
+                      value={category}
+                      className="capitalize"
+                    >
+                      {category}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            {currentUserProfile?.is_admin && (
+              <div className="flex items-center gap-2">
+                <Label
+                  htmlFor="megagame"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Megagame
+                </Label>
+                <Checkbox
+                  id="megagame"
+                  checked={formData.megagame}
+                  onCheckedChange={(checked) =>
+                    setFormData((prev) => ({ ...prev, megagame: !!checked }))
+                  }
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-4 pt-4">
