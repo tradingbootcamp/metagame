@@ -17,6 +17,7 @@ export const profileFormSchema = z.object({
   opted_in_to_homepage_display: z.boolean().nullable(),
   minor: z.boolean().nullable(),
   bringing_kids: z.boolean().nullable(),
+  bio: nullableTextFromForm,
 }) satisfies z.ZodType<DbProfileUpdate>
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>
@@ -30,4 +31,5 @@ export const initialProfileFormData: ProfileFormData = {
   opted_in_to_homepage_display: null,
   minor: null,
   bringing_kids: null,
+  bio: '',
 }

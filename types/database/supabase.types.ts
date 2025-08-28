@@ -156,6 +156,7 @@ export type Database = {
       }
       profiles: {
         Row: {
+          bio: string | null
           bringing_kids: boolean | null
           discord_handle: string | null
           dismissed_info_request: boolean
@@ -175,6 +176,7 @@ export type Database = {
           team: Database["public"]["Enums"]["TEAM_COLORS"]
         }
         Insert: {
+          bio?: string | null
           bringing_kids?: boolean | null
           discord_handle?: string | null
           dismissed_info_request?: boolean
@@ -194,6 +196,7 @@ export type Database = {
           team?: Database["public"]["Enums"]["TEAM_COLORS"]
         }
         Update: {
+          bio?: string | null
           bringing_kids?: boolean | null
           discord_handle?: string | null
           dismissed_info_request?: boolean
@@ -300,6 +303,7 @@ export type Database = {
       sessions: {
         Row: {
           ages: Database["public"]["Enums"]["AGES"] | null
+          category: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           description: string | null
           end_time: string | null
           host_1_id: string | null
@@ -311,12 +315,12 @@ export type Database = {
           megagame: boolean
           min_capacity: number | null
           reserved_spots: number
-          session_type: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           start_time: string | null
           title: string | null
         }
         Insert: {
           ages?: Database["public"]["Enums"]["AGES"] | null
+          category?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           description?: string | null
           end_time?: string | null
           host_1_id?: string | null
@@ -328,12 +332,12 @@ export type Database = {
           megagame?: boolean
           min_capacity?: number | null
           reserved_spots?: number
-          session_type?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           start_time?: string | null
           title?: string | null
         }
         Update: {
           ages?: Database["public"]["Enums"]["AGES"] | null
+          category?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           description?: string | null
           end_time?: string | null
           host_1_id?: string | null
@@ -345,7 +349,6 @@ export type Database = {
           megagame?: boolean
           min_capacity?: number | null
           reserved_spots?: number
-          session_type?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
           start_time?: string | null
           title?: string | null
         }

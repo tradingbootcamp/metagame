@@ -27,6 +27,7 @@ import { URLS } from '@/utils/urls'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Tooltip,
   TooltipContent,
@@ -301,7 +302,9 @@ export default function Profile() {
             <div className="flex-1 space-y-6">
               {/* Full Name */}
               <div>
-                <label className="mb-2 block text-sm font-medium">Name</label>
+                <label className="label">
+                  <span className="label-text">Name</span>
+                </label>
                 {isEditMode ? (
                   <div className="grid grid-cols-2 gap-2">
                     <Input
@@ -329,7 +332,28 @@ export default function Profile() {
                   <p className="text-lg">{fullName}</p>
                 )}
               </div>
-
+              {/* Bio */}
+              <div>
+                <label className="label">
+                  <span className="label-text">Bio</span>
+                </label>
+                {isEditMode ? (
+                  <Textarea
+                    placeholder="Bio"
+                    value={formData.bio ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        bio: e.target.value || null,
+                      }))
+                    }
+                  />
+                ) : (
+                  <p className="text-lg">
+                    {currentUserProfile?.bio || 'Not set'}
+                  </p>
+                )}
+              </div>
               {/* Discord Handle */}
               <div>
                 <label className="label">

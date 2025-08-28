@@ -21,9 +21,6 @@ export function useProfileUpdate({
   const updateProfileMutation = useMutation({
     mutationFn: updateCurrentUserProfile,
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'profile', currentUserId],
-      })
       toast.success('Profile updated successfully!')
       onSuccess?.()
     },
@@ -31,6 +28,11 @@ export function useProfileUpdate({
       console.error('Error updating profile:', error)
       toast.error('Failed to update profile')
       onError?.(error as Error)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users', 'profile', currentUserId],
+      })
     },
   })
 
@@ -40,9 +42,6 @@ export function useProfileUpdate({
         data: { dismissed_info_request: true },
       }),
     onSuccess: () => {
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'profile', currentUserId],
-      })
       toast.success("You won't be prompted again")
       onSuccess?.()
     },
@@ -50,6 +49,11 @@ export function useProfileUpdate({
       console.error('Error dismissing modal:', error)
       toast.error('Failed to dismiss modal')
       onError?.(error as Error)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({
+        queryKey: ['users', 'profile', currentUserId],
+      })
     },
   })
 
