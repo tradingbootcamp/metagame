@@ -27,7 +27,6 @@ import { dateUtils } from '@/utils/dateUtils'
 import {
   SESSION_AGES,
   countRsvpsByTeamColor,
-  countRsvpsForSession,
   dbGetHostsFromSession,
 } from '@/utils/dbUtils'
 
@@ -43,10 +42,7 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import {
-  DbSessionRsvpWithTeam,
-  FullDbSession,
-} from '@/types/database/dbTypeAliases'
+import { FullDbSession } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -148,7 +144,6 @@ export default function Schedule({
   const {
     isUserRsvpd,
     toggleRsvp,
-    rsvpsBySessionId,
     isSessionBookmarked,
     toggleBookmark,
     bookmarks,
@@ -619,7 +614,6 @@ export default function Schedule({
                                 <UserIcon className="size-3" />
                                 <AttendanceDisplay
                                   session={session}
-                                  sessionRsvps={rsvpsBySessionId(session.id!)}
                                   userLoggedIn={!!currentUser}
                                 />
                               </div>
@@ -698,16 +692,14 @@ export default function Schedule({
 
 export const AttendanceDisplay = ({
   session,
-  sessionRsvps,
   userLoggedIn,
 }: {
   session: FullDbSession
-  sessionRsvps: DbSessionRsvpWithTeam[]
   userLoggedIn: boolean
 }) => {
   // For megagames, we need the team breakdown from client-side RSVP data
   if (session.megagame) {
-    const teamCounts = countRsvpsByTeamColor(sessionRsvps)
+    const teamCounts = countRsvpsByTeamColor(session.rsvps)
     return (
       <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
         <span className="font-bold text-purple-500">{teamCounts.purple}</span>
@@ -716,10 +708,6 @@ export const AttendanceDisplay = ({
       </div>
     )
   }
-
-  // Use client-side RSVP data for consistent counting
-  const rsvpCounts = countRsvpsForSession(sessionRsvps)
-  const displayCount = rsvpCounts.confirmed // Show confirmed RSVPs (not waitlist)
 
   if (!userLoggedIn) {
     return (
@@ -734,8 +722,8 @@ export const AttendanceDisplay = ({
   return (
     <span>
       {session.max_capacity
-        ? `${displayCount} / ${session.max_capacity}`
-        : `${displayCount}`}
+        ? `${session.rsvps.length} / ${session.max_capacity}`
+        : `${session.rsvps.length}`}
     </span>
   )
 }

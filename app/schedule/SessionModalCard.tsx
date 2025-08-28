@@ -32,7 +32,6 @@ export default function SessionDetailsCard({
 
   // Use the comprehensive schedule hook
   const {
-    rsvpsBySessionId,
     getCurrentUserRsvp,
     isSessionFull,
     toggleRsvp,
@@ -44,7 +43,6 @@ export default function SessionDetailsCard({
     isUnrsvpPending,
   } = useScheduleStuff()
 
-  const sessionRsvps = rsvpsBySessionId(session.id!)
   const currentUserRsvp = getCurrentUserRsvp(session.id!)
   const isRsvpd = isUserRsvpd(session.id!)
   const sessionBookmarked = isSessionBookmarked(session.id!)
@@ -206,7 +204,6 @@ export default function SessionDetailsCard({
                     <UserIcon className="mr-1 inline-block size-4" />{' '}
                     <AttendanceDisplay
                       session={session}
-                      sessionRsvps={sessionRsvps}
                       userLoggedIn={!!currentUser}
                     />
                   </div>

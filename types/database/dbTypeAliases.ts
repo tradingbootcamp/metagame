@@ -9,7 +9,6 @@ export type DbSession = Tables<'sessions'>
 export type DbSessionInsert = TablesInsert<'sessions'>
 export type DbSessionUpdate = TablesUpdate<'sessions'>
 
-// Session with all the included view type data
 export type FullDbSession = Tables<'sessions'> & {
   host_1: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
   host_2: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
@@ -20,6 +19,7 @@ export type FullDbSession = Tables<'sessions'> & {
   })[]
   location: Pick<DbLocation, 'name'> | null
 }
+
 export type DbSessionAges = Enums<'AGES'>
 export type DbTicketType = Enums<'ticket_type'>
 
@@ -37,12 +37,11 @@ export type DbProfileUpdate = TablesUpdate<'profiles'>
 export type DbTeamColor = Enums<'TEAM_COLORS'>
 
 export type DbSessionRsvp = Tables<'session_rsvps'>
-export type DbSessionRsvpWithTeam = DbSessionRsvp & {
-  profiles: { team: DbProfile['team'] }
+export type DbFullSessionRsvp = DbSessionRsvp & {
+  user: Pick<DbProfile, 'id' | 'team'>
 }
 export type DbSessionRsvpInsert = TablesInsert<'session_rsvps'>
 export type DbSessionRsvpUpdate = TablesUpdate<'session_rsvps'>
-export type DbSessionRsvpView = Tables<'session_rsvps_view'>
 
 export type DbSessionBookmark = Tables<'session_bookmarks'>
 export type DbSessionBookmarkInsert = TablesInsert<'session_bookmarks'>

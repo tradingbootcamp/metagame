@@ -1,9 +1,9 @@
 import {
+  DbFullSessionRsvp,
   DbLocation,
   DbProfile,
   DbSessionBookmark,
   DbSessionRsvp,
-  DbSessionRsvpWithTeam,
   FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
@@ -115,13 +115,13 @@ export const fetchUserProfile = async (userId: string): Promise<DbProfile> => {
   return (await response.json()) as DbProfile
 }
 
-export const fetchAllRsvps = async (): Promise<DbSessionRsvpWithTeam[]> => {
+export const fetchAllRsvps = async (): Promise<DbFullSessionRsvp[]> => {
   const response = await fetch('/api/queries/rsvps')
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch all RSVPs')
   }
 
-  return (await response.json()) as DbSessionRsvpWithTeam[]
+  return (await response.json()) as DbFullSessionRsvp[]
 }
 
 export const fetchUserRsvps = async (

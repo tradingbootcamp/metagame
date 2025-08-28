@@ -2,32 +2,33 @@
 
 import { adminExportWrapper, currentUserWrapper } from './auth'
 
-import { sessionsService } from '@/lib/db/sessions'
+import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
-export const getAllRsvps = sessionsService.getAllRsvps
+export const getAllRsvps = sessionRsvpsService.getAllRsvps
 
 export const adminGetUserRsvps = adminExportWrapper(
-  sessionsService.getUserRsvps,
+  sessionRsvpsService.getUserRsvps,
 )
-export const getAllSessionRsvpCounts = sessionsService.getAllSessionRsvpCounts
-export const getSingleSessionRsvps = sessionsService.getSingleSessionRsvps
+export const getAllSessionRsvpCounts =
+  sessionRsvpsService.getAllSessionRsvpCounts
+export const getSingleSessionRsvps = sessionRsvpsService.getSingleSessionRsvps
 export const getCurrentUserRsvps = async () => {
   try {
-    return await currentUserWrapper(sessionsService.getUserRsvps)({})
+    return await currentUserWrapper(sessionRsvpsService.getUserRsvps)({})
   } catch {
     return []
   }
 }
 /** Mutations */
 export const rsvpCurrentUserToSession = currentUserWrapper(
-  sessionsService.rsvpUserToSession,
+  sessionRsvpsService.rsvpUserToSession,
 )
 export const unrsvpCurrentUserFromSession = currentUserWrapper(
-  sessionsService.unrsvpUserFromSession,
+  sessionRsvpsService.unrsvpUserFromSession,
 )
 export const toggleCurrentUserSessionRsvp = currentUserWrapper(
-  sessionsService.toggleUserRsvpForSession,
+  sessionRsvpsService.toggleUserRsvpForSession,
 )
 export const unrsvpCurrentUserFromAllSessions = currentUserWrapper(
-  sessionsService.unrsvpUserFromAllSessions,
+  sessionRsvpsService.unrsvpUserFromAllSessions,
 )

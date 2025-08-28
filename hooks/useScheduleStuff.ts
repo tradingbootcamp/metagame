@@ -15,9 +15,8 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import {
+  DbFullSessionRsvp,
   DbSessionBookmark,
-  DbSessionRsvpView,
-  DbSessionRsvpWithTeam,
   FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
@@ -84,12 +83,14 @@ export function useScheduleStuff() {
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps'])
+      const previousRsvps = queryClient.getQueryData<DbFullSessionRsvp[]>([
+        'rsvps',
+      ])
 
       // Optimistically update RSVPs
-      queryClient.setQueryData(
+      queryClient.setQueryData<DbFullSessionRsvp[]>(
         ['rsvps'],
-        (old: DbSessionRsvpView[] | undefined) =>
+        (old) =>
           old?.filter(
             (rsvp) =>
               !(
@@ -125,30 +126,36 @@ export function useScheduleStuff() {
       await queryClient.cancelQueries({ queryKey: ['rsvps'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps'])
+      const previousRsvps = queryClient.getQueryData<DbFullSessionRsvp[]>([
+        'rsvps',
+      ])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
-      const newRsvp: DbSessionRsvpWithTeam = {
+      const newRsvp: DbFullSessionRsvp = {
         session_id: sessionId,
         user_id: currentUserProfile?.id || '',
         on_waitlist: false, // Let server handle waitlist logic
         created_at: new Date().toISOString(),
-        profiles: {
+        user: {
+          id: currentUserProfile?.id || '',
           team: currentUserProfile?.team || 'unassigned',
         },
       }
 
-      queryClient.setQueryData(
-        ['rsvps'],
-        (old: DbSessionRsvpView[] | undefined) => [...(old || []), newRsvp],
-      )
+      queryClient.setQueryData<DbFullSessionRsvp[]>(['rsvps'], (old) => [
+        ...(old || []),
+        newRsvp,
+      ])
 
       return { previousRsvps }
     },
     onError: (err, variables, context) => {
       // Rollback on error
       if (context?.previousRsvps) {
-        queryClient.setQueryData(['rsvps'], context.previousRsvps)
+        queryClient.setQueryData<DbFullSessionRsvp[]>(
+          ['rsvps'],
+          context.previousRsvps,
+        )
       }
       toast.error(`RSVP failed: ${err.message}`)
     },

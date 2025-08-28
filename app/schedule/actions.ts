@@ -99,7 +99,7 @@ export async function getUserEditPermissionsForSessions({
   }
 
   // For non-admins, get all sessions they host
-  const hostedSessions = await sessionsService.getUsersHostedSessions({
+  const hostedSessions = await sessionsService.getSessionsHostedByUser({
     userId,
   })
   const hostedSessionIds = new Set(hostedSessions.map((session) => session.id))

@@ -17,5 +17,5 @@ export const getAllSessions = sessionsService.getAllSessions
 export const getSessionById = sessionsService.getSessionById
 
 export const getCurrentUserHostedSessions = currentUserWrapper(
-  sessionsService.getUsersHostedSessions,
+  sessionsService.getSessionsHostedByUser,
 )
