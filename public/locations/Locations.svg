@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   version="1.1"
+   id="svg1"
+   width="648.96698"
+   height="468.21307"
+   sodipodi:docname="lighthaven-outlines.svg"
+   inkscape:export-batch-path="../dev/metagame/public/locations"
+   inkscape:export-batch-name=""
+   xml:space="preserve"
+   inkscape:version="1.4.2 (ebf0e940d0, 2025-05-08)"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:svg="http://www.w3.org/2000/svg"><g
+     inkscape:groupmode="layer"
+     id="layer187"
+     inkscape:label="Locations"
+     style="display:inline"><path
+       style="opacity:1;fill:#000000"
+       d="m 167.64706,300 176.79207,-11.86605 v 100.01422 l 15.34617,-0.22403 31.39117,123.84057 h -33.33333 l -29.82792,0.91096 -28.92568,-0.49026 0.49027,7.84425 h -41.18233 v 12.72677 h -81.27416 -11.09187 z"
+       id="path13"
+       inkscape:label="The Park"
+       sodipodi:nodetypes="cccccccccccccc" /><path
+       style="opacity:1;fill:#000000"
+       d="M 814.46957,428.34191 814.99844,343.0331 694.5,341.57292 l -0.1875,21.41927 -28.25903,-0.48647 v 43.02797 L 693.9375,405.83073 693.75,427.25 Z"
+       id="path14"
+       sodipodi:nodetypes="ccccccccc"
+       inkscape:label="Eigen Hall" /><path
+       style="opacity:1;fill:#000000"
+       d="m 398.45467,754.65968 -102.17693,-1.94454 1.06066,-126.92567 100.58594,0.35356 z"
+       id="path15"
+       sodipodi:nodetypes="ccccc"
+       inkscape:label="The Clocktower" /><path
+       style="opacity:1;fill:#000000"
+       d="m 344.43913,288.13395 v 100.01422 l 67.16641,-0.98053 2.94159,26.47435 100.99475,-0.49027 1.4708,-86.46839 -103.35521,1.23744 0.17414,-41.47417 z"
+       id="path16"
+       inkscape:label="Playtesting Plaza" /></g></svg>
