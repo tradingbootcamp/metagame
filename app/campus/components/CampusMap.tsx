@@ -403,7 +403,7 @@ export default function CampusMap({
       <div className="relative w-full max-w-4xl mx-auto">
         <div className="relative w-full aspect-square overflow-hidden">
           <Image
-            src="/images/lighthaven-rotated.png"
+            src="/images/lighthaven.png"
             alt="Lighthaven Campus"
             fill
             className="object-contain"
