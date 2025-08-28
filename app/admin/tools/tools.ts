@@ -1,5 +1,6 @@
 import { DummyTool } from './DummyTool'
 import TicketsInfo from './TicketsInfo'
+import CouponTool from './coupons/CouponTool'
 import { IssueTicketForm } from './issue-tickets/IssueTicketForm'
 import UserProfileTool from './user-profile/UserProfileTool'
 import UserTeamsTool from './user-teams/UserTeamsTool'
@@ -46,6 +47,13 @@ export const ADMIN_TOOLS = {
     longDescription:
       'View users by team, reassign individuals, and bulk-assign teams.',
     component: UserTeamsTool,
+  },
+  coupons: {
+    label: 'Coupons',
+    menuDescription: 'Create and manage coupon codes',
+    longDescription:
+      'Create or update coupon codes, toggle enabled state, set global max uses, and manage allowed purchaser emails with per-email limits.',
+    component: CouponTool,
   },
 } satisfies Record<string, AdminTool>
 
