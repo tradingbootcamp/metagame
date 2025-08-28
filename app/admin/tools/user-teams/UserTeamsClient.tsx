@@ -7,7 +7,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, MinusIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
-import { TEAM_COLORS_ENUM } from '@/utils/dbUtils'
+import { TEAM_COLORS_ENUM, teamColorToBadgeClass } from '@/utils/dbUtils'
 
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
@@ -33,18 +33,6 @@ import { ApiAllFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
 import { DbTeamColor } from '@/types/database/dbTypeAliases'
 
-const teamColorToBadgeClass = (team: DbTeamColor) => {
-  switch (team) {
-    case 'orange':
-      return 'bg-orange-500'
-    case 'purple':
-      return 'bg-purple-500'
-    case 'green':
-      return 'bg-green-500'
-    case 'unassigned':
-      return 'bg-gray-500'
-  }
-}
 export default function UserTeamsClient() {
   const queryClient = useQueryClient()
   const { data: profiles = [], isLoading } = useQuery({
