@@ -18,7 +18,7 @@ import {
   DbSessionBookmark,
   DbSessionRsvpView,
   DbSessionRsvpWithTeam,
-  DbSessionView,
+  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
 export function useScheduleStuff() {
@@ -68,19 +68,12 @@ export function useScheduleStuff() {
 
   // Helper function to check if a session is at capacity
   const isSessionFull = (sessionId: string) => {
-    const sessions = queryClient.getQueryData(['sessions']) as
-      | DbSessionView[]
-      | undefined
+    const sessions = queryClient.getQueryData<FullDbSession[]>(['sessions'])
     const session = sessions?.find((s) => s.id === sessionId)
-    const sessionRsvps = rsvpsBySessionId(sessionId)
-    const confirmedRsvps = sessionRsvps.filter(
-      (rsvp) => !rsvp.on_waitlist,
-    ).length
+    if (!session || !session.max_capacity || !session.rsvps?.length)
+      return false
 
-    return (
-      session?.max_capacity !== null &&
-      confirmedRsvps >= (session?.max_capacity || 0)
-    )
+    return session.rsvps.length >= session.max_capacity
   }
 
   // UnRSVP mutation

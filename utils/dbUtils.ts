@@ -1,18 +1,18 @@
 import {
   DbSessionAges,
   DbSessionRsvpWithTeam,
-  DbSessionView,
   DbTeamColor,
   DbTicketType,
+  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
-export const dbGetHostsFromSession = (session: DbSessionView) => {
+export const dbGetHostsFromSession = (session: FullDbSession) => {
   const host1Name =
-    (session.host_1_first_name ?? '') + ' ' + (session.host_1_last_name ?? '')
+    (session.host_1?.first_name ?? '') + ' ' + (session.host_1?.last_name ?? '')
   const host2Name =
-    (session.host_2_first_name ?? '') + ' ' + (session.host_2_last_name ?? '')
+    (session.host_2?.first_name ?? '') + ' ' + (session.host_2?.last_name ?? '')
   const host3Name =
-    (session.host_3_first_name ?? '') + ' ' + (session.host_3_last_name ?? '')
+    (session.host_3?.first_name ?? '') + ' ' + (session.host_3?.last_name ?? '')
   return [host1Name, host2Name, host3Name].filter((name) => name !== ' ')
 }
 

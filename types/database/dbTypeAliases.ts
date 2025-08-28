@@ -8,8 +8,18 @@ import {
 export type DbSession = Tables<'sessions'>
 export type DbSessionInsert = TablesInsert<'sessions'>
 export type DbSessionUpdate = TablesUpdate<'sessions'>
-export type DbSessionView = Tables<'sessions_view'>
 
+// Session with all the included view type data
+export type FullDbSession = Tables<'sessions'> & {
+  host_1: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
+  host_2: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
+  host_3: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
+  bookmarks: Pick<DbSessionBookmark, 'user_id'>[]
+  rsvps: (Pick<DbSessionRsvp, 'on_waitlist'> & {
+    user: Pick<DbProfile, 'id' | 'team'>
+  })[]
+  location: Pick<DbLocation, 'name'> | null
+}
 export type DbSessionAges = Enums<'AGES'>
 export type DbTicketType = Enums<'ticket_type'>
 

@@ -45,7 +45,7 @@ import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
 import {
   DbSessionRsvpWithTeam,
-  DbSessionView,
+  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
@@ -99,7 +99,7 @@ const locationEventRSVPdColors = [
 ]
 
 // Updated slot checking - PST based
-const eventStartsInSlot = (session: DbSessionView, slotTime: string) => {
+const eventStartsInSlot = (session: FullDbSession, slotTime: string) => {
   if (!session.start_time) return false
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -114,7 +114,7 @@ const eventStartsInSlot = (session: DbSessionView, slotTime: string) => {
 }
 
 // Updated offset calculation - PST based
-const getEventOffsetMinutes = (session: DbSessionView, slotTime: string) => {
+const getEventOffsetMinutes = (session: FullDbSession, slotTime: string) => {
   if (!session.start_time) return 0
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -125,7 +125,7 @@ const getEventOffsetMinutes = (session: DbSessionView, slotTime: string) => {
 }
 
 // Updated duration calculation - PST based
-const getEventDurationMinutes = (session: DbSessionView) => {
+const getEventDurationMinutes = (session: FullDbSession) => {
   if (!session.start_time || !session.end_time) return 30
 
   const startMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -179,9 +179,9 @@ export default function Schedule({
       [], // Day 0: Friday 9/12
       [], // Day 1: Saturday 9/13
       [], // Day 2: Sunday 9/14
-    ] as DbSessionView[][]
+    ] as FullDbSession[][]
 
-    const userRsvpOrHostingSession = (session: DbSessionView) => {
+    const userRsvpOrHostingSession = (session: FullDbSession) => {
       if (!currentUserProfile) return true
       if (isUserRsvpd(session.id!)) {
         return true
@@ -232,7 +232,7 @@ export default function Schedule({
   }, [sessions, filterForUserEvents, bookmarks])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
-    DbSessionView['id'] | null
+    FullDbSession['id'] | null
   >(sessionId ?? null)
   const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false)
   const [addEventPrefill, setAddEventPrefill] = useState<{
@@ -300,7 +300,7 @@ export default function Schedule({
   }
 
   // Helper function to get event color based on session properties
-  const getEventColor = (session: DbSessionView) => {
+  const getEventColor = (session: FullDbSession) => {
     const userIsRsvpd = isUserRsvpd(session.id!)
 
     // Switch based on session properties for specific styling
@@ -701,7 +701,7 @@ export const AttendanceDisplay = ({
   sessionRsvps,
   userLoggedIn,
 }: {
-  session: DbSessionView
+  session: FullDbSession
   sessionRsvps: DbSessionRsvpWithTeam[]
   userLoggedIn: boolean
 }) => {

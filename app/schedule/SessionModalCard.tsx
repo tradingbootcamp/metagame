@@ -14,14 +14,14 @@ import { Badge } from '@/components/ui/badge'
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import { DbSessionView } from '@/types/database/dbTypeAliases'
+import { FullDbSession } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
   showButtons,
   canEdit = false,
 }: {
-  session: DbSessionView
+  session: FullDbSession
   showButtons: boolean
   canEdit?: boolean
 }) {
@@ -178,7 +178,7 @@ export default function SessionDetailsCard({
         {/* Location and Attendance */}
         <div className="flex w-full justify-between gap-1">
           <div className="text-secondary-300">
-            📍 {session.location_name || 'TBD'}
+            📍 {session.location?.name || 'TBD'}
           </div>
           {session.max_capacity && (
             <div className="text-secondary-300">

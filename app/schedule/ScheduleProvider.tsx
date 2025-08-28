@@ -14,7 +14,7 @@ import { createClient } from '@/utils/supabase/server'
 
 import { currentUserGetSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
-import { DbSessionView } from '@/types/database/dbTypeAliases'
+import { FullDbSession } from '@/types/database/dbTypeAliases'
 
 // import { fetchSessions, fetchCurrentUserRsvps, fetchLocations } from "./queries"
 
@@ -72,13 +72,11 @@ export default async function ScheduleProvider({
   let editPermissions: Record<string, boolean> = {}
   if (user?.id) {
     // Get sessions from the prefetched data
-    const sessions = queryClient.getQueryData(['sessions']) as
-      | DbSessionView[]
-      | undefined
+    const sessions = queryClient.getQueryData<FullDbSession[]>(['sessions'])
     if (sessions) {
       editPermissions = await getUserEditPermissionsForSessions({
         userId: user.id,
-        sessionIds: sessions.map((s) => s.id).filter(Boolean) as string[],
+        sessionIds: sessions.map((s) => s.id),
       })
     }
   }

@@ -104,6 +104,7 @@ export default function Nav() {
               <NavItem href="/faq" closeMenu={closeMenu}>
                 FAQ
               </NavItem>
+
               <AccountButton closeMenu={closeMenu} />
             </ul>
           </div>

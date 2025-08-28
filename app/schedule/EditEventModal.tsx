@@ -30,7 +30,7 @@ import {
 } from '@/app/actions/db/sessions'
 
 import { useUser } from '@/hooks/dbQueries'
-import { DbSessionAges, DbSessionView } from '@/types/database/dbTypeAliases'
+import { DbSessionAges, FullDbSession } from '@/types/database/dbTypeAliases'
 
 interface AddEventModalProps {
   isOpen: boolean
@@ -229,10 +229,11 @@ export function AddEventModal({
   const userEditSessionMutation = useMutation({
     mutationFn: userEditSession,
     onMutate: (data) => {
-      const oldData = queryClient.getQueryData(['sessions'])
-      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      if (!oldData) return { oldData: oldData }
+      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.map((session: DbSessionView) =>
+        return old.map((session: FullDbSession) =>
           session.id === data.sessionId
             ? { ...session, ...data.sessionUpdate }
             : session,
@@ -255,7 +256,7 @@ export function AddEventModal({
     },
   })
 
-  const updateEventMutation = useMutation({
+  const adminUpdateEventMutation = useMutation({
     mutationFn: adminUpdateSession,
     onSuccess: () => {
       toast.success('Event updated successfully!')
@@ -263,10 +264,11 @@ export function AddEventModal({
     },
     onMutate: (data) => {
       // Optimistically update the session in the cache
-      const oldData = queryClient.getQueryData(['sessions'])
-      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      if (!oldData) return { oldData: oldData }
+      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.map((session: DbSessionView) =>
+        return old.map((session) =>
           session.id === data.sessionId
             ? { ...session, ...data.payload }
             : session,
@@ -279,7 +281,7 @@ export function AddEventModal({
     onError: (error, variables, context) => {
       // Rollback to previous state on error
       if (context?.oldData) {
-        queryClient.setQueryData(['sessions'], context.oldData)
+        queryClient.setQueryData<FullDbSession[]>(['sessions'], context.oldData)
       }
       toast.error(`Failed to update event: ${error.message}`)
     },
@@ -288,21 +290,20 @@ export function AddEventModal({
     },
   })
 
-  const deleteEventMutation = useMutation({
+  const deleteSessionMutation = useMutation({
     mutationFn: adminDeleteSession,
     onMutate: (data) => {
-      const oldData = queryClient.getQueryData(['sessions'])
-      queryClient.setQueryData(['sessions'], (old: DbSessionView[]) => {
+      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      if (!oldData) return { oldData: oldData }
+      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.filter(
-          (session: DbSessionView) => session.id !== data.sessionId,
-        )
+        return old.filter((session) => session.id !== data.sessionId)
       })
       return { oldData }
     },
     onError: (error, variables, context) => {
       if (context?.oldData) {
-        queryClient.setQueryData(['sessions'], context.oldData)
+        queryClient.setQueryData<FullDbSession[]>(['sessions'], context.oldData)
       }
       toast.error(`Failed to delete event: ${error.message}`)
     },
@@ -368,7 +369,7 @@ export function AddEventModal({
 
     if (isEditMode && existingSessionId) {
       if (currentUserProfile?.is_admin) {
-        updateEventMutation.mutate({
+        adminUpdateEventMutation.mutate({
           sessionId: existingSessionId,
           payload,
         })
@@ -394,7 +395,7 @@ export function AddEventModal({
         'Are you sure you want to delete this event? This action cannot be undone.',
       )
     ) {
-      deleteEventMutation.mutate({ sessionId: existingSessionId })
+      deleteSessionMutation.mutate({ sessionId: existingSessionId })
     }
   }
 
@@ -833,11 +834,11 @@ export function AddEventModal({
             <button
               type="submit"
               disabled={
-                addEventMutation.isPending || updateEventMutation.isPending
+                addEventMutation.isPending || adminUpdateEventMutation.isPending
               }
               className="flex-1 rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
             >
-              {addEventMutation.isPending || updateEventMutation.isPending
+              {addEventMutation.isPending || adminUpdateEventMutation.isPending
                 ? isEditMode
                   ? 'Updating...'
                   : 'Creating...'
@@ -860,7 +861,8 @@ export function AddEventModal({
                 type="button"
                 onClick={handleDelete}
                 disabled={
-                  !currentUserProfile?.is_admin || deleteEventMutation.isPending
+                  !currentUserProfile?.is_admin ||
+                  deleteSessionMutation.isPending
                 }
                 title={
                   !currentUserProfile?.is_admin
@@ -869,7 +871,9 @@ export function AddEventModal({
                 }
                 className="w-full rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-red-600"
               >
-                {deleteEventMutation.isPending ? 'Deleting...' : 'Delete Event'}
+                {deleteSessionMutation.isPending
+                  ? 'Deleting...'
+                  : 'Delete Event'}
               </button>
             </div>
           )}
