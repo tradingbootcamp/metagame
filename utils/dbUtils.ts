@@ -1,6 +1,7 @@
 import {
   DbFullSessionRsvp,
   DbSessionAges,
+  DbSessionCategory,
   DbTeamColor,
   DbTicketType,
   FullDbSession,
@@ -57,6 +58,17 @@ export const TICKET_TYPES = {
 } as const satisfies Record<Uppercase<DbTicketType>, DbTicketType>
 
 export const TICKET_TYPES_ENUM = Object.values(TICKET_TYPES) as DbTicketType[]
+
+export const SESSION_CATEGORIES = {
+  TALK: 'talk' as const,
+  WORKSHOP: 'workshop' as const,
+  GAME: 'game' as const,
+  OTHER: 'other' as const,
+} as const satisfies Record<Uppercase<DbSessionCategory>, DbSessionCategory>
+
+export const SESSION_CATEGORIES_ENUM = Object.values(
+  SESSION_CATEGORIES,
+) as DbSessionCategory[]
 
 export const countRsvpsByTeamColor = (
   rsvps: Pick<DbFullSessionRsvp, 'user'>[],

@@ -24,6 +24,7 @@ import { toast } from 'sonner'
 import { dateUtils } from '@/utils/dateUtils'
 import {
   SESSION_AGES,
+  SESSION_CATEGORIES,
   // countRsvpsByTeamColor,
   dbGetHostsFromSession,
 } from '@/utils/dbUtils'
@@ -40,7 +41,10 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import { FullDbSession } from '@/types/database/dbTypeAliases'
+import {
+  DbSessionCategory,
+  FullDbSession,
+} from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -67,30 +71,12 @@ const generateTimeSlots = (dayIndex: number) => {
   return slots
 }
 
-// Color options for events
-const locationEventColors = [
-  'bg-blue-200 border-blue-300',
-  'bg-purple-200 border-purple-300',
-  'bg-orange-200 border-orange-300',
-  'bg-cyan-100 border-cyan-200',
-  'bg-pink-200 border-pink-300',
-  'bg-green-200 border-green-300',
-  'bg-red-200 border-red-300',
-  'bg-indigo-200 border-indigo-300',
-  'bg-teal-200 border-teal-300',
-]
-
-const locationEventRSVPdColors = [
-  'bg-blue-500 border-blue-600',
-  'bg-purple-500 border-purple-600',
-  'bg-orange-500 border-orange-600',
-  'bg-cyan-400 border-cyan-500',
-  'bg-pink-500 border-pink-600',
-  'bg-green-500 border-green-600',
-  'bg-red-500 border-red-600',
-  'bg-indigo-500 border-indigo-600',
-  'bg-teal-500 border-teal-600',
-]
+const sessionCategoryColors: Record<DbSessionCategory, string> = {
+  [SESSION_CATEGORIES.TALK]: 'bg-blue-200 border-blue-300',
+  [SESSION_CATEGORIES.WORKSHOP]: 'bg-green-200 border-green-300',
+  [SESSION_CATEGORIES.GAME]: 'bg-fuchsia-300 border-fuchsia-400',
+  [SESSION_CATEGORIES.OTHER]: 'bg-red-200 border-red-300',
+}
 
 // Updated slot checking - PST based
 const eventStartsInSlot = (session: FullDbSession, slotTime: string) => {
@@ -312,16 +298,13 @@ export default function Schedule({
           ? 'bg-yellow-500 border-yellow-600'
           : 'bg-yellow-200 border-yellow-300'
 
+      // Categories have colors
+      case !!session.category:
+        return sessionCategoryColors[session.category]
+
       // Default: location-based coloring
       default:
-        const locationIndex = locations.findIndex(
-          (l) => l.id === session.location_id,
-        )
-        return userIsRsvpd
-          ? locationEventRSVPdColors[
-              locationIndex % locationEventRSVPdColors.length
-            ]
-          : locationEventColors[locationIndex % locationEventColors.length]
+        return sessionCategoryColors[SESSION_CATEGORIES.OTHER]
     }
   }
 
