@@ -6,6 +6,7 @@ import CampusMap from './components/CampusMap'
 
 export default function CampusPage() {
   const [showMegagameNames, setShowMegagameNames] = useState(false)
+  const [showBuildingNames, setShowBuildingNames] = useState(false)
   const [showLocationNames, setShowLocationNames] = useState(false)
   const [showLocationDescription, setShowLocationDescription] = useState(false)
   const [highlightBuilding, setHighlightBuilding] = useState('')
@@ -84,6 +85,22 @@ export default function CampusPage() {
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
+              id="showBuildingNames"
+              checked={showBuildingNames}
+              onChange={(e) => setShowBuildingNames(e.target.checked)}
+              className="rounded border-gray-300"
+            />
+            <label
+              htmlFor="showBuildingNames"
+              className="text-sm font-medium text-gray-900"
+            >
+              Show Building Names
+            </label>
+          </div>
+
+          <div className="flex items-center space-x-2">
+            <input
+              type="checkbox"
               id="showMegagameNames"
               checked={showMegagameNames}
               onChange={(e) => setShowMegagameNames(e.target.checked)}
@@ -93,7 +110,7 @@ export default function CampusPage() {
               htmlFor="showMegagameNames"
               className="text-sm font-medium text-gray-900"
             >
-              Show Building Names
+              Show Megagame Names
             </label>
           </div>
 
@@ -199,6 +216,7 @@ export default function CampusPage() {
 
       <CampusMap
         showMegagameNames={showMegagameNames}
+        showBuildingNames={showBuildingNames}
         showLocationNames={showLocationNames}
         showLocationDescription={showLocationDescription}
         highlightBuilding={highlightBuilding || undefined}

@@ -98,3 +98,30 @@ export const countRsvpsByTeamColor = (
 
   return counts
 }
+
+export const teamColorToBadgeClass = (team: DbTeamColor) => {
+  switch (team) {
+    case 'orange':
+      return 'bg-orange-500'
+    case 'purple':
+      return 'bg-purple-500'
+    case 'green':
+      return 'bg-green-500'
+    case 'unassigned':
+      return 'bg-gray-500'
+  }
+}
+
+export const teamColorToHex = (team: DbTeamColor): string => {
+  switch (team) {
+    case 'orange':
+      return '#f97316' // orange-500
+    case 'purple':
+      return '#a855f7' // purple-500
+    case 'green':
+      return '#22c55e' // green-500
+    case 'unassigned':
+    default:
+      return '#6b7280' // gray-500
+  }
+}
