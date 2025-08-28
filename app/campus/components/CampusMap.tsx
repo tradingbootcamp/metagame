@@ -73,49 +73,49 @@ const buildings: Building[] = [
   {
     id: 'A',
     name: 'Building A',
-    path: 'm 550.81359,537.45385 82.36465,1.96106 -0.24514,3.18673 36.76994,0.7354 0.98053,54.4195 23.77789,-0.7354 v 22.18452 h 6.61859 l -0.49027,12.37921 3.92213,-0.12256 v 6.12832 l 8.45708,-0.24513 0.7354,83.22261 14.58541,0.49027 c 0,0 0.24513,36.52479 -0.24514,36.64736 -0.49026,0.12257 -34.19603,0.49027 -34.19603,0.49027 l 0.73539,36.64736 -70.108,2.5739 -0.49027,-25.24869 -84.93854,-1.22566 v 7.47655 l -46.69781,3.06416 -46.82039,-3.92213 -7.10885,-2.69646 0.24513,-6.37345 -18.2624,-1.22567 c 0,0 -1.83849,-33.5832 -1.83849,-34.07347 0,-0.49026 5.14779,-38.24073 5.14779,-38.24073 l 0.49026,-31.13187 -5.02522,-38.3633 4.28983,-39.34383 25.86151,-0.24513 v -4.28983 l 8.08939,-0.49026 0.85796,-36.27967 45.22702,0.7354 c 0,0 6.49602,0.24513 6.98629,0.12257 0.49026,-0.12257 39.83409,4.53496 39.83409,3.30929 0,-1.22566 0.49027,-11.52124 0.49027,-11.52124 z',
+    path: 'm 537.45385,740.18641 1.96106,-82.36465 3.18673,0.24514 0.7354,-36.76994 54.4195,-0.98053 -0.7354,-23.77789 22.18452,0 0,6.61859 12.37921,0.49027 -0.12256,-3.92213 6.12832,0 -0.24513,-8.45708 83.22261,-0.7354 0.49027,-14.58541 c 0,0 36.52479,-0.24513 36.64736,0.24514 0.12257,0.49026 0.49027,34.19603 0.49027,34.19603 l 36.64736,-0.73539 2.5739,70.108 -25.24869,0.49027 -1.22566,84.93854 7.47655,0 3.06416,46.69781 -3.92213,46.82039 -2.69646,7.10885 -6.37345,-0.24513 -1.22567,18.2624 c 0,0 -33.5832,1.83849 -34.07347,1.83849 -0.49026,0 -38.24073,-5.14779 -38.24073,-5.14779 l -31.13187,-0.49026 -38.3633,5.02522 -39.34383,-4.28983 -0.24513,-25.86151 -4.28983,0 -0.49026,-8.08939 -36.27967,-0.85796 0.7354,-45.22702 c 0,0 0.24513,-6.49602 0.12257,-6.98629 -0.12257,-0.49026 4.53496,-39.83409 3.30929,-39.83409 -1.22566,0 -11.52124,-0.49027 -11.52124,-0.49027 z',
     color: 'unassigned',
-    center: [580, 620],
+    center: [620, 711],
     description: '',
   },
   {
     id: 'B',
     name: 'Building B',
-    path: 'm 654.99506,442.21972 h 100.50448 l -1.22566,-101.23988 -17.64957,-0.49027 0.24514,-14.9531 -6.86372,0.24513 v -10.05045 l 34.3186,-1.71593 0.49026,-28.92568 -7.84425,0.49027 v -41.18233 l -174.28948,0.49027 -0.49026,21.08143 -18.6301,0.49026 c 0,0 -27.45489,-18.87523 -51.47791,4.65753 -24.02302,23.53276 -5.63805,47.06551 -5.63805,47.06551 l -0.49027,85.30625 h 50.25224 l 1.22567,10.54071 h 22.06196 l 0.24513,-8.82478 75.01066,0.49026 z',
+    path: 'm 442.21972,636.00494 0,-100.50448 -101.23988,1.22566 -0.49027,17.64957 -14.9531,-0.24514 0.24513,6.86372 -10.05045,0 -1.71593,-34.3186 -28.92568,-0.49026 0.49027,7.84425 -41.18233,0 0.49027,174.28948 21.08143,0.49026 0.49026,18.6301 c 0,0 -18.87523,27.45489 4.65753,51.47791 23.53276,24.02302 47.06551,5.63805 47.06551,5.63805 l 85.30625,0.49027 0,-50.25224 10.54071,-1.22567 0,-22.06196 -8.82478,-0.24513 0.49026,-75.01066 z',
     color: 'purple',
-    center: [640, 380],
+    center: [380, 651],
     description: '',
   },
   {
     id: 'C',
     name: 'Building C',
-    path: 'm 888.85183,330.43913 h 100.01422 l 3.92212,161.29743 c 0,0 -5.39292,11.27612 -8.33451,11.27612 -2.9416,0 -120.60538,-1.4708 -120.60538,-1.4708 l 0.98053,-46.57525 -26.47435,-0.98053 v -41.18233 h 15.19824 l -0.49027,27.45489 10.78585,-1.4708 -0.49027,-38.24073 26.47435,-2.94159 z',
+    path: 'm 330.43913,402.14817 0,-100.01422 161.29743,-3.92212 c 0,0 11.27612,5.39292 11.27612,8.33451 0,2.9416 -1.4708,120.60538 -1.4708,120.60538 l -46.57525,-0.98053 -0.98053,26.47435 -41.18233,0 0,-15.19824 27.45489,0.49027 -1.4708,-10.78585 -38.24073,0.49027 -2.94159,-26.47435 z',
     color: 'unassigned',
-    center: [940, 410],
+    center: [410, 351],
     description: '',
   },
   {
     id: 'D',
     name: 'Building D',
-    path: 'm 763.09866,518.21091 10e-6,21.32657 7.35398,0.49026 -0.49026,17.8947 -29.90622,-0.24513 -0.98053,42.65312 h 14.70797 l 1.22567,-26.96462 h 14.21771 l -0.49027,15.93364 -5.14779,-0.24513 v 22.79736 l 16.4239,-0.24514 v 4.90266 l 174.77975,1.96106 1.22566,-107.85847 -175.76027,0.24514 -0.24514,7.35398 z',
+    path: 'm 518.21091,527.90134 21.32657,0 0.49026,-7.35398 17.8947,0.49026 -0.24513,29.90622 42.65312,0.98053 0,-14.70797 -26.96462,-1.22567 0,-14.21771 15.93364,0.49027 -0.24513,5.14779 22.79736,0 -0.24514,-16.4239 4.90266,0 1.96106,-174.77975 -107.85847,-1.22566 0.24514,175.76027 7.35398,0.24514 z',
     color: 'unassigned',
-    center: [850, 550],
+    center: [550, 441],
     description: '',
   },
   {
     id: 'E',
     name: 'Building E',
-    path: 'm 825.60755,652.05347 109.81953,0.98053 -1.4708,149.04079 1.4708,32.35754 -2.94159,30.88675 1.96106,139.23552 -68.14694,7.8442 -81.87439,-7.8442 0.49027,-127.46915 v -41.91772 l 8.82478,-0.49026 0.49027,-23.77789 54.17437,0.7354 2.45133,-108.10361 -24.75842,-0.73539 z',
+    path: 'm 652.05347,465.39245 0.98053,-109.81953 149.04079,1.4708 32.35754,-1.4708 30.88675,2.94159 139.23552,-1.96106 7.8442,68.14694 -7.8442,81.87439 -127.46915,-0.49027 -41.91772,0 -0.49026,-8.82478 -23.77789,-0.49027 0.7354,-54.17437 -108.10361,-2.45133 -0.73539,24.75842 z',
     color: 'orange',
-    center: [880, 800],
+    center: [800, 411],
     description: '',
   },
   {
     id: 'F',
     name: 'Building F',
-    path: 'm 1015.8307,683.17303 102.4655,0.25745 7.8443,25.98408 -5.8832,32.35754 0.3713,74.06497 -63.7592,1.63904 -53.0502,-1.42874 v -25.49382 l 12.9397,-0.7354 z',
+    path: 'm 683.17303,275.1693 0.25745,-102.4655 25.98408,-7.8443 32.35754,5.8832 74.06497,-0.3713 1.63904,63.7592 -1.42874,53.0502 -25.49382,0 -0.7354,-12.9397 z',
     color: 'unassigned',
-    center: [1070, 720],
+    center: [720, 221],
     description: '',
   },
 ]
@@ -163,72 +163,72 @@ const edges: Edge[] = [
   {
     fromBuilding: 'A',
     toBuilding: 'B',
-    from: [630, 550],
-    to: [638, 397],
+    from: [550, 661],
+    to: [397, 653],
     fromColor: 'purple',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'B',
     toBuilding: 'C',
-    from: [721, 313],
-    to: [877, 412],
+    from: [313, 570],
+    to: [412, 414],
     fromColor: 'purple',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'C',
     toBuilding: 'D',
-    from: [846, 444],
-    to: [847, 523],
+    from: [444, 445],
+    to: [523, 444],
     fromColor: 'unassigned',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'D',
     toBuilding: 'E',
-    from: [772, 600],
-    to: [843, 670],
+    from: [600, 519],
+    to: [670, 448],
     fromColor: 'orange',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'E',
     toBuilding: 'F',
-    from: [918, 794],
-    to: [1013, 804],
+    from: [794, 373],
+    to: [804, 278],
     fromColor: 'orange',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'A',
     toBuilding: 'D',
-    from: [688, 606],
-    to: [747, 593],
+    from: [606, 603],
+    to: [593, 544],
     fromColor: 'unassigned',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'B',
     toBuilding: 'D',
-    from: [744, 432],
-    to: [791, 520],
+    from: [432, 547],
+    to: [520, 500],
     fromColor: 'purple',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'D',
     toBuilding: 'F',
-    from: [1033, 702],
-    to: [935, 598],
+    from: [702, 258],
+    to: [598, 356],
     fromColor: 'unassigned',
     toColor: 'unassigned',
   },
   {
     fromBuilding: 'A',
     toBuilding: 'E',
-    from: [862, 788],
-    to: [709, 737],
+    from: [788, 429],
+    to: [737, 582],
     fromColor: 'orange',
     toColor: 'unassigned',
   },
@@ -347,8 +347,8 @@ export default function CampusMap({
       e.currentTarget.closest('svg') as SVGElement
     ).getBoundingClientRect()
     const svgPoint = [
-      ((e.clientX - svgRect.left) / svgRect.width) * 1291,
-      ((e.clientY - svgRect.top) / svgRect.height) * 1263,
+      ((e.clientX - svgRect.left) / svgRect.width) * 1263,
+      ((e.clientY - svgRect.top) / svgRect.height) * 1291,
     ]
     const edgePoint = edgePositions[edgeIndex][endpoint]
     setDragState({
@@ -366,8 +366,8 @@ export default function CampusMap({
       e.currentTarget.closest('svg') as SVGElement
     ).getBoundingClientRect()
     const svgPoint = [
-      ((e.clientX - svgRect.left) / svgRect.width) * 1291,
-      ((e.clientY - svgRect.top) / svgRect.height) * 1263,
+      ((e.clientX - svgRect.left) / svgRect.width) * 1263,
+      ((e.clientY - svgRect.top) / svgRect.height) * 1291,
     ]
     const newPoint: [number, number] = [
       svgPoint[0] - dragState.offset[0],
@@ -403,19 +403,17 @@ export default function CampusMap({
       <div className="relative w-full max-w-4xl mx-auto">
         <div className="relative w-full aspect-square overflow-hidden">
           <Image
-            src="/images/lighthaven.jpeg"
+            src="/images/lighthaven-rotated.png"
             alt="Lighthaven Campus"
             fill
             className="object-contain"
-            style={{ transform: 'rotate(-90deg)' }}
             priority
           />
 
           <svg
-            viewBox="0 0 1291 1263"
+            viewBox="0 0 1263 1291"
             className="absolute inset-0 w-full h-full pointer-events-auto"
             preserveAspectRatio="xMidYMid meet"
-            style={{ transform: 'rotate(-90deg)' }}
             onMouseMove={handleMouseMove}
             onMouseUp={handleMouseUp}
             onMouseLeave={handleMouseUp}
@@ -424,7 +422,7 @@ export default function CampusMap({
               {/* Create a mask that excludes building areas */}
               <mask id="edgesMask">
                 {/* White background allows everything through */}
-                <rect width="1291" height="1263" fill="white" />
+                <rect width="1263" height="1291" fill="white" />
                 {/* Black building shapes block edges */}
                 {buildings.map((building) => (
                   <path
@@ -591,7 +589,6 @@ export default function CampusMap({
                       textAnchor="middle"
                       dominantBaseline="middle"
                       fill="black"
-                      transform={`rotate(90 ${building.center[0]} ${building.center[1]})`}
                       style={{
                         fontSize: `${16 * textScale}px`,
                         fontWeight: 'bold',
@@ -612,7 +609,7 @@ export default function CampusMap({
                 {locations
                   .filter((location) => location.id === highlightLocation)
                   .map((location) => (
-                    <g key={location.id} transform="rotate(90 645.5 631.5)">
+                    <g key={location.id} transform="translate(-14, 14)">
                       <path
                         d={location.path}
                         className="fill-green-500/70 hover:fill-green-600/90 transition-all duration-200"
@@ -672,22 +669,21 @@ export default function CampusMap({
             {/* North arrow */}
             <g
               className="north-arrow"
-              transform="translate(630, 1000) rotate(180) scale(1.5)"
+              transform="translate(1000, 661) scale(1.5) rotate(9.28)"
             >
-              {/* Arrow pointing up (north after rotation) */}
+              {/* Arrow pointing right (north) */}
               <path
-                d="M 0,-40 L -15,25 L 0,15 L 15,25 Z"
+                d="M 40,0 L -25,-15 L -15,0 L -25,15 Z"
                 fill="black"
                 stroke="white"
                 strokeWidth="3"
               />
               <text
-                x="-45"
+                x="45"
                 y="0"
                 textAnchor="middle"
                 dominantBaseline="middle"
                 fill="black"
-                transform="rotate(-90)"
                 style={{
                   fontSize: `${22 * textScale}px`,
                   fontWeight: 'bold',
