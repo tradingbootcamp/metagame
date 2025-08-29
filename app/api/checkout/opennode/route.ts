@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { v4 as uuidv4 } from 'uuid'
 
 import { opennodeDbService } from '@/lib/db/opennode'
+import { getSiteUrl } from '@/lib/env'
 import { createChargeRaw } from '@/lib/opennode'
 import {
   TicketPurchaseDetails,
@@ -23,8 +24,8 @@ export async function POST(req: NextRequest) {
     await req.json(),
   )
   const metagameOrderId = uuidv4()
-  const callback = `${process.env.NEXT_PUBLIC_SITE_URL}/api/checkout/opennode/webhook`
-  const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${metagameOrderId}`
+  const callback = `${getSiteUrl()}/api/checkout/opennode/webhook`
+  const successUrl = `${getSiteUrl()}/checkout/status/${metagameOrderId}`
 
   const amountSatoshis = Math.round(amountBtc * 100000000)
 
@@ -92,7 +93,7 @@ function sendChargeCreationEmail(
           <h2 style="margin-top: 0;">Order Details</h2>
           <p><strong>Ticket Type:</strong> ${ticketTitle}</p>
           <p><strong>Amount:</strong> ₿${amountBtc}</p>
-          <p><strong>Order ID:</strong> <a href="${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${charge.order_id}">${charge.order_id}</a></p>
+          <p><strong>Order ID:</strong> <a href="${getSiteUrl()}/checkout/status/${charge.order_id}">${charge.order_id}</a></p>
         </div>
         
         <div style="background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;">

@@ -1,3 +1,4 @@
+import { getSiteUrl } from './env'
 import { Resend } from 'resend'
 
 import { SOCIAL_LINKS } from '@/utils/urls'
@@ -38,7 +39,7 @@ export async function sendTicketConfirmationEmail({
   try {
     const discordUrl = SOCIAL_LINKS.DISCORD
     const testSubject = test ? 'TEST: ' : ''
-    const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://metagame.games'
+    const siteUrl = getSiteUrl()
     const { data, error } = await resend.emails.send({
       from: 'Metagame 2025 <tickets@mail.metagame.games>',
       to,
