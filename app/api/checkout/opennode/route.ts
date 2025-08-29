@@ -14,7 +14,7 @@ import { getHostedCheckoutUrl } from '@/utils/opennode'
 
 import { getCurrentUserAdminStatus } from '@/app/actions/db/users'
 
-import { getTicketType } from '@/config/tickets'
+import { ticketTypeDetails } from '@/config/tickets'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -28,7 +28,7 @@ export async function POST(req: NextRequest) {
 
   const amountSatoshis = Math.round(amountBtc * 100000000)
 
-  const ticketType = getTicketType(ticketDetails.ticketType)
+  const ticketType = ticketTypeDetails[ticketDetails.ticketType]
   const ticketTitle = ticketType?.title || 'Unknown'
   const ticketPriceBtc = ticketType?.priceBTC
 
@@ -70,7 +70,7 @@ function sendChargeCreationEmail(
   charge: OpenNodeCharge,
   ticketDetails: TicketPurchaseDetails,
 ) {
-  const ticketTitle = getTicketType(ticketDetails.ticketType)?.title
+  const ticketTitle = ticketTypeDetails[ticketDetails.ticketType].title
   const amountBtc = (charge.amount / 100000000).toFixed(6)
   const hostedUrl = getHostedCheckoutUrl(charge.id)
 

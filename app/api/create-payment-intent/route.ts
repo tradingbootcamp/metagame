@@ -1,9 +1,10 @@
-import { getTicketType } from '../../../config/tickets'
 import { validateCouponForPurchase } from '../../../lib/coupons'
 import { paymentIntentSchema } from '../../../lib/schemas/ticket'
 import { createPaymentIntent } from '../../../lib/stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
+
+import { ticketTypeDetails } from '@/config/tickets'
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,7 +15,7 @@ export async function POST(request: NextRequest) {
     const { ticketTypeId, name, email, couponCode } = validatedData
 
     // Get ticket type and validate
-    const ticketType = getTicketType(ticketTypeId)
+    const ticketType = ticketTypeDetails[ticketTypeId]
     if (!ticketType) {
       return NextResponse.json(
         { error: 'Invalid ticket type' },

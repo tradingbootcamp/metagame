@@ -2,14 +2,15 @@ import { Resend } from 'resend'
 
 import { SOCIAL_LINKS } from '@/utils/urls'
 
-import { getTicketType } from '@/config/tickets'
+import { ticketTypeDetails } from '@/config/tickets'
+import { DbTicketType } from '@/types/database/dbTypeAliases'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
 export interface TicketConfirmationEmailData {
   to: string
   purchaserName: string
-  ticketType: string
+  ticketType: DbTicketType
   ticketCode: string
   isBtc: boolean
   usdPaid?: number
@@ -57,7 +58,7 @@ export async function sendTicketConfirmationEmail({
           
           <div style="background-color: #f5f5f5; padding: 20px; border-radius: 8px; margin: 20px 0;">
             <h2 style="margin-top: 0;">Ticket Details</h2>
-            <p><strong>Ticket Type:</strong> ${getTicketType(ticketType)?.title}</p>
+            <p><strong>Ticket Type:</strong> ${ticketTypeDetails[ticketType].title}</p>
             ${adminIssued ? '' : `<p><strong>Price Paid:</strong> ${isBtc ? `₿${btcPaid?.toFixed(6)}` : `$${usdPaid?.toFixed(2)}`}</p>`}
             ${forExistingUser ? '' : `<p><strong>Your Ticket Code:</strong> <span style="font-size: 20px; font-weight: bold; color: #007bff;">${ticketCode}</span></p>`}
             ${adminIssued ? '' : isBtc ? `<p><strong>OpenNode Charge ID:</strong> ${opennodeChargeId}</p>` : `<p><strong>Stripe Payment ID:</strong> ${paymentIntentId}</p>`}

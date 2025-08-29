@@ -12,6 +12,11 @@ export interface TicketType {
   features?: string[]
 }
 
+export type DisplayTicketType = Omit<TicketType, 'priceUSD' | 'priceBTC'> & {
+  priceUSD: string
+  priceBTC?: string
+}
+
 export interface TicketPurchaseData {
   name: string
   email: string

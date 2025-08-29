@@ -9,5 +9,7 @@ export const validateCouponBodySchema = z.object({
   ticketTypeId: z.enum(TICKET_TYPES_ENUM, {
     message: `Invalid ticket type, must be one of ${TICKET_TYPES_ENUM.join(', ')}`,
   }),
+  preCouponPriceUSD: z.number('Invalid price').optional(),
+  preCouponPriceBTC: z.number('Invalid price').optional(),
   userEmail: z.string().optional(),
 })

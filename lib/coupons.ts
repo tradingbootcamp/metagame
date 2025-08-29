@@ -1,7 +1,7 @@
 import { couponsService } from './db/coupons'
 import z from 'zod'
 
-import { getTicketType } from '@/config/tickets'
+import { ticketTypeDetails } from '@/config/tickets'
 import { DbCoupon, DbTicketType } from '@/types/database/dbTypeAliases'
 
 export const applyCouponDiscount = (
@@ -16,7 +16,7 @@ export const isTicketTypeEligibleForCoupons = (
   ticketTypeId: DbTicketType,
 ): boolean => {
   // Only player tickets are eligible for coupons currently
-  return ticketTypeId === 'player'
+  return ['player', 'slidingScale'].includes(ticketTypeId)
 }
 
 export const validateCouponResultSchema = z.discriminatedUnion('valid', [
@@ -52,7 +52,8 @@ export type ValidatedCoupon = Extract<
 export const validateCouponForPurchase = async (
   couponCode: string,
   purchaserEmail: string | undefined,
-  ticketTypeId: string,
+  ticketTypeId: DbTicketType,
+  preCouponPriceUSD: number | undefined = undefined,
 ): Promise<ValidateCouponResult> => {
   try {
     // Validate coupon exists
@@ -94,7 +95,7 @@ export const validateCouponForPurchase = async (
     }
 
     // Get ticket type
-    const ticketType = getTicketType(ticketTypeId)
+    const ticketType = ticketTypeDetails[ticketTypeId]
     if (!ticketType) {
       return validateCouponResultSchema.parse({
         valid: false,
@@ -109,8 +110,9 @@ export const validateCouponForPurchase = async (
         error: 'Coupons are not available for this ticket type',
       })
     }
+    const originalPrice = preCouponPriceUSD ?? ticketType.priceUSD
+    const originalPriceInCents = originalPrice * 100
 
-    const originalPriceInCents = ticketType.priceUSD * 100
     const discountedPriceInCents = applyCouponDiscount(
       originalPriceInCents,
       coupon,

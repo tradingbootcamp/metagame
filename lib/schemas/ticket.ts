@@ -23,7 +23,7 @@ export const paymentConfirmationSchema = z.object({
 
 // Schema for payment intent creation
 export const paymentIntentSchema = z.object({
-  ticketTypeId: z.string(),
+  ticketTypeId: z.enum(TICKET_TYPES_ENUM),
   name: z.string().min(1),
   email: z.email(),
   couponCode: z.string().optional(),

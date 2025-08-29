@@ -80,12 +80,12 @@ export const Tickets: React.FC = () => {
         <div className="grid grid-cols-1 gap-8 pb-20 md:grid-cols-3">
           <TicketCard ticketTypeId="player" paymentMethod={paymentMethod} />
           <TicketCard ticketTypeId="dayPass" paymentMethod={paymentMethod} />
-          <TicketCard ticketTypeId="volunteer" paymentMethod={paymentMethod} />
-          <TicketCard ticketTypeId="student" paymentMethod={paymentMethod} />
           <TicketCard
-            ticketTypeId="financialAid"
+            ticketTypeId="slidingScale"
             paymentMethod={paymentMethod}
           />
+          <TicketCard ticketTypeId="volunteer" paymentMethod={paymentMethod} />
+          <TicketCard ticketTypeId="student" paymentMethod={paymentMethod} />
           <TicketCard ticketTypeId="supporter" paymentMethod={paymentMethod} />
         </div>
       </div>
