@@ -72,10 +72,17 @@ const generateTimeSlots = (dayIndex: number) => {
 }
 
 const sessionCategoryColors: Record<DbSessionCategory, string> = {
+  [SESSION_CATEGORIES.TALK]: 'bg-blue-100 border-blue-200',
+  [SESSION_CATEGORIES.WORKSHOP]: 'bg-rose-100 border-rose-200',
+  [SESSION_CATEGORIES.GAME]: 'bg-emerald-100 border-emerald-200',
+  [SESSION_CATEGORIES.OTHER]: 'bg-slate-100 border-slate-200',
+}
+
+const sessionCategoryRSVPdColors: Record<DbSessionCategory, string> = {
   [SESSION_CATEGORIES.TALK]: 'bg-blue-200 border-blue-300',
-  [SESSION_CATEGORIES.WORKSHOP]: 'bg-green-200 border-green-300',
-  [SESSION_CATEGORIES.GAME]: 'bg-fuchsia-300 border-fuchsia-400',
-  [SESSION_CATEGORIES.OTHER]: 'bg-red-200 border-red-300',
+  [SESSION_CATEGORIES.WORKSHOP]: 'bg-rose-200 border-rose-300',
+  [SESSION_CATEGORIES.GAME]: 'bg-emerald-200 border-emerald-300',
+  [SESSION_CATEGORIES.OTHER]: 'bg-slate-200 border-slate-300',
 }
 
 // Updated slot checking - PST based
@@ -289,22 +296,26 @@ export default function Schedule({
       // Megagames get special striped pattern
       case session.megagame:
         return userIsRsvpd
-          ? 'bg-[repeating-linear-gradient(45deg,#f97316,#f97316_10px,#a855f7_10px,#a855f7_20px)]'
-          : 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#c084fc_10px,#c084fc_20px)]'
+          ? 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#a855f7_10px,#a855f7_20px)]'
+          : 'bg-[repeating-linear-gradient(45deg,#fed7aa,#fed7aa_10px,#d8b4fe_10px,#d8b4fe_20px)]'
 
       // Kids sessions get yellow background
       case session.ages === SESSION_AGES.KIDS:
         return userIsRsvpd
-          ? 'bg-yellow-500 border-yellow-600'
-          : 'bg-yellow-200 border-yellow-300'
+          ? 'bg-yellow-200 border-yellow-300'
+          : 'bg-yellow-100 border-yellow-200'
 
       // Categories have colors
       case !!session.category:
-        return sessionCategoryColors[session.category]
+        return userIsRsvpd
+          ? sessionCategoryRSVPdColors[session.category]
+          : sessionCategoryColors[session.category]
 
       // Default: location-based coloring
       default:
-        return sessionCategoryColors[SESSION_CATEGORIES.OTHER]
+        return userIsRsvpd
+          ? sessionCategoryRSVPdColors[SESSION_CATEGORIES.OTHER]
+          : sessionCategoryColors[SESSION_CATEGORIES.OTHER]
     }
   }
 
@@ -505,6 +516,9 @@ export default function Schedule({
                               height: `${getEventDurationMinutes(session) * 2}px`, // 2px per minute
                               left: '0px',
                               right: '0px',
+                              boxShadow: isUserRsvpd(session.id!)
+                                ? '0 0 0 3px #ff33be'
+                                : undefined,
                             }}
                           >
                             <div className="relative flex size-full flex-col">
