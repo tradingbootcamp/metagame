@@ -12,6 +12,8 @@ import {
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
 
+import { getCurrentUserAdminStatus } from '@/app/actions/db/users'
+
 import { getTicketType } from '@/config/tickets'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
@@ -20,12 +22,27 @@ export async function POST(req: NextRequest) {
   const { amountBtc, ticketDetails } = opennodeChargeSchema.parse(
     await req.json(),
   )
-  const callback = `${process.env.NEXT_PUBLIC_SITE_URL}/api/checkout/opennode/webhook`
   const metagameOrderId = uuidv4()
+  const callback = `${process.env.NEXT_PUBLIC_SITE_URL}/api/checkout/opennode/webhook`
+  const successUrl = `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${metagameOrderId}`
 
   const amountSatoshis = Math.round(amountBtc * 100000000)
 
-  const ticketTitle = getTicketType(ticketDetails.ticketType)?.title
+  const ticketType = getTicketType(ticketDetails.ticketType)
+  const ticketTitle = ticketType?.title || 'Unknown'
+  const ticketPriceBtc = ticketType?.priceBTC
+
+  // If the provided bitcoin price doesn't match the ticket price, only admins can proceed otherwise throw error
+  if (!ticketPriceBtc || ticketPriceBtc !== amountBtc) {
+    const userIsAdmin = await getCurrentUserAdminStatus()
+    if (!userIsAdmin) {
+      return NextResponse.json(
+        { error: 'Invalid ticket price' },
+        { status: 400 },
+      )
+    }
+  }
+
   const charge = await createChargeRaw({
     amount: amountSatoshis,
     description: `Metagame ${ticketTitle} ticket for ${ticketDetails.purchaserEmail}`,
@@ -33,7 +50,7 @@ export async function POST(req: NextRequest) {
     auto_settle: true,
     order_id: metagameOrderId,
     callback_url: callback,
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${metagameOrderId}`,
+    success_url: successUrl,
   })
 
   await opennodeDbService.createCharge({ charge, ticketDetails })

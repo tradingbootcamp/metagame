@@ -356,7 +356,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('No BTC amount found for ticket type: ' + ticketType.id)
       }
       const amountBtc = Number(btcAmount.toFixed(6))
-      // const isTest = (process.env.NEXT_PUBLIC_OPENNODE_ENV || 'dev') !== 'live';
       const response = await fetch('/api/checkout/opennode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -418,7 +417,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   }
   const headerTicketType =
     ticketType.id === 'dayPass'
-      ? (getDayPassTicketType(ticketType.id) ?? ticketType)
+      ? (getDayPassTicketType(ticketType.id as DbTicketType) ?? ticketType)
       : ticketType
   return (
     <div className="flex flex-col gap-6">

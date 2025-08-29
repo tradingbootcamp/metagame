@@ -1,6 +1,9 @@
 import type { TicketType } from '../lib/types'
 
+import { TICKET_TYPES_ENUM } from '@/utils/dbUtils'
 import { URLS } from '@/utils/urls'
+
+import { DbTicketType } from '@/types/database/dbTypeAliases'
 
 // Day pass options for the dropdown
 export const DAY_PASS_OPTIONS: TicketType[] = [
@@ -114,9 +117,12 @@ export const TICKET_TYPES: Record<string, TicketType> = {
 }
 
 export const getTicketType = (id: string): TicketType | null => {
+  if (!TICKET_TYPES_ENUM.includes(id as DbTicketType)) {
+    return null
+  }
   return ['friday', 'saturday', 'sunday'].includes(id)
     ? getDayPassTicketType(id)
-    : TICKET_TYPES[id] || null
+    : TICKET_TYPES[id]
 }
 
 export const getAllTicketTypes = (): TicketType[] => {
