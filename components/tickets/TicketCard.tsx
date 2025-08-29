@@ -175,7 +175,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                 <ul className="text-opacity-80 mt-3 mb-3 list-outside pl-4 text-left text-sm text-cyan-300 italic">
                   <li>
                     We also have a financial aid program with further price
-                    reductions available. You can{' '}
+                    reductions available.{' '}
                     <a
                       className="underline"
                       href={URLS.TICKET_FINANCIAL_AID}
@@ -183,9 +183,9 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                       rel="noopener noreferrer"
                     >
                       {' '}
-                      apply here
+                      Apply here
                     </a>{' '}
-                    by Monday 9/1 and we will get back to you by Friday 9/5.
+                    by 9/1.
                   </li>
                 </ul>
               )}
