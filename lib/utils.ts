@@ -32,6 +32,76 @@ export async function uploadFileWithSignedUrl(
   }
 }
 
+export async function downscaleAndUploadImage(
+  signedUrl: string,
+  file: File,
+  maxWidth: number = 512,
+): Promise<void> {
+  // Check if the file is an image
+  if (!file.type.startsWith('image/')) {
+    // If not an image, upload as-is
+    return uploadFileWithSignedUrl(signedUrl, file)
+  }
+
+  return new Promise((resolve, reject) => {
+    const canvas = document.createElement('canvas')
+    const ctx = canvas.getContext('2d')
+    const img = new Image()
+
+    img.onload = () => {
+      // Calculate new dimensions preserving aspect ratio
+      const { width, height } = img
+      let newWidth = width
+      let newHeight = height
+
+      if (width > maxWidth) {
+        newWidth = maxWidth
+        newHeight = (height * maxWidth) / width
+      }
+
+      // Set canvas dimensions
+      canvas.width = newWidth
+      canvas.height = newHeight
+
+      // Draw the resized image
+      ctx?.drawImage(img, 0, 0, newWidth, newHeight)
+
+      // Convert to WebP blob
+      canvas.toBlob(
+        (blob) => {
+          if (!blob) {
+            reject(new Error('Failed to create image blob'))
+            return
+          }
+
+          // Create a new File object with WebP type
+          const webpFile = new File(
+            [blob],
+            file.name.replace(/\.[^/.]+$/, '.webp'),
+            {
+              type: 'image/webp',
+            },
+          )
+
+          // Upload the WebP file
+          uploadFileWithSignedUrl(signedUrl, webpFile)
+            .then(resolve)
+            .catch(reject)
+        },
+        'image/webp',
+        0.85, // Quality setting (0.85 = 85% quality)
+      )
+    }
+
+    img.onerror = () => {
+      reject(new Error('Failed to load image for processing'))
+    }
+
+    // Load the image from the file
+    img.src = URL.createObjectURL(file)
+  })
+}
+
 export function canonicalUserProfilePictureUrl({
   userId,
 }: {

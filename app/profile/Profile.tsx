@@ -20,7 +20,7 @@ import {
   initialProfileFormData,
   profileFormSchema,
 } from '@/lib/schemas/profile'
-import { toExternalLink, uploadFileWithSignedUrl } from '@/lib/utils'
+import { downscaleAndUploadImage, toExternalLink } from '@/lib/utils'
 
 import { URLS } from '@/utils/urls'
 
@@ -110,7 +110,7 @@ export default function Profile() {
       const { signedUrl, storageUrl } =
         await getCurrentUserProfilePictureUploadUrl({ fileExtension })
       // Upload file directly to storage using signed URL
-      await uploadFileWithSignedUrl(signedUrl, file)
+      await downscaleAndUploadImage(signedUrl, file)
 
       // Update profile with new picture URL directly without triggering the profile update mutation
       await updateCurrentUserProfile({
