@@ -26,7 +26,7 @@ import { toast } from 'sonner'
 import { dateUtils } from '@/utils/dateUtils'
 import {
   SESSION_AGES,
-  countRsvpsByTeamColor,
+  // countRsvpsByTeamColor,
   dbGetHostsFromSession,
 } from '@/utils/dbUtils'
 
@@ -697,33 +697,46 @@ export const AttendanceDisplay = ({
   session: FullDbSession
   userLoggedIn: boolean
 }) => {
-  // For megagames, we need the team breakdown from client-side RSVP data
-  if (session.megagame) {
-    const teamCounts = countRsvpsByTeamColor(session.rsvps)
+  const standardRsvpDisplay = () => {
+    if (!userLoggedIn) {
+      return (
+        <div>
+          {session.min_capacity && session.max_capacity
+            ? `${session.min_capacity} - ${session.max_capacity}`
+            : null}
+        </div>
+      )
+    }
+
     return (
-      <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
-        <span className="font-bold text-purple-500">{teamCounts.purple}</span>
-        <span className="font-bold text-black">|</span>
-        <span className="font-bold text-orange-400">{teamCounts.orange}</span>
-      </div>
+      <span>
+        {session.max_capacity
+          ? `${session.rsvps.length} / ${session.max_capacity}`
+          : `${session.rsvps.length}`}
+      </span>
     )
   }
-
-  if (!userLoggedIn) {
-    return (
-      <div>
-        {session.min_capacity && session.max_capacity
-          ? `${session.min_capacity} - ${session.max_capacity}`
-          : null}
-      </div>
-    )
-  }
-
-  return (
-    <span>
-      {session.max_capacity
-        ? `${session.rsvps.length} / ${session.max_capacity}`
-        : `${session.rsvps.length}`}
-    </span>
-  )
+  // For megagames, we need the team breakdown from client-side RSVP data (once we implement teams)
+  // if (session.megagame) {
+  //   const teamCounts = countRsvpsByTeamColor(session.rsvps)
+  //   return (
+  //     <Tooltip>
+  //       <TooltipTrigger>
+  //         <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
+  //           <span className="font-bold text-purple-500">
+  //             {teamCounts.purple}
+  //           </span>
+  //           <span className="font-bold text-black">|</span>
+  //           <span className="font-bold text-orange-400">
+  //             {teamCounts.orange}
+  //           </span>
+  //         </div>
+  //       </TooltipTrigger>
+  //       <TooltipContent>{standardRsvpDisplay()}</TooltipContent>
+  //     </Tooltip>
+  //   )
+  // } else {
+  //   return standardRsvpDisplay()
+  // }
+  return standardRsvpDisplay()
 }
