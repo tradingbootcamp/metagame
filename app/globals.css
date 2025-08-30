@@ -34,7 +34,7 @@
     --color-dark-400
   ); /* Cards, modals, elevated surfaces */
   --color-bg-tertiary: var(
-    --color-dark-300
+    --color-slate-800
   ); /* Hover states, subtle highlights */
   --color-bg-surface: var(--color-dark-600); /* Alternative surface color */
 
