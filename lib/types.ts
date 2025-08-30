@@ -48,12 +48,17 @@ export interface AirtableRecord {
   Email: string
   'Discord Handle'?: string
   'Ticket Type': string
-  Price: number
-  'Stripe Payment ID': string
+  Price?: number
+  'Stripe Payment ID'?: string
   'Purchase Date': string
   Status: 'Success' | 'Failed'
   'Stripe Fee'?: number
   'Volunteer Roles'?: string[]
+  PriceBTC?: number
+  'OpenNode Charge ID'?: string
+  'Supabase Ticket ID'?: string
+  Test?: boolean
+  'Supabase OpenNode Order ID'?: string
 }
 
 /** Takes params that contain either an id or an email, but not both */

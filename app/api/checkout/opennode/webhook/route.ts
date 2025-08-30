@@ -1,10 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { OpenNodeChargeWebhook } from 'opennode/dist/types/v1'
 
+import { createTicketRecord } from '@/lib/airtable'
 import { opennodeDbService } from '@/lib/db/opennode'
 import { ticketsService } from '@/lib/db/tickets'
 import { sendAdminErrorEmail, sendTicketConfirmationEmail } from '@/lib/email'
 import { opennode } from '@/lib/opennode'
+import { AirtableRecord } from '@/lib/types'
 
 export async function POST(req: NextRequest) {
   const body: OpenNodeChargeWebhook = await req.json()
@@ -32,12 +34,36 @@ export async function POST(req: NextRequest) {
       is_test: dbCharge.is_test,
       satoshis_paid: body.amount,
     }
-    await ticketsService.createTicket({ ticket: newTicket })
+    const ticketDb = await ticketsService.createTicket({ ticket: newTicket })
 
     if (!dbCharge.purchaser_email) {
       console.error('no purchaser email on opennode charge', dbCharge)
       await sendAdminErrorEmail(
         'no purchaser email on opennode charge: \n' + JSON.stringify(dbCharge),
+      )
+      return NextResponse.json({ received: true })
+    }
+
+    const airtableRecord: AirtableRecord = {
+      Name: dbCharge.purchaser_name || '',
+      Email: dbCharge.purchaser_email,
+      'Ticket Type': dbCharge.ticket_type!,
+      'Purchase Date': dbCharge.created_at,
+      PriceBTC: body.amount / 100_000_000,
+      'OpenNode Charge ID': dbCharge.opennode_order_id,
+      'Supabase Ticket ID': ticketDb.id,
+      Test: dbCharge.is_test,
+      Status: 'Success',
+      'Supabase OpenNode Order ID': dbCharge.id,
+    }
+
+    try {
+      await createTicketRecord(airtableRecord)
+    } catch (error) {
+      console.error('Error creating Airtable record:', error)
+      await sendAdminErrorEmail(
+        'Error creating Airtable record for OpenNode order: \n' +
+          JSON.stringify(airtableRecord),
       )
       return NextResponse.json({ received: true })
     }

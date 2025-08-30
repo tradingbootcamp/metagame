@@ -30,36 +30,21 @@ export const createTicketRecord = async (recordData: AirtableRecord) => {
       'Ticket Type': recordData['Ticket Type'],
       Price: recordData.Price,
       'Stripe Payment ID': recordData['Stripe Payment ID'],
+      'Stripe Fee': recordData['Stripe Fee'] ?? '',
       'Purchase Date': recordData['Purchase Date'],
       Status: recordData.Status,
+      'Discord Handle': recordData['Discord Handle'] ?? '',
+      PriceBTC: recordData['PriceBTC'] ?? 0,
+      'OpenNode Charge ID': recordData['OpenNode Charge ID'] ?? '',
+      'Supabase OpenNode Order ID':
+        recordData['Supabase OpenNode Order ID'] ?? '',
+      'Supabase Ticket ID': recordData['Supabase Ticket ID'] ?? '',
+      'Volunteer Roles': recordData['Volunteer Roles'] ?? '',
+      Test: recordData['Test'] ?? false,
     }
-
-    // Only add Discord Handle if it's provided
-    if (recordData['Discord Handle']) {
-      fields['Discord Handle'] = recordData['Discord Handle']
-    }
-
-    // Only add Stripe Fee if it's provided
-    if (recordData['Stripe Fee'] !== undefined) {
-      fields['Stripe Fee'] = recordData['Stripe Fee']
-    }
-
-    // Only add Volunteer Roles if it's provided
-    if (
-      recordData['Volunteer Roles'] &&
-      recordData['Volunteer Roles'].length > 0
-    ) {
-      fields['Volunteer Roles'] = recordData['Volunteer Roles']
-      // console.log('Adding Volunteer Roles to fields:', fields['Volunteer Roles']);
-    } else {
-      // console.log('No Volunteer Roles to add');
-    }
-
-    // console.log('Final fields being sent to Airtable:', fields);
 
     const record = await table.create([{ fields }])
 
-    // console.log('Airtable record created successfully:', record[0].id);
     return {
       success: true,
       recordId: record[0].id,
