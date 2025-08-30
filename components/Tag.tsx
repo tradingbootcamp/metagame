@@ -26,32 +26,6 @@ export default function Tag({
   const [textPosition, setTextPosition] = useState({ x: 0, y: 0 })
   const tagRef = useRef<HTMLDivElement>(null)
   const frameRef = useRef<number>(null)
-  const styleIdRef = useRef<string>(
-    `tag-cursor-${Math.random().toString(36).substr(2, 9)}`,
-  )
-  const updateCursorRef = useRef<((e: MouseEvent) => void) | null>(null)
-
-  // Add a reset function
-  const resetCursor = () => {
-    // Remove the style tag by ID
-    const existingStyle = document.getElementById(styleIdRef.current)
-    if (existingStyle) {
-      existingStyle.remove()
-    }
-
-    // Remove the mousemove listener
-    if (updateCursorRef.current) {
-      window.removeEventListener('mousemove', updateCursorRef.current)
-      updateCursorRef.current = null
-    }
-
-    // Reset cursor
-    document.body.style.cursor = 'default'
-
-    setIsCaught(false)
-    setHasEntered(false)
-    setIsChasing(false)
-  }
   // Track mouse position
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
@@ -61,6 +35,62 @@ export default function Tag({
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
+
+  const handleCaught = () => {
+    setIsCaught(true)
+    setIsChasing(false)
+    const cursorStyle = `
+      * {
+        cursor: none !important;
+      }
+      body::after {
+        content: 'IT';
+        font-size: 30px;
+        font-weight: bold;
+        color: gold;
+        position: fixed;
+        left: 0;
+        top: 0;
+        pointer-events: none;
+        z-index: 9999;
+        transform: translate(calc(var(--x, 0) * 1px - 50%), calc(var(--y, 0) * 1px - 50%));
+      }
+    `
+    const styleSheet = document.createElement('style')
+    styleSheet.id = 'it-cursor'
+    styleSheet.textContent = cursorStyle
+    document.head.appendChild(styleSheet)
+
+    // Set initial position immediately using current mousePosition
+    document.body.style.setProperty('--x', mousePosition.x.toString())
+    document.body.style.setProperty('--y', mousePosition.y.toString())
+
+    // Add mousemove handler to update emoji position
+    const updateCursor = (e: MouseEvent) => {
+      document.body.style.setProperty('--x', e.clientX.toString())
+      document.body.style.setProperty('--y', e.clientY.toString())
+    }
+    window.addEventListener('mousemove', updateCursor)
+
+    const resetCursor = () => {
+      // Remove the style tag by ID
+      const existingStyle = document.getElementById('it-cursor')
+      if (existingStyle) {
+        existingStyle.remove()
+      }
+      window.removeEventListener('mousemove', updateCursor)
+
+      // Reset cursor
+      document.body.style.cursor = 'default'
+
+      setIsCaught(false)
+      setHasEntered(false)
+      setIsChasing(false)
+    }
+    setTimeout(() => {
+      resetCursor()
+    }, IT_DURATION)
+  }
 
   // Animation loop
   useEffect(() => {
@@ -74,48 +104,8 @@ export default function Tag({
 
         // Check if caught
         if (isChasing && distance < catchDistance) {
-          setIsCaught(true)
-          setIsChasing(false)
-          const cursorStyle = `
-            * {
-              cursor: none !important;
-            }
-            body::after {
-              content: 'IT';
-              font-size: 30px;
-              font-weight: bold;
-              color: gold;
-              position: fixed;
-              left: 0;
-              top: 0;
-              pointer-events: none;
-              z-index: 9999;
-              transform: translate(calc(var(--x, 0) * 1px - 50%), calc(var(--y, 0) * 1px - 50%));
-            }
-          `
-          const styleSheet = document.createElement('style')
-          styleSheet.id = styleIdRef.current
-          styleSheet.textContent = cursorStyle
-          document.head.appendChild(styleSheet)
-
-          // Set initial position immediately using current mousePosition
-          document.body.style.setProperty('--x', mousePosition.x.toString())
-          document.body.style.setProperty('--y', mousePosition.y.toString())
-
-          // Add mousemove handler to update emoji position
-          const updateCursor = (e: MouseEvent) => {
-            document.body.style.setProperty('--x', e.clientX.toString())
-            document.body.style.setProperty('--y', e.clientY.toString())
-          }
-          window.addEventListener('mousemove', updateCursor)
-
-          // Store the event listener reference for cleanup
-          updateCursorRef.current = updateCursor
-
-          setTimeout(() => {
-            resetCursor()
-          }, IT_DURATION)
-          return prevPosition
+          handleCaught()
+          return { x: prevPosition.x, y: prevPosition.y }
         }
 
         return {
@@ -164,13 +154,6 @@ export default function Tag({
     e.stopPropagation()
     debouncedSetIsChasing.cancel()
   }
-
-  // Add cleanup effect
-  useEffect(() => {
-    return () => {
-      resetCursor()
-    }
-  }, [])
 
   return (
     <span className="relative">
