@@ -24,6 +24,7 @@ import { ZodError } from 'zod'
 
 import { ValidatedCoupon, isTicketTypeEligibleForCoupons } from '@/lib/coupons'
 import { validateCouponResultSchema } from '@/lib/coupons'
+import { opennodeChargeSchema } from '@/lib/schemas/opennode'
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
 
@@ -356,15 +357,17 @@ const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
       const response = await fetch('/api/checkout/opennode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amountBtc,
-          ticketDetails: {
-            ticketType: ticketType.id,
-            isTest: process.env.NEXT_PUBLIC_OPENNODE_ENV === 'dev',
-            purchaserEmail: formData.email,
-            purchaserName: formData.name,
-          },
-        }),
+        body: JSON.stringify(
+          opennodeChargeSchema.parse({
+            amountBtc,
+            ticketDetails: {
+              ticketType: ticketType.id,
+              isTest: process.env.NEXT_PUBLIC_OPENNODE_ENV === 'dev',
+              purchaserEmail: formData.email,
+              purchaserName: formData.name,
+            },
+          }),
+        ),
       })
 
       if (!response.ok) {
