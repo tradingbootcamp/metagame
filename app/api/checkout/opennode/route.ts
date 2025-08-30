@@ -15,7 +15,7 @@ import { getHostedCheckoutUrl } from '@/utils/opennode'
 
 import { getCurrentUserAdminStatus } from '@/app/actions/db/users'
 
-import { ticketTypeDetails } from '@/config/tickets'
+import { btcSlidingScaleMinimum, ticketTypeDetails } from '@/config/tickets'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -34,7 +34,7 @@ export async function POST(req: NextRequest) {
   const ticketPriceBtc = ticketType?.priceBTC
 
   // If the provided bitcoin price doesn't match the ticket price, only admins can proceed otherwise throw error
-  if (!ticketPriceBtc || ticketPriceBtc !== amountBtc) {
+  if (!ticketPriceBtc || ticketPriceBtc < btcSlidingScaleMinimum) {
     const userIsAdmin = await getCurrentUserAdminStatus()
     if (!userIsAdmin) {
       return NextResponse.json(
