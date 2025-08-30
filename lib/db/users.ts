@@ -117,18 +117,19 @@ export const usersService = {
     )
     return signedUrl
   },
-
-  /** Delete a user's profile picture */
-  deleteUserProfilePicture: async ({ userId }: { userId: string }) => {
-    const bucket = 'public-assets'
-    const path = `profile_pictures/${userId}`
-    await storageService.deleteFile(bucket, path)
+  deleteProfilePicture: async ({ userId }: { userId: string }) => {
+    await storageService.deleteUserProfilePicture({ userId })
+    await usersService.updateUserProfile({
+      userId,
+      data: { profile_pictures_url: null },
+    })
+    return { success: true }
   },
 
   /** Fully delete a user from the system */
   fullDeleteUser: async ({ userId }: { userId: string }) => {
     const supabase = createServiceClient()
-    await usersService.deleteUserProfilePicture({ userId })
+    await storageService.deleteUserProfilePicture({ userId })
     const { data, error } = await supabase.auth.admin.deleteUser(userId)
     if (error) {
       throw new Error(error.message)

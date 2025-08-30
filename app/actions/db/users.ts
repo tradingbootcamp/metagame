@@ -26,16 +26,16 @@ export const adminGetUser = adminExportWrapper(usersService.getUser)
 export const updateCurrentUserProfile = currentUserWrapper(
   usersService.updateUserProfile,
 )
-export const deleteCurrentUserProfilePicture = async () => {
-  await currentUserWrapper(usersService.deleteUserProfilePicture)({})
-  await currentUserWrapper(usersService.updateUserProfile)({
-    data: {
-      profile_pictures_url: null,
-    },
-  })
-}
+export const deleteCurrentUserProfilePicture = async () =>
+  currentUserWrapper(usersService.deleteProfilePicture)({})
+export const adminDeleteUserProfilePicture = adminExportWrapper(
+  usersService.deleteProfilePicture,
+)
 export const fullDeleteCurrentUser = async () =>
   currentUserWrapper(usersService.fullDeleteUser)({})
+export const adminFullDeleteUser = adminExportWrapper(
+  usersService.fullDeleteUser,
+)
 // Admin mutation for updating any user's profile
 export const adminUpdateUserProfile = adminExportWrapper(
   usersService.updateUserProfile,
