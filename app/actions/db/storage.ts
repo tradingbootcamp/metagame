@@ -11,7 +11,7 @@ export const getCurrentUserProfilePictureUploadUrl = currentUserWrapper(
     fileExtension,
   }: {
     userId: string
-    fileExtension: string | null
+    fileExtension?: string
   }) => {
     const bucket = 'public-assets'
     const extension = fileExtension ? `.${fileExtension}` : ''

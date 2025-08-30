@@ -104,11 +104,9 @@ export default function Profile() {
         throw new Error('User not found')
       }
 
-      // Extract file extension from the uploaded file
-      const fileExtension = file.name.split('.').pop()?.toLowerCase() || null
-
       const { signedUrl, storageUrl } =
-        await getCurrentUserProfilePictureUploadUrl({ fileExtension })
+        await getCurrentUserProfilePictureUploadUrl({})
+
       // Upload file directly to storage using signed URL
       await downscaleAndUploadImage(signedUrl, file)
 
