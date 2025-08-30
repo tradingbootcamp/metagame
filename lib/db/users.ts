@@ -120,7 +120,7 @@ export const usersService = {
 
   /** Delete a user's profile picture */
   deleteUserProfilePicture: async ({ userId }: { userId: string }) => {
-    const bucket = 'public_assets'
+    const bucket = 'public-assets'
     const path = `profile_pictures/${userId}`
     await storageService.deleteFile(bucket, path)
   },
