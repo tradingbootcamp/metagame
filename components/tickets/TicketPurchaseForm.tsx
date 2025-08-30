@@ -439,45 +439,49 @@ const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
       />
 
       {/* Only show price breakdown when coupon is applied (fiat only) */}
-      {!isBtc && appliedCoupon && (
+      {!isBtc && (
         <div className="flex flex-col rounded-lg bg-gray-800 p-4">
-          {/* Original Price */}
-          <div className="flex items-center justify-between">
-            <span className="text-gray-300">Ticket Price:</span>
-            <span className="text-gray-300">
-              ${ticketType.priceUSD.toFixed(2)}
-            </span>
-          </div>
+          {appliedCoupon && (
+            <>
+              {/* Original Price */}
+              <div className="flex items-center justify-between">
+                <span className="text-gray-300">Ticket Price:</span>
+                <span className="text-gray-300">
+                  ${ticketType.priceUSD.toFixed(2)}
+                </span>
+              </div>
 
-          {/* Separator */}
-          <div className="my-1 border-t border-gray-700" />
+              {/* Separator */}
+              <div className="my-1 border-t border-gray-700" />
 
-          {/* Applied Coupon */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-green-300">
-                Coupon: {appliedCoupon.code}
-              </span>
-              <button
-                type="button"
-                onClick={handleRemoveCoupon}
-                className="text-red-400 transition-colors"
-                title="Remove coupon"
-              >
-                <XIcon className="size-4" />
-              </button>
-            </div>
-            <span className="text-green-300">
-              -$
-              {Math.min(
-                appliedCoupon.discountAmountCents / 100,
-                ticketType.priceUSD,
-              ).toFixed(2)}
-            </span>
-          </div>
+              {/* Applied Coupon */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-300">
+                    Coupon: {appliedCoupon.code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-red-400 transition-colors"
+                    title="Remove coupon"
+                  >
+                    <XIcon className="size-4" />
+                  </button>
+                </div>
+                <span className="text-green-300">
+                  -$
+                  {Math.min(
+                    appliedCoupon.discountAmountCents / 100,
+                    ticketType.priceUSD,
+                  ).toFixed(2)}
+                </span>
+              </div>
 
-          {/* Separator */}
-          <div className="my-1 border-t border-gray-700" />
+              {/* Separator */}
+              <div className="my-1 border-t border-gray-700" />
+            </>
+          )}
 
           {/* Total Price */}
           <div className="flex items-center justify-between">
@@ -488,7 +492,6 @@ const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
           </div>
         </div>
       )}
-
       {!isBtc && (
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-300">
