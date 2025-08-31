@@ -702,7 +702,9 @@ export const AttendanceDisplay = ({
       return (
         <div>
           {session.min_capacity && session.max_capacity
-            ? `${session.min_capacity} - ${session.max_capacity}`
+            ? session.min_capacity === session.max_capacity
+              ? `${session.min_capacity}`
+              : `${session.min_capacity} - ${session.max_capacity}`
             : null}
         </div>
       )
