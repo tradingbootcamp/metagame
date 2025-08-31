@@ -44,14 +44,13 @@ function SignupForm() {
   const [errors, setErrors] = useState<SignupErrors>({})
   const [isLoading, setIsLoading] = useState(false)
   const [showResetPasswordLink, setShowResetPasswordLink] = useState(false)
-
+  const prefillEmail = searchParams.get('email')
   // Pre-fill form with URL parameters
   useEffect(() => {
-    const email = searchParams.get('email')
     const ticketCode = searchParams.get('ticketCode')
 
-    if (email) {
-      setFormData((prev) => ({ ...prev, email }))
+    if (prefillEmail) {
+      setFormData((prev) => ({ ...prev, email: prefillEmail }))
     }
     if (ticketCode) {
       setFormData((prev) => ({
@@ -138,13 +137,31 @@ function SignupForm() {
         </h1>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div className="flex flex-col">
-            <label
-              htmlFor="email"
-              className="mb-1 flex items-center gap-1 font-medium"
-            >
-              <MailIcon className="size-4" /> Email:{' '}
-              <span className="text-red-500">*</span>
-            </label>
+            <div className="flex w-full justify-between">
+              <label
+                htmlFor="email"
+                className="mb-1 flex items-center gap-1 font-medium"
+              >
+                <MailIcon className="size-4" /> Email:{' '}
+                <span className="text-red-500">*</span>
+              </label>
+              <Tooltip clickable>
+                <TooltipTrigger>
+                  <InfoIcon className="size-4" />
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>
+                    This will be the email address the ticket is associated to
+                    for account and event access purposes. It can be different
+                    from the email address used to purchase the ticket{' '}
+                    {!!prefillEmail
+                      ? `(which was prefilled from the link in your purchase confirmation email)`
+                      : ''}
+                    .
+                  </p>
+                </TooltipContent>
+              </Tooltip>
+            </div>
             <input
               id="email"
               name="email"
@@ -177,7 +194,7 @@ function SignupForm() {
                 <TooltipContent>
                   <p>
                     Enter the code that was sent with your ticket purchase
-                    confirmation email. If you didn&apos;t get one but believe
+                    confirmation email. If you didn&apos;t get one, but believe
                     you should be able to make an account,{' '}
                     <a
                       href="mailto:team@metagame.games"
@@ -185,7 +202,7 @@ function SignupForm() {
                     >
                       contact us
                     </a>{' '}
-                    so we can or issue you an account.
+                    for assisstance.
                   </p>
                 </TooltipContent>
               </Tooltip>
