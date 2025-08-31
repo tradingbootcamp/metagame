@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import ScheduleKey from './ScheduleKey'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import { fetchLocations, fetchSessions } from './queries'
@@ -341,15 +342,21 @@ export default function Schedule({
           )}
         </button>
 
-        <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
-          <span className="hidden sm:block">{currentDay.displayName}</span>
-          <div className="flex flex-col items-center justify-center sm:hidden">
-            <span className="">{currentDay.shortName}</span>
-            <span className="text-xs">
-              {dateUtils.getYYYYMMDD(currentDay.date)}
-            </span>
-          </div>
-        </h2>
+        <div className="flex flex-col items-center justify-center gap-1">
+          <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
+            <span className="hidden sm:block">{currentDay.displayName}</span>
+            <div className="flex flex-col items-center justify-center sm:hidden">
+              <span className="">{currentDay.shortName}</span>
+              <span className="text-xs">
+                {dateUtils.getYYYYMMDD(currentDay.date)}
+              </span>
+            </div>
+          </h2>
+          <ScheduleKey
+            categoryColorMapping={sessionCategoryRSVPdColors}
+            className="grid grid-cols-2 sm:flex"
+          />
+        </div>
 
         <button
           onClick={nextDay}
