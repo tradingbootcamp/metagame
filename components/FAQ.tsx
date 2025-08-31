@@ -91,6 +91,26 @@ const faqs: FAQ[] = [
     ),
   },
   {
+    id: 'lodging',
+    question: 'Where can I stay?',
+    contentHtml: (
+      <p>
+        Rooms at and near the venue can be booked via{' '}
+        <a
+          href="https://www.havenbookings.space/events/metagame"
+          target="_blank"
+        >
+          Haven Bookings
+        </a>
+        . You can also coordinate with others in the{' '}
+        <a href="https://discord.gg/GsT3yRrxR9" target="_blank">
+          #housing
+        </a>{' '}
+        Discord channel.
+      </p>
+    ),
+  },
+  {
     id: 'children',
     question: 'Are children welcome at Metagame?',
     contentHtml: (
