@@ -535,3 +535,13 @@ html::before {
   /* Dark mode uses the same semantic color system - no need to override */
   /* The semantic colors are already designed for dark theme */
 }
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
