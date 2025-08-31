@@ -3,14 +3,21 @@
 import { useEffect, useState } from 'react'
 
 import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query'
+import {
+  DehydratedState,
+  HydrationBoundary,
+  QueryClient,
+  QueryClientProvider,
+} from '@tanstack/react-query'
 import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client'
 
 export default function QueryProvider({
   children,
+  state,
 }: {
   children: React.ReactNode
+  state: DehydratedState
 }) {
   const [queryClient] = useState(
     () =>
@@ -39,7 +46,7 @@ export default function QueryProvider({
   if (!persister) {
     return (
       <QueryClientProvider client={queryClient}>
-        {children}
+        <HydrationBoundary state={state}>{children}</HydrationBoundary>
         {process.env.NODE_ENV === 'development' && (
           <ReactQueryDevtools initialIsOpen={false} />
         )}
@@ -51,7 +58,7 @@ export default function QueryProvider({
       client={queryClient}
       persistOptions={{ persister: persister }}
     >
-      {children}
+      <HydrationBoundary state={state}>{children}</HydrationBoundary>
       {process.env.NODE_ENV === 'development' && (
         <ReactQueryDevtools initialIsOpen={false} />
       )}

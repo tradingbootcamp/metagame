@@ -3,6 +3,8 @@ import type { Metadata, Viewport } from 'next'
 import { Jura } from 'next/font/google'
 import { Toaster } from 'sonner'
 
+import { prefetchState } from '@/lib/prefetch'
+
 import Footer from '@/components/Footer'
 import { KbarApp } from '@/components/Kbar/App'
 import Nav from '@/components/Nav'
@@ -67,11 +69,13 @@ export const viewport: Viewport = {
   initialScale: 1,
 }
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{
   children: React.ReactNode
 }>) {
+  const prefetchedState = await prefetchState()
+
   return (
     <html
       lang="en"
@@ -81,7 +85,7 @@ export default function RootLayout({
       <body
         className={`${jura.variable} relative flex min-h-screen flex-col overflow-x-hidden font-sans antialiased`}
       >
-        <QueryProvider>
+        <QueryProvider state={prefetchedState}>
           <KbarApp>
             <Nav />
             <div className="relative flex-grow overflow-x-hidden pt-[72px]">
