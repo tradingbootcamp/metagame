@@ -3,10 +3,10 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
-import ScheduleKey from './ScheduleKey'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import { fetchLocations, fetchSessions } from './queries'
+import { scheduleColors } from './scheduleColors'
 import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeftIcon,
@@ -42,10 +42,7 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import {
-  DbSessionCategory,
-  FullDbSession,
-} from '@/types/database/dbTypeAliases'
+import { FullDbSession } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -70,20 +67,6 @@ const generateTimeSlots = (dayIndex: number) => {
     }
   }
   return slots
-}
-
-const sessionCategoryColors: Record<DbSessionCategory, string> = {
-  [SESSION_CATEGORIES.TALK]: 'bg-blue-100 border-blue-200',
-  [SESSION_CATEGORIES.WORKSHOP]: 'bg-rose-100 border-rose-200',
-  [SESSION_CATEGORIES.GAME]: 'bg-emerald-100 border-emerald-200',
-  [SESSION_CATEGORIES.OTHER]: 'bg-slate-100 border-slate-200',
-}
-
-const sessionCategoryRSVPdColors: Record<DbSessionCategory, string> = {
-  [SESSION_CATEGORIES.TALK]: 'bg-blue-200 border-blue-300',
-  [SESSION_CATEGORIES.WORKSHOP]: 'bg-rose-200 border-rose-300',
-  [SESSION_CATEGORIES.GAME]: 'bg-emerald-200 border-emerald-300',
-  [SESSION_CATEGORIES.OTHER]: 'bg-slate-200 border-slate-300',
 }
 
 // Updated slot checking - PST based
@@ -290,39 +273,29 @@ export default function Schedule({
 
   // Helper function to get event color based on session properties
   const getEventColor = (session: FullDbSession) => {
-    const userIsRsvpd = isUserRsvpd(session.id!)
-
+    const userIsRsvpd = isUserRsvpd(session.id!) ? 'rsvpd' : 'notRsvpd'
     // Switch based on session properties for specific styling
     switch (true) {
       // Megagames get special striped pattern
       case session.megagame:
-        return userIsRsvpd
-          ? 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#a855f7_10px,#a855f7_20px)]'
-          : 'bg-[repeating-linear-gradient(45deg,#fed7aa,#fed7aa_10px,#d8b4fe_10px,#d8b4fe_20px)]'
+        return scheduleColors[userIsRsvpd].megagame
 
       // Kids sessions get yellow background
       case session.ages === SESSION_AGES.KIDS:
-        return userIsRsvpd
-          ? 'bg-yellow-200 border-yellow-300'
-          : 'bg-yellow-100 border-yellow-200'
+        return scheduleColors[userIsRsvpd].kids
 
       // Categories have colors
       case !!session.category:
-        return userIsRsvpd
-          ? sessionCategoryRSVPdColors[session.category]
-          : sessionCategoryColors[session.category]
+        return scheduleColors[userIsRsvpd].category[session.category]
 
       // Default: location-based coloring
       default:
-        return userIsRsvpd
-          ? sessionCategoryRSVPdColors[SESSION_CATEGORIES.OTHER]
-          : sessionCategoryColors[SESSION_CATEGORIES.OTHER]
+        return scheduleColors[userIsRsvpd].category[SESSION_CATEGORIES.OTHER]
     }
   }
 
   return (
     <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
-      {/* Day Navigator - Fixed on desktop, scrollable on mobile */}
       <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-secondary-300 bg-dark-600 p-4">
         <button
           onClick={prevDay}
@@ -342,21 +315,15 @@ export default function Schedule({
           )}
         </button>
 
-        <div className="flex flex-col items-center justify-center gap-1">
-          <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
-            <span className="hidden sm:block">{currentDay.displayName}</span>
-            <div className="flex flex-col items-center justify-center sm:hidden">
-              <span className="">{currentDay.shortName}</span>
-              <span className="text-xs">
-                {dateUtils.getYYYYMMDD(currentDay.date)}
-              </span>
-            </div>
-          </h2>
-          <ScheduleKey
-            categoryColorMapping={sessionCategoryRSVPdColors}
-            className="grid grid-cols-2 sm:flex"
-          />
-        </div>
+        <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
+          <span className="hidden sm:block">{currentDay.displayName}</span>
+          <div className="flex flex-col items-center justify-center sm:hidden">
+            <span className="">{currentDay.shortName}</span>
+            <span className="text-xs">
+              {dateUtils.getYYYYMMDD(currentDay.date)}
+            </span>
+          </div>
+        </h2>
 
         <button
           onClick={nextDay}
@@ -378,7 +345,7 @@ export default function Schedule({
       </div>
 
       {/* Scrollable Schedule Content */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden">
+      <div className="no-scrollbar flex-1 overflow-x-auto overflow-y-hidden">
         <div className="h-fit min-w-fit">
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
