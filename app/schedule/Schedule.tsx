@@ -220,6 +220,7 @@ export default function Schedule({
     return CONFERENCE_DAYS.map((confDay, index) => ({
       date: confDay.date,
       displayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date)})`,
+      shortName: confDay.name,
       events: dayEvents[index].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || ''),
       ),
@@ -331,19 +332,15 @@ export default function Schedule({
       <div className="hidden flex-shrink-0 items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:flex">
         <button
           onClick={prevDay}
-          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex min-w-[130px] cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === 0}
         >
           <ArrowLeftIcon className="h-5 w-5 text-secondary-300" />
-          {
-            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
-              {currentDayIndex === 1
-                ? 'Friday'
-                : currentDayIndex === 2
-                  ? 'Saturday'
-                  : ''}
+          {currentDayIndex > 0 && (
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
+              {days[currentDayIndex - 1].shortName}
             </span>
-          }
+          )}
         </button>
 
         <h2 className="text-center text-xl font-bold text-secondary-200">
@@ -352,18 +349,14 @@ export default function Schedule({
 
         <button
           onClick={nextDay}
-          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === days.length - 1}
         >
-          {
-            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
-              {currentDayIndex === 0
-                ? 'Saturday'
-                : currentDayIndex === 1
-                  ? 'Sunday'
-                  : ''}
+          {currentDayIndex < days.length - 1 && (
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
+              {days[currentDayIndex + 1].shortName}
             </span>
-          }
+          )}
           <ArrowRightIcon className="h-5 w-5 text-secondary-300" />
         </button>
       </div>
