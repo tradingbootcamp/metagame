@@ -22,124 +22,109 @@ export default function Tag({
   const [isChasing, setIsChasing] = useState(false)
   const [isCaught, setIsCaught] = useState(false)
   const [hasEntered, setHasEntered] = useState(false)
-  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
   const [textPosition, setTextPosition] = useState({ x: 0, y: 0 })
+
   const tagRef = useRef<HTMLDivElement>(null)
-  const frameRef = useRef<number>(null)
-  // Track mouse position
+  const frameRef = useRef<number | null>(null)
+  const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const overlayRef = useRef<HTMLDivElement | null>(null)
+  const overlayMoveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null)
+  const isCaughtRef = useRef(isCaught)
+
+  useEffect(() => {
+    isCaughtRef.current = isCaught
+  }, [isCaught])
+
+  // Track mouse position without causing re-renders
   useEffect(() => {
     const handleMouseMove = (e: MouseEvent) => {
-      setMousePosition({ x: e.clientX, y: e.clientY })
+      mouseRef.current.x = e.clientX
+      mouseRef.current.y = e.clientY
     }
-
     window.addEventListener('mousemove', handleMouseMove)
     return () => window.removeEventListener('mousemove', handleMouseMove)
   }, [])
 
+  const resetCursor = () => {
+    if (overlayMoveHandlerRef.current) {
+      window.removeEventListener('mousemove', overlayMoveHandlerRef.current)
+      overlayMoveHandlerRef.current = null
+    }
+    document.body.style.cursor = 'default'
+    setIsCaught(false)
+    setHasEntered(false)
+    setIsChasing(false)
+  }
+
   const handleCaught = () => {
+    if (isCaughtRef.current) return
     setIsCaught(true)
     setIsChasing(false)
-    const cursorStyle = `
-      * {
-        cursor: none !important;
-      }
-      body::after {
-        content: 'IT';
-        font-size: 30px;
-        font-weight: bold;
-        color: gold;
-        position: fixed;
-        left: 0;
-        top: 0;
-        pointer-events: none;
-        z-index: 9999;
-        transform: translate(calc(var(--x, 0) * 1px - 50%), calc(var(--y, 0) * 1px - 50%));
-      }
-    `
-    const styleSheet = document.createElement('style')
-    styleSheet.id = 'it-cursor'
-    styleSheet.textContent = cursorStyle
-    document.head.appendChild(styleSheet)
 
-    // Set initial position immediately using current mousePosition
-    document.body.style.setProperty('--x', mousePosition.x.toString())
-    document.body.style.setProperty('--y', mousePosition.y.toString())
+    // Hide the system cursor
+    document.body.style.cursor = 'none'
 
-    // Add mousemove handler to update emoji position
-    const updateCursor = (e: MouseEvent) => {
-      document.body.style.setProperty('--x', e.clientX.toString())
-      document.body.style.setProperty('--y', e.clientY.toString())
+    // Position the overlay initially
+    const { x, y } = mouseRef.current
+    const overlay = overlayRef.current
+    if (overlay) {
+      overlay.style.left = `${x}px`
+      overlay.style.top = `${y}px`
     }
-    window.addEventListener('mousemove', updateCursor)
 
-    const resetCursor = () => {
-      // Remove the style tag by ID
-      const existingStyle = document.getElementById('it-cursor')
-      if (existingStyle) {
-        existingStyle.remove()
-      }
-      window.removeEventListener('mousemove', updateCursor)
-
-      // Reset cursor
-      document.body.style.cursor = 'default'
-
-      setIsCaught(false)
-      setHasEntered(false)
-      setIsChasing(false)
+    // Follow cursor without re-renders
+    const updateOverlayPosition = (e: MouseEvent) => {
+      if (!overlayRef.current) return
+      overlayRef.current.style.left = `${e.clientX}px`
+      overlayRef.current.style.top = `${e.clientY}px`
     }
+    window.addEventListener('mousemove', updateOverlayPosition)
+    overlayMoveHandlerRef.current = updateOverlayPosition
+
     setTimeout(() => {
       resetCursor()
     }, IT_DURATION)
   }
 
-  // Animation loop
   useEffect(() => {
     if (!isChasing || !tagRef.current) return
 
     const animate = () => {
-      setTextPosition((prevPosition) => {
-        const dx = mousePosition.x - prevPosition.x
-        const dy = mousePosition.y - prevPosition.y
-        const distance = Math.sqrt(dx * dx + dy * dy)
+      const { x: mx, y: my } = mouseRef.current
+      setTextPosition((prev) => {
+        const dx = mx - prev.x
+        const dy = my - prev.y
+        const distance = Math.hypot(dx, dy)
 
-        // Check if caught
-        if (isChasing && distance < catchDistance) {
+        if (distance < catchDistance) {
           handleCaught()
-          return { x: prevPosition.x, y: prevPosition.y }
+          return prev
         }
-
-        return {
-          x: prevPosition.x + dx * speed * 3,
-          y: prevPosition.y + dy * speed * 3,
-        }
+        return { x: prev.x + dx * speed * 3, y: prev.y + dy * speed * 3 }
       })
-      if (isCaught) return
-      frameRef.current = requestAnimationFrame(animate)
+
+      if (!isCaughtRef.current) {
+        frameRef.current = requestAnimationFrame(animate)
+      }
     }
 
     frameRef.current = requestAnimationFrame(animate)
-
     return () => {
-      if (frameRef.current) {
-        cancelAnimationFrame(frameRef.current)
-      }
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
     }
-  }, [isChasing, mousePosition, speed, catchDistance, isCaught])
+  }, [isChasing, speed, catchDistance])
 
   const debouncedSetIsChasing = useDebounce(() => setIsChasing(true), 1000, {
     leading: false,
   })
 
-  // Track whether we've touched the inner span where the text is
   const handleTextMouseover = (e: React.MouseEvent) => {
     e.stopPropagation()
     setHasEntered(true)
   }
 
-  // Start chasing after leaving outer boundary area
   const handlePaddedMouseLeave = (e: React.MouseEvent) => {
     e.stopPropagation()
-    //if the mouse hasnt entered the trigger area, dont chase
     if (!hasEntered || isCaught) return
     if (!isChasing) {
       const rect = tagRef.current?.getBoundingClientRect()
@@ -154,6 +139,14 @@ export default function Tag({
     e.stopPropagation()
     debouncedSetIsChasing.cancel()
   }
+
+  // Cleanup on unmount
+  useEffect(() => {
+    return () => {
+      resetCursor()
+      if (frameRef.current) cancelAnimationFrame(frameRef.current)
+    }
+  }, [])
 
   return (
     <span className="relative">
@@ -185,6 +178,24 @@ export default function Tag({
       >
         {text}
       </span>
+      {isCaught && (
+        <div
+          ref={overlayRef}
+          style={{
+            position: 'fixed',
+            left: 0,
+            top: 0,
+            transform: 'translate(-50%, -50%)',
+            pointerEvents: 'none',
+            zIndex: 9999,
+            fontSize: 30,
+            fontWeight: 'bold',
+            color: 'gold',
+          }}
+        >
+          IT
+        </div>
+      )}
     </span>
   )
 }
