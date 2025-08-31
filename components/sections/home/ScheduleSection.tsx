@@ -1,7 +1,3 @@
-import { URLS } from '@/utils/urls'
-
-import { Button } from '@/components/Button'
-
 import ScheduleKey from '@/app/schedule/ScheduleKey'
 import ScheduleProvider from '@/app/schedule/ScheduleProvider'
 
@@ -17,15 +13,6 @@ export default function ScheduleSection() {
         <ScheduleProvider />
       </div>
       <ScheduleKey />
-      <div className="my-8 flex justify-center">
-        <Button
-          background="bg-cyan-500"
-          link={URLS.CALL_FOR_SESSIONS}
-          target="_blank"
-        >
-          Submit a session proposal
-        </Button>
-      </div>
     </section>
   )
 }
