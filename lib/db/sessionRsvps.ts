@@ -8,7 +8,10 @@ const sessionRsvpsSelectIncludes = `
         *,
         user:profiles!session_rsvps_user_id_fkey (
           id,
-          team
+          team,
+          first_name,
+          last_name,
+          email
         )
       `
 export const sessionRsvpsService = {

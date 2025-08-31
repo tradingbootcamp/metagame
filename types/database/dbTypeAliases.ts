@@ -15,7 +15,7 @@ export type FullDbSession = Tables<'sessions'> & {
   host_3: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
   bookmarks: Pick<DbSessionBookmark, 'user_id'>[]
   rsvps: (Pick<DbSessionRsvp, 'on_waitlist'> & {
-    user: Pick<DbProfile, 'id' | 'team'>
+    user: Pick<DbProfile, 'id' | 'team' | 'first_name' | 'last_name' | 'email'>
   })[]
   location: Pick<DbLocation, 'name'> | null
 }
@@ -39,7 +39,7 @@ export type DbTeamColor = Enums<'TEAM_COLORS'>
 
 export type DbSessionRsvp = Tables<'session_rsvps'>
 export type DbFullSessionRsvp = DbSessionRsvp & {
-  user: Pick<DbProfile, 'id' | 'team'>
+  user: Pick<DbProfile, 'id' | 'team' | 'first_name' | 'last_name' | 'email'>
 }
 export type DbSessionRsvpInsert = TablesInsert<'session_rsvps'>
 export type DbSessionRsvpUpdate = TablesUpdate<'session_rsvps'>

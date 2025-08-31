@@ -31,7 +31,10 @@ rsvps:session_rsvps!session_rsvps_session_id_fkey (
   on_waitlist,
   user:profiles!session_rsvps_user_id_fkey (
     id,
-    team
+    team,
+    first_name,
+    last_name,
+    email
   )
 ),
 location:locations!sessions_location_id_fkey (

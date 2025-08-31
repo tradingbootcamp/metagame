@@ -139,6 +139,9 @@ export function useScheduleStuff() {
         user: {
           id: currentUserProfile?.id || '',
           team: currentUserProfile?.team || 'unassigned',
+          first_name: currentUserProfile?.first_name || '',
+          last_name: currentUserProfile?.last_name || '',
+          email: currentUserProfile?.email || '',
         },
       }
 
