@@ -11,8 +11,6 @@ import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckIcon,
-  ChevronLeft,
-  ChevronRight,
   PlusIcon,
   StarIcon,
   User2Icon,
@@ -220,6 +218,7 @@ export default function Schedule({
     return CONFERENCE_DAYS.map((confDay, index) => ({
       date: confDay.date,
       displayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date)})`,
+      shortDateDisplayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date).slice(5)})`,
       shortName: confDay.name,
       events: dayEvents[index].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || ''),
@@ -329,32 +328,48 @@ export default function Schedule({
   return (
     <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
       {/* Day Navigator - Fixed on desktop, scrollable on mobile */}
-      <div className="hidden flex-shrink-0 items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:flex">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-secondary-300 bg-dark-600 p-4">
         <button
           onClick={prevDay}
-          className="group flex min-w-[130px] cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex cursor-pointer items-center gap-2 justify-self-start rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === 0}
         >
           <ArrowLeftIcon className="h-5 w-5 text-secondary-300" />
           {currentDayIndex > 0 && (
             <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
-              {days[currentDayIndex - 1].shortName}
+              <span className="hidden sm:block">
+                {days[currentDayIndex - 1].shortName}
+              </span>
+              <span className="block sm:hidden">
+                {days[currentDayIndex - 1].shortName.slice(0, 3)}
+              </span>
             </span>
           )}
         </button>
 
-        <h2 className="text-center text-xl font-bold text-secondary-200">
-          {currentDay.displayName}
+        <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
+          <span className="hidden sm:block">{currentDay.displayName}</span>
+          <div className="flex flex-col items-center justify-center sm:hidden">
+            <span className="">{currentDay.shortName}</span>
+            <span className="text-xs">
+              {dateUtils.getYYYYMMDD(currentDay.date)}
+            </span>
+          </div>
         </h2>
 
         <button
           onClick={nextDay}
-          className="group flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex cursor-pointer items-center gap-2 justify-self-end rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === days.length - 1}
         >
           {currentDayIndex < days.length - 1 && (
             <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
-              {days[currentDayIndex + 1].shortName}
+              <span className="hidden sm:block">
+                {days[currentDayIndex + 1].shortName}
+              </span>
+              <span className="block sm:hidden">
+                {days[currentDayIndex + 1].shortName.slice(0, 3)}
+              </span>
             </span>
           )}
           <ArrowRightIcon className="h-5 w-5 text-secondary-300" />
@@ -363,29 +378,6 @@ export default function Schedule({
 
       {/* Scrollable Schedule Content */}
       <div className="flex-1 overflow-x-auto overflow-y-hidden">
-        {/* Day Navigator - Mobile only, inside scrollable area, sticky left */}
-        <div className="sticky left-0 z-30 flex items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:hidden">
-          <button
-            onClick={prevDay}
-            className="rounded-md p-2 transition-colors disabled:opacity-50"
-            disabled={currentDayIndex === 0}
-          >
-            <ChevronLeft className="h-5 w-5 text-secondary-300" />
-          </button>
-
-          <h2 className="text-center text-xl font-bold text-secondary-200">
-            {currentDay.displayName}
-          </h2>
-
-          <button
-            onClick={nextDay}
-            className="rounded-md p-2 transition-colors disabled:opacity-50"
-            disabled={currentDayIndex === days.length - 1}
-          >
-            <ChevronRight className="h-5 w-5 text-secondary-300" />
-          </button>
-        </div>
-
         <div className="h-fit min-w-fit">
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
