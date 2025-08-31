@@ -2,14 +2,14 @@ import { URLS } from '../utils/urls'
 import { Button } from './Button'
 
 interface FAQ {
-  id: number
+  id: string
   question: string
   contentHtml: React.ReactNode
 }
 
 const faqs: FAQ[] = [
   {
-    id: 1,
+    id: 'organizers',
     question: 'Who is organizing this event?',
     contentHtml: (
       <p>
@@ -19,7 +19,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 2,
+    id: 'location',
     question: 'Where will it be?',
     contentHtml: (
       <>
@@ -34,7 +34,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 3,
+    id: 'schedule',
     question: 'What time does Metagame start and end?',
     contentHtml: (
       <p>
@@ -45,7 +45,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 4,
+    id: 'discounts',
     question: 'Do you offer any discounts?',
     contentHtml: (
       <>
@@ -91,7 +91,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 5,
+    id: 'children',
     question: 'Are children welcome at Metagame?',
     contentHtml: (
       <>
@@ -145,7 +145,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 6,
+    id: 'refunds',
     question: 'What is the refund policy?',
     contentHtml: (
       <p>
@@ -158,7 +158,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 7,
+    id: 'contact',
     question: 'I have another question',
     contentHtml: (
       <p>
