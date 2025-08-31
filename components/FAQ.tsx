@@ -1,4 +1,4 @@
-import { URLS } from '../utils/urls'
+import { SOCIAL_LINKS, URLS } from '../utils/urls'
 import { Button } from './Button'
 
 interface FAQ {
@@ -179,14 +179,15 @@ const faqs: FAQ[] = [
   },
   {
     id: 'contact',
-    question: 'I have another question',
+    question: 'I have another question!',
     contentHtml: (
       <p>
-        Let us know{' '}
-        <a href={URLS.INTEREST_FORM} target="_blank">
-          here
+        Ask it in the{' '}
+        <a href={SOCIAL_LINKS.DISCORD} target="_blank">
+          Discord
         </a>
-        !
+        ! Or email us at{' '}
+        <a href="mailto:team@metagame.games">team@metagame.games</a>.
       </p>
     ),
   },
