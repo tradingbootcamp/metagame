@@ -19,6 +19,7 @@ export const useUser = () => {
     queryKey: ['users', 'profile', 'current-user'],
     queryFn: () => getCurrentUserProfile(),
     enabled: !!currentUser?.id,
+    placeholderData: (previousData) => previousData,
     staleTime: 1000 * 60 * 5,
     gcTime: 1000 * 60 * 10,
   })
