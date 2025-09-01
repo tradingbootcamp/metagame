@@ -544,4 +544,7 @@ html::before {
     -ms-overflow-style: none;
     scrollbar-width: none;
   }
+  .link {
+    @apply cursor-pointer text-secondary-300 underline;
+  }
 }
