@@ -6,9 +6,7 @@ import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './RSVPList'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
-import { fetchLocations, fetchSessions } from './queries'
 import { scheduleColors } from './scheduleColors'
-import { useQuery } from '@tanstack/react-query'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -122,24 +120,16 @@ export default function Schedule({
     isSessionBookmarked,
     toggleBookmark,
     bookmarks,
+    locations,
+    sessions,
   } = useScheduleStuff()
 
-  const { data: sessions = [] } = useQuery({
-    queryKey: ['sessions'],
-    queryFn: fetchSessions,
-  })
-
-  const { data: allLocations = [] } = useQuery({
-    queryKey: ['locations'],
-    queryFn: fetchLocations,
-  })
-
   // Filter and sort locations for schedule display
-  const locations = useMemo(() => {
-    return allLocations
+  const scheduleLocations = useMemo(() => {
+    return locations
       .filter((location) => location.display_in_schedule) // Only show locations that should be displayed in schedule
       .sort((a, b) => a.schedule_display_order - b.schedule_display_order) // Sort by display order
-  }, [allLocations])
+  }, [locations])
 
   const [filterForUserEvents, setFilterForUserEvents] = useState(false)
 
@@ -351,13 +341,13 @@ export default function Schedule({
           <div
             className="grid bg-dark-400 lg:top-0 lg:z-30"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             <div className="sticky left-0 z-30 border border-secondary-300 bg-dark-600 p-3">
               {/* Empty space above time column */}
             </div>
-            {locations.map((location) => (
+            {scheduleLocations.map((location) => (
               <div
                 key={location.id}
                 className="border border-secondary-300 bg-dark-600 p-3"
@@ -395,7 +385,7 @@ export default function Schedule({
           <div
             className="sticky top-0 z-20 grid bg-dark-400"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             <div className="sticky top-0 left-0 z-30 border border-b-2 border-secondary-300 bg-dark-600 p-3">
@@ -418,7 +408,7 @@ export default function Schedule({
                 )}
               </div>
             </div>
-            {locations.map((venue) => (
+            {scheduleLocations.map((venue) => (
               <div
                 key={venue.id}
                 className="border border-b-2 border-secondary-300 bg-dark-600 p-3"
@@ -447,7 +437,7 @@ export default function Schedule({
           <div
             className="grid bg-dark-400"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             {generateTimeSlots(currentDayIndex).map((time) => (
@@ -460,7 +450,7 @@ export default function Schedule({
                 </div>
 
                 {/* Venue Cells */}
-                {locations.map((venue) => {
+                {scheduleLocations.map((venue) => {
                   const eventsInSlot = currentDay.events.filter(
                     (session) =>
                       session.location_id === venue.id &&

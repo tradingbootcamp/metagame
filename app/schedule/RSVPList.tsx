@@ -1,4 +1,6 @@
-import { UserIcon } from 'lucide-react'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { UserIcon, XIcon } from 'lucide-react'
+import { toast } from 'sonner'
 
 import { countRsvpsByTeamColor } from '@/utils/dbUtils'
 
@@ -9,6 +11,9 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
+import { adminUnRsvpUserFromSession } from '@/app/actions/db/sessionRsvps'
+
+import { useUser } from '@/hooks/dbQueries'
 import { DbFullSession, DbTeamColor } from '@/types/database/dbTypeAliases'
 
 export const AttendanceDisplay = ({
@@ -62,8 +67,45 @@ export const AttendanceDisplay = ({
     </Tooltip>
   )
 }
-
 const RSVPListModal = ({ session }: { session: DbFullSession }) => {
+  const { currentUserProfile } = useUser()
+  const queryClient = useQueryClient()
+  const unrsvpUserMutation = useMutation({
+    mutationFn: adminUnRsvpUserFromSession,
+    onMutate: async ({ sessionId, userId }) => {
+      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      const previousSessions = queryClient.getQueryData<DbFullSession[]>([
+        'sessions',
+      ])
+      queryClient.setQueryData<DbFullSession[]>(
+        ['sessions'],
+        (old) =>
+          old?.map((session) =>
+            session.id === sessionId
+              ? {
+                  ...session,
+                  rsvps: session.rsvps.filter(
+                    (rsvp) => rsvp.user_id !== userId,
+                  ),
+                }
+              : session,
+          ) || [],
+      )
+      return { previousSessions }
+    },
+    onError: (err, variables, context) => {
+      if (context?.previousSessions) {
+        queryClient.setQueryData(['sessions'], context.previousSessions)
+      }
+      toast.error(`Failed to un-RSVP user from session: ${err.message}`)
+    },
+    onSuccess: () => {
+      toast.success('User un-RSVPed from session')
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+    },
+  })
   const rsvps = session.rsvps
   const teamsToBgColors: Record<DbTeamColor, string> = {
     orange: 'text-orange-500',
@@ -95,6 +137,35 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     )
+  const rsvpListUl = (rsvpArray: DbFullSession['rsvps']) => {
+    return (
+      <ul className="flex flex-col items-start">
+        {rsvpArray.map((rsvp) => (
+          <li
+            key={rsvp.session_id + rsvp.user_id}
+            className={`${teamsToBgColors[rsvp.user.team]} flex items-center justify-between py-1`}
+          >
+            {currentUserProfile?.is_admin && (
+              <button
+                title="Un-RSVP user"
+                className="cursor-pointer rounded-xs p-0.5 text-red-400 hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  unrsvpUserMutation.mutate({
+                    sessionId: session.id,
+                    userId: rsvp.user_id,
+                  })
+                }}
+              >
+                <XIcon className="size-3" />
+              </button>
+            )}
+            <span>{nameDisplay(rsvp.user)}</span>
+          </li>
+        ))}
+      </ul>
+    )
+  }
   return (
     <div className="flex flex-col">
       <div className="flex flex-col justify-start">
@@ -105,16 +176,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
           </span>
           <Separator />
         </div>
-        <ul className="flex flex-col items-start">
-          {going.map((rsvp) => (
-            <li
-              key={rsvp.session_id + rsvp.user_id}
-              className={`${teamsToBgColors[rsvp.user.team]} p-1`}
-            >
-              {nameDisplay(rsvp.user)}
-            </li>
-          ))}
-        </ul>
+        {rsvpListUl(going)}
       </div>
       {waitlist.length > 0 && (
         <>
@@ -124,16 +186,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
               Waitlist ({waitlist.length})
             </span>
             <Separator />
-            <ul className="flex flex-col items-start">
-              {waitlist.map((rsvp) => (
-                <li
-                  key={rsvp.session_id + rsvp.user_id}
-                  className={`${teamsToBgColors[rsvp.user.team]} p-1`}
-                >
-                  {nameDisplay(rsvp.user)}
-                </li>
-              ))}
-            </ul>
+            {rsvpListUl(waitlist)}
           </div>
         </>
       )}

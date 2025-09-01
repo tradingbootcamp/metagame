@@ -9,8 +9,9 @@ import {
   unrsvpCurrentUserFromSession,
 } from '@/app/actions/db/sessionRsvps'
 import {
-  fetchAllRsvps,
   fetchCurrentUserSessionBookmarks,
+  fetchLocations,
+  fetchSessions,
 } from '@/app/schedule/queries'
 
 import { useUser } from '@/hooks/dbQueries'
@@ -24,10 +25,14 @@ export function useScheduleStuff() {
   const { currentUserProfile } = useUser()
   const queryClient = useQueryClient()
 
-  // Fetch all RSVPs
-  const { data: allRsvps = [] } = useQuery({
-    queryKey: ['rsvps'],
-    queryFn: fetchAllRsvps,
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['sessions'],
+    queryFn: fetchSessions,
+  })
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ['locations'],
+    queryFn: fetchLocations,
   })
 
   // Fetch user bookmarks
@@ -37,16 +42,15 @@ export function useScheduleStuff() {
     enabled: !!currentUserProfile?.id,
   })
 
+  const allRsvps = useMemo(() => {
+    return sessions.flatMap((session) => session.rsvps)
+  }, [sessions])
+
   // Get current user's RSVPs
   const currentUserRsvps = useMemo(() => {
     if (!currentUserProfile?.id) return []
     return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile.id)
   }, [allRsvps, currentUserProfile?.id])
-
-  // Helper function to get RSVPs for a specific session
-  const rsvpsBySessionId = (sessionId: string) => {
-    return allRsvps.filter((rsvp) => rsvp.session_id === sessionId)
-  }
 
   // Helper function to get current user's RSVP for a specific session
   const getCurrentUserRsvp = (sessionId: string) => {
@@ -76,36 +80,42 @@ export function useScheduleStuff() {
   }
 
   // UnRSVP mutation
-  const unrsvpMutation = useMutation({
+  const unrsvpCurrentUserFromSessionMutation = useMutation({
     mutationFn: unrsvpCurrentUserFromSession,
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData<DbFullSessionRsvp[]>([
-        'rsvps',
+      const previousSessions = queryClient.getQueryData<DbFullSession[]>([
+        'sessions',
       ])
 
       // Optimistically update RSVPs
-      queryClient.setQueryData<DbFullSessionRsvp[]>(
-        ['rsvps'],
-        (old) =>
-          old?.filter(
-            (rsvp) =>
-              !(
-                rsvp.session_id === sessionId &&
-                rsvp.user_id === currentUserProfile?.id
-              ),
-          ) || [],
-      )
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
+        if (!old) return old
+        const oldChangingSession = old.find(
+          (session) => session.id === sessionId,
+        )
+        if (!oldChangingSession) return old
+        return old.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                rsvps: session.rsvps.filter(
+                  (rsvp) => rsvp.user_id !== currentUserProfile?.id,
+                ),
+              }
+            : session,
+        )
+      })
 
-      return { previousRsvps }
+      return { previousSessions }
     },
     onError: (err, variables, context) => {
       // Rollback on error
-      if (context?.previousRsvps) {
-        queryClient.setQueryData(['rsvps'], context.previousRsvps)
+      if (context?.previousSessions) {
+        queryClient.setQueryData(['sessions'], context.previousSessions)
       }
       toast.error(err.message)
     },
@@ -114,7 +124,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -123,11 +133,11 @@ export function useScheduleStuff() {
     mutationFn: rsvpCurrentUserToSession,
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData<DbFullSessionRsvp[]>([
-        'rsvps',
+      const previousSessions = queryClient.getQueryData<DbFullSession[]>([
+        'sessions',
       ])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
@@ -144,20 +154,30 @@ export function useScheduleStuff() {
           email: currentUserProfile?.email || '',
         },
       }
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
+        if (!old) return old
+        const oldChangingSession = old.find(
+          (session) => session.id === sessionId,
+        )
+        if (!oldChangingSession) return old
+        return old.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                rsvps: [...(session.rsvps || []), newRsvp],
+              }
+            : session,
+        )
+      })
 
-      queryClient.setQueryData<DbFullSessionRsvp[]>(['rsvps'], (old) => [
-        ...(old || []),
-        newRsvp,
-      ])
-
-      return { previousRsvps }
+      return { previousSessions }
     },
     onError: (err, variables, context) => {
       // Rollback on error
-      if (context?.previousRsvps) {
-        queryClient.setQueryData<DbFullSessionRsvp[]>(
-          ['rsvps'],
-          context.previousRsvps,
+      if (context?.previousSessions) {
+        queryClient.setQueryData<DbFullSession[]>(
+          ['sessions'],
+          context.previousSessions,
         )
       }
       toast.error(`RSVP failed: ${err.message}`)
@@ -167,7 +187,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -220,7 +240,7 @@ export function useScheduleStuff() {
   // Toggle RSVP function
   const toggleRsvp = (sessionId: string) => {
     if (isUserRsvpd(sessionId)) {
-      unrsvpMutation.mutate({ sessionId })
+      unrsvpCurrentUserFromSessionMutation.mutate({ sessionId })
     } else {
       rsvpMutation.mutate({ sessionId })
     }
@@ -236,9 +256,10 @@ export function useScheduleStuff() {
     allRsvps,
     currentUserRsvps,
     bookmarks,
+    locations,
+    sessions,
 
     // Helper functions
-    rsvpsBySessionId,
     getCurrentUserRsvp,
     isUserRsvpd,
     isSessionBookmarked,
@@ -246,7 +267,7 @@ export function useScheduleStuff() {
 
     // Mutations
     rsvpMutation,
-    unrsvpMutation,
+    unrsvpMutation: unrsvpCurrentUserFromSessionMutation,
     bookmarkMutation,
 
     // Actions
@@ -254,9 +275,10 @@ export function useScheduleStuff() {
     toggleBookmark,
 
     // Computed states
-    isPending: rsvpMutation.isPending || unrsvpMutation.isPending,
+    isPending:
+      rsvpMutation.isPending || unrsvpCurrentUserFromSessionMutation.isPending,
     isRsvpPending: rsvpMutation.isPending,
-    isUnrsvpPending: unrsvpMutation.isPending,
+    isUnrsvpPending: unrsvpCurrentUserFromSessionMutation.isPending,
     isBookmarkPending: bookmarkMutation.isPending,
   }
 }

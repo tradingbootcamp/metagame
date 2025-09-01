@@ -32,3 +32,6 @@ export const toggleCurrentUserSessionRsvp = currentUserWrapper(
 export const unrsvpCurrentUserFromAllSessions = currentUserWrapper(
   sessionRsvpsService.unrsvpUserFromAllSessions,
 )
+export const adminUnRsvpUserFromSession = adminExportWrapper(
+  sessionRsvpsService.unrsvpUserFromSession,
+)
