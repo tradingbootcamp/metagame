@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import { AttendanceDisplay } from './RSVPList'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import { fetchLocations, fetchSessions } from './queries'
@@ -15,7 +16,6 @@ import {
   PlusIcon,
   StarIcon,
   User2Icon,
-  UserIcon,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -567,7 +567,6 @@ export default function Schedule({
                                     </TooltipContent>
                                   </Tooltip>
                                 )}
-                                <UserIcon className="size-3" />
                                 <AttendanceDisplay
                                   session={session}
                                   userLoggedIn={!!currentUser}
@@ -644,57 +643,4 @@ export default function Schedule({
       )}
     </div>
   )
-}
-
-export const AttendanceDisplay = ({
-  session,
-  userLoggedIn,
-}: {
-  session: FullDbSession
-  userLoggedIn: boolean
-}) => {
-  const standardRsvpDisplay = () => {
-    if (!userLoggedIn) {
-      return (
-        <div>
-          {session.min_capacity && session.max_capacity
-            ? session.min_capacity === session.max_capacity
-              ? `${session.min_capacity}`
-              : `${session.min_capacity} - ${session.max_capacity}`
-            : null}
-        </div>
-      )
-    }
-
-    return (
-      <span>
-        {session.max_capacity
-          ? `${session.rsvps.length} / ${session.max_capacity}`
-          : `${session.rsvps.length}`}
-      </span>
-    )
-  }
-  // For megagames, we need the team breakdown from client-side RSVP data (once we implement teams)
-  // if (session.megagame) {
-  //   const teamCounts = countRsvpsByTeamColor(session.rsvps)
-  //   return (
-  //     <Tooltip>
-  //       <TooltipTrigger>
-  //         <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
-  //           <span className="font-bold text-purple-500">
-  //             {teamCounts.purple}
-  //           </span>
-  //           <span className="font-bold text-black">|</span>
-  //           <span className="font-bold text-orange-400">
-  //             {teamCounts.orange}
-  //           </span>
-  //         </div>
-  //       </TooltipTrigger>
-  //       <TooltipContent>{standardRsvpDisplay()}</TooltipContent>
-  //     </Tooltip>
-  //   )
-  // } else {
-  //   return standardRsvpDisplay()
-  // }
-  return standardRsvpDisplay()
 }

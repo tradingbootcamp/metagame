@@ -3,7 +3,7 @@
 import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
-import { AttendanceDisplay } from './Schedule'
+import { AttendanceDisplay } from './RSVPList'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
