@@ -2,9 +2,9 @@ import { dbGetHostsFromSession } from '@/utils/dbUtils'
 import { createServiceClient } from '@/utils/supabase/service'
 
 import {
+  DbFullSession,
   DbSessionInsert,
   DbSessionUpdate,
-  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
 const sessionsSelectIncludes = `
@@ -28,7 +28,7 @@ bookmarks:session_bookmarks!session_bookmarks_session_id_fkey (
 user_id
 ),
 rsvps:session_rsvps!session_rsvps_session_id_fkey (
-  on_waitlist,
+  *,
   user:profiles!session_rsvps_user_id_fkey (
     id,
     team,
@@ -52,7 +52,7 @@ export const sessionsService = {
     if (error) {
       throw new Error(error.message)
     }
-    return data satisfies FullDbSession
+    return data satisfies DbFullSession
   },
   /** Check if a session is full */
   sessionIsFull: async ({ sessionId }: { sessionId: string }) => {

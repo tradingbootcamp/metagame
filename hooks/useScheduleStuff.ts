@@ -15,9 +15,9 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import {
+  DbFullSession,
   DbFullSessionRsvp,
   DbSessionBookmark,
-  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
 export function useScheduleStuff() {
@@ -67,7 +67,7 @@ export function useScheduleStuff() {
 
   // Helper function to check if a session is at capacity
   const isSessionFull = (sessionId: string) => {
-    const sessions = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+    const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
     const session = sessions?.find((s) => s.id === sessionId)
     if (!session || !session.max_capacity || !session.rsvps?.length)
       return false

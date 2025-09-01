@@ -35,9 +35,9 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import {
+  DbFullSession,
   DbSessionAges,
   DbSessionCategory,
-  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
 interface AddEventModalProps {
@@ -240,11 +240,11 @@ export function AddEventModal({
   const userEditSessionMutation = useMutation({
     mutationFn: userEditSession,
     onMutate: (data) => {
-      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      const oldData = queryClient.getQueryData<DbFullSession[]>(['sessions'])
       if (!oldData) return { oldData: oldData }
-      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.map((session: FullDbSession) =>
+        return old.map((session: DbFullSession) =>
           session.id === data.sessionId
             ? { ...session, ...data.sessionUpdate }
             : session,
@@ -275,9 +275,9 @@ export function AddEventModal({
     },
     onMutate: (data) => {
       // Optimistically update the session in the cache
-      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      const oldData = queryClient.getQueryData<DbFullSession[]>(['sessions'])
       if (!oldData) return { oldData: oldData }
-      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
         return old.map((session) =>
           session.id === data.sessionId
@@ -292,7 +292,7 @@ export function AddEventModal({
     onError: (error, variables, context) => {
       // Rollback to previous state on error
       if (context?.oldData) {
-        queryClient.setQueryData<FullDbSession[]>(['sessions'], context.oldData)
+        queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
       }
       toast.error(`Failed to update event: ${error.message}`)
     },
@@ -304,9 +304,9 @@ export function AddEventModal({
   const deleteSessionMutation = useMutation({
     mutationFn: adminDeleteSession,
     onMutate: (data) => {
-      const oldData = queryClient.getQueryData<FullDbSession[]>(['sessions'])
+      const oldData = queryClient.getQueryData<DbFullSession[]>(['sessions'])
       if (!oldData) return { oldData: oldData }
-      queryClient.setQueryData<FullDbSession[]>(['sessions'], (old) => {
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
         return old.filter((session) => session.id !== data.sessionId)
       })
@@ -314,7 +314,7 @@ export function AddEventModal({
     },
     onError: (error, variables, context) => {
       if (context?.oldData) {
-        queryClient.setQueryData<FullDbSession[]>(['sessions'], context.oldData)
+        queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
       }
       toast.error(`Failed to delete event: ${error.message}`)
     },

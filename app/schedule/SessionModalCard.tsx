@@ -14,14 +14,14 @@ import { Badge } from '@/components/ui/badge'
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import { FullDbSession } from '@/types/database/dbTypeAliases'
+import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
   showButtons,
   canEdit = false,
 }: {
-  session: FullDbSession
+  session: DbFullSession
   showButtons: boolean
   canEdit?: boolean
 }) {

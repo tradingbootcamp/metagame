@@ -1,13 +1,13 @@
 import {
+  DbFullSession,
   DbFullSessionRsvp,
   DbSessionAges,
   DbSessionCategory,
   DbTeamColor,
   DbTicketType,
-  FullDbSession,
 } from '@/types/database/dbTypeAliases'
 
-export const dbGetHostsFromSession = (session: FullDbSession) => {
+export const dbGetHostsFromSession = (session: DbFullSession) => {
   const host1Name =
     (session.host_1?.first_name ?? '') + ' ' + (session.host_1?.last_name ?? '')
   const host2Name =

@@ -9,12 +9,12 @@ export type DbSession = Tables<'sessions'>
 export type DbSessionInsert = TablesInsert<'sessions'>
 export type DbSessionUpdate = TablesUpdate<'sessions'>
 
-export type FullDbSession = Tables<'sessions'> & {
+export type DbFullSession = Tables<'sessions'> & {
   host_1: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
   host_2: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
   host_3: Pick<DbProfile, 'first_name' | 'last_name' | 'email'> | null
   bookmarks: Pick<DbSessionBookmark, 'user_id'>[]
-  rsvps: (Pick<DbSessionRsvp, 'on_waitlist'> & {
+  rsvps: (DbSessionRsvp & {
     user: Pick<DbProfile, 'id' | 'team' | 'first_name' | 'last_name' | 'email'>
   })[]
   location: Pick<DbLocation, 'name'> | null

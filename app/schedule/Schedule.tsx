@@ -42,7 +42,7 @@ import {
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import { FullDbSession } from '@/types/database/dbTypeAliases'
+import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -70,7 +70,7 @@ const generateTimeSlots = (dayIndex: number) => {
 }
 
 // Updated slot checking - PST based
-const eventStartsInSlot = (session: FullDbSession, slotTime: string) => {
+const eventStartsInSlot = (session: DbFullSession, slotTime: string) => {
   if (!session.start_time) return false
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -85,7 +85,7 @@ const eventStartsInSlot = (session: FullDbSession, slotTime: string) => {
 }
 
 // Updated offset calculation - PST based
-const getEventOffsetMinutes = (session: FullDbSession, slotTime: string) => {
+const getEventOffsetMinutes = (session: DbFullSession, slotTime: string) => {
   if (!session.start_time) return 0
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -96,7 +96,7 @@ const getEventOffsetMinutes = (session: FullDbSession, slotTime: string) => {
 }
 
 // Updated duration calculation - PST based
-const getEventDurationMinutes = (session: FullDbSession) => {
+const getEventDurationMinutes = (session: DbFullSession) => {
   if (!session.start_time || !session.end_time) return 30
 
   const startMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -149,9 +149,9 @@ export default function Schedule({
       [], // Day 0: Friday 9/12
       [], // Day 1: Saturday 9/13
       [], // Day 2: Sunday 9/14
-    ] as FullDbSession[][]
+    ] as DbFullSession[][]
 
-    const userRsvpOrHostingSession = (session: FullDbSession) => {
+    const userRsvpOrHostingSession = (session: DbFullSession) => {
       if (!currentUserProfile) return true
       if (isUserRsvpd(session.id!)) {
         return true
@@ -204,7 +204,7 @@ export default function Schedule({
   }, [sessions, filterForUserEvents, bookmarks])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
-    FullDbSession['id'] | null
+    DbFullSession['id'] | null
   >(sessionId ?? null)
   const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false)
   const [addEventPrefill, setAddEventPrefill] = useState<{
@@ -272,7 +272,7 @@ export default function Schedule({
   }
 
   // Helper function to get event color based on session properties
-  const getEventColor = (session: FullDbSession) => {
+  const getEventColor = (session: DbFullSession) => {
     const userIsRsvpd = isUserRsvpd(session.id!) ? 'rsvpd' : 'notRsvpd'
     // Switch based on session properties for specific styling
     switch (true) {
