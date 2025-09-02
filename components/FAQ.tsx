@@ -83,13 +83,24 @@ const faqs: FAQ[] = [
             reduced price ticket.
           </li>
           <li>
+            <strong>Sliding Scale Tickets</strong>: We want you to come! If the
+            ticket price is prohibitive for you, select a sliding scale price
+            down to half of the full Player Ticket price. If that is still too
+            much, and volunteering isn&apos;t an option, see the Financial Aid
+            info below.
+          </li>
+          <li>
+            <strong>Bitcoin Tickets</strong>: Thanks to our headline sponsor, we
+            are offering a Bitcoin payment option with (at current exchange
+            rates) discounted prices on both player and sliding scale tickets
+            relative to fiat.
+          </li>
+          <li>
             <strong>Financial aid tickets</strong>: We have a scholarship fund
             with free and reduced price tickets available for people for whom
-            attending Metagame would pose a financial hardship. If the current
-            ticket price ($580) is prohibitive but a 50% off ticket would be
-            doable, you can use the discount code <strong>HALFPRICE</strong> to
-            get a $290 ticket, on the honor system. For a reduction in ticket
-            price beyond that or to apply for travel assistance, please fill out{' '}
+            attending Metagame would pose a financial hardship. For a reduction
+            in ticket price beyond the range of our sliding scale option, or to
+            apply for travel assistance, please fill out{' '}
             <a
               className="link"
               href={URLS.TICKET_FINANCIAL_AID}
