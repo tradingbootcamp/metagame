@@ -177,7 +177,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                     We also have a financial aid program with further price
                     reductions available.{' '}
                     <a
-                      className="underline"
+                      className="link"
                       href={URLS.TICKET_FINANCIAL_AID}
                       target="_blank"
                       rel="noopener noreferrer"

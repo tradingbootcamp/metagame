@@ -70,6 +70,7 @@ export default function ContributeContent() {
                 target="_blank"
                 href="https://en.wikipedia.org/wiki/Senet"
                 rel="noopener noreferrer"
+                className="link"
               >
                 Senet
               </a>{' '}
@@ -78,6 +79,7 @@ export default function ContributeContent() {
                 target="_blank"
                 href="https://en.wikipedia.org/wiki/Ludus_latrunculorum"
                 rel="noopener noreferrer"
+                className="link"
               >
                 Ludus Latrunculorum
               </a>
@@ -100,6 +102,7 @@ export default function ContributeContent() {
               target="_blank"
               href={SOCIAL_LINKS.DISCORD}
               rel="noopener noreferrer"
+              className="link"
             >
               join the Discord
             </a>
@@ -123,6 +126,7 @@ export default function ContributeContent() {
               target="_blank"
               href="https://github.com/RickiHeicklen/metagame"
               rel="noopener noreferrer"
+              className="link"
             >
               here
             </a>

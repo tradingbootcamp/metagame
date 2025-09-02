@@ -132,6 +132,7 @@ const faqs: FAQ[] = [
       <p>
         Rooms at and near the venue can be booked via{' '}
         <a
+          className="link"
           href="https://www.havenbookings.space/events/metagame"
           target="_blank"
         >

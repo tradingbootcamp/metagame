@@ -371,7 +371,7 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
                         href={toExternalLink(current.site_url)}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 hover:underline"
+                        className="flex link items-center gap-2"
                       >
                         {current.site_name}
                         <span className="text-gray-400">
@@ -420,7 +420,7 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
                           href={current.site_url_2 || '#'}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="flex items-center gap-2 hover:underline"
+                          className="flex link items-center gap-2"
                         >
                           {current.site_name_2 || 'Unnamed'}
                           {current.site_url_2 && (

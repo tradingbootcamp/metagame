@@ -89,7 +89,7 @@ export const SpeakerCard: React.FC<SpeakerCardProps> = ({ profile }) => {
             }
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-1 flex items-center justify-center gap-1 text-[10px] font-semibold text-secondary-200 hover:text-secondary-300 sm:text-sm"
+            className="mt-1 flex link items-center justify-center gap-1 text-[10px] font-semibold sm:text-sm"
           >
             {site_name}
             <ExternalLinkIcon />
@@ -104,7 +104,7 @@ export const SpeakerCard: React.FC<SpeakerCardProps> = ({ profile }) => {
             }
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center justify-center gap-1 text-[10px] font-semibold text-secondary-200 hover:text-secondary-300 sm:text-sm"
+            className="flex link items-center justify-center gap-1 text-[10px] font-semibold sm:text-sm"
           >
             {site_name_2}
             <ExternalLinkIcon />

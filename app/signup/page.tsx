@@ -198,7 +198,7 @@ function SignupForm() {
                     you should be able to make an account,{' '}
                     <a
                       href="mailto:team@metagame.games"
-                      className="font-bold underline"
+                      className="link font-bold"
                     >
                       contact us
                     </a>{' '}

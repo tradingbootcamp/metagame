@@ -556,7 +556,7 @@ const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
               href={SOCIAL_LINKS.DISCORD}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block w-fit rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-indigo-700"
+              className="inline-block w-fit link rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-indigo-700"
             >
               Join Discord Server
             </a>
