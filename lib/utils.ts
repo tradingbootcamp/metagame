@@ -35,7 +35,7 @@ export async function uploadFileWithSignedUrl(
 export async function downscaleAndUploadImage(
   signedUrl: string,
   file: File,
-  maxWidth: number = 512,
+  maxWidth: number = 1024,
 ): Promise<void> {
   // Check if the file is an image
   if (!file.type.startsWith('image/')) {
