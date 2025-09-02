@@ -264,25 +264,6 @@ function FaqItem({ faq, isTarget }: { faq: FAQ; isTarget: boolean }) {
           <span className="text-xl font-medium">{faq.question}</span>
 
           <div className="flex items-center">
-            {isOpen && (
-              <button
-                onClick={(e) => {
-                  e.stopPropagation()
-                  copyLink()
-                }}
-                className="mr-2 rounded-md p-1 transition-colors hover:bg-dark-400"
-                title="Copy link to this question"
-                aria-label="Copy link to this question"
-              >
-                {showCopiedMessage ? (
-                  <CheckIcon className="h-4 w-4 text-green-400" />
-                ) : (
-                  <LinkIcon
-                    className={`h-4 w-4 opacity-50 ${copyError ? 'text-red-500' : 'text-white-300'}`}
-                  />
-                )}
-              </button>
-            )}
             {isOpen ? (
               <ChevronDownIcon className="h-4 w-4" />
             ) : (
@@ -291,8 +272,27 @@ function FaqItem({ faq, isTarget }: { faq: FAQ; isTarget: boolean }) {
           </div>
         </CollapsibleTrigger>
 
-        <CollapsibleContent className="flex justify-between p-3">
+        <CollapsibleContent className="flex items-start justify-between p-3">
           <article className="text-lg">{faq.contentHtml}</article>
+          {isOpen && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                copyLink()
+              }}
+              className="mr-2 rounded-md p-1 transition-colors hover:bg-dark-400"
+              title="Copy link to this question"
+              aria-label="Copy link to this question"
+            >
+              {showCopiedMessage ? (
+                <CheckIcon className="h-4 w-4 text-green-400" />
+              ) : (
+                <LinkIcon
+                  className={`h-4 w-4 opacity-50 ${copyError ? 'text-red-500' : 'text-white-300'}`}
+                />
+              )}
+            </button>
+          )}
         </CollapsibleContent>
       </Collapsible>
     </div>
