@@ -91,6 +91,11 @@ const TicketsTable = ({ tickets }: { tickets: DbTicket[] }) => {
         ) : null,
     },
     {
+      id: 'ticket_code',
+      header: 'Ticket Code',
+      render: (ticket) => ticket.ticket_code,
+    },
+    {
       id: 'btc_paid',
       header: 'BTC Paid',
       render: (ticket) =>
