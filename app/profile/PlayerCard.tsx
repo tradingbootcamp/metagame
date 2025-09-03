@@ -4,7 +4,7 @@ import Image from 'next/image'
 import { DbProfile } from '@/types/database/dbTypeAliases'
 
 // Establish some base numbers
-const CARD_WIDTH = 944
+const CARD_WIDTH = 941
 const CARD_HEIGHT = 1344
 const FRAME_FROM_EDGE = 92
 const CIRCLE_FROM_EDGE = 20
@@ -100,6 +100,15 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         className="relative z-2 overflow-hidden"
       >
         <div className="relative size-full overflow-hidden bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
+          {/* Gray border */}
+          <Image
+            src={washImageSrcs.unassigned}
+            alt="border"
+            fill
+            className="z-1 object-cover"
+          />
+          {/* flash thing */}
+          <div className="animate-flash absolute inset-0 z-1 h-[200%] w-[20%] bg-gradient-to-r from-transparent via-yellow-100 to-transparent"></div>
           <div className="relative size-full">
             <Image
               id="player-picture"
@@ -109,7 +118,6 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
               className="z-2 object-cover"
             />
           </div>
-          <div className="animate-flash absolute inset-0 z-1 h-[200%] w-[20%] bg-gradient-to-r from-transparent via-yellow-100 to-transparent"></div>
         </div>
       </div>
       {/* Frame Overlay */}
@@ -137,7 +145,7 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         </div>
         {/* Abilities? */}
         <div className="flex flex-col gap-2">
-          <div className="flex items-center justify-start gap-1">
+          <div className="flex items-start justify-start gap-1">
             <div
               className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
               style={{
