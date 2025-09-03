@@ -44,7 +44,7 @@ export const fetchLocations = async (): Promise<DbLocation[]> => {
   return (await response.json()) as DbLocation[]
 }
 
-export const fetchProfiles = async (): Promise<DbProfile[]> => {
+export const adminFetchFullProfiles = async (): Promise<DbProfile[]> => {
   const response = await fetch('/api/queries/profiles')
   if (!response.ok) {
     await handleApiError(response, 'Failed to fetch profiles')

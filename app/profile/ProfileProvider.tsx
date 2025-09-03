@@ -1,4 +1,4 @@
-import { getCurrentUser, getCurrentUserProfile } from '../actions/db/users'
+import { getCurrentUser, getCurrentUserFullProfile } from '../actions/db/users'
 import Profile from './Profile'
 import {
   HydrationBoundary,
@@ -26,7 +26,7 @@ export default async function ProfileProvider() {
       }),
       queryClient.prefetchQuery({
         queryKey: ['users', 'profile', user.id],
-        queryFn: () => getCurrentUserProfile(),
+        queryFn: () => getCurrentUserFullProfile(),
       }),
     ])
   }

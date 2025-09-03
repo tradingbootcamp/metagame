@@ -30,8 +30,7 @@ rsvps:session_rsvps!session_rsvps_session_id_fkey (
     id,
     team,
     first_name,
-    last_name,
-    email
+    last_name
   )
 ),
 location:locations!sessions_location_id_fkey (
@@ -49,7 +48,7 @@ export const sessionsService = {
     if (error) {
       throw new Error(error.message)
     }
-    return data satisfies DbFullSession
+    return data satisfies DbFullSession | null
   },
   /** Check if a session is full */
   sessionIsFull: async ({ sessionId }: { sessionId: string }) => {

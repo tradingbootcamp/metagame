@@ -38,7 +38,7 @@ import { getCurrentUserProfilePictureUploadUrl } from '@/app/actions/db/storage'
 import {
   deleteCurrentUserProfilePicture,
   getCurrentUser,
-  getCurrentUserProfile,
+  getCurrentUserFullProfile,
   updateCurrentUserProfile,
 } from '@/app/actions/db/users'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
@@ -55,7 +55,7 @@ export default function Profile() {
 
   const { data: currentUserProfile } = useQuery({
     queryKey: ['users', 'profile', currentUser?.id],
-    queryFn: () => getCurrentUserProfile(),
+    queryFn: () => getCurrentUserFullProfile(),
     enabled: !!currentUser?.id,
   })
   const [isEditMode, setIsEditMode] = useState(false)

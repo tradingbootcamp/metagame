@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import { adminGetAllProfiles } from '@/app/actions/db/users'
+import { adminGetAllFullProfiles } from '@/app/actions/db/users'
 
 export async function GET() {
   try {
-    const profiles = await adminGetAllProfiles()
+    const profiles = await adminGetAllFullProfiles()
 
     return NextResponse.json(profiles)
   } catch (error) {

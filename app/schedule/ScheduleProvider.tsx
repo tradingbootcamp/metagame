@@ -1,7 +1,7 @@
 import { getAllLocations } from '../actions/db/locations'
 import { getAllRsvps } from '../actions/db/sessionRsvps'
 import { getAllSessions } from '../actions/db/sessions'
-import { getCurrentUserProfile } from '../actions/db/users'
+import { getCurrentUserFullProfile } from '../actions/db/users'
 import Schedule from './Schedule'
 import { getUserEditPermissionsForSessions } from './actions'
 import {
@@ -37,7 +37,7 @@ export default async function ScheduleProvider({
     () =>
       queryClient.prefetchQuery({
         queryKey: ['users', 'profile', 'current-user'],
-        queryFn: () => getCurrentUserProfile(),
+        queryFn: () => getCurrentUserFullProfile(),
       }),
     () =>
       queryClient.prefetchQuery({

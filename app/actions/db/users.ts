@@ -6,22 +6,24 @@ import { usersService } from '@/lib/db/users'
 
 /* Queries */
 export const getCurrentUser = usersService.getCurrentUser
-export const getCurrentUserProfile = async () =>
-  currentUserWrapper(usersService.getUserProfile)({})
+export const getCurrentUserFullProfile = async () =>
+  currentUserWrapper(usersService.getUserFullProfile)({})
 export const getCurrentUserAdminStatus = async () =>
   currentUserWrapper(usersService.getUserAdminStatus)({})
-export const adminGetAllProfiles = adminExportWrapper(
-  usersService.getAllProfiles,
+export const adminGetAllFullProfiles = adminExportWrapper(
+  usersService.getAllFullProfiles,
 )
-export const adminGetUserProfileByEmail = adminExportWrapper(
-  usersService.getUserProfileByEmail,
+export const adminGetUserFullProfileByEmail = adminExportWrapper(
+  usersService.getUserFullProfileByEmail,
 )
-export const adminGetUserProfileById = adminExportWrapper(
-  usersService.getUserProfile,
+export const adminGetUserFullProfileById = adminExportWrapper(
+  usersService.getUserFullProfile,
 )
 
 export const adminGetUser = adminExportWrapper(usersService.getUser)
 
+export const getAllUserPublicProfiles = usersService.getAllUserPublicProfiles
+export const getUserPublicProfileById = usersService.getUserPublicProfileById
 /* Mutations */
 export const updateCurrentUserProfile = currentUserWrapper(
   usersService.updateUserProfile,

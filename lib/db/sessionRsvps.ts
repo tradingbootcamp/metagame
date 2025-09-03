@@ -10,8 +10,7 @@ const sessionRsvpsSelectIncludes = `
           id,
           team,
           first_name,
-          last_name,
-          email
+          last_name
         )
       `
 export const sessionRsvpsService = {

@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import { getCurrentUserProfile } from '@/app/actions/db/users'
+import { getCurrentUserFullProfile } from '@/app/actions/db/users'
 
 export async function GET() {
   try {
-    const profile = await getCurrentUserProfile()
+    const profile = await getCurrentUserFullProfile()
 
     return NextResponse.json(profile)
   } catch (error) {

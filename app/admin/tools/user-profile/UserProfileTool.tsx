@@ -5,7 +5,7 @@ import { UserSelector } from './UserSelector'
 import { Card } from '@/components/Card'
 
 import { adminGetAllTickets } from '@/app/actions/db/tickets'
-import { adminGetAllProfiles } from '@/app/actions/db/users'
+import { adminGetAllFullProfiles } from '@/app/actions/db/users'
 
 interface UserProfileToolProps {
   searchParams?: Promise<{ user_id?: string }>
@@ -14,7 +14,7 @@ interface UserProfileToolProps {
 export default async function UserProfileTool({
   searchParams,
 }: UserProfileToolProps) {
-  const profiles = await adminGetAllProfiles()
+  const profiles = await adminGetAllFullProfiles()
   const tickets = await adminGetAllTickets()
   const params = searchParams ? await searchParams : {}
   const { user_id } = params

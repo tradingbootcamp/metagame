@@ -4,7 +4,11 @@ import { useEffect, useState } from 'react'
 
 import { CONFERENCE_DAYS } from './Schedule'
 import { userEditSession } from './actions'
-import { fetchLocations, fetchProfiles, fetchSessionById } from './queries'
+import {
+  adminFetchFullProfiles,
+  fetchLocations,
+  fetchSessionById,
+} from './queries'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { XIcon } from 'lucide-react'
 import { toast } from 'sonner'
@@ -100,8 +104,8 @@ export function AddEventModal({
     isLoading: profilesLoading,
     error: profilesError,
   } = useQuery({
-    queryKey: ['profiles', 'all'],
-    queryFn: fetchProfiles,
+    queryKey: ['profiles'],
+    queryFn: adminFetchFullProfiles,
     enabled: !!currentUserProfile?.is_admin && !!isOpen,
     staleTime: 1000 * 60 * 5,
   })

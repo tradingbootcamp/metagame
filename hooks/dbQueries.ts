@@ -1,6 +1,9 @@
 import { useQuery } from '@tanstack/react-query'
 
-import { getCurrentUser, getCurrentUserProfile } from '@/app/actions/db/users'
+import {
+  getCurrentUser,
+  getCurrentUserFullProfile,
+} from '@/app/actions/db/users'
 
 export const useUser = () => {
   const {
@@ -17,7 +20,7 @@ export const useUser = () => {
   })
   const { data: currentUserProfile } = useQuery({
     queryKey: ['users', 'profile', 'current-user'],
-    queryFn: () => getCurrentUserProfile(),
+    queryFn: () => getCurrentUserFullProfile(),
     enabled: !!currentUser?.id,
     placeholderData: (previousData) => previousData,
     staleTime: 1000 * 60 * 5,
