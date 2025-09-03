@@ -6,6 +6,7 @@ import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './RSVPList'
 import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
 import {
+  AppleIcon,
   CalendarIcon,
   CheckIcon,
   EditIcon,
@@ -96,15 +97,7 @@ export default function SessionDetailsCard({
                     />
                   </button>
                 )}
-                <a
-                  href={gCalLinkFromSession(session)}
-                  className={buttonVariants({ variant: 'ghost' })}
-                  title="Add to Calendar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <CalendarIcon className={`size-4 text-secondary-300`} />
-                </a>
+
                 {/* Edit button for admins */}
                 {canEdit && (
                   <button
@@ -170,8 +163,28 @@ export default function SessionDetailsCard({
                 )}
               </div>
             )}
-            <div className="font-medium text-secondary-300">
-              📅 {dateUtils.getStringDate(session.start_time)}
+            <div className="flex items-center gap-4 font-medium text-secondary-300">
+              <span>📅 {dateUtils.getStringDate(session.start_time)}</span>
+              <div className="flex items-center">
+                <a
+                  href={gCalLinkFromSession(session)}
+                  className={buttonVariants({ variant: 'ghost' })}
+                  title="Add to Google Calendar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <CalendarIcon className={`size-4 text-secondary-300`} />
+                </a>
+                <a
+                  href={`/api/queries/sessions/${session.id}/ics`}
+                  className={buttonVariants({ variant: 'ghost' })}
+                  title="Download iCal/ICS"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <AppleIcon className={`size-4 text-secondary-300`} />
+                </a>
+              </div>
             </div>
             <div className="text-secondary-300">
               🕐 {dateUtils.getStringTime(session.start_time)}
