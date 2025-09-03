@@ -44,7 +44,7 @@ export const sessionsService = {
       .from('sessions')
       .select(sessionsSelectIncludes)
       .eq('id', sessionId)
-      .single()
+      .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }

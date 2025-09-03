@@ -23,7 +23,9 @@ export async function userCanEditSession({
   }
 
   const session = await sessionsService.getSessionById({ sessionId })
-
+  if (!session) {
+    return false
+  }
   //Hosts can edit sessions
   if (
     [session.host_1_id, session.host_2_id, session.host_3_id].includes(userId)
