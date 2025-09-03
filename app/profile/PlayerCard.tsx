@@ -1,7 +1,7 @@
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullSession, DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 // Establish some base numbers
 const CARD_WIDTH = 941
@@ -22,7 +22,13 @@ const ABILITY_COST_SIZE = 75
 
 const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
 
-export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
+export default function PlayerCard({
+  hostedSessions,
+  profile,
+}: {
+  hostedSessions: DbFullSession[]
+  profile: DbPublicProfile | null
+}) {
   const washImageSrcs = {
     orange: '/images/cards/orange-wash.png',
     purple: '/images/cards/purple-wash.png',
@@ -80,15 +86,17 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         />
       </div>
       {/* Hosting line */}
-      <div
-        style={{
-          top: 4 * scale,
-          right: 20 * scale,
-        }}
-        className="absolute z-4 text-sm text-white"
-      >
-        <span>Hosting: 2</span>
-      </div>
+      {
+        /*hostedSessions.length > 0 && */ <div
+          style={{
+            top: 4 * scale,
+            right: 20 * scale,
+          }}
+          className="absolute z-4 text-sm text-white"
+        >
+          <span>Hosting: {hostedSessions.length}</span>
+        </div>
+      }
       {/* Player picture */}
       <div
         style={{

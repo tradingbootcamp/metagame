@@ -1,4 +1,5 @@
 import { getCurrentUser, getCurrentUserFullProfile } from '../actions/db/users'
+import { PlayerCardProvider } from './PlayerCardProvider'
 import Profile from './Profile'
 import {
   HydrationBoundary,
@@ -34,6 +35,7 @@ export default async function ProfileProvider() {
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <Profile />
+      {user && <PlayerCardProvider userId={user.id} />}
     </HydrationBoundary>
   )
 }

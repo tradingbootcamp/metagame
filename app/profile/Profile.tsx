@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import PlayerCard from './PlayerCard'
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   CheckIcon,
@@ -38,8 +37,6 @@ import {
 import { getCurrentUserProfilePictureUploadUrl } from '@/app/actions/db/storage'
 import {
   deleteCurrentUserProfilePicture,
-  getCurrentUser,
-  getCurrentUserFullProfile,
   updateCurrentUserProfile,
 } from '@/app/actions/db/users'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
@@ -51,16 +48,7 @@ export default function Profile() {
   const queryClient = useQueryClient()
   const [temporarilyDismissedInfoRequest, setTemporarilyDismissedInfoRequest] =
     useState(false)
-  const { data: currentUser, isLoading: currentUserLoading } = useQuery({
-    queryKey: ['users', 'current'],
-    queryFn: getCurrentUser,
-  })
-
-  const { data: currentUserProfile } = useQuery({
-    queryKey: ['users', 'profile', currentUser?.id],
-    queryFn: () => getCurrentUserFullProfile(),
-    enabled: !!currentUser?.id,
-  })
+  const { currentUser, currentUserProfile, currentUserLoading } = useUser()
   const [isEditMode, setIsEditMode] = useState(false)
   const showCTAModal = useMemo(() => {
     console.log('showCTAModal', currentUserProfile)
@@ -631,7 +619,6 @@ export default function Profile() {
           </div>
         </div>
       </div>
-      <PlayerCard profile={currentUserProfile ?? null} />
     </>
   )
 }
