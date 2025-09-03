@@ -91,12 +91,12 @@
   --font-sans:
     Jura, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-  --font-imfell:
-    'IM Fell English', ui-serif, serif, 'Apple Color Emoji';
-  /* Keyframes */ 
+  --font-imfell: 'IM Fell English', ui-serif, serif, 'Apple Color Emoji';
+  /* Keyframes */
   --animate-coin-pop: coin-pop 0.6s ease-out;
   --animate-fade-in: fade-in 0.5s ease-in forwards;
   --animate-fade-out: fade-out 0.5s linear forwards;
+  --animate-flash: flash 2s linear infinite;
 }
 
 /* Keyframe definitions */
@@ -114,7 +114,17 @@
     opacity: 0;
   }
 }
-
+@keyframes flash {
+  0% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  65% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(500%) translateY(-30%);
+  }
+}
 @keyframes fade-in {
   0% {
     opacity: 0;
@@ -581,20 +591,4 @@ html::before {
   .link {
     @apply cursor-pointer text-secondary-300 underline;
   }
-}
-
-@keyframes flash {
-  0% {
-    transform: rotate(45deg) translateX(-500%) translateY(-30%);
-  }
-  33% {
-    transform: rotate(45deg) translateX(-500%) translateY(-30%);
-  }
-  100% {
-    transform: rotate(45deg) translateX(500%) translateY(-30%);
-  }
-}
-
-.animate-flash {
-  animation: flash 1.8s linear infinite;
 }

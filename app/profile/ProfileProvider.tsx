@@ -34,8 +34,10 @@ export default async function ProfileProvider() {
 
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
-      <Profile />
-      {user && <PlayerCardProvider userId={user.id} />}
+      <div className="flex flex-col items-center gap-4">
+        <Profile />
+        {user && <PlayerCardProvider userId={user.id} />}
+      </div>
     </HydrationBoundary>
   )
 }

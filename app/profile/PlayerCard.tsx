@@ -5,10 +5,10 @@ import { DbFullSession, DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 // Establish some base numbers
 const CARD_WIDTH = 941
-const CARD_HEIGHT = 1344
+const CARD_HEIGHT = 1341
 const FRAME_FROM_EDGE = 92
-const CIRCLE_FROM_EDGE = 20
-const CIRCLE_DIAMETER = 172
+const CIRCLE_FROM_EDGE = 19
+const CIRCLE_DIAMETER = 173
 const SQUARE_FROM_EDGE = 32
 const SQUARE_FROM_TOP = 235
 const SQUARE_SIZE = 143
@@ -38,7 +38,7 @@ export default function PlayerCard({
   }
   return (
     <div
-      className="relative aspect-[944/1344] max-w-full font-imfell"
+      className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
       style={{
         width: BASELINE_CARD_WIDTH,
         aspectRatio: CARD_WIDTH / CARD_HEIGHT,
@@ -50,6 +50,13 @@ export default function PlayerCard({
         alt="Celestial Base Color"
         fill
         className="z-1 object-cover"
+      />
+      {/* Frame Overlay */}
+      <Image
+        src="/images/cards/celestial-frame.png"
+        alt="Frame overlay"
+        fill
+        className="z-3 object-cover"
       />
       {/* Breath Square icon */}
       <div
@@ -89,12 +96,23 @@ export default function PlayerCard({
       {
         /*hostedSessions.length > 0 && */ <div
           style={{
-            top: 4 * scale,
-            right: 20 * scale,
+            top: 35 * scale,
+            right: 55 * scale,
           }}
           className="absolute z-4 text-sm text-white"
         >
-          <span>Hosting: {hostedSessions.length}</span>
+          <span className="flex items-center gap-1">
+            Hosting:
+            <div
+              style={{
+                width: 50 * scale,
+                height: 50 * scale,
+              }}
+              className="flex items-center justify-center rounded-full bg-gray-500 p-1 text-secondary-300"
+            >
+              <strong className="font-serif">{hostedSessions.length}</strong>
+            </div>
+          </span>
         </div>
       }
       {/* Player picture */}
@@ -107,7 +125,7 @@ export default function PlayerCard({
         }}
         className="relative z-2 overflow-hidden"
       >
-        <div className="relative size-full overflow-hidden bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
+        <div className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
           {/* Gray border */}
           <Image
             src={washImageSrcs.unassigned}
@@ -116,25 +134,18 @@ export default function PlayerCard({
             className="z-1 object-cover"
           />
           {/* flash thing */}
-          <div className="animate-flash absolute inset-0 z-1 h-[200%] w-[20%] bg-gradient-to-r from-transparent via-yellow-100 to-transparent"></div>
+          <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
           <div className="relative size-full">
             <Image
               id="player-picture"
               src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
               alt="Profile picture"
               fill
-              className="z-2 object-cover"
+              className="z-2 rounded-sm object-cover"
             />
           </div>
         </div>
       </div>
-      {/* Frame Overlay */}
-      <Image
-        src="/images/cards/celestial-frame.png"
-        alt="Frame overlay"
-        fill
-        className="z-3 object-cover"
-      />
       {/* Sub Profile Picture */}
       <div
         style={{
@@ -198,8 +209,8 @@ export default function PlayerCard({
             </span>
           </div>
         </div>
-        {/* Bottom left */}
-        <div className="absolute right-0 bottom-0 flex items-center gap-1 p-1">
+        {/* Bottom right */}
+        <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
           <GlobeIcon className="size-3" />
           <a
             href={profile?.site_url ?? ''}
@@ -208,6 +219,16 @@ export default function PlayerCard({
           >
             {profile?.site_url}
           </a>
+        </div>
+        {/* Bottom left */}
+        <div className="absolute bottom-0 left-0 flex items-center gap-1 pl-1">
+          <Image
+            src="/logos/discord-logo.svg"
+            alt="D"
+            width={40 * scale}
+            height={40 * scale}
+          />
+          {profile?.discord_handle ?? 'Discord Handle'}
         </div>
       </div>
     </div>
