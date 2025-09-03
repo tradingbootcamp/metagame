@@ -2,7 +2,8 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import PlayerCard from './PlayerCard'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   CheckIcon,
   ExternalLinkIcon,
@@ -43,6 +44,8 @@ import {
 } from '@/app/actions/db/users'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
 import { useProfileUpdate } from '@/app/profile/hooks/useProfileUpdate'
+
+import { useUser } from '@/hooks/dbQueries'
 
 export default function Profile() {
   const queryClient = useQueryClient()
@@ -628,6 +631,7 @@ export default function Profile() {
           </div>
         </div>
       </div>
+      <PlayerCard profile={currentUserProfile ?? null} />
     </>
   )
 }

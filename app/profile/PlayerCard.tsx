@@ -1,0 +1,72 @@
+import Image from 'next/image'
+
+import { DbProfile } from '@/types/database/dbTypeAliases'
+
+// Establish some base numbers
+const CARD_WIDTH = 944
+const CARD_HEIGHT = 1344
+const INNER_WIDTH = 784 //between walls of inner gold frame
+// const INNER_HEIGHT = 1147 // from bottom gold to top
+const TOP_FROM_TOP = 121 // from top of card png to top of frame
+const FROM_LEFT = 79
+
+const BASELINE_CARD_WIDTH = 300
+
+const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
+
+export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
+  const washImageSrc = (() => {
+    switch (profile?.team) {
+      case 'orange':
+        return '/images/cards/orange-wash.png'
+      case 'purple':
+        return '/images/cards/purple-wash.png'
+      case 'green':
+        return '/images/cards/green-wash.png'
+      default:
+        return '/images/cards/gray-wash.png'
+    }
+  })()
+  return (
+    <div
+      className="relative aspect-[944/1344] max-w-full"
+      style={{
+        width: BASELINE_CARD_WIDTH,
+        aspectRatio: CARD_WIDTH / CARD_HEIGHT,
+      }}
+    >
+      {/* Background card image */}
+      <Image
+        src={washImageSrc}
+        alt="Celestial Base Color"
+        fill
+        className="z-1 object-cover"
+      />
+      {/* Player picture */}
+      <div
+        style={{
+          width: INNER_WIDTH * scale,
+          height: INNER_WIDTH * scale,
+          top: TOP_FROM_TOP * scale,
+          left: FROM_LEFT * scale,
+        }}
+        className="relative z-2"
+      >
+        <Image
+          id="player-picture"
+          src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
+          alt="Profile picture"
+          fill
+          className="z-10 object-cover pb-12"
+        />
+      </div>
+      {/* Frame Overlay */}
+      <Image
+        src="/images/cards/celestial-frame.png"
+        alt="Frame overlay"
+        fill
+        className="z-3 object-cover"
+      />
+    </div>
+  )
+}
