@@ -6,9 +6,10 @@ import { DbProfile } from '@/types/database/dbTypeAliases'
 const CARD_WIDTH = 944
 const CARD_HEIGHT = 1344
 const INNER_WIDTH = 784 //between walls of inner gold frame
-// const INNER_HEIGHT = 1147 // from bottom gold to top
+const INNER_HEIGHT = 1147 // from bottom gold to top
 const TOP_FROM_TOP = 121 // from top of card png to top of frame
 const FROM_LEFT = 79
+const PICTURE_HEIGHT = INNER_HEIGHT / 2
 
 const BASELINE_CARD_WIDTH = 300
 
@@ -46,11 +47,11 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
       <div
         style={{
           width: INNER_WIDTH * scale,
-          height: INNER_WIDTH * scale,
+          height: PICTURE_HEIGHT * scale,
           top: TOP_FROM_TOP * scale,
           left: FROM_LEFT * scale,
         }}
-        className="relative z-2 overflow-hidden pb-12"
+        className="relative z-2 overflow-hidden"
       >
         <div className="relative size-full overflow-hidden bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
           <div className="relative size-full">
@@ -72,6 +73,22 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         fill
         className="z-3 object-cover"
       />
+      {/* Sub Profile Picture */}
+      <div
+        style={{
+          width: INNER_WIDTH * scale,
+          left: FROM_LEFT * scale,
+          top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
+        }}
+        className="absolute z-2"
+      >
+        {/* Bio */}
+        <div className="w-full p-2 font-imfell text-sm leading-none text-black">
+          {profile?.bio && profile.bio.length > 200
+            ? profile?.bio?.slice(0, 200) + '...'
+            : profile?.bio}
+        </div>
+      </div>
     </div>
   )
 }
