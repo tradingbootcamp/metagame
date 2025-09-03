@@ -580,3 +580,19 @@ html::before {
     @apply cursor-pointer text-secondary-300 underline;
   }
 }
+
+@keyframes flash {
+  0% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  33% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(500%) translateY(-30%);
+  }
+}
+
+.animate-flash {
+  animation: flash 1.8s linear infinite;
+}

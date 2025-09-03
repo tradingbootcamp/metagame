@@ -50,15 +50,20 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
           top: TOP_FROM_TOP * scale,
           left: FROM_LEFT * scale,
         }}
-        className="relative z-2"
+        className="relative z-2 overflow-hidden pb-12"
       >
-        <Image
-          id="player-picture"
-          src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
-          alt="Profile picture"
-          fill
-          className="z-10 object-cover pb-12"
-        />
+        <div className="relative size-full overflow-hidden bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
+          <div className="relative size-full">
+            <Image
+              id="player-picture"
+              src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
+              alt="Profile picture"
+              fill
+              className="z-2 object-cover"
+            />
+          </div>
+          <div className="animate-flash absolute inset-0 z-1 h-[200%] w-[20%] bg-gradient-to-r from-transparent via-yellow-100 to-transparent"></div>
+        </div>
       </div>
       {/* Frame Overlay */}
       <Image
