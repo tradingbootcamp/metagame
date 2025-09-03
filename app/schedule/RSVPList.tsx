@@ -120,10 +120,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
         ? `${user.first_name} ${user.last_name}`
         : user.first_name
     }
-    if (user.email) {
-      return user.email
-    }
-    return user.id
+    return 'Anonymous'
   }
   const waitlist = rsvps
     .filter((rsvp) => rsvp.on_waitlist)
