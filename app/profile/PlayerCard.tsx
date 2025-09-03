@@ -7,6 +7,11 @@ import { DbProfile } from '@/types/database/dbTypeAliases'
 const CARD_WIDTH = 944
 const CARD_HEIGHT = 1344
 const FRAME_FROM_EDGE = 92
+const CIRCLE_FROM_EDGE = 20
+const CIRCLE_DIAMETER = 172
+const SQUARE_FROM_EDGE = 32
+const SQUARE_FROM_TOP = 235
+const SQUARE_SIZE = 143
 const INNER_WIDTH = CARD_WIDTH - FRAME_FROM_EDGE * 2 //between walls of inner gold frame
 const INNER_HEIGHT = 1147 // from bottom gold to top
 const TOP_FROM_TOP = 121 // from top of card png to top of frame
@@ -23,11 +28,11 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
     purple: '/images/cards/purple-wash.png',
     green: '/images/cards/green-wash.png',
     unassigned: '/images/cards/gray-wash.png',
-    blue: '/images/cards/blue0wash.png',
+    blue: '/images/cards/blue-wash.png',
   }
   return (
     <div
-      className="relative aspect-[944/1344] max-w-full"
+      className="relative aspect-[944/1344] max-w-full font-imfell"
       style={{
         width: BASELINE_CARD_WIDTH,
         aspectRatio: CARD_WIDTH / CARD_HEIGHT,
@@ -40,9 +45,49 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         fill
         className="z-1 object-cover"
       />
+      {/* Breath Square icon */}
+      <div
+        style={{
+          width: SQUARE_SIZE * scale,
+          height: SQUARE_SIZE * scale,
+          top: SQUARE_FROM_TOP * scale,
+          left: SQUARE_FROM_EDGE * scale,
+        }}
+        className="absolute z-4"
+      >
+        <Image
+          src="/images/cards/fog.gif"
+          alt="Breath"
+          fill
+          objectFit="cover"
+        />
+      </div>
+      {/* Points? Cirlce icon */}
+      <div
+        style={{
+          width: CIRCLE_DIAMETER * scale,
+          height: CIRCLE_DIAMETER * scale,
+          top: CIRCLE_FROM_EDGE * scale,
+          left: CIRCLE_FROM_EDGE * scale,
+        }}
+        className="absolute z-4 overflow-hidden rounded-full"
+      >
+        <Image
+          src="/images/cards/fog.gif"
+          alt="Points"
+          fill
+          objectFit="cover"
+        />
+      </div>
       {/* Hosting line */}
-      <div className="absolute top-1 right-1">
-        <span>Hosting: </span>
+      <div
+        style={{
+          top: 4 * scale,
+          right: 20 * scale,
+        }}
+        className="absolute z-4 text-sm text-white"
+      >
+        <span>Hosting: 2</span>
       </div>
       {/* Player picture */}
       <div
@@ -82,7 +127,7 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
           top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
           bottom: FRAME_FROM_EDGE * scale,
         }}
-        className="absolute z-2 flex flex-col gap-1 font-imfell text-sm leading-none break-words text-black"
+        className="absolute z-2 flex flex-col gap-1 text-sm leading-none break-words text-black"
       >
         {/* Bio */}
         <div className="w-full p-1">
@@ -94,7 +139,7 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         <div className="flex flex-col gap-2">
           <div className="flex items-center justify-start gap-1">
             <div
-              className="relative z-1 flex flex-shrink-0 items-center justify-center"
+              className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
               style={{
                 width: ABILITY_COST_SIZE * scale,
                 height: ABILITY_COST_SIZE * scale,
@@ -116,7 +161,7 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
           </div>
           <div className="flex items-center justify-start gap-1">
             <div
-              className="justify-cente relative flex flex-shrink-0 items-center"
+              className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
               style={{
                 width: ABILITY_COST_SIZE * scale,
                 height: ABILITY_COST_SIZE * scale,
@@ -140,7 +185,13 @@ export default function PlayerCard({ profile }: { profile: DbProfile | null }) {
         {/* Bottom left */}
         <div className="absolute right-0 bottom-0 flex items-center gap-1 p-1">
           <GlobeIcon className="size-3" />
-          <span>{profile?.site_url}</span>
+          <a
+            href={profile?.site_url ?? ''}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {profile?.site_url}
+          </a>
         </div>
       </div>
     </div>
