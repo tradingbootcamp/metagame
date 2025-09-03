@@ -11,18 +11,15 @@ const sessionsSelectIncludes = `
 *,
 host_1:profiles!sessions_host_1_id_fkey (
   first_name,
-  last_name,
-  email
+  last_name
 ),
 host_2:profiles!sessions_host_2_id_fkey (
   first_name,
-  last_name,
-  email
+  last_name
 ),
 host_3:profiles!sessions_host_3_id_fkey (
   first_name,
-  last_name,
-  email
+  last_name
 ),
 bookmarks:session_bookmarks!session_bookmarks_session_id_fkey (
 user_id
