@@ -4,7 +4,7 @@ import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './RSVPList'
-import { gCalLinkFromSession } from './calendar'
+import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
 import {
   CalendarIcon,
   CheckIcon,
@@ -57,8 +57,7 @@ export default function SessionDetailsCard({
   const sessionBookmarked = isSessionBookmarked(session.id!)
 
   const copyLink = () => {
-    const base = window.location.origin
-    const fullUrl = `${base}/schedule?session=${session.id!}`
+    const fullUrl = sessionLink(session.id)
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -100,6 +99,7 @@ export default function SessionDetailsCard({
                 <a
                   href={gCalLinkFromSession(session)}
                   className={buttonVariants({ variant: 'ghost' })}
+                  title="Add to Calendar"
                   target="_blank"
                   rel="noopener noreferrer"
                 >
