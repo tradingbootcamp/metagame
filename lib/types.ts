@@ -60,3 +60,9 @@ export interface AirtableRecord {
 export type IdXorEmail =
   | { id: string; email?: never }
   | { id?: never; email: string }
+
+export type Exact<T, Shape> = T extends Shape
+  ? Exclude<keyof T, keyof Shape> extends never
+    ? T
+    : `Error: Object has extra keys '${Exclude<keyof T, keyof Shape> & string}'`
+  : `Error: Object has missing keys '${Exclude<keyof Shape, keyof T> & string}'`
