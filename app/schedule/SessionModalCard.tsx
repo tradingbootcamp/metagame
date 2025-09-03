@@ -4,13 +4,22 @@ import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './RSVPList'
-import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
+import { gCalLinkFromSession } from './calendar'
+import {
+  CalendarIcon,
+  CheckIcon,
+  EditIcon,
+  LinkIcon,
+  StarIcon,
+  UserIcon,
+} from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
 import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
 
 import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
@@ -88,7 +97,14 @@ export default function SessionDetailsCard({
                     />
                   </button>
                 )}
-
+                <a
+                  href={gCalLinkFromSession(session)}
+                  className={buttonVariants({ variant: 'ghost' })}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <CalendarIcon className={`size-4 text-secondary-300`} />
+                </a>
                 {/* Edit button for admins */}
                 {canEdit && (
                   <button
