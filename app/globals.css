@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=IM+Fell+English:ital@0;1&display=swap');
 @import 'tailwindcss';
 @import '@fontsource/jura/latin.css';
 @import 'tw-animate-css';
@@ -90,8 +91,9 @@
   --font-sans:
     Jura, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-
-  /* Keyframes */
+  --font-imfell:
+    'IM Fell English', ui-serif, serif, 'Apple Color Emoji';
+  /* Keyframes */ 
   --animate-coin-pop: coin-pop 0.6s ease-out;
   --animate-fade-in: fade-in 0.5s ease-in forwards;
   --animate-fade-out: fade-out 0.5s linear forwards;
