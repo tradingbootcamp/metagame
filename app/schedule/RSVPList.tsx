@@ -73,7 +73,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
   const unrsvpUserMutation = useMutation({
     mutationFn: adminUnRsvpUserFromSession,
     onMutate: async ({ sessionId, userId }) => {
-      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      await queryClient.cancelQueries({ queryKey: ['sessions'] })
       const previousSessions = queryClient.getQueryData<DbFullSession[]>([
         'sessions',
       ])

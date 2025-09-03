@@ -1,5 +1,4 @@
 import { getAllLocations } from '../actions/db/locations'
-import { getAllRsvps } from '../actions/db/sessionRsvps'
 import { getAllSessions } from '../actions/db/sessions'
 import { getCurrentUserFullProfile } from '../actions/db/users'
 import Schedule from './Schedule'
@@ -55,12 +54,6 @@ export default async function ScheduleProvider({
       queryClient.prefetchQuery({
         queryKey: ['locations'],
         queryFn: getAllLocations,
-      }),
-
-    () =>
-      queryClient.prefetchQuery({
-        queryKey: ['rsvps', 'all'],
-        queryFn: getAllRsvps,
       }),
   ]
   await Promise.all(generalPrefetchQueries.map((query) => query()))
