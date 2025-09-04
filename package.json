@@ -5,7 +5,7 @@
   "scripts": {
     "build": "next build",
     "db:migrate": "npx supabase migration up --local && pnpm types:supabase",
-    "db:migrate:prod": "npx supabase link --project-ref fkarmpoupazxnshofaeg && npx supabase db push && pnpm types:supabase:remote",
+    "db:migrate:prod": "npx supabase link --project-ref fkarmpoupazxnshofaeg && npx supabase db push && pnpm types:supabase:prod",
     "db:reset": "npx supabase db reset --local && pnpm types:supabase",
     "dev": "next dev",
     "fmt": "pnpm format",

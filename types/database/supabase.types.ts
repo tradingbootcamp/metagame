@@ -7,6 +7,11 @@ export type Json =
   | Json[]
 
 export type Database = {
+  // Allows to automatically instantiate createClient with right options
+  // instead of createClient<Database, { PostgrestVersion: 'XX' }>(URL, KEY)
+  __InternalSupabase: {
+    PostgrestVersion: "12.2.12 (cd3cf9e)"
+  }
   public: {
     Tables: {
       coupon_emails: {
@@ -163,6 +168,7 @@ export type Database = {
           last_name: string | null
           minor: boolean | null
           opted_in_to_homepage_display: boolean | null
+          player_id: number
           profile_pictures_url: string | null
           site_name: string | null
           site_name_2: string | null
@@ -183,6 +189,7 @@ export type Database = {
           last_name?: string | null
           minor?: boolean | null
           opted_in_to_homepage_display?: boolean | null
+          player_id: number
           profile_pictures_url?: string | null
           site_name?: string | null
           site_name_2?: string | null
@@ -203,6 +210,7 @@ export type Database = {
           last_name?: string | null
           minor?: boolean | null
           opted_in_to_homepage_display?: boolean | null
+          player_id?: number
           profile_pictures_url?: string | null
           site_name?: string | null
           site_name_2?: string | null
@@ -549,7 +557,10 @@ export type Database = {
       }
     }
     Functions: {
-      [_ in never]: never
+      generate_unique_player_id: {
+        Args: Record<PropertyKey, never>
+        Returns: number
+      }
     }
     Enums: {
       AGES: "ADULTS" | "KIDS" | "ALL"
@@ -718,4 +729,3 @@ export const Constants = {
     },
   },
 } as const
-
