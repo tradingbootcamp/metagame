@@ -33,7 +33,7 @@ export async function POST(request: NextRequest) {
     }
 
     let originalPriceInCents: number
-    if (preCouponPriceUSD) {
+    if (preCouponPriceUSD && ticketTypeId ==="player") {
       if (preCouponPriceUSD < usdSlidingScaleMinimum) {
         return NextResponse.json({ error: 'Invalid price' }, { status: 400 })
       }
