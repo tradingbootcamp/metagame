@@ -11,8 +11,8 @@ import { ProfileFormData, initialProfileFormData } from '@/lib/schemas/profile'
 import { cn } from '@/utils/cn'
 import { URLS } from '@/utils/urls'
 
-import { Modal } from '@/components/Modal'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
@@ -53,8 +53,13 @@ export function ProfileInfoModal({
   }
 
   return (
-    <Modal onClose={onClose}>
-      <div className="mx-4 w-full max-w-md rounded-lg bg-card p-6">
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogContent className="mx-4 w-full max-w-md bg-card">
         <h2 className="mb-1 text-2xl font-bold">Complete Your Profile</h2>
         <p className="mb-6 text-muted-foreground">
           We need some basic profile information
@@ -241,7 +246,7 @@ export function ProfileInfoModal({
             Maybe later
           </Button>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }
