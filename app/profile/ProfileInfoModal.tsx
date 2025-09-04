@@ -14,7 +14,9 @@ import { URLS } from '@/utils/urls'
 import { Modal } from '@/components/Modal'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 
 import { DbProfile } from '@/types/database/dbTypeAliases'
 
@@ -88,6 +90,21 @@ export function ProfileInfoModal({
                 }
               />
             </div>
+          </div>
+          <div>
+            <Label className="label">
+              <span className="label-text">Bio</span>
+            </Label>
+            <Textarea
+              placeholder="Bio"
+              value={formData.bio ?? ''}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  bio: e.target.value || null,
+                }))
+              }
+            />
           </div>
 
           {/* Homepage Display Radio Group */}
