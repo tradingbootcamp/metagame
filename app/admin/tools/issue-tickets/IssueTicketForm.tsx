@@ -29,7 +29,7 @@ import {
   AdminIssueTicketInput,
   adminIssueTicket,
 } from '@/app/admin/tools/issue-tickets/actions'
-import { ApiFullProfilesResponse } from '@/app/api/queries/profiles/route'
+import { ApiAllFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
 import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
@@ -67,7 +67,7 @@ export function IssueTicketForm({}: {
         if (!userProfiles.ok) {
           throw new Error('Failed to load users')
         }
-        const users = (await userProfiles.json()) as ApiFullProfilesResponse
+        const users = (await userProfiles.json()) as ApiAllFullProfilesResponse
         setExistingUsers(users)
       } catch (err) {
         console.error('Failed to load users:', err)

@@ -42,3 +42,8 @@ export const adminFullDeleteUser = adminExportWrapper(
 export const adminUpdateUserProfile = adminExportWrapper(
   usersService.updateUserProfile,
 )
+
+export const getUsersPublicProfiles = usersService.getUsersPublicProfiles
+export const adminGetUsersFullProfiles = adminExportWrapper(
+  usersService.getUsersFullProfiles,
+)

@@ -29,7 +29,7 @@ import {
 } from '@/components/ui/table'
 
 import { adminUpdateUserProfile } from '@/app/actions/db/users'
-import { ApiFullProfilesResponse } from '@/app/api/queries/profiles/route'
+import { ApiAllFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
 import { DbTeamColor } from '@/types/database/dbTypeAliases'
 
@@ -54,7 +54,7 @@ export default function UserTeamsClient() {
       if (!profiles.ok) {
         throw new Error('Failed to load users')
       }
-      return (await profiles.json()) as ApiFullProfilesResponse
+      return (await profiles.json()) as ApiAllFullProfilesResponse
     },
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())

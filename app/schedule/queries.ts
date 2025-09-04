@@ -1,7 +1,7 @@
 import { ApiAllLocationsResponse as ApiLocationsResponse } from '../api/queries/locations/route'
 import { ApiUserFullProfileResponse } from '../api/queries/profiles/[userId]/route'
 import { ApiCurrentUserFullProfileResponse } from '../api/queries/profiles/current/route'
-import { ApiFullProfilesResponse } from '../api/queries/profiles/route'
+import { ApiAllFullProfilesResponse } from '../api/queries/profiles/route'
 import { ApiUserRsvpsResponse } from '../api/queries/rsvps/[userId]/route'
 import { ApiCurrentUserRsvpsResponse } from '../api/queries/rsvps/current/route'
 import { ApiRsvpsResponse } from '../api/queries/rsvps/route'
@@ -49,7 +49,7 @@ export const fetchLocations = async (): Promise<ApiLocationsResponse> => {
 }
 
 export const adminFetchFullProfiles =
-  async (): Promise<ApiFullProfilesResponse> => {
+  async (): Promise<ApiAllFullProfilesResponse> => {
     const response = await fetch('/api/queries/profiles')
     if (!response.ok) {
       await handleApiError(response, 'Failed to fetch profiles')

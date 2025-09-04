@@ -7,6 +7,7 @@ import { createClient } from '@/utils/supabase/server'
 import { createServiceClient } from '@/utils/supabase/service'
 
 import {
+  DbFullProfile,
   DbProfileUpdate,
   DbPublicProfile,
 } from '@/types/database/dbTypeAliases'
@@ -97,7 +98,28 @@ export const usersService = {
     }
     return data
   },
-
+  getUsersPublicProfiles: async ({ userIds }: { userIds: string[] }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+      .in('id', userIds)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile[]
+  },
+  getUsersFullProfiles: async ({ userIds }: { userIds: string[] }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbFullProfile[]
+  },
   /** Update a user's profile */
   updateUserProfile: async ({
     userId,
