@@ -24,7 +24,11 @@ const ABILITY_COST_SIZE = 75
 const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
 
 export default function PlayerCard({ userId }: { userId: string }) {
-  const { profile, profileLoading, profileError } = usePublicProfile(userId)
+  const {
+    data: profile,
+    isLoading: profileLoading,
+    isError: profileError,
+  } = usePublicProfile(userId)
   const washImageSrcs = {
     orange: '/images/cards/orange-wash.png',
     purple: '/images/cards/purple-wash.png',
