@@ -29,7 +29,8 @@ const publicProfileSelectIncludes = `
   dismissed_info_request,
   minor,
   profile_pictures_url,
-  player_id
+  player_id,
+  pronouns
 `
 export const usersService = {
   /** Get the current authenticated user */
