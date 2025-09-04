@@ -3,20 +3,17 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import { AttendanceDisplay } from './RSVPList'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
-import { fetchLocations, fetchSessions } from './queries'
-import { useQuery } from '@tanstack/react-query'
+import { scheduleColors } from './scheduleColors'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
   CheckIcon,
-  ChevronLeft,
-  ChevronRight,
   PlusIcon,
   StarIcon,
   User2Icon,
-  UserIcon,
 } from 'lucide-react'
 import Image from 'next/image'
 import { useRouter } from 'next/navigation'
@@ -26,27 +23,24 @@ import { toast } from 'sonner'
 import { dateUtils } from '@/utils/dateUtils'
 import {
   SESSION_AGES,
-  countRsvpsByTeamColor,
-  countRsvpsForSession,
+  SESSION_CATEGORIES,
+  // countRsvpsByTeamColor,
   dbGetHostsFromSession,
 } from '@/utils/dbUtils'
 
 import { BloodDrippingFrame } from '@/components/BloodDrippingFrame'
-import { Modal } from '@/components/Modal'
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import {
   Tooltip,
   TooltipContent,
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { useUser } from '@/hooks/dbQueries'
-import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import {
-  DbSessionRsvpWithTeam,
-  DbSessionView,
-} from '@/types/database/dbTypeAliases'
+import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
+import { useUser } from '@/hooks/useUser'
+import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]
 const SCHEDULE_END_TIMES = [22, 22, 22]
@@ -73,33 +67,8 @@ const generateTimeSlots = (dayIndex: number) => {
   return slots
 }
 
-// Color options for events
-const locationEventColors = [
-  'bg-blue-200 border-blue-300',
-  'bg-purple-200 border-purple-300',
-  'bg-orange-200 border-orange-300',
-  'bg-cyan-100 border-cyan-200',
-  'bg-pink-200 border-pink-300',
-  'bg-yellow-200 border-yellow-300',
-  'bg-red-200 border-red-300',
-  'bg-indigo-200 border-indigo-300',
-  'bg-teal-200 border-teal-300',
-]
-
-const locationEventRSVPdColors = [
-  'bg-blue-500 border-blue-600',
-  'bg-purple-500 border-purple-600',
-  'bg-orange-500 border-orange-600',
-  'bg-cyan-400 border-cyan-500',
-  'bg-pink-500 border-pink-600',
-  'bg-yellow-500 border-yellow-600',
-  'bg-red-500 border-red-600',
-  'bg-indigo-500 border-indigo-600',
-  'bg-teal-500 border-teal-600',
-]
-
 // Updated slot checking - PST based
-const eventStartsInSlot = (session: DbSessionView, slotTime: string) => {
+const eventStartsInSlot = (session: DbFullSession, slotTime: string) => {
   if (!session.start_time) return false
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -114,7 +83,7 @@ const eventStartsInSlot = (session: DbSessionView, slotTime: string) => {
 }
 
 // Updated offset calculation - PST based
-const getEventOffsetMinutes = (session: DbSessionView, slotTime: string) => {
+const getEventOffsetMinutes = (session: DbFullSession, slotTime: string) => {
   if (!session.start_time) return 0
 
   const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -125,7 +94,7 @@ const getEventOffsetMinutes = (session: DbSessionView, slotTime: string) => {
 }
 
 // Updated duration calculation - PST based
-const getEventDurationMinutes = (session: DbSessionView) => {
+const getEventDurationMinutes = (session: DbFullSession) => {
   if (!session.start_time || !session.end_time) return 30
 
   const startMinutes = dateUtils.getPSTMinutes(session.start_time)
@@ -148,28 +117,19 @@ export default function Schedule({
   const {
     isUserRsvpd,
     toggleRsvp,
-    rsvpsBySessionId,
     isSessionBookmarked,
     toggleBookmark,
     bookmarks,
+    locations,
+    sessions,
   } = useScheduleStuff()
 
-  const { data: sessions = [] } = useQuery({
-    queryKey: ['sessions'],
-    queryFn: fetchSessions,
-  })
-
-  const { data: allLocations = [] } = useQuery({
-    queryKey: ['locations'],
-    queryFn: fetchLocations,
-  })
-
   // Filter and sort locations for schedule display
-  const locations = useMemo(() => {
-    return allLocations
+  const scheduleLocations = useMemo(() => {
+    return locations
       .filter((location) => location.display_in_schedule) // Only show locations that should be displayed in schedule
       .sort((a, b) => a.schedule_display_order - b.schedule_display_order) // Sort by display order
-  }, [allLocations])
+  }, [locations])
 
   const [filterForUserEvents, setFilterForUserEvents] = useState(false)
 
@@ -179,9 +139,9 @@ export default function Schedule({
       [], // Day 0: Friday 9/12
       [], // Day 1: Saturday 9/13
       [], // Day 2: Sunday 9/14
-    ] as DbSessionView[][]
+    ] as DbFullSession[][]
 
-    const userRsvpOrHostingSession = (session: DbSessionView) => {
+    const userRsvpOrHostingSession = (session: DbFullSession) => {
       if (!currentUserProfile) return true
       if (isUserRsvpd(session.id!)) {
         return true
@@ -225,6 +185,8 @@ export default function Schedule({
     return CONFERENCE_DAYS.map((confDay, index) => ({
       date: confDay.date,
       displayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date)})`,
+      shortDateDisplayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date).slice(5)})`,
+      shortName: confDay.name,
       events: dayEvents[index].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || ''),
       ),
@@ -232,7 +194,7 @@ export default function Schedule({
   }, [sessions, filterForUserEvents, bookmarks])
   const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
   const [openedSessionId, setOpenedSessionId] = useState<
-    DbSessionView['id'] | null
+    DbFullSession['id'] | null
   >(sessionId ?? null)
   const [isAddEventModalOpen, setIsAddEventModalOpen] = useState(false)
   const [addEventPrefill, setAddEventPrefill] = useState<{
@@ -299,104 +261,93 @@ export default function Schedule({
     })
   }
 
-  // Helper function to get event color
-  const getEventColor = (session: DbSessionView) => {
-    const userIsRsvpd = isUserRsvpd(session.id!)
-    if (session.megagame) {
-      return userIsRsvpd
-        ? 'bg-[repeating-linear-gradient(45deg,#f97316,#f97316_10px,#a855f7_10px,#a855f7_20px)]'
-        : 'bg-[repeating-linear-gradient(45deg,#fb923c,#fb923c_10px,#c084fc_10px,#c084fc_20px)]'
+  // Helper function to get event color based on session properties
+  const getEventColor = (session: DbFullSession) => {
+    const userIsRsvpd = isUserRsvpd(session.id!) ? 'rsvpd' : 'notRsvpd'
+    // Switch based on session properties for specific styling
+    switch (true) {
+      // Megagames get special striped pattern
+      case session.megagame:
+        return scheduleColors[userIsRsvpd].megagame
+
+      // Kids sessions get yellow background
+      case session.ages === SESSION_AGES.KIDS:
+        return scheduleColors[userIsRsvpd].kids
+
+      // Categories have colors
+      case !!session.category:
+        return scheduleColors[userIsRsvpd].category[session.category]
+
+      // Default: location-based coloring
+      default:
+        return scheduleColors[userIsRsvpd].category[SESSION_CATEGORIES.OTHER]
     }
-    const locationIndex = locations.findIndex(
-      (l) => l.id === session.location_id,
-    )
-    return userIsRsvpd
-      ? locationEventRSVPdColors[
-          locationIndex % locationEventRSVPdColors.length
-        ]
-      : locationEventColors[locationIndex % locationEventColors.length]
   }
 
   return (
     <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
-      {/* Day Navigator - Fixed on desktop, scrollable on mobile */}
-      <div className="hidden flex-shrink-0 items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:flex">
+      <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-secondary-300 bg-dark-600 p-4">
         <button
           onClick={prevDay}
-          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex cursor-pointer items-center gap-2 justify-self-start rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === 0}
         >
           <ArrowLeftIcon className="h-5 w-5 text-secondary-300" />
-          {
-            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
-              {currentDayIndex === 1
-                ? 'Friday'
-                : currentDayIndex === 2
-                  ? 'Saturday'
-                  : ''}
+          {currentDayIndex > 0 && (
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
+              <span className="hidden sm:block">
+                {days[currentDayIndex - 1].shortName}
+              </span>
+              <span className="block sm:hidden">
+                {days[currentDayIndex - 1].shortName.slice(0, 3)}
+              </span>
             </span>
-          }
+          )}
         </button>
 
-        <h2 className="text-center text-xl font-bold text-secondary-200">
-          {currentDay.displayName}
+        <h2 className="justify-self-center text-center text-xl font-bold text-secondary-200">
+          <span className="hidden sm:block">{currentDay.displayName}</span>
+          <div className="flex flex-col items-center justify-center sm:hidden">
+            <span className="">{currentDay.shortName}</span>
+            <span className="text-xs">
+              {dateUtils.getYYYYMMDD(currentDay.date)}
+            </span>
+          </div>
         </h2>
 
         <button
           onClick={nextDay}
-          className="flex cursor-pointer items-center gap-2 rounded-md p-2 transition-colors disabled:opacity-50"
+          className="group flex cursor-pointer items-center gap-2 justify-self-end rounded-md p-2 transition-colors disabled:opacity-50"
           disabled={currentDayIndex === days.length - 1}
         >
-          {
-            <span className="text-lg font-semibold text-secondary-200 opacity-50 hover:opacity-100">
-              {currentDayIndex === 0
-                ? 'Saturday'
-                : currentDayIndex === 1
-                  ? 'Sunday'
-                  : ''}
+          {currentDayIndex < days.length - 1 && (
+            <span className="text-lg font-semibold text-secondary-200 opacity-50 group-hover:opacity-100">
+              <span className="hidden sm:block">
+                {days[currentDayIndex + 1].shortName}
+              </span>
+              <span className="block sm:hidden">
+                {days[currentDayIndex + 1].shortName.slice(0, 3)}
+              </span>
             </span>
-          }
+          )}
           <ArrowRightIcon className="h-5 w-5 text-secondary-300" />
         </button>
       </div>
 
       {/* Scrollable Schedule Content */}
-      <div className="flex-1 overflow-x-auto overflow-y-hidden">
-        {/* Day Navigator - Mobile only, inside scrollable area, sticky left */}
-        <div className="sticky left-0 z-30 flex items-center justify-between border-b border-secondary-300 bg-dark-600 p-4 lg:hidden">
-          <button
-            onClick={prevDay}
-            className="rounded-md p-2 transition-colors disabled:opacity-50"
-            disabled={currentDayIndex === 0}
-          >
-            <ChevronLeft className="h-5 w-5 text-secondary-300" />
-          </button>
-
-          <h2 className="text-center text-xl font-bold text-secondary-200">
-            {currentDay.displayName}
-          </h2>
-
-          <button
-            onClick={nextDay}
-            className="rounded-md p-2 transition-colors disabled:opacity-50"
-            disabled={currentDayIndex === days.length - 1}
-          >
-            <ChevronRight className="h-5 w-5 text-secondary-300" />
-          </button>
-        </div>
-
+      <div className="no-scrollbar flex-1 overflow-x-auto overflow-y-hidden">
         <div className="h-fit min-w-fit">
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
             className="grid bg-dark-400 lg:top-0 lg:z-30"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             <div className="sticky left-0 z-30 border border-secondary-300 bg-dark-600 p-3">
               {/* Empty space above time column */}
             </div>
-            {locations.map((location) => (
+            {scheduleLocations.map((location) => (
               <div
                 key={location.id}
                 className="border border-secondary-300 bg-dark-600 p-3"
@@ -434,7 +385,7 @@ export default function Schedule({
           <div
             className="sticky top-0 z-20 grid bg-dark-400"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             <div className="sticky top-0 left-0 z-30 border border-b-2 border-secondary-300 bg-dark-600 p-3">
@@ -457,7 +408,7 @@ export default function Schedule({
                 )}
               </div>
             </div>
-            {locations.map((venue) => (
+            {scheduleLocations.map((venue) => (
               <div
                 key={venue.id}
                 className="border border-b-2 border-secondary-300 bg-dark-600 p-3"
@@ -486,7 +437,7 @@ export default function Schedule({
           <div
             className="grid bg-dark-400"
             style={{
-              gridTemplateColumns: `60px repeat(${locations.length}, minmax(180px, 1fr))`,
+              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
           >
             {generateTimeSlots(currentDayIndex).map((time) => (
@@ -499,7 +450,7 @@ export default function Schedule({
                 </div>
 
                 {/* Venue Cells */}
-                {locations.map((venue) => {
+                {scheduleLocations.map((venue) => {
                   const eventsInSlot = currentDay.events.filter(
                     (session) =>
                       session.location_id === venue.id &&
@@ -529,6 +480,9 @@ export default function Schedule({
                               height: `${getEventDurationMinutes(session) * 2}px`, // 2px per minute
                               left: '0px',
                               right: '0px',
+                              boxShadow: isUserRsvpd(session.id!)
+                                ? '0 0 0 3px #ff33be'
+                                : undefined,
                             }}
                           >
                             <div className="relative flex size-full flex-col">
@@ -538,38 +492,42 @@ export default function Schedule({
                               <div className="font-sans text-xs">
                                 {dbGetHostsFromSession(session).join(', ')}
                               </div>
-                              <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
-                                <button
-                                  onClick={(e) => {
-                                    e.stopPropagation()
-                                    toggleBookmark(session.id!)
-                                  }}
-                                  className="group rounded-xs p-0.5 hover:cursor-pointer"
-                                >
-                                  <StarIcon
-                                    fill={
-                                      isSessionBookmarked(session.id!)
-                                        ? 'yellow'
-                                        : 'none'
-                                    }
-                                    strokeWidth={2}
-                                    className={`size-3 ${isSessionBookmarked(session.id!) ? 'block' : 'hidden'} text-black group-hover:block`}
-                                  />
-                                </button>
-                              </div>
-                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
-                                <div className="flex min-h-[20px] items-center gap-1">
+                              {currentUser && (
+                                <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
                                   <button
                                     onClick={(e) => {
                                       e.stopPropagation()
-                                      toggleRsvp(session.id!)
+                                      toggleBookmark(session.id!)
                                     }}
-                                    className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                    className="rounded-xs p-0.5 hover:cursor-pointer"
                                   >
-                                    {isUserRsvpd(session.id!)
-                                      ? 'UnRSVP'
-                                      : 'RSVP'}
+                                    <StarIcon
+                                      fill={
+                                        isSessionBookmarked(session.id!)
+                                          ? 'black'
+                                          : 'none'
+                                      }
+                                      strokeWidth={2}
+                                      className={`size-3 ${isSessionBookmarked(session.id!) ? 'block' : 'hidden'} text-black group-hover:block`}
+                                    />
                                   </button>
+                                </div>
+                              )}
+                              <div className="absolute right-0 bottom-0 flex items-center gap-1 font-sans text-xs opacity-80">
+                                <div className="flex min-h-[20px] items-center gap-1">
+                                  {currentUser && (
+                                    <button
+                                      onClick={(e) => {
+                                        e.stopPropagation()
+                                        toggleRsvp(session.id!)
+                                      }}
+                                      className={`hidden cursor-pointer rounded-sm bg-slate-200 p-0.5 font-serif group-hover:block ${isUserRsvpd(session.id!) ? 'text-red-600' : 'text-green-700'}`}
+                                    >
+                                      {isUserRsvpd(session.id!)
+                                        ? 'UnRSVP'
+                                        : 'RSVP'}
+                                    </button>
+                                  )}
                                   {isUserRsvpd(session.id!) && (
                                     <CheckIcon
                                       className="size-4 rounded-full bg-white text-green-600"
@@ -599,10 +557,8 @@ export default function Schedule({
                                     </TooltipContent>
                                   </Tooltip>
                                 )}
-                                <UserIcon className="size-3" />
                                 <AttendanceDisplay
                                   session={session}
-                                  sessionRsvps={rsvpsBySessionId(session.id!)}
                                   userLoggedIn={!!currentUser}
                                 />
                               </div>
@@ -634,23 +590,32 @@ export default function Schedule({
       </div>
 
       {openedSession && (
-        <Modal
-          onClose={() => {
-            const sessionDayIndex = days.findIndex((day) =>
-              day.events.some((event) => event.id === openedSessionId),
-            )
-            setOpenedSessionId(null)
-            if (sessionDayIndex >= 0) {
-              setCurrentDayIndex(sessionDayIndex)
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              const sessionDayIndex = days.findIndex((day) =>
+                day.events.some((event) => event.id === openedSessionId),
+              )
+              setOpenedSessionId(null)
+              if (sessionDayIndex >= 0) {
+                setCurrentDayIndex(sessionDayIndex)
+              }
             }
           }}
         >
-          <SessionDetailsCard
-            session={openedSession}
-            canEdit={editPermissions[openedSessionId!] || false}
-            showButtons={true}
-          />
-        </Modal>
+          <DialogContent
+            showCloseButton={false}
+            className="rounded-none border-none bg-transparent p-0 shadow-none"
+          >
+            <DialogTitle className="sr-only">Session Details</DialogTitle>
+            <SessionDetailsCard
+              session={openedSession}
+              canEdit={editPermissions[openedSessionId!] || false}
+              showButtons={true}
+            />
+          </DialogContent>
+        </Dialog>
       )}
 
       <AddEventModal
@@ -676,49 +641,5 @@ export default function Schedule({
         </button>
       )}
     </div>
-  )
-}
-
-export const AttendanceDisplay = ({
-  session,
-  sessionRsvps,
-  userLoggedIn,
-}: {
-  session: DbSessionView
-  sessionRsvps: DbSessionRsvpWithTeam[]
-  userLoggedIn: boolean
-}) => {
-  // For megagames, we need the team breakdown from client-side RSVP data
-  if (session.megagame) {
-    const teamCounts = countRsvpsByTeamColor(sessionRsvps)
-    return (
-      <div className="flex items-center gap-1 rounded-md bg-gray-200 px-1 py-0.5 font-sans text-xs">
-        <span className="font-bold text-purple-500">{teamCounts.purple}</span>
-        <span className="font-bold text-black">|</span>
-        <span className="font-bold text-orange-400">{teamCounts.orange}</span>
-      </div>
-    )
-  }
-
-  // Use client-side RSVP data for consistent counting
-  const rsvpCounts = countRsvpsForSession(sessionRsvps)
-  const displayCount = rsvpCounts.confirmed // Show confirmed RSVPs (not waitlist)
-
-  if (!userLoggedIn) {
-    return (
-      <div>
-        {session.min_capacity && session.max_capacity
-          ? `${session.min_capacity} - ${session.max_capacity}`
-          : null}
-      </div>
-    )
-  }
-
-  return (
-    <span>
-      {session.max_capacity
-        ? `${displayCount} / ${session.max_capacity}`
-        : `${displayCount}`}
-    </span>
   )
 }

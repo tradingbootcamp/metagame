@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useEffect } from 'react'
+import React from 'react'
 
 import { Button } from '../../Button'
 import { Typer } from '../../Typer'
@@ -22,35 +22,6 @@ const gameNames = [
 ]
 
 export const Hero: React.FC = () => {
-  useEffect(() => {
-    // Only run animation on non-mobile devices
-    const isMobile = window.matchMedia('(max-width: 768px)').matches
-
-    if (!isMobile) {
-      const r = document.querySelector(':root') as HTMLElement
-
-      let dt = 0
-      let prevtime = 0
-      let outrun = 0
-
-      function doAnimationStep(timeStamp: DOMHighResTimeStamp) {
-        dt = (timeStamp - prevtime) / 1000
-        prevtime = timeStamp
-        outrun = (outrun + dt) % 1
-
-        r.style.setProperty('--outrun', `${outrun}`)
-        requestAnimationFrame(doAnimationStep)
-      }
-
-      const animationId = requestAnimationFrame(doAnimationStep)
-
-      // Cleanup function
-      return () => {
-        cancelAnimationFrame(animationId)
-      }
-    }
-  }, [])
-
   return (
     <section
       className="flex h-[80vh] flex-col items-center justify-center px-0 pb-2 md:px-12"
@@ -76,7 +47,6 @@ export const Hero: React.FC = () => {
         <Button background="bg-cyan-500" link="#tickets">
           GET YOUR TICKET
         </Button>
-        {/* <RFPCTA /> */}
       </div>
     </section>
   )

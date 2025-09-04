@@ -1,3 +1,4 @@
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400..900&family=IM+Fell+English:ital@0;1&family=Mulish:ital,wght@0,200..1000;1,200..1000&display=swap');
 @import 'tailwindcss';
 @import '@fontsource/jura/latin.css';
 @import 'tw-animate-css';
@@ -34,7 +35,7 @@
     --color-dark-400
   ); /* Cards, modals, elevated surfaces */
   --color-bg-tertiary: var(
-    --color-dark-300
+    --color-slate-800
   ); /* Hover states, subtle highlights */
   --color-bg-surface: var(--color-dark-600); /* Alternative surface color */
 
@@ -90,11 +91,14 @@
   --font-sans:
     Jura, ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
     'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
-
-  /* Keyframes */
-  --animate-coin-pop: coin-pop 0.6s ease-out;
+  --font-imfell: 'IM Fell English', ui-serif, serif, 'Apple Color Emoji';
+  --font-cinzel: 'Cinzel', ui-serif, serif, 'Apple Color Emoji';
+  --font-mulish:
+    'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+    /* Keyframes */ --animate-coin-pop: coin-pop 0.6s ease-out;
   --animate-fade-in: fade-in 0.5s ease-in forwards;
   --animate-fade-out: fade-out 0.5s linear forwards;
+  --animate-flash: flash 2s linear infinite;
 }
 
 /* Keyframe definitions */
@@ -112,7 +116,17 @@
     opacity: 0;
   }
 }
-
+@keyframes flash {
+  0% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  65% {
+    transform: rotate(45deg) translateX(-500%) translateY(-30%);
+  }
+  100% {
+    transform: rotate(45deg) translateX(500%) translateY(-30%);
+  }
+}
 @keyframes fade-in {
   0% {
     opacity: 0;
@@ -128,6 +142,21 @@
   }
   100% {
     opacity: 0;
+  }
+}
+
+@property --outrun {
+  syntax: '<number>';
+  inherits: false;
+  initial-value: 0;
+}
+
+@keyframes outrun-scroll {
+  from {
+    --outrun: 0;
+  }
+  to {
+    --outrun: 1;
   }
 }
 
@@ -351,6 +380,10 @@ html::before {
   z-index: -1;
   pointer-events: none;
   filter: brightness(0.8);
+  /* Grid sizing variables to keep near-square cells across viewports */
+  --grid-gap: clamp(3px, 1.2vmin, 8px);
+  --grid-line: clamp(1px, 0.12vmin, 2px);
+  --hline: var(--grid-line);
   --lgDepth: url('data:image/svg+xml;utf8,<svg width="1808" height="230" xmlns="http://www.w3.org/2000/svg"><path d="M904 -46 L-3616 230 M904 -46 L-3254.4 230 M904 -46 L-2892.8 230 M904 -46 L-2531.2000000000003 230 M904 -46 L-2169.6000000000004 230 M904 -46 L-1808 230 M904 -46 L-1446.4 230 M904 -46 L-1084.8000000000002 230 M904 -46 L-723.2 230 M904 -46 L-361.6 230 M904 -46 L0 230 M904 -46 L361.6 230 M904 -46 L723.2 230 M904 -46 L1084.8000000000002 230 M904 -46 L1446.4 230 M904 -46 L1808 230 M904 -46 L2169.6000000000004 230 M904 -46 L2531.2000000000003 230 M904 -46 L2892.8 230 M904 -46 L3254.4 230 M904 -46 L3616 230 M904 -46 L3977.6000000000004 230 M904 -46 L4339.200000000001 230 M904 -46 L4700.8 230 M904 -46 L5062.400000000001 230 M904 -46 L5424 230" stroke="cornflowerblue" stroke-width="2" vector-effect="non-scaling-stroke" /></svg>')
     left bottom / 100% 40% no-repeat;
   --pos: var(--outrun, 0);
@@ -408,58 +441,58 @@ html::before {
     );
   --lgh: linear-gradient(
     transparent 0px var(--hor),
-    var(--c1) var(--hor) calc(var(--hor) + 2px),
-    transparent calc(var(--hor) + 2px)
+    var(--c1) var(--hor) calc(var(--hor) + var(--hline)),
+    transparent calc(var(--hor) + var(--hline))
   );
   --lg0: linear-gradient(
     transparent 0px calc(var(--l0)),
-    var(--c1) calc(var(--l0)) calc(var(--l0) + 2px),
-    transparent calc(var(--l0) + 2px)
+    var(--c1) calc(var(--l0)) calc(var(--l0) + var(--hline)),
+    transparent calc(var(--l0) + var(--hline))
   );
   --lg1: linear-gradient(
     transparent 0px calc(var(--l1)),
-    var(--c1) calc(var(--l1)) calc(var(--l1) + 2px),
-    transparent calc(var(--l1) + 2px)
+    var(--c1) calc(var(--l1)) calc(var(--l1) + var(--hline)),
+    transparent calc(var(--l1) + var(--hline))
   );
   --lg2: linear-gradient(
     transparent 0px calc(var(--l2)),
-    var(--c1) calc(var(--l2)) calc(var(--l2) + 2px),
-    transparent calc(var(--l2) + 2px)
+    var(--c1) calc(var(--l2)) calc(var(--l2) + var(--hline)),
+    transparent calc(var(--l2) + var(--hline))
   );
   --lg3: linear-gradient(
     transparent 0px calc(var(--l3)),
-    var(--c1) calc(var(--l3)) calc(var(--l3) + 2px),
-    transparent calc(var(--l3) + 2px)
+    var(--c1) calc(var(--l3)) calc(var(--l3) + var(--hline)),
+    transparent calc(var(--l3) + var(--hline))
   );
   --lg4: linear-gradient(
     transparent 0px calc(var(--l4)),
-    var(--c1) calc(var(--l4)) calc(var(--l4) + 2px),
-    transparent calc(var(--l4) + 2px)
+    var(--c1) calc(var(--l4)) calc(var(--l4) + var(--hline)),
+    transparent calc(var(--l4) + var(--hline))
   );
   --lg5: linear-gradient(
     transparent 0px calc(var(--l5)),
-    var(--c1) calc(var(--l5)) calc(var(--l5) + 2px),
-    transparent calc(var(--l5) + 2px)
+    var(--c1) calc(var(--l5)) calc(var(--l5) + var(--hline)),
+    transparent calc(var(--l5) + var(--hline))
   );
   --lg6: linear-gradient(
     transparent 0px calc(var(--l6)),
-    var(--c1) calc(var(--l6)) calc(var(--l6) + 2px),
-    transparent calc(var(--l6) + 2px)
+    var(--c1) calc(var(--l6)) calc(var(--l6) + var(--hline)),
+    transparent calc(var(--l6) + var(--hline))
   );
   --lg7: linear-gradient(
     transparent 0px calc(var(--l7)),
-    var(--c1) calc(var(--l7)) calc(var(--l7) + 2px),
-    transparent calc(var(--l7) + 2px)
+    var(--c1) calc(var(--l7)) calc(var(--l7) + var(--hline)),
+    transparent calc(var(--l7) + var(--hline))
   );
   --lg8: linear-gradient(
     transparent 0px calc(var(--l8)),
-    var(--c1) calc(var(--l8)) calc(var(--l8) + 2px),
-    transparent calc(var(--l8) + 2px)
+    var(--c1) calc(var(--l8)) calc(var(--l8) + var(--hline)),
+    transparent calc(var(--l8) + var(--hline))
   );
   --lg9: linear-gradient(
     transparent 0px calc(var(--l9)),
-    var(--c1) calc(var(--l9)) calc(var(--l9) + 2px),
-    transparent calc(var(--l9) + 2px)
+    var(--c1) calc(var(--l9)) calc(var(--l9) + var(--hline)),
+    transparent calc(var(--l9) + var(--hline))
   );
   --darker: #010020;
   --lighter: rgba(11, 11, 17, 0.4);
@@ -491,6 +524,19 @@ html::before {
     ),
     url('/kamen.svg') no-repeat 50% 30% / 90% 90%,
     linear-gradient(var(--c5) 60%, var(--c3) 60%, var(--c2) 150%);
+  animation: outrun-scroll 1.5s linear infinite;
+}
+
+@media (min-width: 100px) {
+  html::before {
+    animation: outrun-scroll 1.5s linear infinite;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html::before {
+    animation: none;
+  }
 }
 
 @theme inline {
@@ -534,4 +580,17 @@ html::before {
 .dark {
   /* Dark mode uses the same semantic color system - no need to override */
   /* The semantic colors are already designed for dark theme */
+}
+
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .link {
+    @apply cursor-pointer text-secondary-300 underline;
+  }
 }

@@ -2,11 +2,14 @@ import { NextResponse } from 'next/server'
 
 import { getAllSessions } from '@/app/actions/db/sessions'
 
+import { DbFullSession } from '@/types/database/dbTypeAliases'
+
+export type ApiAllSessionsResponse = DbFullSession[]
 export async function GET() {
   try {
     const sessions = await getAllSessions()
 
-    return NextResponse.json(sessions)
+    return NextResponse.json(sessions satisfies ApiAllSessionsResponse)
   } catch (error) {
     console.error('Error fetching sessions:', error)
 

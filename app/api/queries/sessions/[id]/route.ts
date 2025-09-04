@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 
 import { getSessionById } from '@/app/actions/db/sessions'
 
+import { DbFullSession } from '@/types/database/dbTypeAliases'
+
+export type ApiSessionResponse = DbFullSession | null
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -9,7 +12,7 @@ export async function GET(
   try {
     const session = await getSessionById({ sessionId: (await params).id })
 
-    return NextResponse.json(session)
+    return NextResponse.json(session satisfies ApiSessionResponse)
   } catch (error) {
     console.error('Error fetching session:', error)
 

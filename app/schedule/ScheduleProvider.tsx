@@ -1,7 +1,6 @@
 import { getAllLocations } from '../actions/db/locations'
-import { getAllRsvps } from '../actions/db/sessionRsvps'
 import { getAllSessions } from '../actions/db/sessions'
-import { getCurrentUserProfile } from '../actions/db/users'
+import { getCurrentUserFullProfile } from '../actions/db/users'
 import Schedule from './Schedule'
 import { getUserEditPermissionsForSessions } from './actions'
 import {
@@ -14,7 +13,7 @@ import { createClient } from '@/utils/supabase/server'
 
 import { currentUserGetSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
-import { DbSessionView } from '@/types/database/dbTypeAliases'
+import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 // import { fetchSessions, fetchCurrentUserRsvps, fetchLocations } from "./queries"
 
@@ -36,12 +35,12 @@ export default async function ScheduleProvider({
   const userPrefetchQueries = [
     () =>
       queryClient.prefetchQuery({
-        queryKey: ['users', 'profile', 'current-user'],
-        queryFn: () => getCurrentUserProfile(),
+        queryKey: ['users', 'profile', 'current'],
+        queryFn: () => getCurrentUserFullProfile(),
       }),
     () =>
       queryClient.prefetchQuery({
-        queryKey: ['bookmarks', 'current-user'],
+        queryKey: ['bookmarks', 'current'],
         queryFn: currentUserGetSessionBookmarks,
       }),
   ]
@@ -56,12 +55,6 @@ export default async function ScheduleProvider({
         queryKey: ['locations'],
         queryFn: getAllLocations,
       }),
-
-    () =>
-      queryClient.prefetchQuery({
-        queryKey: ['rsvps', 'all'],
-        queryFn: getAllRsvps,
-      }),
   ]
   await Promise.all(generalPrefetchQueries.map((query) => query()))
   if (user?.id) {
@@ -72,13 +65,11 @@ export default async function ScheduleProvider({
   let editPermissions: Record<string, boolean> = {}
   if (user?.id) {
     // Get sessions from the prefetched data
-    const sessions = queryClient.getQueryData(['sessions']) as
-      | DbSessionView[]
-      | undefined
+    const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
     if (sessions) {
       editPermissions = await getUserEditPermissionsForSessions({
         userId: user.id,
-        sessionIds: sessions.map((s) => s.id).filter(Boolean) as string[],
+        sessionIds: sessions.map((s) => s.id),
       })
     }
   }

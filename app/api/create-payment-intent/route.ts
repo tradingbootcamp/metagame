@@ -1,9 +1,12 @@
-import { getTicketType } from '../../../config/tickets'
 import { validateCouponForPurchase } from '../../../lib/coupons'
 import { paymentIntentSchema } from '../../../lib/schemas/ticket'
 import { createPaymentIntent } from '../../../lib/stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
+
+import { couponsService } from '@/lib/db/coupons'
+
+import { ticketTypeDetails, usdSlidingScaleMinimum } from '@/config/tickets'
 
 export async function POST(request: NextRequest) {
   try {
@@ -11,10 +14,17 @@ export async function POST(request: NextRequest) {
 
     // Validate input using Zod schema
     const validatedData = paymentIntentSchema.parse(body)
-    const { ticketTypeId, name, email, couponCode } = validatedData
-
+    const {
+      ticketTypeId,
+      name,
+      email,
+      couponCode,
+      preCouponPriceUSD,
+      expectedFinalPriceUSD,
+    } = validatedData
+    console.log('validatedData', validatedData)
     // Get ticket type and validate
-    const ticketType = getTicketType(ticketTypeId)
+    const ticketType = ticketTypeDetails[ticketTypeId]
     if (!ticketType) {
       return NextResponse.json(
         { error: 'Invalid ticket type' },
@@ -22,8 +32,15 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    // Convert ticket price from dollars to cents for Stripe
-    const originalPriceInCents = ticketType.priceUSD * 100
+    let originalPriceInCents: number
+    if (preCouponPriceUSD && ticketTypeId ==="player") {
+      if (preCouponPriceUSD < usdSlidingScaleMinimum) {
+        return NextResponse.json({ error: 'Invalid price' }, { status: 400 })
+      }
+      originalPriceInCents = preCouponPriceUSD * 100
+    } else {
+      originalPriceInCents = ticketType.priceUSD * 100
+    }
 
     // Validate coupon if provided
     let coupon = null
@@ -33,6 +50,7 @@ export async function POST(request: NextRequest) {
         couponCode.trim(),
         email,
         ticketTypeId,
+        preCouponPriceUSD,
       )
 
       if (!validationResult.valid) {
@@ -45,7 +63,14 @@ export async function POST(request: NextRequest) {
       coupon = validationResult.coupon
       finalPriceInCents = validationResult.newPriceCents
     }
-
+    if (finalPriceInCents !== expectedFinalPriceUSD * 100) {
+      console.log('finalPriceInCents', finalPriceInCents)
+      console.log('expectedFinalPriceUSD', expectedFinalPriceUSD)
+      return NextResponse.json(
+        { error: 'Price calculation mismatch; contact us if this persists' },
+        { status: 400 },
+      )
+    }
     // Create payment intent
     const metadata = {
       ticketType: ticketType.title,
@@ -68,6 +93,14 @@ export async function POST(request: NextRequest) {
         { error: `Failed to create payment intent: ${error}` },
         { status: 500 },
       )
+    }
+    if (coupon) {
+      couponsService.update({
+        id: coupon.id,
+        data: {
+          used_count: coupon.usedCount + 1,
+        },
+      })
     }
     return NextResponse.json({
       clientSecret,

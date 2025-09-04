@@ -5,7 +5,7 @@ import {
   dehydrate,
 } from '@tanstack/react-query'
 
-import { adminGetAllProfiles } from '@/app/actions/db/users'
+import { adminGetAllFullProfiles } from '@/app/actions/db/users'
 
 export default async function UserTeamsTool({}: {
   searchParams?: Promise<Record<string, string | undefined>>
@@ -13,7 +13,7 @@ export default async function UserTeamsTool({}: {
   const queryClient = new QueryClient()
   await queryClient.prefetchQuery({
     queryKey: ['profiles'],
-    queryFn: adminGetAllProfiles,
+    queryFn: adminGetAllFullProfiles,
   })
 
   return (

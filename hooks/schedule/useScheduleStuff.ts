@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo } from 'react'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -8,46 +10,49 @@ import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
 } from '@/app/actions/db/sessionRsvps'
-import {
-  fetchAllRsvps,
-  fetchCurrentUserSessionBookmarks,
-} from '@/app/schedule/queries'
 
-import { useUser } from '@/hooks/dbQueries'
 import {
+  fetchCurrentUserSessionBookmarks,
+  fetchLocations,
+  fetchSessions,
+} from '@/hooks/schedule/queries'
+import { useUser } from '@/hooks/useUser'
+import {
+  DbFullSession,
+  DbFullSessionRsvp,
   DbSessionBookmark,
-  DbSessionRsvpView,
-  DbSessionRsvpWithTeam,
-  DbSessionView,
 } from '@/types/database/dbTypeAliases'
 
 export function useScheduleStuff() {
   const { currentUserProfile } = useUser()
   const queryClient = useQueryClient()
 
-  // Fetch all RSVPs
-  const { data: allRsvps = [] } = useQuery({
-    queryKey: ['rsvps'],
-    queryFn: fetchAllRsvps,
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['sessions'],
+    queryFn: fetchSessions,
+  })
+
+  const { data: locations = [] } = useQuery({
+    queryKey: ['locations'],
+    queryFn: fetchLocations,
   })
 
   // Fetch user bookmarks
   const { data: bookmarks = [] } = useQuery({
-    queryKey: ['bookmarks', 'current-user'],
+    queryKey: ['bookmarks', 'current'],
     queryFn: fetchCurrentUserSessionBookmarks,
     enabled: !!currentUserProfile?.id,
   })
+
+  const allRsvps = useMemo(() => {
+    return sessions.flatMap((session) => session.rsvps)
+  }, [sessions])
 
   // Get current user's RSVPs
   const currentUserRsvps = useMemo(() => {
     if (!currentUserProfile?.id) return []
     return allRsvps.filter((rsvp) => rsvp.user_id === currentUserProfile.id)
   }, [allRsvps, currentUserProfile?.id])
-
-  // Helper function to get RSVPs for a specific session
-  const rsvpsBySessionId = (sessionId: string) => {
-    return allRsvps.filter((rsvp) => rsvp.session_id === sessionId)
-  }
 
   // Helper function to get current user's RSVP for a specific session
   const getCurrentUserRsvp = (sessionId: string) => {
@@ -68,50 +73,51 @@ export function useScheduleStuff() {
 
   // Helper function to check if a session is at capacity
   const isSessionFull = (sessionId: string) => {
-    const sessions = queryClient.getQueryData(['sessions']) as
-      | DbSessionView[]
-      | undefined
+    const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
     const session = sessions?.find((s) => s.id === sessionId)
-    const sessionRsvps = rsvpsBySessionId(sessionId)
-    const confirmedRsvps = sessionRsvps.filter(
-      (rsvp) => !rsvp.on_waitlist,
-    ).length
+    if (!session || !session.max_capacity || !session.rsvps?.length)
+      return false
 
-    return (
-      session?.max_capacity !== null &&
-      confirmedRsvps >= (session?.max_capacity || 0)
-    )
+    return session.rsvps.length >= session.max_capacity
   }
 
   // UnRSVP mutation
-  const unrsvpMutation = useMutation({
+  const unrsvpCurrentUserFromSessionMutation = useMutation({
     mutationFn: unrsvpCurrentUserFromSession,
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps'])
+      const previousSessions = queryClient.getQueryData<DbFullSession[]>([
+        'sessions',
+      ])
 
       // Optimistically update RSVPs
-      queryClient.setQueryData(
-        ['rsvps'],
-        (old: DbSessionRsvpView[] | undefined) =>
-          old?.filter(
-            (rsvp) =>
-              !(
-                rsvp.session_id === sessionId &&
-                rsvp.user_id === currentUserProfile?.id
-              ),
-          ) || [],
-      )
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
+        if (!old) return old
+        const oldChangingSession = old.find(
+          (session) => session.id === sessionId,
+        )
+        if (!oldChangingSession) return old
+        return old.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                rsvps: session.rsvps.filter(
+                  (rsvp) => rsvp.user_id !== currentUserProfile?.id,
+                ),
+              }
+            : session,
+        )
+      })
 
-      return { previousRsvps }
+      return { previousSessions }
     },
     onError: (err, variables, context) => {
       // Rollback on error
-      if (context?.previousRsvps) {
-        queryClient.setQueryData(['rsvps'], context.previousRsvps)
+      if (context?.previousSessions) {
+        queryClient.setQueryData(['sessions'], context.previousSessions)
       }
       toast.error(err.message)
     },
@@ -120,7 +126,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -129,33 +135,51 @@ export function useScheduleStuff() {
     mutationFn: rsvpCurrentUserToSession,
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
-      await queryClient.cancelQueries({ queryKey: ['rsvps'] })
+      await queryClient.cancelQueries({ queryKey: ['sessions'] })
 
       // Snapshot the previous values
-      const previousRsvps = queryClient.getQueryData(['rsvps'])
+      const previousSessions = queryClient.getQueryData<DbFullSession[]>([
+        'sessions',
+      ])
 
       // Optimistically add RSVP (simplified - no waitlist logic)
-      const newRsvp: DbSessionRsvpWithTeam = {
+      const newRsvp: DbFullSessionRsvp = {
         session_id: sessionId,
         user_id: currentUserProfile?.id || '',
         on_waitlist: false, // Let server handle waitlist logic
         created_at: new Date().toISOString(),
-        profiles: {
+        user: {
+          id: currentUserProfile?.id || '',
           team: currentUserProfile?.team || 'unassigned',
+          first_name: currentUserProfile?.first_name || '',
+          last_name: currentUserProfile?.last_name || '',
         },
       }
+      queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
+        if (!old) return old
+        const oldChangingSession = old.find(
+          (session) => session.id === sessionId,
+        )
+        if (!oldChangingSession) return old
+        return old.map((session) =>
+          session.id === sessionId
+            ? {
+                ...session,
+                rsvps: [...(session.rsvps || []), newRsvp],
+              }
+            : session,
+        )
+      })
 
-      queryClient.setQueryData(
-        ['rsvps'],
-        (old: DbSessionRsvpView[] | undefined) => [...(old || []), newRsvp],
-      )
-
-      return { previousRsvps }
+      return { previousSessions }
     },
     onError: (err, variables, context) => {
       // Rollback on error
-      if (context?.previousRsvps) {
-        queryClient.setQueryData(['rsvps'], context.previousRsvps)
+      if (context?.previousSessions) {
+        queryClient.setQueryData<DbFullSession[]>(
+          ['sessions'],
+          context.previousSessions,
+        )
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
@@ -164,7 +188,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['rsvps'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'] })
     },
   })
 
@@ -173,41 +197,51 @@ export function useScheduleStuff() {
     mutationFn: currentUserToggleSessionBookmark,
     onMutate: async ({ sessionId }) => {
       await queryClient.cancelQueries({
-        queryKey: ['bookmarks', 'current-user'],
+        queryKey: ['bookmarks', 'current'],
       })
       const previousBookmarks = queryClient.getQueryData([
         'bookmarks',
-        'current-user',
+        'current',
       ])
 
       const isBookmarked = isSessionBookmarked(sessionId)
 
       if (isBookmarked) {
         queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
+          ['bookmarks', 'current'],
           (old: DbSessionBookmark[] | undefined) =>
             old?.filter((bookmark) => bookmark.session_id !== sessionId) || [],
         )
       } else {
         queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
+          ['bookmarks', 'current'],
           (old: DbSessionBookmark[] | undefined) => [
             ...(old || []),
             { session_id: sessionId, user_id: currentUserProfile?.id || '' },
           ],
         )
       }
-      return { previousBookmarks }
+      return { previousBookmarks, isBookmarked }
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
+    onSuccess: (_, __, context) => {
+      if (context?.isBookmarked) {
+        toast.info('Bookmark removed')
+      } else {
+        toast.success('Bookmarked')
+      }
+    },
+    onError: (err) => {
+      toast.error(err.message)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current'] })
     },
   })
 
   // Toggle RSVP function
   const toggleRsvp = (sessionId: string) => {
     if (isUserRsvpd(sessionId)) {
-      unrsvpMutation.mutate({ sessionId })
+      unrsvpCurrentUserFromSessionMutation.mutate({ sessionId })
     } else {
       rsvpMutation.mutate({ sessionId })
     }
@@ -223,9 +257,10 @@ export function useScheduleStuff() {
     allRsvps,
     currentUserRsvps,
     bookmarks,
+    locations,
+    sessions,
 
     // Helper functions
-    rsvpsBySessionId,
     getCurrentUserRsvp,
     isUserRsvpd,
     isSessionBookmarked,
@@ -233,7 +268,7 @@ export function useScheduleStuff() {
 
     // Mutations
     rsvpMutation,
-    unrsvpMutation,
+    unrsvpMutation: unrsvpCurrentUserFromSessionMutation,
     bookmarkMutation,
 
     // Actions
@@ -241,9 +276,10 @@ export function useScheduleStuff() {
     toggleBookmark,
 
     // Computed states
-    isPending: rsvpMutation.isPending || unrsvpMutation.isPending,
+    isPending:
+      rsvpMutation.isPending || unrsvpCurrentUserFromSessionMutation.isPending,
     isRsvpPending: rsvpMutation.isPending,
-    isUnrsvpPending: unrsvpMutation.isPending,
+    isUnrsvpPending: unrsvpCurrentUserFromSessionMutation.isPending,
     isBookmarkPending: bookmarkMutation.isPending,
   }
 }

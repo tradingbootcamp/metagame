@@ -28,7 +28,7 @@ Create a `.env` file in your project root with the following variables:
 ```env
 # Stripe Configuration
 STRIPE_SECRET_KEY=sk_test_your_stripe_secret_key_here
-PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
+NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY=pk_test_your_stripe_publishable_key_here
 
 # Airtable Configuration (using Personal Access Token)
 AIRTABLE_PAT=pat_your_airtable_personal_access_token_here

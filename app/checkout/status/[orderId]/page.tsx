@@ -153,7 +153,7 @@ export default function CheckoutStatusPage() {
             OpenNode Charge ID:{' '}
             <a
               href={orderStatus.hostedUrl}
-              className="underline"
+              className="link"
               target="_blank"
               rel="noopener noreferrer"
             >

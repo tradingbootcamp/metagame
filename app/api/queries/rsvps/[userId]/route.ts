@@ -1,11 +1,10 @@
 import { NextResponse } from 'next/server'
 
-import { createClient } from '@/utils/supabase/server'
+import { getUserRsvps } from '@/app/actions/db/sessionRsvps'
 
-import {
-  adminGetUserRsvps,
-  getCurrentUserRsvps,
-} from '@/app/actions/db/sessionRsvps'
+import { DbSessionRsvp } from '@/types/database/dbTypeAliases'
+
+export type ApiUserRsvpsResponse = DbSessionRsvp[]
 
 export async function GET(
   request: Request,
@@ -14,27 +13,9 @@ export async function GET(
   try {
     const { userId } = await params
 
-    // Get current user from server client
-    const supabase = await createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
+    const rsvps = await getUserRsvps({ userId })
 
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    let rsvps
-
-    // If requesting their own data, allow it using current user wrapper
-    if (userId === user.id) {
-      rsvps = await getCurrentUserRsvps()
-    } else {
-      // Otherwise, require admin privileges
-      rsvps = await adminGetUserRsvps({ userId })
-    }
-
-    return NextResponse.json(rsvps)
+    return NextResponse.json(rsvps satisfies ApiUserRsvpsResponse)
   } catch (error) {
     console.error('Error fetching user RSVPs:', error)
 

@@ -9,7 +9,7 @@ import { z } from 'zod'
 
 import { createClient } from '@/utils/supabase/client'
 
-import { useUser } from '@/hooks/dbQueries'
+import { useUser } from '@/hooks/useUser'
 
 const loginSchema = z.object({
   email: z.email('Please enter a valid email'),

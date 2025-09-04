@@ -24,12 +24,12 @@ import { ZodError } from 'zod'
 
 import { ValidatedCoupon, isTicketTypeEligibleForCoupons } from '@/lib/coupons'
 import { validateCouponResultSchema } from '@/lib/coupons'
+import { opennodeChargeSchema } from '@/lib/schemas/opennode'
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
 
 import { validateCouponBodySchema } from '@/app/api/validate-coupon/reqSchema'
 
-import { getDayPassTicketType } from '@/config/tickets'
 import { DbTicketType } from '@/types/database/dbTypeAliases'
 
 // Load Stripe outside of component to avoid recreating on every render
@@ -41,20 +41,18 @@ if (!stripeKey) {
 
 const stripePromise = loadStripe(stripeKey)
 
-interface PaymentFormProps {
+interface TicketPurchaseFormProps {
   ticketType: TicketType
   onClose: () => void
   paymentMethod: PaymentCurrency
-  selectedUsdPrice?: number
-  selectedBtcPrice?: number
+  slidingScalePrice: number | null
 }
 
-const PaymentForm: React.FC<PaymentFormProps> = ({
+const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
   ticketType,
   onClose,
   paymentMethod,
-  selectedUsdPrice,
-  selectedBtcPrice,
+  slidingScalePrice,
 }) => {
   const stripe = useStripe()
   const elements = useElements()
@@ -74,11 +72,10 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   const [appliedCoupon, setAppliedCoupon] = useState<ValidatedCoupon | null>(
     null,
   )
-  const [finalPrice, setFinalPrice] = useState(
-    selectedUsdPrice ?? ticketType.priceUSD,
-  )
+  const preCouponPriceUSD = slidingScalePrice ?? ticketType.priceUSD
+  const [finalPrice, setFinalPrice] = useState(preCouponPriceUSD)
   const isBtc = paymentMethod === 'btc'
-  const btcAmount = selectedBtcPrice ?? ticketType.priceBTC
+  const btcAmount = slidingScalePrice ?? ticketType.priceBTC
   const couponsEnabled =
     isTicketTypeEligibleForCoupons(ticketType.id as DbTicketType) && !isBtc
 
@@ -138,6 +135,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         validateCouponBodySchema.safeParse({
           couponCode: formData.couponCode,
           ticketTypeId: ticketType.id,
+          preCouponPriceUSD: preCouponPriceUSD,
           userEmail: formData.email || undefined,
         })
       if (couponError) {
@@ -172,7 +170,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           couponCode: errorData?.error || `API error (${response.status})`,
         }))
         setAppliedCoupon(null)
-        setFinalPrice(ticketType.priceUSD)
+        setFinalPrice(preCouponPriceUSD)
         return
       }
 
@@ -184,7 +182,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           couponCode: parsedData.error || 'Invalid coupon code',
         }))
         setAppliedCoupon(null)
-        setFinalPrice(ticketType.priceUSD)
+        setFinalPrice(preCouponPriceUSD)
         return
       }
 
@@ -232,6 +230,8 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         name: formData.name,
         email: formData.email,
         couponCode: appliedCoupon?.code || '',
+        expectedFinalPriceUSD: finalPrice,
+        preCouponPriceUSD: preCouponPriceUSD,
       })
 
       // Step 1: Create payment intent
@@ -356,19 +356,20 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
         throw new Error('No BTC amount found for ticket type: ' + ticketType.id)
       }
       const amountBtc = Number(btcAmount.toFixed(6))
-      // const isTest = (process.env.NEXT_PUBLIC_OPENNODE_ENV || 'dev') !== 'live';
       const response = await fetch('/api/checkout/opennode', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          amountBtc,
-          ticketDetails: {
-            ticketType: ticketType.id,
-            isTest: process.env.NEXT_PUBLIC_OPENNODE_ENV === 'dev',
-            purchaserEmail: formData.email,
-            purchaserName: formData.name,
-          },
-        }),
+        body: JSON.stringify(
+          opennodeChargeSchema.parse({
+            amountBtc,
+            ticketDetails: {
+              ticketType: ticketType.id,
+              isTest: process.env.NEXT_PUBLIC_OPENNODE_ENV === 'dev',
+              purchaserEmail: formData.email,
+              purchaserName: formData.name,
+            },
+          }),
+        ),
       })
 
       if (!response.ok) {
@@ -416,18 +417,15 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       },
     },
   }
-  const headerTicketType =
-    ticketType.id === 'dayPass'
-      ? (getDayPassTicketType(ticketType.id) ?? ticketType)
-      : ticketType
+
   return (
     <div className="flex flex-col gap-6">
       <div className="mb-2 flex flex-col items-center gap-2">
         <span className="text-center text-3xl font-bold text-primary-300">
-          {headerTicketType.title}
+          {ticketType.title}
         </span>
         <span className="text-center text-sm text-gray-400">
-          {headerTicketType.description}
+          {ticketType.description}
         </span>
       </div>
       <TicketFormFields
@@ -443,45 +441,49 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
       />
 
       {/* Only show price breakdown when coupon is applied (fiat only) */}
-      {!isBtc && appliedCoupon && (
+      {!isBtc && (
         <div className="flex flex-col rounded-lg bg-gray-800 p-4">
-          {/* Original Price */}
-          <div className="flex items-center justify-between">
-            <span className="text-gray-300">Ticket Price:</span>
-            <span className="text-gray-300">
-              ${ticketType.priceUSD.toFixed(2)}
-            </span>
-          </div>
+          {appliedCoupon && (
+            <>
+              {/* Original Price */}
+              <div className="flex items-center justify-between">
+                <span className="text-gray-300">Ticket Price:</span>
+                <span className="text-gray-300">
+                  ${ticketType.priceUSD.toFixed(2)}
+                </span>
+              </div>
 
-          {/* Separator */}
-          <div className="my-1 border-t border-gray-700" />
+              {/* Separator */}
+              <div className="my-1 border-t border-gray-700" />
 
-          {/* Applied Coupon */}
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <span className="text-green-300">
-                Coupon: {appliedCoupon.code}
-              </span>
-              <button
-                type="button"
-                onClick={handleRemoveCoupon}
-                className="text-red-400 transition-colors"
-                title="Remove coupon"
-              >
-                <XIcon className="size-4" />
-              </button>
-            </div>
-            <span className="text-green-300">
-              -$
-              {Math.min(
-                appliedCoupon.discountAmountCents / 100,
-                ticketType.priceUSD,
-              ).toFixed(2)}
-            </span>
-          </div>
+              {/* Applied Coupon */}
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <span className="text-green-300">
+                    Coupon: {appliedCoupon.code}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleRemoveCoupon}
+                    className="text-red-400 transition-colors"
+                    title="Remove coupon"
+                  >
+                    <XIcon className="size-4" />
+                  </button>
+                </div>
+                <span className="text-green-300">
+                  -$
+                  {Math.min(
+                    appliedCoupon.discountAmountCents / 100,
+                    ticketType.priceUSD,
+                  ).toFixed(2)}
+                </span>
+              </div>
 
-          {/* Separator */}
-          <div className="my-1 border-t border-gray-700" />
+              {/* Separator */}
+              <div className="my-1 border-t border-gray-700" />
+            </>
+          )}
 
           {/* Total Price */}
           <div className="flex items-center justify-between">
@@ -492,7 +494,6 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
           </div>
         </div>
       )}
-
       {!isBtc && (
         <div>
           <label className="mb-2 block text-sm font-medium text-gray-300">
@@ -557,7 +558,7 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
               href={SOCIAL_LINKS.DISCORD}
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-block w-fit rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-indigo-700"
+              className="inline-block w-fit link rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium transition-colors hover:bg-indigo-700"
             >
               Join Discord Server
             </a>
@@ -595,12 +596,11 @@ const PaymentForm: React.FC<PaymentFormProps> = ({
   )
 }
 
-export const TicketPurchaseForm: React.FC<PaymentFormProps> = ({
+export const TicketPurchaseForm: React.FC<TicketPurchaseFormProps> = ({
   ticketType,
   onClose,
   paymentMethod = 'usd',
-  selectedUsdPrice,
-  selectedBtcPrice,
+  slidingScalePrice,
 }) => {
   return (
     <Elements stripe={stripePromise}>
@@ -608,8 +608,7 @@ export const TicketPurchaseForm: React.FC<PaymentFormProps> = ({
         ticketType={ticketType}
         onClose={onClose}
         paymentMethod={paymentMethod}
-        selectedUsdPrice={selectedUsdPrice}
-        selectedBtcPrice={selectedBtcPrice}
+        slidingScalePrice={slidingScalePrice}
       />
     </Elements>
   )

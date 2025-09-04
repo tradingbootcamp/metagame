@@ -35,4 +35,31 @@ export const storageService = {
     const { data } = supabase.storage.from(bucket).getPublicUrl(path)
     return data.publicUrl
   },
+  getUserProfilePictureUploadUrl: async ({
+    userId,
+    fileExtension,
+  }: {
+    userId: string
+    fileExtension?: string
+  }) => {
+    const bucket = 'public-assets'
+    const extension = fileExtension ? `.${fileExtension}` : ''
+    const path = `profile_pictures/${userId}${extension}`
+    const url = await storageService.getSignedUploadUrl(bucket, path, 'image/*')
+    return {
+      signedUrl: url.signedUrl,
+      storageUrl:
+        process.env.NEXT_PUBLIC_SUPABASE_URL +
+        '/storage/v1/object/public/' +
+        bucket +
+        '/' +
+        path,
+    }
+  },
+  /** Delete a user's profile picture */
+  deleteUserProfilePicture: async ({ userId }: { userId: string }) => {
+    const bucket = 'public-assets'
+    const path = `profile_pictures/${userId}`
+    await storageService.deleteFile(bucket, path)
+  },
 }

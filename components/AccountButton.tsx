@@ -1,7 +1,6 @@
 'use client'
 
 import { NavItem } from './Nav'
-import { useQuery } from '@tanstack/react-query'
 import Image from 'next/image'
 import Link from 'next/link'
 
@@ -13,24 +12,21 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { getCurrentUserProfile } from '@/app/actions/db/users'
-
-import { useUser } from '@/hooks/dbQueries'
 import { useLogout } from '@/hooks/useLogout'
+import { useUser } from '@/hooks/useUser'
 
 export default function AccountButton({
   closeMenu,
 }: {
   closeMenu: () => void
 }) {
-  const { currentUser: user, currentUserLoading: userLoading } = useUser()
+  const {
+    currentUser: user,
+    currentUserLoading: userLoading,
+    currentUserProfile: profile,
+  } = useUser()
   const { handleLogout, isLoggingOut } = useLogout()
 
-  const { data: profile } = useQuery({
-    queryKey: ['users', 'profiles', user?.id],
-    queryFn: () => getCurrentUserProfile(),
-    enabled: !!user?.id,
-  })
   if (!userLoading && !user) {
     return (
       <NavItem href="/login" closeMenu={closeMenu}>

@@ -3,9 +3,13 @@ import { NextResponse } from 'next/server'
 import { createClient } from '@/utils/supabase/server'
 
 import {
-  adminGetUserProfileById,
-  getCurrentUserProfile,
+  adminGetUserFullProfileById,
+  getCurrentUserFullProfile,
 } from '@/app/actions/db/users'
+
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
+
+export type ApiUserFullProfileResponse = DbFullProfile | null
 
 export async function GET(
   request: Request,
@@ -28,13 +32,13 @@ export async function GET(
 
     // If requesting their own data, allow it using current user wrapper
     if (userId === user.id) {
-      profile = await getCurrentUserProfile()
+      profile = await getCurrentUserFullProfile()
     } else {
       // Otherwise, require admin privileges
-      profile = await adminGetUserProfileById({ userId })
+      profile = await adminGetUserFullProfileById({ userId })
     }
 
-    return NextResponse.json(profile)
+    return NextResponse.json(profile satisfies ApiUserFullProfileResponse)
   } catch (error) {
     console.error('Error fetching user profile:', error)
 

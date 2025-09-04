@@ -4,6 +4,7 @@ import { Resend } from 'resend'
 import { v4 as uuidv4 } from 'uuid'
 
 import { opennodeDbService } from '@/lib/db/opennode'
+import { getSiteUrl } from '@/lib/env'
 import { createChargeRaw } from '@/lib/opennode'
 import {
   TicketPurchaseDetails,
@@ -12,7 +13,9 @@ import {
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
 
-import { getTicketType } from '@/config/tickets'
+import { getCurrentUserAdminStatus } from '@/app/actions/db/users'
+
+import { btcSlidingScaleMinimum, ticketTypeDetails } from '@/config/tickets'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
@@ -20,12 +23,27 @@ export async function POST(req: NextRequest) {
   const { amountBtc, ticketDetails } = opennodeChargeSchema.parse(
     await req.json(),
   )
-  const callback = `${process.env.NEXT_PUBLIC_SITE_URL}/api/checkout/opennode/webhook`
   const metagameOrderId = uuidv4()
+  const callback = `${getSiteUrl()}/api/checkout/opennode/webhook`
+  const successUrl = `${getSiteUrl()}/checkout/status/${metagameOrderId}`
 
   const amountSatoshis = Math.round(amountBtc * 100000000)
 
-  const ticketTitle = getTicketType(ticketDetails.ticketType)?.title
+  const ticketType = ticketTypeDetails[ticketDetails.ticketType]
+  const ticketTitle = ticketType?.title || 'Unknown'
+  const ticketPriceBtc = ticketType?.priceBTC
+
+  // If the provided bitcoin price doesn't match the ticket price, only admins can proceed otherwise throw error
+  if (!ticketPriceBtc || ticketPriceBtc < btcSlidingScaleMinimum) {
+    const userIsAdmin = await getCurrentUserAdminStatus()
+    if (!userIsAdmin) {
+      return NextResponse.json(
+        { error: 'Invalid ticket price' },
+        { status: 400 },
+      )
+    }
+  }
+
   const charge = await createChargeRaw({
     amount: amountSatoshis,
     description: `Metagame ${ticketTitle} ticket for ${ticketDetails.purchaserEmail}`,
@@ -33,7 +51,7 @@ export async function POST(req: NextRequest) {
     auto_settle: true,
     order_id: metagameOrderId,
     callback_url: callback,
-    success_url: `${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${metagameOrderId}`,
+    success_url: successUrl,
   })
 
   await opennodeDbService.createCharge({ charge, ticketDetails })
@@ -53,7 +71,7 @@ function sendChargeCreationEmail(
   charge: OpenNodeCharge,
   ticketDetails: TicketPurchaseDetails,
 ) {
-  const ticketTitle = getTicketType(ticketDetails.ticketType)?.title
+  const ticketTitle = ticketTypeDetails[ticketDetails.ticketType].title
   const amountBtc = (charge.amount / 100000000).toFixed(6)
   const hostedUrl = getHostedCheckoutUrl(charge.id)
 
@@ -75,7 +93,7 @@ function sendChargeCreationEmail(
           <h2 style="margin-top: 0;">Order Details</h2>
           <p><strong>Ticket Type:</strong> ${ticketTitle}</p>
           <p><strong>Amount:</strong> ₿${amountBtc}</p>
-          <p><strong>Order ID:</strong> <a href="${process.env.NEXT_PUBLIC_SITE_URL}/checkout/status/${charge.order_id}">${charge.order_id}</a></p>
+          <p><strong>Order ID:</strong> <a href="${getSiteUrl()}/checkout/status/${charge.order_id}">${charge.order_id}</a></p>
         </div>
         
         <div style="background-color: #e8f4f8; padding: 20px; border-radius: 8px; margin: 20px 0;">

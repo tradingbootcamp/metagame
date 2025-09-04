@@ -14,9 +14,12 @@ export const profileFormSchema = z.object({
   discord_handle: nullableTextFromForm,
   site_name: nullableTextFromForm,
   site_url: nullableTextFromForm,
+  site_name_2: nullableTextFromForm,
+  site_url_2: nullableTextFromForm,
   opted_in_to_homepage_display: z.boolean().nullable(),
   minor: z.boolean().nullable(),
   bringing_kids: z.boolean().nullable(),
+  bio: nullableTextFromForm,
 }) satisfies z.ZodType<DbProfileUpdate>
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>
@@ -27,7 +30,10 @@ export const initialProfileFormData: ProfileFormData = {
   discord_handle: '',
   site_name: '',
   site_url: '',
+  site_name_2: '',
+  site_url_2: '',
   opted_in_to_homepage_display: null,
   minor: null,
   bringing_kids: null,
+  bio: '',
 }

@@ -11,16 +11,18 @@ import { ProfileFormData, initialProfileFormData } from '@/lib/schemas/profile'
 import { cn } from '@/utils/cn'
 import { URLS } from '@/utils/urls'
 
-import { Modal } from '@/components/Modal'
 import { Button, buttonVariants } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 interface ProfileInfoModalProps {
   onClose: () => void
-  currentProfile: DbProfile | null | undefined
+  currentProfile: DbFullProfile | null | undefined
   currentUserId?: string
 }
 
@@ -53,9 +55,16 @@ export function ProfileInfoModal({
   }
 
   return (
-    <Modal onClose={onClose}>
-      <div className="mx-4 w-full max-w-md rounded-lg bg-card p-6">
-        <h2 className="mb-1 text-2xl font-bold">Complete Your Profile</h2>
+    <Dialog
+      open
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogContent className="mx-4 w-full max-w-md bg-card">
+        <DialogTitle>
+          <span className="mb-1 text-2xl font-bold">Complete Your Profile</span>
+        </DialogTitle>
         <p className="mb-6 text-muted-foreground">
           We need some basic profile information
         </p>
@@ -88,6 +97,21 @@ export function ProfileInfoModal({
                 }
               />
             </div>
+          </div>
+          <div className="flex flex-col gap-2">
+            <Label className="label">
+              <span className="label-text">Bio</span>
+            </Label>
+            <Textarea
+              placeholder="Bio"
+              value={formData.bio ?? ''}
+              onChange={(e) =>
+                setFormData((prev) => ({
+                  ...prev,
+                  bio: e.target.value || null,
+                }))
+              }
+            />
           </div>
 
           {/* Homepage Display Radio Group */}
@@ -241,7 +265,7 @@ export function ProfileInfoModal({
             Maybe later
           </Button>
         </div>
-      </div>
-    </Modal>
+      </DialogContent>
+    </Dialog>
   )
 }

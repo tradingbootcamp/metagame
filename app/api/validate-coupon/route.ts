@@ -7,6 +7,8 @@ import {
   validateCouponResultSchema,
 } from '@/lib/coupons'
 
+import { usdSlidingScaleMinimum } from '@/config/tickets'
+
 // Simple in-memory rate limiting (for production, use Redis or similar)
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>()
 const RATE_LIMIT_WINDOW = 60 * 1000 // 1 minute
@@ -67,13 +69,22 @@ export async function POST(
         { status: 400 },
       )
     }
-    const { couponCode, ticketTypeId, userEmail } = bodyData
+    const { couponCode, ticketTypeId, userEmail, preCouponPriceUSD } = bodyData
 
-    // Validate coupon using the abstracted function
+    if (preCouponPriceUSD && preCouponPriceUSD < usdSlidingScaleMinimum) {
+      return NextResponse.json(
+        validateCouponResultSchema.parse({
+          valid: false,
+          error: `Sliding scale USD price must be at least $${usdSlidingScaleMinimum}`,
+        }),
+        { status: 400 },
+      )
+    }
     const validationResult = await validateCouponForPurchase(
       couponCode,
       userEmail,
       ticketTypeId,
+      preCouponPriceUSD,
     )
 
     if (!validationResult.valid) {

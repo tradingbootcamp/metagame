@@ -23,7 +23,9 @@ export async function userCanEditSession({
   }
 
   const session = await sessionsService.getSessionById({ sessionId })
-
+  if (!session) {
+    return false
+  }
   //Hosts can edit sessions
   if (
     [session.host_1_id, session.host_2_id, session.host_3_id].includes(userId)
@@ -36,11 +38,11 @@ export async function userCanEditSession({
 
 // Fields that users can update on sessions; for admins editing sessinos more generally, we use adminUpdateSession
 const sessionUpdateSchema = z.object({
-  title: z.string().min(1),
-  description: z.string().min(1),
-  min_capacity: z.number().min(1),
-  max_capacity: z.number().min(1),
-  ages: z.enum(SESSION_AGES),
+  title: z.string().min(1).optional(),
+  description: z.string().min(1).optional(),
+  min_capacity: z.number().min(1).optional(),
+  max_capacity: z.number().min(1).optional(),
+  ages: z.enum(SESSION_AGES).optional(),
 })
 export async function userEditSession({
   sessionId,
@@ -68,6 +70,7 @@ export async function userEditSession({
     throw new Error('Unauthorized')
   }
 
+  //extract only the values that a user can edit
   const validatedSessionUpdate = sessionUpdateSchema.parse(sessionUpdate)
   await sessionsService.updateSession({
     sessionId,
@@ -99,7 +102,7 @@ export async function getUserEditPermissionsForSessions({
   }
 
   // For non-admins, get all sessions they host
-  const hostedSessions = await sessionsService.getUsersHostedSessions({
+  const hostedSessions = await sessionsService.getSessionsHostedByUser({
     userId,
   })
   const hostedSessionIds = new Set(hostedSessions.map((session) => session.id))

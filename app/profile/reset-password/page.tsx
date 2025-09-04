@@ -54,7 +54,10 @@ export default function ResetPasswordPage() {
           setReauthNeeded(true)
           await supabase.auth.reauthenticate()
         } else if (error.code?.includes('rate_limit')) {
-          setErrors({ submit: 'Rate limit problem; try again in a bit' })
+          setErrors({
+            submit:
+              "Rate limit problem; try again in a bit (it's not you, it's us)",
+          })
         } else {
           setErrors({ submit: error.message })
         }

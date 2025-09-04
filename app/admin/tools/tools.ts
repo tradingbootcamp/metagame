@@ -1,6 +1,8 @@
 import { DummyTool } from './DummyTool'
 import TicketsInfo from './TicketsInfo'
+import CouponTool from './coupons/CouponTool'
 import { IssueTicketForm } from './issue-tickets/IssueTicketForm'
+import OpenNodeChargeTool from './opennode-charge/OpenNodeChargeTool'
 import UserProfileTool from './user-profile/UserProfileTool'
 import UserTeamsTool from './user-teams/UserTeamsTool'
 
@@ -46,6 +48,20 @@ export const ADMIN_TOOLS = {
     longDescription:
       'View users by team, reassign individuals, and bulk-assign teams.',
     component: UserTeamsTool,
+  },
+  'opennode-charge': {
+    label: 'OpenNode Charge',
+    menuDescription: 'Create a custom BTC charge',
+    longDescription:
+      'Create an OpenNode charge for an arbitrary BTC amount with purchaser details and ticket type. Posts to the /api/checkout/opennode route and validates via the OpenNodeCharge schema.',
+    component: OpenNodeChargeTool,
+  },
+  coupons: {
+    label: 'Coupons',
+    menuDescription: 'Create and manage coupon codes',
+    longDescription:
+      'Create or update coupon codes, toggle enabled state, set global max uses, and manage allowed purchaser emails with per-email limits.',
+    component: CouponTool,
   },
 } satisfies Record<string, AdminTool>
 

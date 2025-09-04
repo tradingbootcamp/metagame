@@ -34,7 +34,7 @@ export const signupByTicketCode = async ({
   }
   let userId: string
   const supabase = createServiceClient()
-  const existingUser = await usersService.getUserProfileByEmail({ email })
+  const existingUser = await usersService.getUserFullProfileByEmail({ email })
   if (existingUser) {
     userId = existingUser.id
   } else {

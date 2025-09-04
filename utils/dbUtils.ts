@@ -1,19 +1,23 @@
 import {
+  DbFullSession,
+  DbFullSessionRsvp,
   DbSessionAges,
-  DbSessionRsvpWithTeam,
-  DbSessionView,
+  DbSessionCategory,
   DbTeamColor,
   DbTicketType,
 } from '@/types/database/dbTypeAliases'
 
-export const dbGetHostsFromSession = (session: DbSessionView) => {
-  const host1Name =
-    (session.host_1_first_name ?? '') + ' ' + (session.host_1_last_name ?? '')
-  const host2Name =
-    (session.host_2_first_name ?? '') + ' ' + (session.host_2_last_name ?? '')
-  const host3Name =
-    (session.host_3_first_name ?? '') + ' ' + (session.host_3_last_name ?? '')
-  return [host1Name, host2Name, host3Name].filter((name) => name !== ' ')
+export const dbGetHostsFromSession = (session: DbFullSession) => {
+  const host1Name = !session.host_1?.first_name
+    ? ''
+    : (session.host_1.first_name ?? '') + ' ' + (session.host_1.last_name ?? '')
+  const host2Name = !session.host_2?.first_name
+    ? ''
+    : (session.host_2.first_name ?? '') + ' ' + (session.host_2.last_name ?? '')
+  const host3Name = !session.host_3?.first_name
+    ? ''
+    : (session.host_3.first_name ?? '') + ' ' + (session.host_3.last_name ?? '')
+  return [host1Name, host2Name, host3Name].filter((name) => !!name)
 }
 
 export const getAgesDisplayText = (ages: DbSessionAges | null): string => {
@@ -58,28 +62,39 @@ export const TICKET_TYPES = {
 
 export const TICKET_TYPES_ENUM = Object.values(TICKET_TYPES) as DbTicketType[]
 
-export const countRsvpsByTeamColor = (rsvps: DbSessionRsvpWithTeam[]) => {
+export const SESSION_CATEGORIES = {
+  TALK: 'talk' as const,
+  WORKSHOP: 'workshop' as const,
+  GAME: 'game' as const,
+  OTHER: 'other' as const,
+} as const satisfies Record<Uppercase<DbSessionCategory>, DbSessionCategory>
+
+export const SESSION_CATEGORIES_ENUM = Object.values(
+  SESSION_CATEGORIES,
+) as DbSessionCategory[]
+
+export const countRsvpsByTeamColor = (
+  rsvps: Pick<DbFullSessionRsvp, 'user'>[],
+) => {
   const counts = {
     purple: 0,
     orange: 0,
+    green: 0,
+    unassigned: 0,
   }
 
   rsvps.forEach((rsvp) => {
-    const team = rsvp.profiles?.team
+    const team = rsvp.user.team
     if (team === 'purple') {
       counts.purple++
     } else if (team === 'orange') {
       counts.orange++
+    } else if (team === 'green') {
+      counts.green++
+    } else if (team === 'unassigned') {
+      counts.unassigned++
     }
   })
 
   return counts
-}
-
-export const countRsvpsForSession = (rsvps: DbSessionRsvpWithTeam[]) => {
-  return {
-    total: rsvps.length,
-    confirmed: rsvps.filter((rsvp) => !rsvp.on_waitlist).length,
-    waitlist: rsvps.filter((rsvp) => rsvp.on_waitlist).length,
-  }
 }

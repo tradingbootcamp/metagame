@@ -11,10 +11,10 @@ import {
 } from '@/components/ui/collapsible'
 import { Textarea } from '@/components/ui/textarea'
 
-import { DbProfile, DbTicket } from '@/types/database/dbTypeAliases'
+import { DbFullProfile, DbTicket } from '@/types/database/dbTypeAliases'
 
 interface ProfileDataCollapsibleProps {
-  profile: DbProfile
+  profile: DbFullProfile
   tickets: DbTicket[]
 }
 

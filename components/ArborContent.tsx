@@ -25,7 +25,7 @@ export default function ArborContent() {
               href="https://rickiheicklen.com"
               target="_blank"
               rel="noopener noreferrer"
-              className="text-secondary-500 transition-colors hover:text-fuchsia-500 hover:underline"
+              className="link"
             >
               Ricki Heicklen
             </a>
@@ -42,7 +42,7 @@ export default function ArborContent() {
                     href="https://trading.camp"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-secondary-500 transition-colors hover:text-fuchsia-500 hover:underline"
+                    className="link"
                   >
                     trading bootcamp
                   </a>
@@ -58,7 +58,7 @@ export default function ArborContent() {
                     href="https://arborsummer.camp/incubator"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-secondary-500 transition-colors hover:text-fuchsia-500 hover:underline"
+                    className="link"
                   >
                     pedagogy incubator
                   </a>

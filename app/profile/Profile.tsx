@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from 'react'
 
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
 import {
   CheckIcon,
   ExternalLinkIcon,
@@ -20,13 +20,14 @@ import {
   initialProfileFormData,
   profileFormSchema,
 } from '@/lib/schemas/profile'
-import { toExternalLink, uploadFileWithSignedUrl } from '@/lib/utils'
+import { downscaleAndUploadImage, toExternalLink } from '@/lib/utils'
 
 import { URLS } from '@/utils/urls'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
+import { Textarea } from '@/components/ui/textarea'
 import {
   Tooltip,
   TooltipContent,
@@ -36,27 +37,18 @@ import {
 import { getCurrentUserProfilePictureUploadUrl } from '@/app/actions/db/storage'
 import {
   deleteCurrentUserProfilePicture,
-  getCurrentUser,
-  getCurrentUserProfile,
   updateCurrentUserProfile,
 } from '@/app/actions/db/users'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
 import { useProfileUpdate } from '@/app/profile/hooks/useProfileUpdate'
 
+import { useUser } from '@/hooks/useUser'
+
 export default function Profile() {
   const queryClient = useQueryClient()
   const [temporarilyDismissedInfoRequest, setTemporarilyDismissedInfoRequest] =
     useState(false)
-  const { data: currentUser, isLoading: currentUserLoading } = useQuery({
-    queryKey: ['users', 'current'],
-    queryFn: getCurrentUser,
-  })
-
-  const { data: currentUserProfile } = useQuery({
-    queryKey: ['users', 'profile', currentUser?.id],
-    queryFn: () => getCurrentUserProfile(),
-    enabled: !!currentUser?.id,
-  })
+  const { currentUser, currentUserProfile, currentUserLoading } = useUser()
   const [isEditMode, setIsEditMode] = useState(false)
   const showCTAModal = useMemo(() => {
     console.log('showCTAModal', currentUserProfile)
@@ -103,13 +95,11 @@ export default function Profile() {
         throw new Error('User not found')
       }
 
-      // Extract file extension from the uploaded file
-      const fileExtension = file.name.split('.').pop()?.toLowerCase() || null
-
       const { signedUrl, storageUrl } =
-        await getCurrentUserProfilePictureUploadUrl({ fileExtension })
+        await getCurrentUserProfilePictureUploadUrl({})
+
       // Upload file directly to storage using signed URL
-      await uploadFileWithSignedUrl(signedUrl, file)
+      await downscaleAndUploadImage(signedUrl, file)
 
       // Update profile with new picture URL directly without triggering the profile update mutation
       await updateCurrentUserProfile({
@@ -301,7 +291,9 @@ export default function Profile() {
             <div className="flex-1 space-y-6">
               {/* Full Name */}
               <div>
-                <label className="mb-2 block text-sm font-medium">Name</label>
+                <label className="label">
+                  <span className="label-text">Name</span>
+                </label>
                 {isEditMode ? (
                   <div className="grid grid-cols-2 gap-2">
                     <Input
@@ -329,7 +321,28 @@ export default function Profile() {
                   <p className="text-lg">{fullName}</p>
                 )}
               </div>
-
+              {/* Bio */}
+              <div>
+                <label className="label">
+                  <span className="label-text">Bio</span>
+                </label>
+                {isEditMode ? (
+                  <Textarea
+                    placeholder="Bio"
+                    value={formData.bio ?? ''}
+                    onChange={(e) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        bio: e.target.value || null,
+                      }))
+                    }
+                  />
+                ) : (
+                  <p className="text-lg">
+                    {currentUserProfile?.bio || 'Not set'}
+                  </p>
+                )}
+              </div>
               {/* Discord Handle */}
               <div>
                 <label className="label">

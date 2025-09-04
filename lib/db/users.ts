@@ -6,8 +6,32 @@ import { storageService } from '@/lib/db/storage'
 import { createClient } from '@/utils/supabase/server'
 import { createServiceClient } from '@/utils/supabase/service'
 
-import { DbProfileUpdate } from '@/types/database/dbTypeAliases'
+import {
+  DbFullProfile,
+  DbProfileUpdate,
+  DbPublicProfile,
+} from '@/types/database/dbTypeAliases'
 
+const publicProfileSelectIncludes = `
+  id,
+  first_name,
+  last_name,
+  team,
+  discord_handle,
+  opted_in_to_homepage_display,
+  bio,
+  is_admin,
+  homepage_order,
+  site_name,
+  site_url,
+  site_name_2,
+  site_url_2,
+  dismissed_info_request,
+  minor,
+  profile_pictures_url,
+  player_id,
+  pronouns
+`
 export const usersService = {
   /** Get the current authenticated user */
   getCurrentUser: async () => {
@@ -27,7 +51,9 @@ export const usersService = {
     if (id) {
       return await usersService.getUserById({ userId: id })
     } else if (email) {
-      const userProfile = await usersService.getUserProfileByEmail({ email })
+      const userProfile = await usersService.getUserFullProfileByEmail({
+        email,
+      })
       //TODO: handle multiple matching profiles; or enforce that we never will
       if (!userProfile) {
         return {
@@ -61,7 +87,7 @@ export const usersService = {
   },
 
   /** Get a user's profile */
-  getUserProfile: async ({ userId }: { userId: string }) => {
+  getUserFullProfile: async ({ userId }: { userId: string }) => {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
@@ -73,7 +99,28 @@ export const usersService = {
     }
     return data
   },
-
+  getUsersPublicProfiles: async ({ userIds }: { userIds: string[] }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+      .in('id', userIds)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile[]
+  },
+  getUsersFullProfiles: async ({ userIds }: { userIds: string[] }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('*')
+      .in('id', userIds)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbFullProfile[]
+  },
   /** Update a user's profile */
   updateUserProfile: async ({
     userId,
@@ -93,7 +140,7 @@ export const usersService = {
     }
     return updatedData
   },
-  getUserProfileByEmail: async ({ email }: { email: string }) => {
+  getUserFullProfileByEmail: async ({ email }: { email: string }) => {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
@@ -117,18 +164,19 @@ export const usersService = {
     )
     return signedUrl
   },
-
-  /** Delete a user's profile picture */
-  deleteUserProfilePicture: async ({ userId }: { userId: string }) => {
-    const bucket = 'public_assets'
-    const path = `profile_pictures/${userId}`
-    await storageService.deleteFile(bucket, path)
+  deleteProfilePicture: async ({ userId }: { userId: string }) => {
+    await storageService.deleteUserProfilePicture({ userId })
+    await usersService.updateUserProfile({
+      userId,
+      data: { profile_pictures_url: null },
+    })
+    return { success: true }
   },
 
   /** Fully delete a user from the system */
   fullDeleteUser: async ({ userId }: { userId: string }) => {
     const supabase = createServiceClient()
-    await usersService.deleteUserProfilePicture({ userId })
+    await storageService.deleteUserProfilePicture({ userId })
     const { data, error } = await supabase.auth.admin.deleteUser(userId)
     if (error) {
       throw new Error(error.message)
@@ -137,7 +185,7 @@ export const usersService = {
   },
 
   /** Get all user profiles */
-  getAllProfiles: async () => {
+  getAllFullProfiles: async () => {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
@@ -147,5 +195,27 @@ export const usersService = {
       throw new Error(error.message)
     }
     return data
+  },
+  getUserPublicProfileById: async ({ userId }: { userId: string }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+      .eq('id', userId)
+      .maybeSingle()
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile | null
+  },
+  getAllUserPublicProfiles: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile[]
   },
 }

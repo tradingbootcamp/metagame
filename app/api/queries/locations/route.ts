@@ -1,12 +1,15 @@
 import { NextResponse } from 'next/server'
 
-import { getOrderedScheduleLocations } from '@/app/actions/db/locations'
+import { getAllLocations } from '@/app/actions/db/locations'
 
+import { DbLocation } from '@/types/database/dbTypeAliases'
+
+export type ApiAllLocationsResponse = DbLocation[]
 export async function GET() {
   try {
-    const locations = await getOrderedScheduleLocations()
+    const locations = await getAllLocations()
 
-    return NextResponse.json(locations)
+    return NextResponse.json(locations satisfies ApiAllLocationsResponse)
   } catch (error) {
     console.error('Error fetching locations:', error)
 

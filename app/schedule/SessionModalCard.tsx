@@ -3,25 +3,35 @@
 import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
-import { AttendanceDisplay } from './Schedule'
-import { CheckIcon, EditIcon, LinkIcon, StarIcon, UserIcon } from 'lucide-react'
+import { AttendanceDisplay } from './RSVPList'
+import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
+import {
+  AppleIcon,
+  CalendarIcon,
+  CheckIcon,
+  EditIcon,
+  LinkIcon,
+  StarIcon,
+  UserIcon,
+} from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
 import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
 
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
 
-import { useUser } from '@/hooks/dbQueries'
-import { useScheduleStuff } from '@/hooks/useScheduleStuff'
-import { DbSessionView } from '@/types/database/dbTypeAliases'
+import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
+import { useUser } from '@/hooks/useUser'
+import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({
   session,
   showButtons,
   canEdit = false,
 }: {
-  session: DbSessionView
+  session: DbFullSession
   showButtons: boolean
   canEdit?: boolean
 }) {
@@ -32,7 +42,6 @@ export default function SessionDetailsCard({
 
   // Use the comprehensive schedule hook
   const {
-    rsvpsBySessionId,
     getCurrentUserRsvp,
     isSessionFull,
     toggleRsvp,
@@ -44,14 +53,12 @@ export default function SessionDetailsCard({
     isUnrsvpPending,
   } = useScheduleStuff()
 
-  const sessionRsvps = rsvpsBySessionId(session.id!)
   const currentUserRsvp = getCurrentUserRsvp(session.id!)
   const isRsvpd = isUserRsvpd(session.id!)
   const sessionBookmarked = isSessionBookmarked(session.id!)
 
   const copyLink = () => {
-    const base = window.location.origin
-    const fullUrl = `${base}/schedule?session=${session.id!}`
+    const fullUrl = sessionLink(session.id)
     navigator.clipboard
       .writeText(fullUrl)
       .then(() => {
@@ -156,8 +163,28 @@ export default function SessionDetailsCard({
                 )}
               </div>
             )}
-            <div className="font-medium text-secondary-300">
-              📅 {dateUtils.getStringDate(session.start_time)}
+            <div className="flex items-center gap-4 font-medium text-secondary-300">
+              <span>📅 {dateUtils.getStringDate(session.start_time)}</span>
+              <div className="flex items-center">
+                <a
+                  href={gCalLinkFromSession(session)}
+                  className={buttonVariants({ variant: 'ghost' })}
+                  title="Add to Google Calendar"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <CalendarIcon className={`size-4 text-secondary-300`} />
+                </a>
+                <a
+                  href={`/api/queries/sessions/${session.id}/ics`}
+                  className={buttonVariants({ variant: 'ghost' })}
+                  title="Download iCal/ICS"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  <AppleIcon className={`size-4 text-secondary-300`} />
+                </a>
+              </div>
             </div>
             <div className="text-secondary-300">
               🕐 {dateUtils.getStringTime(session.start_time)}
@@ -178,7 +205,7 @@ export default function SessionDetailsCard({
         {/* Location and Attendance */}
         <div className="flex w-full justify-between gap-1">
           <div className="text-secondary-300">
-            📍 {session.location_name || 'TBD'}
+            📍 {session.location?.name || 'TBD'}
           </div>
           {session.max_capacity && (
             <div className="text-secondary-300">
@@ -206,7 +233,6 @@ export default function SessionDetailsCard({
                     <UserIcon className="mr-1 inline-block size-4" />{' '}
                     <AttendanceDisplay
                       session={session}
-                      sessionRsvps={sessionRsvps}
                       userLoggedIn={!!currentUser}
                     />
                   </div>

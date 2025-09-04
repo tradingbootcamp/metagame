@@ -1,31 +1,51 @@
-import { URLS } from '../utils/urls'
+'use client'
+
+import { Suspense, useEffect, useRef, useState } from 'react'
+
+import { SOCIAL_LINKS, URLS } from '../utils/urls'
 import { Button } from './Button'
+import {
+  CheckIcon,
+  ChevronDownIcon,
+  ChevronRightIcon,
+  LinkIcon,
+} from 'lucide-react'
+import { useSearchParams } from 'next/navigation'
+
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible'
 
 interface FAQ {
-  id: number
+  id: string
   question: string
   contentHtml: React.ReactNode
 }
 
 const faqs: FAQ[] = [
   {
-    id: 1,
+    id: 'organizers',
     question: 'Who is organizing this event?',
     contentHtml: (
       <p>
-        Ricki Heicklen and the <a href="/arbor">Arbor</a> team, as well as many,
-        many others. More information coming soon!
+        Ricki Heicklen and the{' '}
+        <a className="link" href="/arbor">
+          Arbor
+        </a>{' '}
+        team, as well as many, many others. More information coming soon!
       </p>
     ),
   },
 
   {
-    id: 2,
+    id: 'location',
     question: 'Where will it be?',
     contentHtml: (
       <>
         <p>
-          <a href="https://lighthaven.space" target="_blank">
+          <a className="link" href="https://lighthaven.space" target="_blank">
             Lighthaven Campus
           </a>
           , Berkeley, CA
@@ -35,7 +55,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 3,
+    id: 'schedule',
     question: 'What time does Metagame start and end?',
     contentHtml: (
       <p>
@@ -46,16 +66,16 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 4,
+    id: 'discounts',
     question: 'Do you offer any discounts?',
     contentHtml: (
       <>
         <p>Yes, we offer several discount options:</p>
-        <ul>
+        <ul className="list-outside list-disc pl-4">
           <li>
             <strong>Volunteer tickets</strong>: Applications for volunteer
             tickets can be found{' '}
-            <a href={URLS.TICKET_VOLUNTEER} target="_blank">
+            <a className="link" href={URLS.TICKET_VOLUNTEER} target="_blank">
               here
             </a>{' '}
             and will be evaluated on a rolling basis. Volunteers work up to 6
@@ -64,14 +84,29 @@ const faqs: FAQ[] = [
             reduced price ticket.
           </li>
           <li>
+            <strong>Sliding Scale Tickets</strong>: We want you to come! If the
+            ticket price is prohibitive for you, select a sliding scale price
+            down to half of the full Player Ticket price. If that is still too
+            much, and volunteering isn&apos;t an option, see the Financial Aid
+            info below.
+          </li>
+          <li>
+            <strong>Bitcoin Tickets</strong>: Thanks to our headline sponsor, we
+            are offering a Bitcoin payment option with (at current exchange
+            rates) discounted prices on both player and sliding scale tickets
+            relative to fiat.
+          </li>
+          <li>
             <strong>Financial aid tickets</strong>: We have a scholarship fund
             with free and reduced price tickets available for people for whom
-            attending Metagame would pose a financial hardship. If the current
-            ticket price ($580) is prohibitive but a 50% off ticket would be
-            doable, you can use the discount code <strong>HALFPRICE</strong> to
-            get a $290 ticket, on the honor system. For a reduction in ticket
-            price beyond that or to apply for travel assistance, please fill out{' '}
-            <a href={URLS.TICKET_FINANCIAL_AID} target="_blank">
+            attending Metagame would pose a financial hardship. For a reduction
+            in ticket price beyond the range of our sliding scale option, or to
+            apply for travel assistance, please fill out{' '}
+            <a
+              className="link"
+              href={URLS.TICKET_FINANCIAL_AID}
+              target="_blank"
+            >
               this form
             </a>
             . The deadline to apply for financial aid is Monday, August 25th. We
@@ -92,7 +127,32 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 5,
+    id: 'lodging',
+    question: 'Where can I stay?',
+    contentHtml: (
+      <p>
+        Rooms at and near the venue can be booked via{' '}
+        <a
+          className="link"
+          href="https://www.havenbookings.space/events/metagame"
+          target="_blank"
+        >
+          Haven Bookings
+        </a>
+        . You can also coordinate with others in the{' '}
+        <a
+          className="link"
+          href="https://discord.gg/GsT3yRrxR9"
+          target="_blank"
+        >
+          #housing
+        </a>{' '}
+        Discord channel.
+      </p>
+    ),
+  },
+  {
+    id: 'children',
     question: 'Are children welcome at Metagame?',
     contentHtml: (
       <>
@@ -128,7 +188,7 @@ const faqs: FAQ[] = [
         </ul>
         <p>
           See the{' '}
-          <a href="/schedule" target="_blank">
+          <a className="link" href="/schedule" target="_blank">
             schedule
           </a>{' '}
           for more details.
@@ -146,7 +206,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 6,
+    id: 'refunds',
     question: 'What is the refund policy?',
     contentHtml: (
       <p>
@@ -154,20 +214,27 @@ const faqs: FAQ[] = [
         September 1st. After that point, we will not be able to issue refunds.
         Tickets purchased in Bitcoin are not refundable. You can also transfer
         your ticket to someone else by September 1st by emailing{' '}
-        <a href="mailto:team@metagame.games">team@metagame.games</a>.
+        <a className="link" href="mailto:team@metagame.games">
+          team@metagame.games
+        </a>
+        .
       </p>
     ),
   },
   {
-    id: 7,
-    question: 'I have another question',
+    id: 'contact',
+    question: 'I have another question!',
     contentHtml: (
       <p>
-        Let us know{' '}
-        <a href={URLS.INTEREST_FORM} target="_blank">
-          here
+        Ask it in the{' '}
+        <a className="link" href={SOCIAL_LINKS.DISCORD} target="_blank">
+          Discord
         </a>
-        !
+        ! Or email us at{' '}
+        <a className="link" href="mailto:team@metagame.games">
+          team@metagame.games
+        </a>
+        .
       </p>
     ),
   },
@@ -222,23 +289,98 @@ const faqs: FAQ[] = [
   },
 ]
 
-export default function FAQ() {
+function FaqItem({ faq, isTarget }: { faq: FAQ; isTarget: boolean }) {
+  const [isOpen, setIsOpen] = useState<boolean>(isTarget)
+  const [showCopiedMessage, setShowCopiedMessage] = useState(false)
+  const [copyError, setCopyError] = useState(false)
+  const ref = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    if (isTarget) {
+      setIsOpen(true)
+      setTimeout(() => {
+        ref.current?.scrollIntoView({ behavior: 'smooth', block: 'center' })
+      }, 0)
+    }
+  }, [isTarget])
+
+  const copyLink = () => {
+    const base = window.location.origin
+    const fullUrl = `${base}/faq?qId=${faq.id}`
+    navigator.clipboard
+      .writeText(fullUrl)
+      .then(() => {
+        setShowCopiedMessage(true)
+        setTimeout(() => setShowCopiedMessage(false), 2000)
+      })
+      .catch(() => {
+        setCopyError(true)
+        setTimeout(() => setCopyError(false), 2000)
+      })
+  }
+
   return (
-    <div className="flex max-w-prose flex-col gap-5 py-20">
-      <h1 className="pb-8 text-center text-2xl font-black text-secondary-300">
+    <div ref={ref} id={faq.id} className="w-full rounded-md bg-indigo-950">
+      <Collapsible open={isOpen} onOpenChange={setIsOpen}>
+        <CollapsibleTrigger className="flex w-full items-center justify-between rounded-md p-3 text-left">
+          <span className="text-xl font-medium">{faq.question}</span>
+
+          <div className="flex items-center">
+            {isOpen ? (
+              <ChevronDownIcon className="h-4 w-4" />
+            ) : (
+              <ChevronRightIcon className="h-4 w-4" />
+            )}
+          </div>
+        </CollapsibleTrigger>
+
+        <CollapsibleContent className="flex items-start justify-between p-3">
+          <article className="text-lg">{faq.contentHtml}</article>
+          {isOpen && (
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                copyLink()
+              }}
+              className="mr-2 rounded-md p-1 transition-colors hover:bg-dark-400"
+              title="Copy link to this question"
+              aria-label="Copy link to this question"
+            >
+              {showCopiedMessage ? (
+                <CheckIcon className="h-4 w-4 text-green-400" />
+              ) : (
+                <LinkIcon
+                  className={`h-4 w-4 opacity-50 ${copyError ? 'text-red-500' : 'text-white-300'}`}
+                />
+              )}
+            </button>
+          )}
+        </CollapsibleContent>
+      </Collapsible>
+    </div>
+  )
+}
+
+function FAQInner() {
+  const searchParams = useSearchParams()
+  const qId = (searchParams.get('qId') ?? '').trim()
+
+  return (
+    <div className="flex w-full max-w-[600px] flex-col gap-5">
+      <h1 className="my-6 text-center text-2xl font-black text-secondary-300">
         Frequently Asked Questions
       </h1>
       {faqs.map((faq) => (
-        <div key={faq.id} className="collapse-plus collapse bg-base-200">
-          <input type="checkbox" name={`accordion-${faq.id}`} />
-          <div className="collapse-title text-xl font-medium">
-            {faq.question}
-          </div>
-          <div className="prose-xl collapse-content prose">
-            <article className="prose">{faq.contentHtml}</article>
-          </div>
-        </div>
+        <FaqItem key={faq.id} faq={faq} isTarget={qId === faq.id} />
       ))}
     </div>
+  )
+}
+
+export default function FAQ() {
+  return (
+    <Suspense fallback={<div className="py-20" />}>
+      <FAQInner />
+    </Suspense>
   )
 }
