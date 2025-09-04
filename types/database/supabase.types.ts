@@ -170,6 +170,7 @@ export type Database = {
           opted_in_to_homepage_display: boolean | null
           player_id: number
           profile_pictures_url: string | null
+          pronouns: string | null
           site_name: string | null
           site_name_2: string | null
           site_url: string | null
@@ -191,6 +192,7 @@ export type Database = {
           opted_in_to_homepage_display?: boolean | null
           player_id: number
           profile_pictures_url?: string | null
+          pronouns?: string | null
           site_name?: string | null
           site_name_2?: string | null
           site_url?: string | null
@@ -212,6 +214,7 @@ export type Database = {
           opted_in_to_homepage_display?: boolean | null
           player_id?: number
           profile_pictures_url?: string | null
+          pronouns?: string | null
           site_name?: string | null
           site_name_2?: string | null
           site_url?: string | null
