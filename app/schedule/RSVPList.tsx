@@ -13,7 +13,7 @@ import {
 
 import { adminUnRsvpUserFromSession } from '@/app/actions/db/sessionRsvps'
 
-import { useUser } from '@/hooks/dbQueries'
+import { useUser } from '@/hooks/useUser'
 import { DbFullSession, DbTeamColor } from '@/types/database/dbTypeAliases'
 
 export const AttendanceDisplay = ({

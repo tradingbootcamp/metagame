@@ -2,11 +2,11 @@
 
 import { useMemo } from 'react'
 
-import { ApiUserPublicProfileResponse } from '../api/queries/profiles/public/[userId]/route'
+import { ApiUserPublicProfileResponse } from '../app/api/queries/profiles/public/[userId]/route'
 import {
   ApiAllPublicProfilesResponse,
   ApiUsersPublicProfilesResponse,
-} from '../api/queries/profiles/public/route'
+} from '../app/api/queries/profiles/public/route'
 import { useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { DbPublicProfile } from '@/types/database/dbTypeAliases'

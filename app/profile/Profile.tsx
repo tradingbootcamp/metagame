@@ -42,7 +42,7 @@ import {
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
 import { useProfileUpdate } from '@/app/profile/hooks/useProfileUpdate'
 
-import { useUser } from '@/hooks/dbQueries'
+import { useUser } from '@/hooks/useUser'
 
 export default function Profile() {
   const queryClient = useQueryClient()

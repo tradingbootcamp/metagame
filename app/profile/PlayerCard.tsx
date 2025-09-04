@@ -1,6 +1,6 @@
 'use client'
 
-import { usePublicProfile } from './useProfiles'
+import { usePublicProfile } from '../../hooks/useProfiles'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 

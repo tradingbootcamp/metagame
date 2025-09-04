@@ -37,7 +37,7 @@ import {
   adminUpdateSession,
 } from '@/app/actions/db/sessions'
 
-import { useUser } from '@/hooks/dbQueries'
+import { useUser } from '@/hooks/useUser'
 import {
   DbFullSession,
   DbSessionAges,

@@ -14,7 +14,7 @@ import {
   fetchSessions,
 } from '@/app/schedule/queries'
 
-import { useUser } from '@/hooks/dbQueries'
+import { useUser } from '@/hooks/useUser'
 import {
   DbFullSession,
   DbFullSessionRsvp,

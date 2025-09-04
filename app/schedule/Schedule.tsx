@@ -38,8 +38,8 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
+import { useUser } from '@/hooks/useUser'
 import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 const SCHEDULE_START_TIMES = [14, 9, 9]

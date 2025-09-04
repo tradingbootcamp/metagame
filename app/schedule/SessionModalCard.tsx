@@ -22,8 +22,8 @@ import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 
-import { useUser } from '@/hooks/dbQueries'
 import { useScheduleStuff } from '@/hooks/useScheduleStuff'
+import { useUser } from '@/hooks/useUser'
 import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 export default function SessionDetailsCard({

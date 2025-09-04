@@ -12,8 +12,8 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu'
 
-import { useUser } from '@/hooks/dbQueries'
 import { useLogout } from '@/hooks/useLogout'
+import { useUser } from '@/hooks/useUser'
 
 export default function AccountButton({
   closeMenu,
