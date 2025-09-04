@@ -7,7 +7,7 @@ export interface TicketType {
   live: boolean //whether the apply/purchase button for this ticket should be disabled
   ticketUrl?: string
   regularPrice?: number
-  description: string
+  description: string | React.ReactNode
   finePrint?: string
   features?: string[]
 }

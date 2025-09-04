@@ -239,7 +239,7 @@ const faqs: FAQ[] = [
     ),
   },
   {
-    id: 8,
+    id: 'howtoplay',
     question: 'How do I play??', // Editable placeholder
     contentHtml: (
       <div className="not-prose text-lg">

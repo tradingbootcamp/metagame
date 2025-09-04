@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from 'react'
 export default function PlayWord({
   children = 'played',
   sound = '/Super Mario Bros.mp3',
+  hoverColor = '#67e8f9',
 }) {
   const [active, setActive] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -27,12 +28,23 @@ export default function PlayWord({
     }
   }
 
+  const [hovered, setHovered] = useState(false)
+
+  let color = 'inherit'
+  if (active) {
+    color = '#22d3ee' // cyan-400
+  } else if (hovered) {
+    color = hoverColor // cyan-300 (lighter)
+  }
+
   return (
     <span
       onClick={handleClick}
+      onMouseEnter={() => setHovered(true)}
+      onMouseLeave={() => setHovered(false)}
       style={{
         cursor: 'pointer',
-        color: active ? '#22d3ee' : 'inherit', // cyan-400
+        color,
         transition: 'color 0.2s',
         fontWeight: 'bold',
       }}

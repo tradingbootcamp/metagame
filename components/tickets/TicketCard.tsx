@@ -10,6 +10,8 @@ import { PaymentCurrency } from './Tickets'
 import { TicketType } from '@/lib/types'
 
 import { URLS } from '@/utils/urls'
+import PlayWord from '@/components/PlayWord'
+
 
 import {
   Select,
@@ -112,7 +114,13 @@ export const TicketCard: React.FC<TicketCardProps> = ({
               </h3>
 
               <p className="mt-3 mb-3 font-bold text-cyan-300">
-                {displayTicketType.description}
+                {ticketTypeId === 'slidingScale' ? (
+                  <>
+                    <PlayWord sound="/Animal Crossing.mp3" hoverColor= '#ffd500ff'>Play</PlayWord>er tickets at a pay-what-you-can rate
+                  </>
+                ) : (
+                  displayTicketType.description
+                )}
               </p>
               {/* Day Pass Dropdown */}
               {ticketTypeId === 'dayPass' && (

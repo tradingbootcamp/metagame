@@ -88,7 +88,7 @@ export const displayOnlyTicketType: Record<string, DisplayTicketType> = {
   slidingScale: {
     applicationBased: false,
     live: true,
-    description: 'Player tickets at a pay-what-you-can rate',
+    description: 'Real description set in TicketCard component as part of "play" game',
     title: 'Sliding Scale',
     id: 'slidingScale',
     priceUSD: '290-580',

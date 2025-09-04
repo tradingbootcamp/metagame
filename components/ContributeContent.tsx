@@ -6,8 +6,6 @@ import { SOCIAL_LINKS } from '../utils/urls'
 import { Button } from './Button'
 import Image from 'next/image'
 
-import PlayWord from '@/components/PlayWord'
-
 export default function ContributeContent() {
   useEffect(() => {
     // Audio effect for any coin containers (if they exist)
@@ -86,8 +84,7 @@ export default function ContributeContent() {
                 Ludus Latrunculorum
               </a>
               , but not the rules. Want to run a hackathon where competitors
-              come up with the rule book, and judges{' '}
-              <PlayWord sound="/Zelda.mp3">play</PlayWord> each version and
+              come up with the rule book, and judges play each version and
               choose the best?
             </li>
             <li>
@@ -114,11 +111,10 @@ export default function ContributeContent() {
 
           <h2>The Megagame</h2>
           <p>
-            Upon arrival, <PlayWord sound="/Animal Crossing.mp3">Play</PlayWord>
-            ers will be split into two teams as part of a conference-long
-            Megagame. If you have a format for a contest/game/tournament,
-            consider running it as part of the Megagame. Many more details to
-            follow.
+            Upon arrival, Players will be split into two teams as part of a
+            conference-long Megagame. If you have a format for a
+            contest/game/tournament, consider running it as part of the
+            Megagame. Many more details to follow.
           </p>
 
           <h2>The Website</h2>
