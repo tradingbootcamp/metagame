@@ -22,7 +22,7 @@ import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
 import { buttonVariants } from '@/components/ui/button'
 
-import { useScheduleStuff } from '@/hooks/useScheduleStuff'
+import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
 import { useUser } from '@/hooks/useUser'
 import { DbFullSession } from '@/types/database/dbTypeAliases'
 

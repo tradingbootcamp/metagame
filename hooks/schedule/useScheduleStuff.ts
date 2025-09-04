@@ -1,3 +1,5 @@
+'use client'
+
 import { useMemo } from 'react'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -8,12 +10,12 @@ import {
   rsvpCurrentUserToSession,
   unrsvpCurrentUserFromSession,
 } from '@/app/actions/db/sessionRsvps'
+
 import {
   fetchCurrentUserSessionBookmarks,
   fetchLocations,
   fetchSessions,
-} from '@/app/schedule/queries'
-
+} from '@/hooks/schedule/queries'
 import { useUser } from '@/hooks/useUser'
 import {
   DbFullSession,

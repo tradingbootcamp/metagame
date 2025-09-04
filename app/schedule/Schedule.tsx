@@ -38,7 +38,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { useScheduleStuff } from '@/hooks/useScheduleStuff'
+import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
 import { useUser } from '@/hooks/useUser'
 import { DbFullSession } from '@/types/database/dbTypeAliases'
 

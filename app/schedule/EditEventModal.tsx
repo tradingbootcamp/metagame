@@ -2,13 +2,13 @@
 
 import { useEffect, useState } from 'react'
 
-import { CONFERENCE_DAYS } from './Schedule'
-import { userEditSession } from './actions'
 import {
   adminFetchFullProfiles,
   fetchLocations,
   fetchSessionById,
-} from './queries'
+} from '../../hooks/schedule/queries'
+import { CONFERENCE_DAYS } from './Schedule'
+import { userEditSession } from './actions'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { XIcon } from 'lucide-react'
 import { toast } from 'sonner'
