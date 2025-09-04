@@ -16,7 +16,7 @@ export const sessionCalendarDescription = (session: DbFullSession) => {
     ? `Location: ${session.location.name}`
     : ''
   const hostsString = dbGetHostsFromSession(session).join(', ')
-  const detailsString = `${locationString}\nHosts: ${hostsString}\n\n=================\n\n${session.description + '\n\n=================\n\n' || ''}${sessionLink(session.id)}`
+  const detailsString = `${locationString}\nHosts: ${hostsString}\n\n=================\n\n${session.description + '\n\n=================\n\n' || ''}<a href=${sessionLink(session.id)}>${sessionLink(session.id)}</a>`
   return detailsString
 }
 export const gCalLinkFromSession = (session: DbFullSession) => {
