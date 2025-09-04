@@ -91,6 +91,10 @@ function SignupForm() {
         setShowResetPasswordLink(true)
         return
       }
+      if (res.error === 'rate_limit') {
+        setErrors({ submit: 'Rate limit problem; try again in a bit' })
+        return
+      }
 
       router.push(`/signup/success?email=${validatedData.email}`)
     } catch (error) {
@@ -233,8 +237,7 @@ function SignupForm() {
               }`}
             />
             <div className="mt-1 text-xs text-gray-500">
-              Must be at least 10 characters with uppercase, lowercase, number,
-              and symbol
+              Must be at least 12 characters and include a number and a letter
             </div>
             {errors.password && (
               <div className="mt-1 text-xs text-red-500">

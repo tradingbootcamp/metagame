@@ -240,18 +240,24 @@ export default function Schedule({
     locationId: string
   } | null>(null)
 
+  const openedSession = useMemo(() => {
+    return sessions.find((s) => s.id === openedSessionId) ?? null
+  }, [sessions, openedSessionId])
+
   // Sync URL parameters with state changes
   useEffect(() => {
     if (!pathname.startsWith('/schedule')) return
     const params = new URLSearchParams()
     if (currentDayIndex !== 0) params.set('day', currentDayIndex.toString())
     if (openedSessionId) params.set('session', openedSessionId)
+    if (!openedSessionId) params.delete('session')
 
     const newUrl = params.toString()
       ? `?${params.toString()}`
       : window.location.pathname
     router.replace(newUrl, { scroll: false })
   }, [currentDayIndex, openedSessionId, router])
+
   const currentDay = days[currentDayIndex] || {
     date: '',
     displayName: 'No Events',
@@ -627,7 +633,7 @@ export default function Schedule({
         </div>
       </div>
 
-      {openedSessionId && (
+      {openedSession && (
         <Modal
           onClose={() => {
             const sessionDayIndex = days.findIndex((day) =>
@@ -640,7 +646,7 @@ export default function Schedule({
           }}
         >
           <SessionDetailsCard
-            session={sessions.find((s) => s.id === openedSessionId)!}
+            session={openedSession}
             canEdit={editPermissions[openedSessionId!] || false}
             showButtons={true}
           />

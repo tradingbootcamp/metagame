@@ -75,6 +75,11 @@ export default function AccountButton({
         <DropdownMenuItem asChild onClick={closeMenu}>
           <Link href="/profile">Profile</Link>
         </DropdownMenuItem>
+        {profile?.is_admin && (
+          <DropdownMenuItem asChild onClick={closeMenu}>
+            <Link href="/admin">Admin</Link>
+          </DropdownMenuItem>
+        )}
         <DropdownMenuSeparator />
         <DropdownMenuItem
           onClick={() => {
