@@ -1,6 +1,6 @@
 'use server'
 
-import { adminExportWrapper, currentUserWrapper } from './auth'
+import { currentUserWrapper } from './auth'
 
 import { sessionBookmarkService } from '@/lib/db/sessionBookmarks'
 
@@ -17,10 +17,8 @@ export const currentUserToggleSessionBookmark = currentUserWrapper(
 export const currentUserGetSessionBookmarks = async () =>
   currentUserWrapper(sessionBookmarkService.getUserSessionBookmarks)({})
 
-export const adminGetUserSessionBookmarks = adminExportWrapper(
-  sessionBookmarkService.getUserSessionBookmarks,
-)
+export const getUserSessionBookmarks =
+  sessionBookmarkService.getUserSessionBookmarks
 
-export const adminGetAllSessionBookmarks = adminExportWrapper(
-  sessionBookmarkService.getAllSessionBookmarks,
-)
+export const getAllSessionBookmarks =
+  sessionBookmarkService.getAllSessionBookmarks

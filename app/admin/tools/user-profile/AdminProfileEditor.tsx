@@ -26,16 +26,16 @@ import {
   adminUpdateUserProfile,
 } from '@/app/actions/db/users'
 
-import { DbProfile, DbTicket } from '@/types/database/dbTypeAliases'
+import { DbFullProfile, DbTicket } from '@/types/database/dbTypeAliases'
 
 type Props = {
-  profile: DbProfile
+  profile: DbFullProfile
   tickets: DbTicket[]
 }
 
 export default function AdminProfileEditor({ profile, tickets }: Props) {
   const [isEditMode, setIsEditMode] = useState(false)
-  const [current, setCurrent] = useState<DbProfile>(profile)
+  const [current, setCurrent] = useState<DbFullProfile>(profile)
   const [formData, setFormData] = useState<ProfileFormData>(() => {
     try {
       return profileFormSchema.parse(profile)

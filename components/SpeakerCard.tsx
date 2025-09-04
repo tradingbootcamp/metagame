@@ -6,10 +6,10 @@ import Image from 'next/image'
 import { cn } from '@/utils/cn'
 import { urlWithProtocol } from '@/utils/urlFix'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 type SpeakerCardProps = {
-  profile: Partial<DbProfile>
+  profile: Partial<DbFullProfile>
 }
 
 export const SpeakerCard: React.FC<SpeakerCardProps> = ({ profile }) => {

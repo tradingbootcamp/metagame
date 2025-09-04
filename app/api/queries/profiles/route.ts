@@ -2,11 +2,14 @@ import { NextResponse } from 'next/server'
 
 import { adminGetAllFullProfiles } from '@/app/actions/db/users'
 
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
+
+export type ApiFullProfilesResponse = DbFullProfile[]
 export async function GET() {
   try {
     const profiles = await adminGetAllFullProfiles()
 
-    return NextResponse.json(profiles)
+    return NextResponse.json(profiles satisfies ApiFullProfilesResponse)
   } catch (error) {
     console.error('Error fetching profiles:', error)
 

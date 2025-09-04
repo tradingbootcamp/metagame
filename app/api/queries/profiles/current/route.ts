@@ -2,11 +2,17 @@ import { NextResponse } from 'next/server'
 
 import { getCurrentUserFullProfile } from '@/app/actions/db/users'
 
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
+
+export type ApiCurrentUserFullProfileResponse = DbFullProfile | null
+
 export async function GET() {
   try {
     const profile = await getCurrentUserFullProfile()
 
-    return NextResponse.json(profile)
+    return NextResponse.json(
+      profile satisfies ApiCurrentUserFullProfileResponse,
+    )
   } catch (error) {
     console.error('Error fetching current user profile:', error)
 

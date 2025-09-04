@@ -1,5 +1,5 @@
 import { getCurrentUser, getCurrentUserFullProfile } from '../actions/db/users'
-import { PlayerCardProvider } from './PlayerCardProvider'
+import PlayerCard from './PlayerCard'
 import Profile from './Profile'
 import {
   HydrationBoundary,
@@ -36,7 +36,7 @@ export default async function ProfileProvider() {
     <HydrationBoundary state={dehydrate(queryClient)}>
       <div className="flex flex-col items-center gap-4">
         <Profile />
-        {user && <PlayerCardProvider userId={user.id} />}
+        {user && <PlayerCard userId={user.id} />}
       </div>
     </HydrationBoundary>
   )

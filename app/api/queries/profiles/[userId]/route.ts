@@ -7,6 +7,10 @@ import {
   getCurrentUserFullProfile,
 } from '@/app/actions/db/users'
 
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
+
+export type ApiUserFullProfileResponse = DbFullProfile | null
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string }> },
@@ -34,7 +38,7 @@ export async function GET(
       profile = await adminGetUserFullProfileById({ userId })
     }
 
-    return NextResponse.json(profile)
+    return NextResponse.json(profile satisfies ApiUserFullProfileResponse)
   } catch (error) {
     console.error('Error fetching user profile:', error)
 

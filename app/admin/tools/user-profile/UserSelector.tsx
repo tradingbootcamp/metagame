@@ -10,10 +10,10 @@ import {
   SelectValue,
 } from '@/components/ui/select'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 interface UserSelectorProps {
-  users: DbProfile[]
+  users: DbFullProfile[]
   selectedUserId: string | undefined
 }
 

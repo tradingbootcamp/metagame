@@ -32,7 +32,7 @@ export type DbTicket = Tables<'tickets'>
 export type DbTicketInsert = TablesInsert<'tickets'>
 export type DbTicketUpdate = TablesUpdate<'tickets'>
 
-export type DbProfile = Tables<'profiles'>
+export type DbFullProfile = Tables<'profiles'>
 export type DbPublicProfileKeys =
   | 'id'
   | 'first_name'
@@ -51,7 +51,7 @@ export type DbPublicProfileKeys =
   | 'minor'
   | 'profile_pictures_url'
   | 'player_id'
-export type DbPublicProfile = Pick<DbProfile, DbPublicProfileKeys>
+export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys>
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>
 export type DbTeamColor = Enums<'TEAM_COLORS'>

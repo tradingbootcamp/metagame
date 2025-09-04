@@ -1,40 +1,21 @@
 import { NextResponse } from 'next/server'
 
-import { createClient } from '@/utils/supabase/server'
+import { getUserSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
-import {
-  adminGetUserSessionBookmarks,
-  currentUserGetSessionBookmarks,
-} from '@/app/actions/db/sessionBookmarks'
+import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
 
+export type ApiUserSessionBookmarksResponse = DbSessionBookmark[]
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
     const { userId } = await params
+    const bookmarks = await getUserSessionBookmarks({ userId })
 
-    // Get current user from server client
-    const supabase = await createClient()
-    const {
-      data: { user },
-    } = await supabase.auth.getUser()
-
-    if (!user) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-    }
-
-    let bookmarks
-
-    // If requesting their own data, allow it using current user wrapper
-    if (userId === user.id) {
-      bookmarks = await currentUserGetSessionBookmarks()
-    } else {
-      // Otherwise, require admin privileges
-      bookmarks = await adminGetUserSessionBookmarks({ userId })
-    }
-
-    return NextResponse.json(bookmarks)
+    return NextResponse.json(
+      bookmarks satisfies ApiUserSessionBookmarksResponse,
+    )
   } catch (error) {
     console.error('Error fetching user session bookmarks:', error)
 

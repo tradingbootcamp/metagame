@@ -1,7 +1,8 @@
+'use client'
+
+import { usePublicProfile } from './useProfiles'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
-
-import { DbFullSession, DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 // Establish some base numbers
 const CARD_WIDTH = 941
@@ -22,13 +23,8 @@ const ABILITY_COST_SIZE = 75
 
 const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
 
-export default function PlayerCard({
-  hostedSessions,
-  profile,
-}: {
-  hostedSessions: DbFullSession[]
-  profile: DbPublicProfile | null
-}) {
+export default function PlayerCard({ userId }: { userId: string }) {
+  const { profile, profileLoading, profileError } = usePublicProfile(userId)
   const washImageSrcs = {
     orange: '/images/cards/orange-wash.png',
     purple: '/images/cards/purple-wash.png',
@@ -36,6 +32,59 @@ export default function PlayerCard({
     unassigned: '/images/cards/gray-wash.png',
     blue: '/images/cards/blue-wash.png',
   }
+
+  // Loading state - show gray wash, question mark, and frame
+  if (profileLoading || profileError) {
+    return (
+      <div
+        className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
+        style={{
+          width: BASELINE_CARD_WIDTH,
+          aspectRatio: CARD_WIDTH / CARD_HEIGHT,
+          fontSize: 500 * scale,
+        }}
+      >
+        {/* Background card image - gray wash */}
+        <Image
+          src="/images/cards/fog.gif"
+          alt="Loading..."
+          fill
+          className="z-1 object-cover"
+        />
+        <Image
+          src="/images/cards/gray-wash.png"
+          alt="Loading..."
+          fill
+          className="z-2 object-cover opacity-50"
+        />
+        {/* Frame Overlay */}
+        <Image
+          src="/images/cards/celestial-frame.png"
+          alt="Frame overlay"
+          fill
+          className="z-3 object-cover"
+        />
+        {/* Large question mark in center */}
+        <div
+          // style={{
+          //   width: INNER_WIDTH * scale,
+          //   height: PICTURE_HEIGHT * scale,
+          //   top: TOP_FROM_TOP * scale,
+          //   left: FRAME_FROM_EDGE * scale,
+          // }}
+          className="absolute inset-0 z-2 flex items-center justify-center"
+        >
+          <div className="flex flex-col items-center text-gray-200">
+            <span>{profileLoading ? '?' : 'X'}</span>
+            <span style={{ fontSize: 100 * scale }}>
+              {profileLoading ? 'Loading...' : 'Error'}
+            </span>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
     <div
       className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
@@ -46,7 +95,7 @@ export default function PlayerCard({
     >
       {/* Background card image */}
       <Image
-        src={washImageSrcs[profile?.team ?? 'unassigned']}
+        src={washImageSrcs[profile?.team || 'unassigned']}
         alt="Celestial Base Color"
         fill
         className="z-1 object-cover"
@@ -98,10 +147,11 @@ export default function PlayerCard({
           style={{
             top: 35 * scale,
             right: 55 * scale,
+            fontSize: 50 * scale,
           }}
-          className="absolute z-4 text-sm text-white"
+          className="absolute z-4 text-white"
         >
-          <span className="flex items-center gap-1">
+          {/* <span className="flex items-center gap-1">
             Hosting:
             <div
               style={{
@@ -112,9 +162,25 @@ export default function PlayerCard({
             >
               <strong className="font-serif">{hostedSessions.length}</strong>
             </div>
+          </span> */}
+          <span className="text-opacity-50 font-cinzel text-gray-400">
+            #{profile?.player_id}
           </span>
         </div>
       }
+      {/* Name */}
+      <div
+        style={{
+          left: 210 * scale,
+          top: 35 * scale,
+          fontSize: 50 * scale,
+        }}
+        className="absolute z-3 font-cinzel text-white"
+      >
+        <strong>
+          {profile?.first_name} {profile?.last_name}
+        </strong>
+      </div>
       {/* Player picture */}
       <div
         style={{
@@ -153,8 +219,9 @@ export default function PlayerCard({
           left: FRAME_FROM_EDGE * scale,
           top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
           bottom: FRAME_FROM_EDGE * scale,
+          fontSize: 40 * scale,
         }}
-        className="absolute z-2 flex flex-col gap-1 text-sm leading-none break-words text-black"
+        className="absolute z-2 flex flex-col gap-1 leading-none break-words text-black"
       >
         {/* Bio */}
         <div className="w-full p-1">

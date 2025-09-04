@@ -18,11 +18,11 @@ import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 interface ProfileInfoModalProps {
   onClose: () => void
-  currentProfile: DbProfile | null | undefined
+  currentProfile: DbFullProfile | null | undefined
   currentUserId?: string
 }
 

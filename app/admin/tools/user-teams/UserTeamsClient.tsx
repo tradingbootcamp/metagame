@@ -29,8 +29,9 @@ import {
 } from '@/components/ui/table'
 
 import { adminUpdateUserProfile } from '@/app/actions/db/users'
+import { ApiFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
-import { DbProfile, DbTeamColor } from '@/types/database/dbTypeAliases'
+import { DbTeamColor } from '@/types/database/dbTypeAliases'
 
 const teamColorToBadgeClass = (team: DbTeamColor) => {
   switch (team) {
@@ -53,7 +54,7 @@ export default function UserTeamsClient() {
       if (!profiles.ok) {
         throw new Error('Failed to load users')
       }
-      return (await profiles.json()) as DbProfile[]
+      return (await profiles.json()) as ApiFullProfilesResponse
     },
   })
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set())

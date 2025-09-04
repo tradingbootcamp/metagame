@@ -5,7 +5,7 @@ import { ProfileFormData, profileFormSchema } from '@/lib/schemas/profile'
 
 import { updateCurrentUserProfile } from '@/app/actions/db/users'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 interface UseProfileUpdateOptions {
   currentUserId?: string
@@ -19,20 +19,16 @@ export function useProfileUpdate({
   onError,
 }: UseProfileUpdateOptions = {}) {
   const queryClient = useQueryClient()
-
+  const profileQueryKey = ['users', 'profile', currentUserId]
   const updateProfileMutation = useMutation({
     mutationFn: updateCurrentUserProfile,
     onMutate: (data) => {
-      const oldData = queryClient.getQueryData<DbProfile>([
-        'users',
-        'profile',
-        'current-user',
-      ])
+      const oldData = queryClient.getQueryData<DbFullProfile>(profileQueryKey)
       const newData = {
         ...oldData,
         ...data.data,
       }
-      queryClient.setQueryData(['users', 'profile', 'current-user'], newData)
+      queryClient.setQueryData(profileQueryKey, newData)
       return { oldData }
     },
     onSuccess: () => {
@@ -41,10 +37,7 @@ export function useProfileUpdate({
     },
     onError: (error, variables, context) => {
       if (context?.oldData) {
-        queryClient.setQueryData(
-          ['users', 'profile', 'current-user'],
-          context.oldData,
-        )
+        queryClient.setQueryData(profileQueryKey, context.oldData)
       }
       console.error('Error updating profile:', error)
       toast.error('Failed to update profile')
@@ -52,7 +45,7 @@ export function useProfileUpdate({
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['users', 'profile', 'current-user'],
+        queryKey: profileQueryKey,
       })
     },
   })
@@ -73,7 +66,7 @@ export function useProfileUpdate({
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['users', 'profile', currentUserId],
+        queryKey: profileQueryKey,
       })
     },
   })

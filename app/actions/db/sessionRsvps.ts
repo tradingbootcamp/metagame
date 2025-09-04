@@ -6,9 +6,8 @@ import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
 export const getAllRsvps = sessionRsvpsService.getAllRsvps
 
-export const adminGetUserRsvps = adminExportWrapper(
-  sessionRsvpsService.getUserRsvps,
-)
+export const getUserRsvps = sessionRsvpsService.getUserRsvps
+
 export const getAllSessionRsvpCounts =
   sessionRsvpsService.getAllSessionRsvpCounts
 export const getSingleSessionRsvps = sessionRsvpsService.getSingleSessionRsvps
@@ -34,4 +33,7 @@ export const unrsvpCurrentUserFromAllSessions = currentUserWrapper(
 )
 export const adminUnRsvpUserFromSession = adminExportWrapper(
   sessionRsvpsService.unrsvpUserFromSession,
+)
+export const adminRsvpUserToSession = adminExportWrapper(
+  sessionRsvpsService.rsvpUserToSession,
 )

@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server'
 
-import { adminGetAllSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
+import { getAllSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
+
+import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
+
+export type ApiAllSessionBookmarksResponse = DbSessionBookmark[]
 
 export async function GET() {
   try {
-    const bookmarks = await adminGetAllSessionBookmarks()
+    const bookmarks = await getAllSessionBookmarks()
 
-    return NextResponse.json(bookmarks)
+    return NextResponse.json(bookmarks satisfies ApiAllSessionBookmarksResponse)
   } catch (error) {
     console.error('Error fetching all session bookmarks:', error)
 

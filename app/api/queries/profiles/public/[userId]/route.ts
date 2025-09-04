@@ -2,6 +2,9 @@ import { NextResponse } from 'next/server'
 
 import { getUserPublicProfileById } from '@/app/actions/db/users'
 
+import { DbPublicProfile } from '@/types/database/dbTypeAliases'
+
+export type ApiUserPublicProfileResponse = DbPublicProfile | null
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ userId: string }> },
@@ -11,7 +14,7 @@ export async function GET(
 
     const profile = await getUserPublicProfileById({ userId })
 
-    return NextResponse.json(profile)
+    return NextResponse.json(profile satisfies ApiUserPublicProfileResponse)
   } catch (error) {
     console.error('Error fetching user profile:', error)
 

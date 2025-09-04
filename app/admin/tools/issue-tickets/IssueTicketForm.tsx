@@ -29,8 +29,9 @@ import {
   AdminIssueTicketInput,
   adminIssueTicket,
 } from '@/app/admin/tools/issue-tickets/actions'
+import { ApiFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
-import { DbProfile } from '@/types/database/dbTypeAliases'
+import { DbFullProfile } from '@/types/database/dbTypeAliases'
 
 const initialFormData: AdminIssueTicketInput = {
   ticketType: TICKET_TYPES.PLAYER,
@@ -55,7 +56,7 @@ export function IssueTicketForm({}: {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [success, setSuccess] = useState<string | null>(null)
-  const [existingUsers, setExistingUsers] = useState<DbProfile[]>([])
+  const [existingUsers, setExistingUsers] = useState<DbFullProfile[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
   const [extraFieldsOpen, setExtraFieldsOpen] = useState(false)
   useEffect(() => {
@@ -66,7 +67,7 @@ export function IssueTicketForm({}: {
         if (!userProfiles.ok) {
           throw new Error('Failed to load users')
         }
-        const users = (await userProfiles.json()) as DbProfile[]
+        const users = (await userProfiles.json()) as ApiFullProfilesResponse
         setExistingUsers(users)
       } catch (err) {
         console.error('Failed to load users:', err)
