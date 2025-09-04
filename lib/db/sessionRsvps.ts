@@ -171,14 +171,9 @@ export const sessionRsvpsService = {
 
   getAllRsvps: async () => {
     const supabase = createServiceClient()
-    const { data, error } = await supabase.from('session_rsvps').select(`
-        *,
-        user:profiles!session_rsvps_user_id_fkey (
-          id,
-          email,
-          team
-        )
-      `)
+    const { data, error } = await supabase
+      .from('session_rsvps')
+      .select(sessionRsvpsSelectIncludes)
     if (error) {
       throw new Error(error.message)
     }
