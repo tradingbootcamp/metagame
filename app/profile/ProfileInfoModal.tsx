@@ -12,7 +12,7 @@ import { cn } from '@/utils/cn'
 import { URLS } from '@/utils/urls'
 
 import { Button, buttonVariants } from '@/components/ui/button'
-import { Dialog, DialogContent } from '@/components/ui/dialog'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -62,7 +62,9 @@ export function ProfileInfoModal({
       }}
     >
       <DialogContent className="mx-4 w-full max-w-md bg-card">
-        <h2 className="mb-1 text-2xl font-bold">Complete Your Profile</h2>
+        <DialogTitle>
+          <span className="mb-1 text-2xl font-bold">Complete Your Profile</span>
+        </DialogTitle>
         <p className="mb-6 text-muted-foreground">
           We need some basic profile information
         </p>
@@ -96,7 +98,7 @@ export function ProfileInfoModal({
               />
             </div>
           </div>
-          <div>
+          <div className="flex flex-col gap-2">
             <Label className="label">
               <span className="label-text">Bio</span>
             </Label>
