@@ -21,7 +21,7 @@ export async function prefetchState() {
       }),
     async () =>
       qc.prefetchQuery({
-        queryKey: ['users', 'profile', 'current-user'],
+        queryKey: ['users', 'profile', 'current'],
         queryFn: getCurrentUserFullProfile,
       }),
   ]

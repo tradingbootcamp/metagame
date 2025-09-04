@@ -39,7 +39,7 @@ export function useScheduleStuff() {
 
   // Fetch user bookmarks
   const { data: bookmarks = [] } = useQuery({
-    queryKey: ['bookmarks', 'current-user'],
+    queryKey: ['bookmarks', 'current'],
     queryFn: fetchCurrentUserSessionBookmarks,
     enabled: !!currentUserProfile?.id,
   })
@@ -197,24 +197,24 @@ export function useScheduleStuff() {
     mutationFn: currentUserToggleSessionBookmark,
     onMutate: async ({ sessionId }) => {
       await queryClient.cancelQueries({
-        queryKey: ['bookmarks', 'current-user'],
+        queryKey: ['bookmarks', 'current'],
       })
       const previousBookmarks = queryClient.getQueryData([
         'bookmarks',
-        'current-user',
+        'current',
       ])
 
       const isBookmarked = isSessionBookmarked(sessionId)
 
       if (isBookmarked) {
         queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
+          ['bookmarks', 'current'],
           (old: DbSessionBookmark[] | undefined) =>
             old?.filter((bookmark) => bookmark.session_id !== sessionId) || [],
         )
       } else {
         queryClient.setQueryData(
-          ['bookmarks', 'current-user'],
+          ['bookmarks', 'current'],
           (old: DbSessionBookmark[] | undefined) => [
             ...(old || []),
             { session_id: sessionId, user_id: currentUserProfile?.id || '' },
@@ -234,7 +234,7 @@ export function useScheduleStuff() {
       toast.error(err.message)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current-user'] })
+      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current'] })
     },
   })
 
