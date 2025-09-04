@@ -27,7 +27,8 @@ const publicProfileSelectIncludes = `
   site_url_2,
   dismissed_info_request,
   minor,
-  profile_pictures_url
+  profile_pictures_url,
+  player_id
 `
 export const usersService = {
   /** Get the current authenticated user */

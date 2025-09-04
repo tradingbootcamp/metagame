@@ -50,6 +50,7 @@ export type DbPublicProfileKeys =
   | 'dismissed_info_request'
   | 'minor'
   | 'profile_pictures_url'
+  | 'player_id'
 export type DbPublicProfile = Pick<DbProfile, DbPublicProfileKeys>
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>
