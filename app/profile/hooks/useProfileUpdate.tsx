@@ -5,6 +5,8 @@ import { ProfileFormData, profileFormSchema } from '@/lib/schemas/profile'
 
 import { updateCurrentUserProfile } from '@/app/actions/db/users'
 
+import { DbProfile } from '@/types/database/dbTypeAliases'
+
 interface UseProfileUpdateOptions {
   currentUserId?: string
   onSuccess?: () => void
@@ -20,18 +22,37 @@ export function useProfileUpdate({
 
   const updateProfileMutation = useMutation({
     mutationFn: updateCurrentUserProfile,
+    onMutate: (data) => {
+      const oldData = queryClient.getQueryData<DbProfile>([
+        'users',
+        'profile',
+        'current-user',
+      ])
+      const newData = {
+        ...oldData,
+        ...data.data,
+      }
+      queryClient.setQueryData(['users', 'profile', 'current-user'], newData)
+      return { oldData }
+    },
     onSuccess: () => {
       toast.success('Profile updated successfully!')
       onSuccess?.()
     },
-    onError: (error) => {
+    onError: (error, variables, context) => {
+      if (context?.oldData) {
+        queryClient.setQueryData(
+          ['users', 'profile', 'current-user'],
+          context.oldData,
+        )
+      }
       console.error('Error updating profile:', error)
       toast.error('Failed to update profile')
       onError?.(error as Error)
     },
     onSettled: () => {
       queryClient.invalidateQueries({
-        queryKey: ['users', 'profile', currentUserId],
+        queryKey: ['users', 'profile', 'current-user'],
       })
     },
   })
