@@ -26,7 +26,7 @@ export const useUser = () => {
     retry: 1,
   })
   const { data: currentUserProfile } = useQuery({
-    queryKey: ['users', 'profile', currentUser!.id],
+    queryKey: ['users', 'profile', currentUser?.id ?? null],
     queryFn: async () => {
       const response = await fetch('/api/queries/profiles/current')
       if (!response.ok) {

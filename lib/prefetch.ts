@@ -12,16 +12,16 @@ import {
  */
 export async function prefetchState() {
   const qc = new QueryClient()
-
+  const currentUser = await getCurrentUser()
   const prefetches = [
     async () =>
       qc.prefetchQuery({
         queryKey: ['users', 'current'],
-        queryFn: getCurrentUser,
+        queryFn: () => currentUser,
       }),
     async () =>
       qc.prefetchQuery({
-        queryKey: ['users', 'profile', 'current'],
+        queryKey: ['users', 'profile', currentUser?.id ?? null],
         queryFn: getCurrentUserFullProfile,
       }),
   ]
