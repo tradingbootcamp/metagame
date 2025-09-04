@@ -22,11 +22,13 @@ import {
 interface TicketCardProps {
   ticketTypeId: string
   paymentMethod?: PaymentCurrency
+  customTitle?: React.ReactNode
 }
 
 export const TicketCard: React.FC<TicketCardProps> = ({
   ticketTypeId,
   paymentMethod = 'usd',
+  customTitle,
 }) => {
   const [selectedDayPass, setSelectedDayPass] = useState<
     (typeof DAY_PASS_OPTIONS)[0] | null
@@ -137,7 +139,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
           <div className="flex flex-grow flex-col justify-between">
             <div>
               <h3 className="text-5xl font-black text-primary-300 uppercase md:text-3xl">
-                {displayTicketType.title}
+                {customTitle || displayTicketType.title}
               </h3>
 
               <p className="mt-3 mb-3 font-bold text-cyan-300">

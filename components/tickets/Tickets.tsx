@@ -6,6 +6,8 @@ import { Tooltip, TooltipContent, TooltipTrigger } from '../ui/tooltip'
 import { TicketCard } from './TicketCard'
 import { InfoIcon } from 'lucide-react'
 
+import PlayWord from '@/components/PlayWord'
+
 import { useLocalStorage } from '@/hooks/useLocalStorage'
 
 export type PaymentCurrency = 'usd' | 'btc'
@@ -78,7 +80,15 @@ export const Tickets: React.FC = () => {
         </div>
 
         <div className="grid grid-cols-1 gap-8 pb-20 md:grid-cols-3">
-          <TicketCard ticketTypeId="player" paymentMethod={paymentMethod} />
+          <TicketCard
+            ticketTypeId="player"
+            paymentMethod={paymentMethod}
+            customTitle={
+              <>
+                <PlayWord sound="/Zelda.mp3">Play</PlayWord>er
+              </>
+            }
+          />
           <TicketCard ticketTypeId="dayPass" paymentMethod={paymentMethod} />
           <TicketCard ticketTypeId="volunteer" paymentMethod={paymentMethod} />
           <TicketCard ticketTypeId="student" paymentMethod={paymentMethod} />
