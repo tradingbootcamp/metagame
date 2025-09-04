@@ -230,6 +230,8 @@ const PaymentForm: React.FC<TicketPurchaseFormProps> = ({
         name: formData.name,
         email: formData.email,
         couponCode: appliedCoupon?.code || '',
+        expectedFinalPriceUSD: finalPrice,
+        preCouponPriceUSD: preCouponPriceUSD,
       })
 
       // Step 1: Create payment intent

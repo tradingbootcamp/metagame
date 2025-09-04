@@ -27,6 +27,8 @@ export const paymentIntentSchema = z.object({
   name: z.string().min(1),
   email: z.email(),
   couponCode: z.string().optional(),
+  preCouponPriceUSD: z.number().optional(),
+  expectedFinalPriceUSD: z.number(),
 })
 
 // Type exports

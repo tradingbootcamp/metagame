@@ -24,6 +24,8 @@ export const validateCouponResultSchema = z.discriminatedUnion('valid', [
     valid: z.literal(true),
     coupon: z.object({
       code: z.string(),
+      id: z.string(),
+      usedCount: z.number(),
       discountAmountCents: z.number(),
       description: z.string(),
     }),
@@ -125,6 +127,8 @@ export const validateCouponForPurchase = async (
       savingsCents: originalPriceInCents - discountedPriceInCents,
       coupon: {
         code: coupon.coupon_code,
+        id: coupon.id,
+        usedCount: coupon.used_count,
         discountAmountCents: coupon.discount_amount_cents,
         description: coupon.description || '',
       },
