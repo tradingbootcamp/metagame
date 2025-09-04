@@ -20,8 +20,8 @@ import {
   getAgesDisplayText,
 } from '@/utils/dbUtils'
 
-import { Modal } from '@/components/Modal'
 import { Checkbox } from '@/components/ui/checkbox'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import { Label } from '@/components/ui/label'
 import {
   Select,
@@ -476,461 +476,490 @@ export function AddEventModal({
   // Show loading state while fetching session data in edit mode
   if (isEditMode && sessionLoading) {
     return (
-      <Modal onClose={onClose}>
-        <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 shadow-lg">
-          <div className="text-center">
-            <div className="mb-2 text-lg font-semibold">
-              Loading event data...
-            </div>
-            <div className="text-sm text-gray-400">
-              Please wait while we fetch the event details.
+      <Dialog
+        open={isOpen}
+        onOpenChange={(open) => {
+          if (!open) onClose()
+        }}
+      >
+        <DialogContent
+          showCloseButton={false}
+          className="rounded-none border-none bg-transparent p-0 shadow-none"
+        >
+          <DialogTitle className="sr-only">Loading event data...</DialogTitle>
+          <div className="w-full max-w-md rounded-lg bg-dark-400 p-8 shadow-lg">
+            <div className="text-center">
+              <div className="mb-2 text-lg font-semibold">
+                Loading event data...
+              </div>
+              <div className="text-sm text-gray-400">
+                Please wait while we fetch the event details.
+              </div>
             </div>
           </div>
-        </div>
-      </Modal>
+        </DialogContent>
+      </Dialog>
     )
   }
 
   return (
-    <Modal onClose={onClose}>
-      <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-dark-400 p-8 shadow-lg">
-        <h2 className="mb-6 text-2xl font-bold">
+    <Dialog
+      open={isOpen}
+      onOpenChange={(open) => {
+        if (!open) onClose()
+      }}
+    >
+      <DialogContent
+        showCloseButton={false}
+        className="rounded-none border-none bg-transparent p-0 shadow-none"
+      >
+        <DialogTitle className="sr-only">
           {isEditMode ? 'Edit Event' : 'Add New Event'}
-        </h2>
-        <form onSubmit={handleSubmit} className="space-y-4">
-          <div>
-            <label htmlFor="title" className="mb-1 block text-sm font-medium">
-              Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              id="title"
-              name="title"
-              type="text"
-              required
-              value={formData.title}
-              onChange={handleInputChange}
-              className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="description"
-              className="mb-1 block text-sm font-medium"
-            >
-              Description
-            </label>
-            <textarea
-              id="description"
-              name="description"
-              rows={3}
-              value={formData.description}
-              onChange={handleInputChange}
-              className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
-            />
-          </div>
-          <div className="flex w-full justify-between">
+        </DialogTitle>
+        <div className="max-h-[90vh] w-full max-w-md overflow-y-auto rounded-lg bg-dark-400 p-8 shadow-lg">
+          <h2 className="mb-6 text-2xl font-bold">
+            {isEditMode ? 'Edit Event' : 'Add New Event'}
+          </h2>
+          <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="day" className="mb-1 block text-sm font-medium">
-                Day <span className="text-red-500">*</span>
-              </label>
-              <Select
-                name="day"
-                required
-                value={formData.day}
-                disabled={!currentUserProfile?.is_admin}
-                onValueChange={(value) => {
-                  if (!value) {
-                    return
-                  }
-                  setFormData((prev) => ({ ...prev, day: value }))
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a day" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  {CONFERENCE_DAYS.map((day) => (
-                    <SelectItem
-                      key={day.date.getDate().toString()}
-                      value={day.date.getDate().toString()}
-                    >
-                      {day.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            <div>
-              <label
-                htmlFor="locationId"
-                className="mb-1 block text-sm font-medium"
-              >
-                Location
-              </label>
-              <Select
-                name="locationId"
-                value={formData.locationId || ''}
-                disabled={!currentUserProfile?.is_admin}
-                onValueChange={(value) => {
-                  if (!value) {
-                    return
-                  }
-                  setFormData((prev) => ({
-                    ...prev,
-                    locationId: value === 'none' ? null : value,
-                  }))
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a location" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  <SelectItem value="none">No specific location</SelectItem>
-                  {locationsLoading && (
-                    <SelectItem value="loading" disabled>
-                      Loading locations...
-                    </SelectItem>
-                  )}
-                  {locations.map((location) => (
-                    <SelectItem key={location.id} value={location.id}>
-                      {location.name}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <label
-                htmlFor="startTime"
-                className="mb-1 block text-sm font-medium"
-              >
-                Start Time <span className="text-red-500">*</span>
+              <label htmlFor="title" className="mb-1 block text-sm font-medium">
+                Title <span className="text-red-500">*</span>
               </label>
               <input
-                id="startTime"
-                name="startTime"
-                type="time"
+                id="title"
+                name="title"
+                type="text"
                 required
-                disabled={!currentUserProfile?.is_admin}
-                value={formData.startTime}
+                value={formData.title}
                 onChange={handleInputChange}
-                className="w-full rounded border p-2 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
               />
             </div>
+
             <div>
               <label
-                htmlFor="endTime"
+                htmlFor="description"
                 className="mb-1 block text-sm font-medium"
               >
-                End Time <span className="text-red-500">*</span>
+                Description
               </label>
-              <input
-                id="endTime"
-                name="endTime"
-                type="time"
-                required
-                disabled={!currentUserProfile?.is_admin}
-                value={formData.endTime}
+              <textarea
+                id="description"
+                name="description"
+                rows={3}
+                value={formData.description}
                 onChange={handleInputChange}
-                className="w-full rounded border p-2 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
               />
             </div>
-          </div>
-
-          {/* Host 1 - Required */}
-          {currentUserProfile?.is_admin && (
-            <div>
-              <div className="flex gap-2">
+            <div className="flex w-full justify-between">
+              <div>
+                <label htmlFor="day" className="mb-1 block text-sm font-medium">
+                  Day <span className="text-red-500">*</span>
+                </label>
+                <Select
+                  name="day"
+                  required
+                  value={formData.day}
+                  disabled={!currentUserProfile?.is_admin}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return
+                    }
+                    setFormData((prev) => ({ ...prev, day: value }))
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a day" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    {CONFERENCE_DAYS.map((day) => (
+                      <SelectItem
+                        key={day.date.getDate().toString()}
+                        value={day.date.getDate().toString()}
+                      >
+                        {day.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              <div>
                 <label
-                  htmlFor="host_1_id"
+                  htmlFor="locationId"
                   className="mb-1 block text-sm font-medium"
                 >
-                  Host 1 <span className="text-red-500">*</span>
+                  Location
                 </label>
-                {formData.host_1_id && (
-                  <XIcon
-                    className="size-4 text-red-500"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, host_1_id: null }))
+                <Select
+                  name="locationId"
+                  value={formData.locationId || ''}
+                  disabled={!currentUserProfile?.is_admin}
+                  onValueChange={(value) => {
+                    if (!value) {
+                      return
                     }
-                  />
-                )}
+                    setFormData((prev) => ({
+                      ...prev,
+                      locationId: value === 'none' ? null : value,
+                    }))
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a location" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    <SelectItem value="none">No specific location</SelectItem>
+                    {locationsLoading && (
+                      <SelectItem value="loading" disabled>
+                        Loading locations...
+                      </SelectItem>
+                    )}
+                    {locations.map((location) => (
+                      <SelectItem key={location.id} value={location.id}>
+                        {location.name}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
               </div>
-              <Select
-                name="host_1_id"
-                value={formData.host_1_id || ''}
-                disabled={!currentUserProfile?.is_admin}
-                onValueChange={(value) => {
-                  if (!value) return
-                  setFormData((prev) => {
-                    return { ...prev, host_1_id: value }
-                  })
-                }}
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a host" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  {hostSelectOptions()}
-                </SelectContent>
-              </Select>
-              {profilesError && (
-                <p className="mt-1 text-xs text-red-400">
-                  Error: {profilesError.message}
-                </p>
-              )}
             </div>
-          )}
-
-          {/* Host 2 - Optional, only show if Host 1 is selected */}
-          {formData.host_1_id && currentUserProfile?.is_admin && (
-            <div>
-              <div className="flex gap-2">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
                 <label
-                  htmlFor="host_2_id"
+                  htmlFor="startTime"
                   className="mb-1 block text-sm font-medium"
                 >
-                  Host 2 <span className="text-gray-400">(Optional)</span>
+                  Start Time <span className="text-red-500">*</span>
                 </label>
-                {formData.host_2_id && (
-                  <XIcon
-                    className="size-4 text-red-500"
-                    onClick={() =>
-                      setFormData((prev) => ({ ...prev, host_2_id: null }))
-                    }
-                  />
-                )}
+                <input
+                  id="startTime"
+                  name="startTime"
+                  type="time"
+                  required
+                  disabled={!currentUserProfile?.is_admin}
+                  value={formData.startTime}
+                  onChange={handleInputChange}
+                  className="w-full rounded border p-2 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                />
               </div>
-              <Select
-                name="host_2_id"
-                value={formData.host_2_id || ''}
-                disabled={!currentUserProfile?.is_admin}
-                onValueChange={(value) =>
-                  setFormData((prev) => ({
-                    ...prev,
-                    host_2_id: value === 'none' ? null : value,
-                  }))
-                }
-              >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a second host" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  <SelectItem value="none">No second host</SelectItem>
-                  {hostSelectOptions()}
-                </SelectContent>
-              </Select>
+              <div>
+                <label
+                  htmlFor="endTime"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  End Time <span className="text-red-500">*</span>
+                </label>
+                <input
+                  id="endTime"
+                  name="endTime"
+                  type="time"
+                  required
+                  disabled={!currentUserProfile?.is_admin}
+                  value={formData.endTime}
+                  onChange={handleInputChange}
+                  className="w-full rounded border p-2 disabled:cursor-not-allowed disabled:text-gray-400 disabled:opacity-50 dark:border-gray-600 dark:bg-gray-700"
+                />
+              </div>
             </div>
-          )}
 
-          {/* Host 3 - Optional, only show if Host 2 is selected */}
-          {formData.host_1_id &&
-            formData.host_2_id &&
-            currentUserProfile?.is_admin && (
+            {/* Host 1 - Required */}
+            {currentUserProfile?.is_admin && (
               <div>
                 <div className="flex gap-2">
                   <label
-                    htmlFor="host_3_id"
+                    htmlFor="host_1_id"
                     className="mb-1 block text-sm font-medium"
                   >
-                    Host 3 <span className="text-gray-400">(Optional)</span>
+                    Host 1 <span className="text-red-500">*</span>
                   </label>
-                  {formData.host_3_id && (
+                  {formData.host_1_id && (
                     <XIcon
                       className="size-4 text-red-500"
                       onClick={() =>
-                        setFormData((prev) => ({ ...prev, host_3_id: null }))
+                        setFormData((prev) => ({ ...prev, host_1_id: null }))
                       }
                     />
                   )}
                 </div>
                 <Select
-                  name="host_3_id"
-                  value={formData.host_3_id || ''}
+                  name="host_1_id"
+                  value={formData.host_1_id || ''}
+                  disabled={!currentUserProfile?.is_admin}
+                  onValueChange={(value) => {
+                    if (!value) return
+                    setFormData((prev) => {
+                      return { ...prev, host_1_id: value }
+                    })
+                  }}
+                >
+                  <SelectTrigger>
+                    <SelectValue placeholder="Select a host" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    {hostSelectOptions()}
+                  </SelectContent>
+                </Select>
+                {profilesError && (
+                  <p className="mt-1 text-xs text-red-400">
+                    Error: {profilesError.message}
+                  </p>
+                )}
+              </div>
+            )}
+
+            {/* Host 2 - Optional, only show if Host 1 is selected */}
+            {formData.host_1_id && currentUserProfile?.is_admin && (
+              <div>
+                <div className="flex gap-2">
+                  <label
+                    htmlFor="host_2_id"
+                    className="mb-1 block text-sm font-medium"
+                  >
+                    Host 2 <span className="text-gray-400">(Optional)</span>
+                  </label>
+                  {formData.host_2_id && (
+                    <XIcon
+                      className="size-4 text-red-500"
+                      onClick={() =>
+                        setFormData((prev) => ({ ...prev, host_2_id: null }))
+                      }
+                    />
+                  )}
+                </div>
+                <Select
+                  name="host_2_id"
+                  value={formData.host_2_id || ''}
                   disabled={!currentUserProfile?.is_admin}
                   onValueChange={(value) =>
                     setFormData((prev) => ({
                       ...prev,
-                      host_3_id: value === 'none' ? null : value,
+                      host_2_id: value === 'none' ? null : value,
                     }))
                   }
                 >
                   <SelectTrigger>
-                    <SelectValue placeholder="Select a third host" />
+                    <SelectValue placeholder="Select a second host" />
                   </SelectTrigger>
                   <SelectContent className="z-[70]">
-                    <SelectItem value="none">No third host</SelectItem>
+                    <SelectItem value="none">No second host</SelectItem>
                     {hostSelectOptions()}
                   </SelectContent>
                 </Select>
               </div>
             )}
 
-          <div className="grid grid-cols-3 gap-4">
-            <div>
-              <label
-                htmlFor="minCapacity"
-                className="mb-1 block text-sm font-medium"
-              >
-                Min Capacity
-              </label>
-              <input
-                id="minCapacity"
-                name="minCapacity"
-                type="number"
-                min="0"
-                value={formData.minCapacity || ''}
-                onChange={handleInputChange}
-                className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="maxCapacity"
-                className="mb-1 block text-sm font-medium"
-              >
-                Max Capacity
-              </label>
-              <input
-                id="maxCapacity"
-                name="maxCapacity"
-                type="number"
-                min="0"
-                value={formData.maxCapacity || ''}
-                onChange={handleInputChange}
-                className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
-              />
-            </div>
-            <div>
-              <label htmlFor="ages" className="mb-1 block text-sm font-medium">
-                Ages
-              </label>
-              <Select
-                value={formData.ages}
-                onValueChange={(value: DbSessionAges) =>
-                  setFormData((prev) => ({ ...prev, ages: value }))
-                }
-                name="ages"
-              >
-                <SelectTrigger id="ages" className="w-full">
-                  <SelectValue placeholder="Select an age" />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  {Object.values(SESSION_AGES).map((age) => (
-                    <SelectItem key={age} value={age}>
-                      {getAgesDisplayText(age)}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
-          <div className="flex w-full justify-between">
-            <div className="flex flex-col items-start">
-              <Label
-                htmlFor="category"
-                className="mb-1 block text-sm font-medium"
-              >
-                Category
-              </Label>
-              <Select
-                name="category"
-                value={formData.category || ''}
-                onValueChange={(value) => {
-                  if (!value) return
-                  setFormData((prev) => ({
-                    ...prev,
-                    category: value as DbSessionCategory,
-                  }))
-                }}
-              >
-                <SelectTrigger className="capitalize">
-                  <SelectValue placeholder="Select..." />
-                </SelectTrigger>
-                <SelectContent className="z-[70]">
-                  {Object.values(SESSION_CATEGORIES_ENUM).map((category) => (
-                    <SelectItem
-                      key={category}
-                      value={category}
-                      className="capitalize"
+            {/* Host 3 - Optional, only show if Host 2 is selected */}
+            {formData.host_1_id &&
+              formData.host_2_id &&
+              currentUserProfile?.is_admin && (
+                <div>
+                  <div className="flex gap-2">
+                    <label
+                      htmlFor="host_3_id"
+                      className="mb-1 block text-sm font-medium"
                     >
-                      {category}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-            {currentUserProfile?.is_admin && (
-              <div className="flex items-center gap-2">
-                <Label
-                  htmlFor="megagame"
+                      Host 3 <span className="text-gray-400">(Optional)</span>
+                    </label>
+                    {formData.host_3_id && (
+                      <XIcon
+                        className="size-4 text-red-500"
+                        onClick={() =>
+                          setFormData((prev) => ({ ...prev, host_3_id: null }))
+                        }
+                      />
+                    )}
+                  </div>
+                  <Select
+                    name="host_3_id"
+                    value={formData.host_3_id || ''}
+                    disabled={!currentUserProfile?.is_admin}
+                    onValueChange={(value) =>
+                      setFormData((prev) => ({
+                        ...prev,
+                        host_3_id: value === 'none' ? null : value,
+                      }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Select a third host" />
+                    </SelectTrigger>
+                    <SelectContent className="z-[70]">
+                      <SelectItem value="none">No third host</SelectItem>
+                      {hostSelectOptions()}
+                    </SelectContent>
+                  </Select>
+                </div>
+              )}
+
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <label
+                  htmlFor="minCapacity"
                   className="mb-1 block text-sm font-medium"
                 >
-                  Megagame
-                </Label>
-                <Checkbox
-                  id="megagame"
-                  checked={formData.megagame}
-                  onCheckedChange={(checked) =>
-                    setFormData((prev) => ({ ...prev, megagame: !!checked }))
-                  }
+                  Min Capacity
+                </label>
+                <input
+                  id="minCapacity"
+                  name="minCapacity"
+                  type="number"
+                  min="0"
+                  value={formData.minCapacity || ''}
+                  onChange={handleInputChange}
+                  className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
                 />
               </div>
-            )}
-          </div>
+              <div>
+                <label
+                  htmlFor="maxCapacity"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Max Capacity
+                </label>
+                <input
+                  id="maxCapacity"
+                  name="maxCapacity"
+                  type="number"
+                  min="0"
+                  value={formData.maxCapacity || ''}
+                  onChange={handleInputChange}
+                  className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
+                />
+              </div>
+              <div>
+                <label
+                  htmlFor="ages"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Ages
+                </label>
+                <Select
+                  value={formData.ages}
+                  onValueChange={(value: DbSessionAges) =>
+                    setFormData((prev) => ({ ...prev, ages: value }))
+                  }
+                  name="ages"
+                >
+                  <SelectTrigger id="ages" className="w-full">
+                    <SelectValue placeholder="Select an age" />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    {Object.values(SESSION_AGES).map((age) => (
+                      <SelectItem key={age} value={age}>
+                        {getAgesDisplayText(age)}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+            </div>
+            <div className="flex w-full justify-between">
+              <div className="flex flex-col items-start">
+                <Label
+                  htmlFor="category"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Category
+                </Label>
+                <Select
+                  name="category"
+                  value={formData.category || ''}
+                  onValueChange={(value) => {
+                    if (!value) return
+                    setFormData((prev) => ({
+                      ...prev,
+                      category: value as DbSessionCategory,
+                    }))
+                  }}
+                >
+                  <SelectTrigger className="capitalize">
+                    <SelectValue placeholder="Select..." />
+                  </SelectTrigger>
+                  <SelectContent className="z-[70]">
+                    {Object.values(SESSION_CATEGORIES_ENUM).map((category) => (
+                      <SelectItem
+                        key={category}
+                        value={category}
+                        className="capitalize"
+                      >
+                        {category}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+              {currentUserProfile?.is_admin && (
+                <div className="flex items-center gap-2">
+                  <Label
+                    htmlFor="megagame"
+                    className="mb-1 block text-sm font-medium"
+                  >
+                    Megagame
+                  </Label>
+                  <Checkbox
+                    id="megagame"
+                    checked={formData.megagame}
+                    onCheckedChange={(checked) =>
+                      setFormData((prev) => ({ ...prev, megagame: !!checked }))
+                    }
+                  />
+                </div>
+              )}
+            </div>
 
-          <div className="flex gap-4 pt-4">
-            <button
-              type="submit"
-              disabled={
-                addEventMutation.isPending || adminUpdateEventMutation.isPending
-              }
-              className="flex-1 rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {addEventMutation.isPending || adminUpdateEventMutation.isPending
-                ? isEditMode
-                  ? 'Updating...'
-                  : 'Creating...'
-                : isEditMode
-                  ? 'Update Event'
-                  : 'Create Event'}
-            </button>
-            <button
-              type="button"
-              onClick={onClose}
-              className="flex-1 rounded bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
-            >
-              Cancel
-            </button>
-          </div>
-
-          {isEditMode && currentUserProfile?.is_admin && (
-            <div className="border-t border-gray-600 pt-4">
+            <div className="flex gap-4 pt-4">
+              <button
+                type="submit"
+                disabled={
+                  addEventMutation.isPending ||
+                  adminUpdateEventMutation.isPending
+                }
+                className="flex-1 rounded bg-blue-500 px-4 py-2 text-white transition-colors hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {addEventMutation.isPending ||
+                adminUpdateEventMutation.isPending
+                  ? isEditMode
+                    ? 'Updating...'
+                    : 'Creating...'
+                  : isEditMode
+                    ? 'Update Event'
+                    : 'Create Event'}
+              </button>
               <button
                 type="button"
-                onClick={handleDelete}
-                disabled={
-                  !currentUserProfile?.is_admin ||
-                  deleteSessionMutation.isPending
-                }
-                title={
-                  !currentUserProfile?.is_admin
-                    ? 'You must be an admin to delete an event'
-                    : 'Delete Event'
-                }
-                className="w-full rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-red-600"
+                onClick={onClose}
+                className="flex-1 rounded bg-gray-600 px-4 py-2 text-white transition-colors hover:bg-gray-700"
               >
-                {deleteSessionMutation.isPending
-                  ? 'Deleting...'
-                  : 'Delete Event'}
+                Cancel
               </button>
             </div>
-          )}
-        </form>
-      </div>
-    </Modal>
+
+            {isEditMode && currentUserProfile?.is_admin && (
+              <div className="border-t border-gray-600 pt-4">
+                <button
+                  type="button"
+                  onClick={handleDelete}
+                  disabled={
+                    !currentUserProfile?.is_admin ||
+                    deleteSessionMutation.isPending
+                  }
+                  title={
+                    !currentUserProfile?.is_admin
+                      ? 'You must be an admin to delete an event'
+                      : 'Delete Event'
+                  }
+                  className="w-full rounded bg-red-600 px-4 py-2 text-white transition-colors hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:bg-red-600"
+                >
+                  {deleteSessionMutation.isPending
+                    ? 'Deleting...'
+                    : 'Delete Event'}
+                </button>
+              </div>
+            )}
+          </form>
+        </div>
+      </DialogContent>
+    </Dialog>
   )
 }

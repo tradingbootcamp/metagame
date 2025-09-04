@@ -2,7 +2,7 @@
 
 import React, { useMemo, useState } from 'react'
 
-import { Modal } from '../Modal'
+import { Dialog, DialogContent, DialogTitle } from '../ui/dialog'
 import { Slider } from '../ui/slider'
 import { TicketPurchaseForm } from './TicketPurchaseForm'
 import { PaymentCurrency } from './Tickets'
@@ -261,22 +261,30 @@ export const TicketCard: React.FC<TicketCardProps> = ({
 
       {/* Purchase Modal */}
       {showModal && purchaseableTicketType && (
-        <Modal onClose={handleCloseModal} className="w-full max-w-2xl">
-          <div className="max-h-[90vh] overflow-y-auto rounded-lg border border-gray-700 bg-dark-500 p-6">
-            <TicketPurchaseForm
-              ticketType={purchaseableTicketType}
-              paymentMethod={paymentMethod}
-              onClose={handleCloseModal}
-              slidingScalePrice={
-                ticketTypeId === 'slidingScale'
-                  ? isBTC
-                    ? slidingScalePriceBTC
-                    : slidingScalePriceUSD
-                  : null
-              }
-            />
-          </div>
-        </Modal>
+        <Dialog
+          open={!!showModal && !!purchaseableTicketType}
+          onOpenChange={(open) => {
+            if (!open) handleCloseModal()
+          }}
+        >
+          <DialogContent className="w-full max-w-2xl">
+            <DialogTitle className="sr-only">Ticket Purchase Form</DialogTitle>
+            <div className="max-h-[90vh] overflow-y-auto rounded-lg border border-gray-700 bg-dark-500 p-6">
+              <TicketPurchaseForm
+                ticketType={purchaseableTicketType}
+                paymentMethod={paymentMethod}
+                onClose={handleCloseModal}
+                slidingScalePrice={
+                  ticketTypeId === 'slidingScale'
+                    ? isBTC
+                      ? slidingScalePriceBTC
+                      : slidingScalePriceUSD
+                    : null
+                }
+              />
+            </div>
+          </DialogContent>
+        </Dialog>
       )}
     </>
   )

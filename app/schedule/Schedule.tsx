@@ -29,9 +29,9 @@ import {
 } from '@/utils/dbUtils'
 
 import { BloodDrippingFrame } from '@/components/BloodDrippingFrame'
-import { Modal } from '@/components/Modal'
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
+import { Dialog, DialogContent, DialogTitle } from '@/components/ui/dialog'
 import {
   Tooltip,
   TooltipContent,
@@ -590,23 +590,32 @@ export default function Schedule({
       </div>
 
       {openedSession && (
-        <Modal
-          onClose={() => {
-            const sessionDayIndex = days.findIndex((day) =>
-              day.events.some((event) => event.id === openedSessionId),
-            )
-            setOpenedSessionId(null)
-            if (sessionDayIndex >= 0) {
-              setCurrentDayIndex(sessionDayIndex)
+        <Dialog
+          open
+          onOpenChange={(open) => {
+            if (!open) {
+              const sessionDayIndex = days.findIndex((day) =>
+                day.events.some((event) => event.id === openedSessionId),
+              )
+              setOpenedSessionId(null)
+              if (sessionDayIndex >= 0) {
+                setCurrentDayIndex(sessionDayIndex)
+              }
             }
           }}
         >
-          <SessionDetailsCard
-            session={openedSession}
-            canEdit={editPermissions[openedSessionId!] || false}
-            showButtons={true}
-          />
-        </Modal>
+          <DialogContent
+            showCloseButton={false}
+            className="rounded-none border-none bg-transparent p-0 shadow-none"
+          >
+            <DialogTitle className="sr-only">Session Details</DialogTitle>
+            <SessionDetailsCard
+              session={openedSession}
+              canEdit={editPermissions[openedSessionId!] || false}
+              showButtons={true}
+            />
+          </DialogContent>
+        </Dialog>
       )}
 
       <AddEventModal
