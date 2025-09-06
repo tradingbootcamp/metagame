@@ -97,11 +97,14 @@ export default async function SignupSuccess({
                 account.
               </p>
 
-              <div className="rounded-lg border border-blue-200 bg-blue-50 p-4 dark:border-blue-800 dark:bg-blue-950/20">
+              <div className="rounded-lg border border-blue-200 bg-blue-100 p-4 dark:border-blue-800 dark:bg-blue-950/20">
                 <p className="text-sm text-blue-700 dark:text-blue-300">
                   <strong>Didn&apos;t receive the email?</strong> Check your
                   spam folder or{' '}
-                  <a className="link" href="mailto:team@metagame.games">
+                  <a
+                    className="cursor-pointer text-yellow-700 underline"
+                    href="mailto:team@metagame.games"
+                  >
                     contact us
                   </a>{' '}
                   if you need help.
