@@ -10,9 +10,8 @@ import { PaymentCurrency } from './Tickets'
 import { TicketType } from '@/lib/types'
 
 import { URLS } from '@/utils/urls'
+
 import PlayWord from '@/components/PlayWord'
-
-
 import {
   Select,
   SelectContent,
@@ -116,7 +115,14 @@ export const TicketCard: React.FC<TicketCardProps> = ({
               <p className="mt-3 mb-3 font-bold text-cyan-300">
                 {ticketTypeId === 'slidingScale' ? (
                   <>
-                    <PlayWord sound="/Animal Crossing.mp3" hoverColor= '#ffd500ff' differentColor='#acf5ffff'>Play</PlayWord>er tickets at a pay-what-you-can rate
+                    <PlayWord
+                      sound="/Animal Crossing.mp3"
+                      hoverColor="#ffd500ff"
+                      differentColor="#acf5ffff"
+                    >
+                      Play
+                    </PlayWord>
+                    er tickets at a pay-what-you-can rate
                   </>
                 ) : (
                   displayTicketType.description
@@ -195,7 +201,7 @@ export const TicketCard: React.FC<TicketCardProps> = ({
                       {' '}
                       Apply here
                     </a>{' '}
-                    by 9/1.
+                    .
                   </li>
                 </ul>
               )}
