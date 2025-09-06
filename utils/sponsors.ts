@@ -45,4 +45,14 @@ export const sponsors: Partner[] = [
     linkedin: 'https://linkedin.com/company/techcorp',
     github: 'https://github.com/techcorp',
   },
+  {
+    id: 8,
+    name: 'Celestial',
+    logo: '/logos/Celestial_Logo_Black.svg',
+    wideLogo: false,
+    website: 'https://www.celestial.gg/about',
+    type: 'sponsor',
+    tier: 'gold',
+    description: 'Celestial is a card game',
+  },
 ]
