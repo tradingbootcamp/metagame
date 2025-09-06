@@ -10,6 +10,8 @@ import { PaymentCurrency } from './Tickets'
 import { TicketType } from '@/lib/types'
 
 import { URLS } from '@/utils/urls'
+import PlayWord from '@/components/PlayWord'
+
 
 import {
   Select,
@@ -29,11 +31,13 @@ import { DbTicketType } from '@/types/database/dbTypeAliases'
 interface TicketCardProps {
   ticketTypeId: DbTicketType | 'dayPass' | 'slidingScale'
   paymentMethod?: PaymentCurrency
+  customTitle?: React.ReactNode
 }
 
 export const TicketCard: React.FC<TicketCardProps> = ({
   ticketTypeId,
   paymentMethod = 'usd',
+  customTitle,
 }) => {
   const [selectedDayPass, setSelectedDayPass] = useState<
     'friday' | 'saturday' | 'sunday' | null
@@ -106,11 +110,17 @@ export const TicketCard: React.FC<TicketCardProps> = ({
           <div className="flex flex-grow flex-col justify-between">
             <div>
               <h3 className="text-5xl font-black text-primary-300 uppercase md:text-3xl">
-                {displayTicketType.title}
+                {customTitle || displayTicketType.title}
               </h3>
 
               <p className="mt-3 mb-3 font-bold text-cyan-300">
-                {displayTicketType.description}
+                {ticketTypeId === 'slidingScale' ? (
+                  <>
+                    <PlayWord sound="/Animal Crossing.mp3" hoverColor= '#ffd500ff' differentColor='#acf5ffff'>Play</PlayWord>er tickets at a pay-what-you-can rate
+                  </>
+                ) : (
+                  displayTicketType.description
+                )}
               </p>
               {/* Day Pass Dropdown */}
               {ticketTypeId === 'dayPass' && (

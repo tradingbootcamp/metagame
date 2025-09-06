@@ -6,6 +6,8 @@ import { Button } from '../../Button'
 import { Typer } from '../../Typer'
 import './Hero.css'
 
+import PlayWord from '@/components/PlayWord'
+
 // import RFPCTA from './RFPCTA'
 
 const gameNames = [
@@ -37,8 +39,9 @@ export const Hero: React.FC = () => {
             className="text-amber-300"
             data-glitchies='{ "totalClones": 2 }'
           >
-            A conference about game design, strategy, narrative, and play. Join
-            us September 12-14 in Berkeley, California.
+            A conference about game design, strategy, narrative, and{' '}
+            <PlayWord sound="/Tetris.mp3" differentColor='#ffe17fff'>play</PlayWord>. Join us September
+            12-14 in Berkeley, California.
           </span>
         </p>
         <Button background="bg-cyan-500" link="#tickets">

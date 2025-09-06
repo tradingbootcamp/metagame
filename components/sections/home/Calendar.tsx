@@ -1,5 +1,6 @@
 import Coincidence from '@/components/Coincidence'
 import MyCrossword from '@/components/MyCrossword'
+import PlayWord from '@/components/PlayWord'
 
 export default function Calendar() {
   return (
@@ -15,11 +16,11 @@ export default function Calendar() {
           <p className="mb-4 font-semibold">
             Metagame is a weekend conference devoted to games. We mean games in
             the broadest sense of the word: any experience that is designed to
-            be played, as opposed to passively consumed. This includes board
-            games, card games, videogames, tabletop games, LARPs, puzzles, rock
-            climbing routes, and more. If building it involves asking the
-            question &quot;what would the consumer of this experience choose to
-            do next?&quot;, it&apos;s a game.
+            be <PlayWord differentColor='#dafafeff'>play</PlayWord>ed, as opposed to passively consumed.
+            This includes board games, card games, videogames, tabletop games,
+            LARPs, puzzles, rock climbing routes, and more. If building it
+            involves asking the question &quot;what would the consumer of this
+            experience choose to do next?&quot;, it&apos;s a game.
             <br />
             <br />
             My guess is the event will lean extremely toward the &quot;communal,
