@@ -6,6 +6,7 @@ export default function PlayWord({
   children = 'played',
   sound = '/Super Mario Bros.mp3',
   hoverColor = '#67e8f9',
+  differentColor = '#e0f7fa',
 }) {
   const [active, setActive] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
@@ -30,11 +31,12 @@ export default function PlayWord({
 
   const [hovered, setHovered] = useState(false)
 
-  let color = 'inherit'
+  
+  let color = differentColor
   if (active) {
-    color = '#22d3ee' // cyan-400
+    color = '#22d3ee' 
   } else if (hovered) {
-    color = hoverColor // cyan-300 (lighter)
+    color = hoverColor  
   }
 
   return (

@@ -85,7 +85,7 @@ export const Tickets: React.FC = () => {
             paymentMethod={paymentMethod}
             customTitle={
               <>
-                <PlayWord sound="/Zelda.mp3">Play</PlayWord>er
+                <PlayWord sound="/Zelda.mp3" differentColor='#f395f3ff'>Play</PlayWord>er
               </>
             }
           />

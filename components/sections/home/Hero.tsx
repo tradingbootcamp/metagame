@@ -40,7 +40,7 @@ export const Hero: React.FC = () => {
             data-glitchies='{ "totalClones": 2 }'
           >
             A conference about game design, strategy, narrative, and{' '}
-            <PlayWord sound="/Tetris.mp3">play</PlayWord>. Join us September
+            <PlayWord sound="/Tetris.mp3" differentColor='#ffe17fff'>play</PlayWord>. Join us September
             12-14 in Berkeley, California.
           </span>
         </p>
