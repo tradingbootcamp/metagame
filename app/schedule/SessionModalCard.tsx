@@ -12,7 +12,6 @@ import {
   EditIcon,
   LinkIcon,
   StarIcon,
-  UserIcon,
 } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
@@ -230,7 +229,6 @@ export default function SessionDetailsCard({
                         strokeWidth={3}
                       />
                     )}
-                    <UserIcon className="mr-1 inline-block size-4" />{' '}
                     <AttendanceDisplay
                       session={session}
                       userLoggedIn={!!currentUser}
