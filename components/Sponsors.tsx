@@ -1,33 +1,30 @@
 import PartnerCard from './PartnerCard'
-import Image from 'next/image'
 
-import { getSponsors } from '@/lib/content'
+import { sponsors } from '@/utils/sponsors'
 
-export default async function Sponsors() {
-  const sponsors = await getSponsors()
+export default function Sponsors() {
+  const allSponsors = sponsors
 
-  const platinumSponsors = sponsors.filter((s) => s.tier === 'platinum')
-  const goldSponsors = sponsors.filter((s) => s.tier === 'gold')
-  const silverSponsors = sponsors.filter((s) => s.tier === 'silver')
+  const platinumSponsors = allSponsors.filter((s) => s.tier === 'platinum')
+  const goldSponsors = allSponsors.filter((s) => s.tier === 'gold')
+  const silverSponsors = allSponsors.filter((s) => s.tier === 'silver')
+  const headlineSponsors = allSponsors.filter((s) => s.tier === 'headline')
   return (
     <section className="mb-20 flex flex-col" id="sponsors">
       <div className="flex w-full flex-col items-center justify-center">
         <h2 className="mb-8 text-3xl font-bold">Sponsors</h2>
         <div className="flex flex-col items-center justify-center gap-12">
           {/* Headline */}
-          <div>
-            <h3 className="mb-2 text-center text-2xl font-bold text-white">
-              Headline
-            </h3>
-            {/* Bitcoin logo image size ratio is 1920/456 */}
-            <Image
-              src="/logos/bitcoin-white.png"
-              alt="Bitcoin"
-              height={90}
-              width={375}
-              className="mt-6"
-            />
-          </div>
+          {headlineSponsors.length > 0 && (
+            <div>
+              <PartnerCard
+                key={headlineSponsors[0].id}
+                imgClass="w-[375px] h-[90px]"
+                partner={headlineSponsors[0]}
+              />
+            </div>
+          )}
+
           {/* Platinum */}
           {platinumSponsors.length > 0 && (
             <div className="flex w-full flex-col items-center">

@@ -85,35 +85,11 @@ export interface Partner {
   wideLogo?: boolean
   website?: string
   type: 'organizer' | 'supporter' | 'sponsor' | 'media' | "drinks'n'bytes"
-  tier?: 'bronze' | 'silver' | 'gold' | 'platinum'
+  tier?: 'bronze' | 'silver' | 'gold' | 'platinum' | 'headline'
   description?: string
   tagline?: string
   industry?: string
   twitter?: string
   linkedin?: string
   github?: string
-}
-
-export async function getPartners(
-  filterFn?: (partner: Partner) => boolean,
-): Promise<Partner[]> {
-  const partnersDirectory = path.join(process.cwd(), 'content', 'partners')
-  const fileNames = fs.readdirSync(partnersDirectory)
-
-  const partners = fileNames
-    .filter((fileName) => fileName.endsWith('.json'))
-    .map((fileName) => {
-      const fullPath = path.join(partnersDirectory, fileName)
-      const fileContents = fs.readFileSync(fullPath, 'utf8')
-      const data = JSON.parse(fileContents) as Partner
-      return data
-    })
-
-  const sortedPartners = partners.sort((a, b) => a.id - b.id)
-
-  return filterFn ? sortedPartners.filter(filterFn) : sortedPartners
-}
-
-export async function getSponsors(): Promise<Partner[]> {
-  return getPartners((partner) => partner.type === 'sponsor')
 }

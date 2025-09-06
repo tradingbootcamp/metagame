@@ -1,9 +1,0 @@
-{
-  "id": 5,
-  "name": "Morty",
-  "logo": "/logos/morty.svg",
-  "wideLogo": false,
-  "website": "https://morty.app/",
-  "type": "sponsor",
-  "tier": "silver"
-}
