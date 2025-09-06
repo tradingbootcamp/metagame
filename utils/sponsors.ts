@@ -50,7 +50,7 @@ export const sponsors: Partner[] = [
     name: 'Celestial',
     logo: '/logos/Celestial_Logo_Black.svg',
     wideLogo: false,
-    website: 'https://www.celestial.gg/about',
+    website: 'https://celestialdecks.gg/about',
     type: 'sponsor',
     tier: 'gold',
     description: 'Celestial is a card game',
