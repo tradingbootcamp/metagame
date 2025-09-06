@@ -20,13 +20,15 @@ export default async function Sponsors() {
               Headline
             </h3>
             {/* Bitcoin logo image size ratio is 1920/456 */}
-            <Image
-              src="/logos/bitcoin-white.png"
-              alt="Bitcoin"
-              height={90}
-              width={375}
-              className="mt-6"
-            />
+            <a href="https://www.bitcoin.org/">
+              <Image
+                src="/logos/bitcoin-white.png"
+                alt="Bitcoin"
+                height={90}
+                width={375}
+                className="mt-6"
+              />
+            </a>
           </div>
           {/* Platinum */}
           {platinumSponsors.length > 0 && (
