@@ -15,6 +15,8 @@ export const URLS = {
     'https://airtable.com/appTvPARUssZp4qiB/pagqYAgxKlTdRbS6n/form',
   CHILDREN_REGISTRATION:
     'https://airtable.com/appTvPARUssZp4qiB/pagZ9WbXLji0eBqDU/form',
+  NIGHT_MARKET_BOOTH:
+    'https://airtable.com/appTvPARUssZp4qiB/pagWzXdF8eA6PfDXs/form',
 } as const
 
 export const SOCIAL_LINKS = {
