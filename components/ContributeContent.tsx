@@ -2,8 +2,9 @@
 
 import React, { useEffect } from 'react'
 
-import { SOCIAL_LINKS } from '../utils/urls'
+import { URLS } from '../utils/urls'
 import { Button } from './Button'
+import { Separator } from './ui/separator'
 import Image from 'next/image'
 
 export default function ContributeContent() {
@@ -31,9 +32,9 @@ export default function ContributeContent() {
   }, [])
 
   return (
-    <div className="">
+    <div>
       <section
-        className="relative flex h-[30vh] flex-col items-center justify-center"
+        className="relative flex h-64 w-full flex-col items-center justify-center"
         id="hero"
       >
         <Image
@@ -46,103 +47,93 @@ export default function ContributeContent() {
         <div className="absolute inset-0 bg-gradient-to-t from-dark-500 to-transparent" />
       </section>
 
-      <div className="container mx-auto">
-        <div className="lg:prose-xl dark:prose-invert prose max-w-none p-8 font-semibold">
-          <h1>Run something</h1>
-
-          <p>
-            Some examples of the kind of things that would be very welcome at
-            Metagame:
+      <div className="container mx-auto px-4 py-12">
+        <section className="mb-16">
+          <h2 className="mb-8 text-3xl font-bold">Become a Volunteer</h2>
+          <p className="mb-6">
+            Interested in volunteering at Metagame for a ticket discount? Fill
+            out our volunteer application form! The application is open on a
+            rolling basis, but earlier submissions have better chances at
+            preferred volunteer shifts. We&apos;ll try to respond to all
+            volunteers as quickly as possible.
           </p>
 
-          <ul>
-            <li>
-              <span className="text-primary-300">
-                Gradient descent themed escape room
-              </span>{' '}
-              - We provide the physical space, you design and run the room over
-              the course of the conference.
-            </li>
-            <li>
-              <span className="text-primary-300">Game design hackathon</span> -
-              We (civilization as a whole) have the pieces for games like{' '}
-              <a
-                target="_blank"
-                href="https://en.wikipedia.org/wiki/Senet"
-                rel="noopener noreferrer"
-                className="link"
-              >
-                Senet
-              </a>{' '}
-              and{' '}
-              <a
-                target="_blank"
-                href="https://en.wikipedia.org/wiki/Ludus_latrunculorum"
-                rel="noopener noreferrer"
-                className="link"
-              >
-                Ludus Latrunculorum
-              </a>
-              , but not the rules. Want to run a hackathon where competitors
-              come up with the rule book, and judges play each version and
-              choose the best?
-            </li>
-            <li>
-              <span className="text-primary-300">
-                Trading-based Survivor variant
-              </span>{' '}
-              - What if Survivor had live markets, with trading based rounds
-              between tribal councils?
-            </li>
-          </ul>
+          <div className="flex justify-center">
+            <Button link={URLS.TICKET_VOLUNTEER}>Volunteer Application</Button>
+          </div>
+        </section>
 
-          <p>
-            The easiest way to get involved is to{' '}
-            <a
-              target="_blank"
-              href={SOCIAL_LINKS.DISCORD}
-              rel="noopener noreferrer"
-              className="link"
-            >
-              join the Discord
-            </a>
-            .
+        <section className="mb-16">
+          <h2 className="mb-8 text-3xl font-bold">
+            Run a Booth at the Night Market
+          </h2>
+          <p className="mb-6">
+            The Night Market will be an opportunity to exchange goods and
+            services with fellow game aficionados.
           </p>
 
-          <h2>The Megagame</h2>
-          <p>
-            Upon arrival, Players will be split into two teams as part of a
-            conference-long Megagame. If you have a format for a
-            contest/game/tournament, consider running it as part of the
-            Megagame. Many more details to follow.
-          </p>
+          <div className="mb-8">
+            <h3 className="mb-4 text-xl font-semibold">Market Sections:</h3>
+            <ul className="grid gap-x-4 gap-y-1 md:grid-cols-3">
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Games and Puzzles</strong>
+                <Separator />
+                <p>
+                  Your indie TTRPG, jigsaw puzzle, 5-dimensional rubik&apos;s
+                  cube, or escape room in a box - for sale right here!
+                </p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Other Physical Stuff</strong>
+                <Separator />
+                <p>
+                  Arts, crafts, foods, books, and take-home items that
+                  don&apos;t fit in the &quot;games and puzzles&quot; category
+                </p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Experiences</strong>
+                <Separator />
+                <p>
+                  Try on a weird VR immersive bodysuit, get your fortune told,
+                  have a phenomenological time
+                </p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Job Market</strong>
+                <Separator />
+                <p>
+                  For those looking to hire, get hired, or promote their company
+                  or self. Open for both sides of the job market!
+                </p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Information Booth</strong>
+                <Separator />
+                <p>Like a poster session, without the standards</p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Black Market</strong>
+                <Separator />
+                <p>
+                  Rights to middle names, tickets to cheat in your next RPG,
+                  etc. Black market goods must still be legal!
+                </p>
+              </li>
+              <li className="rounded-lg p-4">
+                <strong className="mb-2 block">Other</strong>
+                <Separator />
+                <p>Booths too weird to fit into any of the categories above!</p>
+              </li>
+            </ul>
+          </div>
 
-          <h2>The Website</h2>
-          <p>
-            That&apos;s the thing you&apos;re looking at right now. There are
-            games hidden all over, with coupon codes attached in many cases. You
-            can add your own games, coupons, and easter eggs{' '}
-            <a
-              target="_blank"
-              href="https://github.com/RickiHeicklen/metagame"
-              rel="noopener noreferrer"
-              className="link"
-            >
-              here
-            </a>
-            .
-          </p>
-
-          <div className="flex items-center justify-center p-8">
-            <Button
-              background="bg-cyan-500"
-              link={SOCIAL_LINKS.DISCORD}
-              target="_blank"
-            >
-              Get Involved
+          <div className="flex justify-center">
+            <Button link={URLS.NIGHT_MARKET_BOOTH}>
+              Apply for a Vendor Booth
             </Button>
           </div>
-        </div>
+        </section>
       </div>
     </div>
   )
