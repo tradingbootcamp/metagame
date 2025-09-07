@@ -11,6 +11,7 @@ const nullableTextFromForm = z
 export const profileFormSchema = z.object({
   first_name: nullableTextFromForm,
   last_name: nullableTextFromForm,
+  pronouns: nullableTextFromForm,
   discord_handle: nullableTextFromForm,
   site_name: nullableTextFromForm,
   site_url: nullableTextFromForm,
@@ -27,6 +28,7 @@ export type ProfileFormData = z.infer<typeof profileFormSchema>
 export const initialProfileFormData: ProfileFormData = {
   first_name: '',
   last_name: '',
+  pronouns: '',
   discord_handle: '',
   site_name: '',
   site_url: '',

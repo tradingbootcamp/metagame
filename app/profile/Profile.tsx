@@ -47,11 +47,6 @@ export default function Profile() {
   const { currentUser, currentUserProfile, currentUserLoading } = useUser()
   const [isEditMode, setIsEditMode] = useState(false)
   const showCTAModal = useMemo(() => {
-    console.log('showCTAModal', currentUserProfile)
-    console.log(
-      'temporarilyDismissedInfoRequest',
-      temporarilyDismissedInfoRequest,
-    )
     if (
       !currentUserProfile ||
       currentUserProfile.dismissed_info_request ||
@@ -167,8 +162,9 @@ export default function Profile() {
 
   const handleSave = () => {
     updateProfile(formData)
+    console.log('formData', formData)
   }
-
+  console.log('formData', formData)
   const handleCancel = () => {
     setFormData(profileFormSchema.parse(currentUserProfile))
     setIsEditMode(false)
@@ -191,7 +187,6 @@ export default function Profile() {
     isUpdatingProfile ||
     uploadPictureMutation.isPending ||
     deletePictureMutation.isPending
-  console.log('showCTAModal', showCTAModal)
   return (
     <>
       {showCTAModal && (
@@ -391,28 +386,47 @@ export default function Profile() {
               {/* Profile Information Section (edit) */}
               <div className="flex-1 space-y-6">
                 {/* Full Name */}
-                <div>
-                  <label className="label">
-                    <span className="label-text">Name</span>
-                  </label>
-                  <div className="grid grid-cols-2 gap-2">
+                <div className="flex flex-col gap-2 sm:flex-row sm:gap-6">
+                  <div>
+                    <label className="label">
+                      <span className="label-text">Name</span>
+                    </label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input
+                        placeholder="First name"
+                        value={formData.first_name ?? ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            first_name: e.target.value || null,
+                          }))
+                        }
+                      />
+                      <Input
+                        placeholder="Last name"
+                        value={formData.last_name ?? ''}
+                        onChange={(e) =>
+                          setFormData((prev) => ({
+                            ...prev,
+                            last_name: e.target.value || null,
+                          }))
+                        }
+                      />
+                    </div>
+                  </div>
+                  {/* Pronouns */}
+                  <div>
+                    <label className="label">
+                      <span className="label-text">Pronouns</span>
+                    </label>
                     <Input
-                      placeholder="First name"
-                      value={formData.first_name ?? ''}
+                      placeholder=""
+                      className="w-16"
+                      value={formData.pronouns ?? ''}
                       onChange={(e) =>
                         setFormData((prev) => ({
                           ...prev,
-                          first_name: e.target.value || null,
-                        }))
-                      }
-                    />
-                    <Input
-                      placeholder="Last name"
-                      value={formData.last_name ?? ''}
-                      onChange={(e) =>
-                        setFormData((prev) => ({
-                          ...prev,
-                          last_name: e.target.value || null,
+                          pronouns: e.target.value || null,
                         }))
                       }
                     />
