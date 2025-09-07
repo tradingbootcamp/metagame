@@ -187,8 +187,11 @@ export default function PlayerCard({
         }}
         className="absolute z-3 font-cinzel text-white"
       >
-        <strong>
-          {profile?.first_name} {profile?.last_name}
+        <strong className="flex items-center gap-1">
+          <span>
+            {profile?.first_name} {profile?.last_name}
+          </span>
+          <span>{profile?.minor ? '🌱' : ''}</span>
         </strong>
       </div>
       {/* Player picture */}
