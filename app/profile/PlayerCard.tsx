@@ -32,7 +32,7 @@ export default function PlayerCard({
   tiltFactor = 0,
   gleamFollowsTilt = false,
 }: {
-  userId: string
+  userId: string | null
   asProfile?: boolean
   tiltFactor?: number
   gleamFollowsTilt?: boolean

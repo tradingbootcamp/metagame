@@ -46,6 +46,19 @@ export const usersService = {
     const supabase = createServiceClient()
     return await supabase.auth.admin.getUserById(userId)
   },
+  getPublicProfileByPlayerId: async ({ playerId }: { playerId: number }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+      .eq('player_id', playerId)
+      .maybeSingle()
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile | null
+  },
+
   getUser: async (idOrEmail: IdXorEmail): Promise<UserResponse> => {
     const { id, email } = idOrEmail
     if (id) {
