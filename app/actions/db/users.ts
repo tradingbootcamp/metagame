@@ -24,6 +24,8 @@ export const adminGetUser = adminExportWrapper(usersService.getUser)
 
 export const getAllUserPublicProfiles = usersService.getAllUserPublicProfiles
 export const getUserPublicProfileById = usersService.getUserPublicProfileById
+export const getUserPublicProfileByPlayerId =
+  usersService.getPublicProfileByPlayerId
 /* Mutations */
 export const updateCurrentUserProfile = currentUserWrapper(
   usersService.updateUserProfile,
