@@ -4,6 +4,8 @@ import { usePublicProfile } from '../../hooks/useProfiles'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 
+import { Card } from '@/components/Card'
+
 // Establish some base numbers
 const CARD_WIDTH = 941
 const CARD_HEIGHT = 1341
@@ -26,9 +28,11 @@ const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
 export default function PlayerCard({
   userId,
   asProfile = false,
+  tiltFactor = 0,
 }: {
   userId: string
   asProfile?: boolean
+  tiltFactor?: number
 }) {
   const {
     data: profile,
@@ -96,72 +100,73 @@ export default function PlayerCard({
   }
 
   return (
-    <div
-      className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
-      style={{
-        width: BASELINE_CARD_WIDTH,
-        aspectRatio: CARD_WIDTH / CARD_HEIGHT,
-      }}
-    >
-      {/* Background card image */}
-      <Image
-        src={washImageSrcs[profile?.team || 'unassigned']}
-        alt="Celestial Base Color"
-        fill
-        className="z-1 object-cover"
-      />
-      {/* Frame Overlay */}
-      <Image
-        src="/images/cards/celestial-frame.png"
-        alt="Frame overlay"
-        fill
-        className="z-3 object-cover"
-      />
-      {/* Breath Square icon */}
+    <Card borderless padless tiltFactor={tiltFactor}>
       <div
+        className="relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell"
         style={{
-          width: SQUARE_SIZE * scale,
-          height: SQUARE_SIZE * scale,
-          top: SQUARE_FROM_TOP * scale,
-          left: SQUARE_FROM_EDGE * scale,
+          width: BASELINE_CARD_WIDTH,
+          aspectRatio: CARD_WIDTH / CARD_HEIGHT,
         }}
-        className="absolute z-4"
       >
+        {/* Background card image */}
         <Image
-          src="/images/cards/fog.gif"
-          alt="Breath"
+          src={washImageSrcs[profile?.team || 'unassigned']}
+          alt="Celestial Base Color"
           fill
-          objectFit="cover"
+          className="z-1 object-cover"
         />
-      </div>
-      {/* Points? Cirlce icon */}
-      <div
-        style={{
-          width: CIRCLE_DIAMETER * scale,
-          height: CIRCLE_DIAMETER * scale,
-          top: CIRCLE_FROM_EDGE * scale,
-          left: CIRCLE_FROM_EDGE * scale,
-        }}
-        className="absolute z-4 overflow-hidden rounded-full"
-      >
+        {/* Frame Overlay */}
         <Image
-          src="/images/cards/fog.gif"
-          alt="Points"
+          src="/images/cards/celestial-frame.png"
+          alt="Frame overlay"
           fill
-          objectFit="cover"
+          className="z-3 object-cover"
         />
-      </div>
-      {/* Hosting line */}
-      {
-        /*hostedSessions.length > 0 && */ <div
+        {/* Breath Square icon */}
+        <div
           style={{
-            top: 35 * scale,
-            right: 55 * scale,
-            fontSize: 50 * scale,
+            width: SQUARE_SIZE * scale,
+            height: SQUARE_SIZE * scale,
+            top: SQUARE_FROM_TOP * scale,
+            left: SQUARE_FROM_EDGE * scale,
           }}
-          className="absolute z-4 text-white"
+          className="absolute z-4"
         >
-          {/* <span className="flex items-center gap-1">
+          <Image
+            src="/images/cards/fog.gif"
+            alt="Breath"
+            fill
+            objectFit="cover"
+          />
+        </div>
+        {/* Points? Cirlce icon */}
+        <div
+          style={{
+            width: CIRCLE_DIAMETER * scale,
+            height: CIRCLE_DIAMETER * scale,
+            top: CIRCLE_FROM_EDGE * scale,
+            left: CIRCLE_FROM_EDGE * scale,
+          }}
+          className="absolute z-4 overflow-hidden rounded-full"
+        >
+          <Image
+            src="/images/cards/fog.gif"
+            alt="Points"
+            fill
+            objectFit="cover"
+          />
+        </div>
+        {/* Hosting line */}
+        {
+          /*hostedSessions.length > 0 && */ <div
+            style={{
+              top: 35 * scale,
+              right: 55 * scale,
+              fontSize: 50 * scale,
+            }}
+            className="absolute z-4 text-white"
+          >
+            {/* <span className="flex items-center gap-1">
             Hosting:
             <div
               style={{
@@ -173,147 +178,148 @@ export default function PlayerCard({
               <strong className="font-serif">{hostedSessions.length}</strong>
             </div>
           </span> */}
-          <span className="text-opacity-50 font-cinzel text-gray-400">
-            #{profile?.player_id}
-          </span>
+            <span className="text-opacity-50 font-cinzel text-gray-400">
+              #{profile?.player_id}
+            </span>
+          </div>
+        }
+        {/* Name */}
+        <div
+          style={{
+            left: 210 * scale,
+            top: 35 * scale,
+            fontSize: 50 * scale,
+          }}
+          className="absolute z-3 font-cinzel text-white"
+        >
+          <strong className="flex items-center gap-1">
+            <span>
+              {profile?.first_name} {profile?.last_name}
+            </span>
+            <span>{profile?.minor ? '🌱' : ''}</span>
+          </strong>
         </div>
-      }
-      {/* Name */}
-      <div
-        style={{
-          left: 210 * scale,
-          top: 35 * scale,
-          fontSize: 50 * scale,
-        }}
-        className="absolute z-3 font-cinzel text-white"
-      >
-        <strong className="flex items-center gap-1">
-          <span>
-            {profile?.first_name} {profile?.last_name}
-          </span>
-          <span>{profile?.minor ? '🌱' : ''}</span>
-        </strong>
-      </div>
-      {/* Player picture */}
-      <div
-        style={{
-          width: INNER_WIDTH * scale,
-          height: PICTURE_HEIGHT * scale,
-          top: TOP_FROM_TOP * scale,
-          left: FRAME_FROM_EDGE * scale,
-        }}
-        className="relative z-2 overflow-hidden"
-      >
-        <div className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
-          {/* Gray border */}
-          <Image
-            src={washImageSrcs.unassigned}
-            alt="border"
-            fill
-            className="z-1 object-cover"
-          />
-          {/* flash thing */}
-          <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-          <div className="relative size-full">
+        {/* Player picture */}
+        <div
+          style={{
+            width: INNER_WIDTH * scale,
+            height: PICTURE_HEIGHT * scale,
+            top: TOP_FROM_TOP * scale,
+            left: FRAME_FROM_EDGE * scale,
+          }}
+          className="relative z-2 overflow-hidden"
+        >
+          <div className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
+            {/* Gray border */}
             <Image
-              id="player-picture"
-              src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
-              alt="Profile picture"
+              src={washImageSrcs.unassigned}
+              alt="border"
               fill
-              className="z-2 rounded-sm object-cover"
+              className="z-1 object-cover"
             />
+            {/* flash thing */}
+            <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            <div className="relative size-full">
+              <Image
+                id="player-picture"
+                src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
+                alt="Profile picture"
+                fill
+                className="z-2 rounded-sm object-cover"
+              />
+            </div>
+          </div>
+        </div>
+        {/* Sub Profile Picture */}
+        <div
+          style={{
+            width: INNER_WIDTH * scale,
+            left: FRAME_FROM_EDGE * scale,
+            top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
+            bottom: FRAME_FROM_EDGE * scale,
+            fontSize: 40 * scale,
+          }}
+          className="absolute z-2 flex flex-col gap-1 leading-none break-words text-black"
+        >
+          {/* Bio */}
+          <div className="w-full p-1">
+            {(() => {
+              const limit = (asProfile ? 2 : 1) * BIO_CHAR_LIMIT
+              return profile?.bio && profile.bio.length > limit
+                ? (profile?.bio?.slice(0, limit) ?? '') + '...'
+                : profile?.bio
+            })()}
+          </div>
+          {/* Abilities? (hidden when used on Profile page) */}
+          {!asProfile && (
+            <div className="flex flex-col gap-2">
+              <div className="flex items-start justify-start gap-1">
+                <div
+                  className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
+                  style={{
+                    width: ABILITY_COST_SIZE * scale,
+                    height: ABILITY_COST_SIZE * scale,
+                  }}
+                >
+                  <Image
+                    src="/images/cards/fog.gif"
+                    alt=""
+                    fill
+                    objectFit="cover"
+                  />
+                  <span className="z-2"></span>
+                </div>
+                <span>
+                  <strong>Ability 1:</strong> Your first ability, it probably
+                  takes at least this many characters to describe
+                </span>
+              </div>
+              <div className="flex items-center justify-start gap-1">
+                <div
+                  className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
+                  style={{
+                    width: ABILITY_COST_SIZE * scale,
+                    height: ABILITY_COST_SIZE * scale,
+                  }}
+                >
+                  <Image
+                    src="/images/cards/fog.gif"
+                    alt=""
+                    fill
+                    objectFit="cover"
+                  />
+                  <span className="z-2"></span>
+                </div>
+                <span>
+                  <strong>Ability 2:</strong> Your second ability, maybe this
+                  one&apos;s shorter
+                </span>
+              </div>
+            </div>
+          )}
+          {/* Bottom right */}
+          <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
+            <GlobeIcon className="size-3" />
+            <a
+              href={profile?.site_url ?? ''}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {profile?.site_url}
+            </a>
+          </div>
+          {/* Bottom left */}
+          <div className="absolute bottom-0 left-0 flex items-center gap-1 pl-1">
+            <Image
+              src="/logos/discord-logo.svg"
+              alt="D"
+              width={40 * scale}
+              height={40 * scale}
+            />
+            {profile?.discord_handle ?? 'Discord Handle'}
           </div>
         </div>
       </div>
-      {/* Sub Profile Picture */}
-      <div
-        style={{
-          width: INNER_WIDTH * scale,
-          left: FRAME_FROM_EDGE * scale,
-          top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
-          bottom: FRAME_FROM_EDGE * scale,
-          fontSize: 40 * scale,
-        }}
-        className="absolute z-2 flex flex-col gap-1 leading-none break-words text-black"
-      >
-        {/* Bio */}
-        <div className="w-full p-1">
-          {(() => {
-            const limit = (asProfile ? 2 : 1) * BIO_CHAR_LIMIT
-            return profile?.bio && profile.bio.length > limit
-              ? (profile?.bio?.slice(0, limit) ?? '') + '...'
-              : profile?.bio
-          })()}
-        </div>
-        {/* Abilities? (hidden when used on Profile page) */}
-        {!asProfile && (
-          <div className="flex flex-col gap-2">
-            <div className="flex items-start justify-start gap-1">
-              <div
-                className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
-                style={{
-                  width: ABILITY_COST_SIZE * scale,
-                  height: ABILITY_COST_SIZE * scale,
-                }}
-              >
-                <Image
-                  src="/images/cards/fog.gif"
-                  alt=""
-                  fill
-                  objectFit="cover"
-                />
-                <span className="z-2"></span>
-              </div>
-              <span>
-                <strong>Ability 1:</strong> Your first ability, it probably
-                takes at least this many characters to describe
-              </span>
-            </div>
-            <div className="flex items-center justify-start gap-1">
-              <div
-                className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
-                style={{
-                  width: ABILITY_COST_SIZE * scale,
-                  height: ABILITY_COST_SIZE * scale,
-                }}
-              >
-                <Image
-                  src="/images/cards/fog.gif"
-                  alt=""
-                  fill
-                  objectFit="cover"
-                />
-                <span className="z-2"></span>
-              </div>
-              <span>
-                <strong>Ability 2:</strong> Your second ability, maybe this
-                one&apos;s shorter
-              </span>
-            </div>
-          </div>
-        )}
-        {/* Bottom right */}
-        <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
-          <GlobeIcon className="size-3" />
-          <a
-            href={profile?.site_url ?? ''}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {profile?.site_url}
-          </a>
-        </div>
-        {/* Bottom left */}
-        <div className="absolute bottom-0 left-0 flex items-center gap-1 pl-1">
-          <Image
-            src="/logos/discord-logo.svg"
-            alt="D"
-            width={40 * scale}
-            height={40 * scale}
-          />
-          {profile?.discord_handle ?? 'Discord Handle'}
-        </div>
-      </div>
-    </div>
+    </Card>
   )
 }

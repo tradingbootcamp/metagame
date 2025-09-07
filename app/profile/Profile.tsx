@@ -229,7 +229,11 @@ export default function Profile() {
               {/* Player Card */}
               <div className="flex-shrink-0">
                 {currentUser?.id && (
-                  <PlayerCard userId={currentUser.id} asProfile />
+                  <PlayerCard
+                    userId={currentUser.id}
+                    asProfile
+                    tiltFactor={2.5}
+                  />
                 )}
               </div>
               {/* Off-card details */}
