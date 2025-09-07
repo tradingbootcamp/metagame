@@ -20,6 +20,7 @@ const INNER_HEIGHT = 1147 // from bottom gold to top
 const TOP_FROM_TOP = 121 // from top of card png to top of frame
 const PICTURE_HEIGHT = INNER_HEIGHT / 2
 const BIO_CHAR_LIMIT = 150
+const NO_ABILITY_BIO_CHAR_LIMIT = 475
 const BASELINE_CARD_WIDTH = 300
 const ABILITY_COST_SIZE = 75
 
@@ -244,7 +245,9 @@ export default function PlayerCard({
           {/* Bio */}
           <div className="w-full p-1">
             {(() => {
-              const limit = (asProfile ? 2 : 1) * BIO_CHAR_LIMIT
+              const limit = asProfile
+                ? NO_ABILITY_BIO_CHAR_LIMIT
+                : BIO_CHAR_LIMIT
               return profile?.bio && profile.bio.length > limit
                 ? (profile?.bio?.slice(0, limit) ?? '') + '...'
                 : profile?.bio
