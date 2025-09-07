@@ -9,7 +9,7 @@ export default async function ProfilePage({
 }) {
   const { id } = await params
   let uuid: string | null
-  if (id.toString().length === 4) {
+  if (id.length === 4) {
     const profile = await getUserPublicProfileByPlayerId({
       playerId: parseInt(id),
     })
