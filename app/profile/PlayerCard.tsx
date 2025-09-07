@@ -30,10 +30,12 @@ export default function PlayerCard({
   userId,
   asProfile = false,
   tiltFactor = 0,
+  gleamFollowsTilt = false,
 }: {
   userId: string
   asProfile?: boolean
   tiltFactor?: number
+  gleamFollowsTilt?: boolean
 }) {
   const {
     data: profile,
@@ -106,7 +108,7 @@ export default function PlayerCard({
   return (
     <Card borderless padless tiltFactor={tiltFactor}>
       <div
-        className="relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell"
+        className="group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell"
         style={{
           width: BASELINE_CARD_WIDTH,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
@@ -229,8 +231,25 @@ export default function PlayerCard({
               fill
               className="z-1 object-cover"
             />
-            {/* flash thing */}
-            <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
+            {gleamFollowsTilt ? (
+              <div className="pointer-events-none absolute inset-0 z-1 overflow-hidden">
+                {/* Spotlight (show only on hover) */}
+                <div
+                  className="absolute inset-0 hidden group-hover:block"
+                  style={{
+                    background:
+                      'radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 12%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.0) 54%), radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 78%)',
+                    mixBlendMode: 'overlay',
+                    filter: 'blur(1px)',
+                  }}
+                />
+                {/* Flash bar (hide on hover) */}
+                <div className="absolute inset-0 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent group-hover:hidden" />
+              </div>
+            ) : (
+              <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+            )}
             <div className="relative size-full">
               <Image
                 id="player-picture"

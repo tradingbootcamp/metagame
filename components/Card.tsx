@@ -31,19 +31,32 @@ export const Card: React.FC<CardProps> = ({
     const onMouseUpdate = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
       const width = el.offsetWidth
+      const height = el.offsetHeight
       const XRel = e.clientX - rect.left
       const YRel = e.clientY - rect.top
 
-      const YAngle = (0.5 - XRel / width) * (tiltFactor * 10)
-      const XAngle = -(0.5 - YRel / width) * (tiltFactor * 10)
+      const normX = (XRel / width - 0.5) * 2 // -1..1 left(-) to right(+)
+      const normY = (YRel / height - 0.5) * 2 // -1..1 top(-) to bottom(+)
+
+      const YAngle = -normX * (tiltFactor * 10) // rotateY based on X
+      const XAngle = normY * (tiltFactor * 10) // rotateX based on Y
 
       setProp('--dy', `${YAngle}deg`)
       setProp('--dx', `${XAngle}deg`)
+      setProp('--tx', `${normX}`)
+      setProp('--ty', `${normY}`)
+      const tiltMag = Math.min(1, Math.sqrt(normX * normX + normY * normY))
+      setProp('--tilt', `${tiltMag}`)
+      setProp('--hover', `1`)
     }
 
     const resetProps = () => {
       setProp('--dy', '0')
       setProp('--dx', '0')
+      setProp('--tx', '0')
+      setProp('--ty', '0')
+      setProp('--tilt', '0')
+      setProp('--hover', '0')
     }
 
     el.addEventListener('mousemove', onMouseUpdate)
