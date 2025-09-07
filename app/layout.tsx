@@ -60,7 +60,8 @@ export const metadata: Metadata = {
     images: ['https://metagame.games/images/proset_poster.png'],
   },
   icons: {
-    icon: '/logo.svg',
+    icon: '/dice/die3.svg',
+    shortcut: '/dice/die3.svg',
   },
 }
 
