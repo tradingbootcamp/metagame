@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 import { CustomDie } from './CustomDie'
 import {
@@ -8,6 +8,7 @@ import {
 } from './DiceUtils'
 
 import { cn } from '@/utils/cn'
+import { enforceFavicon } from '@/utils/favicon'
 
 type AnimatedCustomDieProps = {
   startingDieIdentifier?: Record<Face, number> //default starting die if you dont want a random one on load
@@ -30,6 +31,16 @@ export default function AnimatedCustomDie({
     startingDieIdentifier ?? generateRandomDieIdentifier(dieGenerationOptions),
   )
   const [isAnimating, setIsAnimating] = useState(false)
+  const svgRef = useRef<SVGSVGElement | null>(null)
+
+  const svgToDataUrl = (svg: SVGSVGElement) => {
+    const clone = svg.cloneNode(true) as SVGSVGElement
+    // Normalize favicon-friendly size
+    clone.setAttribute('width', '64')
+    clone.setAttribute('height', '64')
+    const svgString = clone.outerHTML
+    return `data:image/svg+xml;utf8,${encodeURIComponent(svgString)}`
+  }
 
   const animate = () => {
     if (isAnimating) return
@@ -69,6 +80,22 @@ export default function AnimatedCustomDie({
     requestAnimationFrame(animateFrame)
   }
 
+  // On mount, set favicon to the starting/custom die
+  useEffect(() => {
+    const el = svgRef.current
+    if (!el) return
+    enforceFavicon(svgToDataUrl(el))
+     
+  }, [])
+
+  // When animation completes, set favicon to the final custom die
+  useEffect(() => {
+    if (isAnimating) return
+    const el = svgRef.current
+    if (!el) return
+    enforceFavicon(svgToDataUrl(el))
+  }, [isAnimating, dieIdentifier])
+
   return (
     <button
       onClick={animate}
@@ -86,7 +113,7 @@ export default function AnimatedCustomDie({
           : {}
       }
     >
-      <CustomDie dieIdentifier={dieIdentifier} size={40} />
+      <CustomDie ref={svgRef} dieIdentifier={dieIdentifier} size={40} />
     </button>
   )
 }
