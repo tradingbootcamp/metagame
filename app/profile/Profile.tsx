@@ -1,6 +1,7 @@
 'use client'
 
 import { useEffect, useMemo, useRef, useState } from 'react'
+import { FaEdit } from 'react-icons/fa'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { CheckIcon, ExternalLinkIcon, InfoIcon, XIcon } from 'lucide-react'
@@ -202,11 +203,20 @@ export default function Profile() {
       )}
 
       <div className="container mx-auto flex max-w-md flex-col items-center px-4 py-8 md:max-w-4xl">
-        <div className="mb-8 flex w-full items-center justify-between">
-          <h1 className="text-3xl font-bold">Profile</h1>
-          {!isEditMode ? (
-            <Button onClick={() => setIsEditMode(true)}>Edit Profile</Button>
-          ) : (
+        <div className="mb-2 flex w-full items-center justify-between">
+          <div className="flex items-center gap-2">
+            <h1 className="text-3xl font-bold">Profile</h1>
+            {!isEditMode && (
+              <button
+                className="flex cursor-pointer items-center justify-center rounded-md p-2"
+                onClick={() => setIsEditMode(true)}
+              >
+                <FaEdit className="size-4" />
+              </button>
+            )}
+          </div>
+
+          {isEditMode && (
             <div className="flex gap-2">
               <Button
                 variant="outline"
