@@ -238,6 +238,7 @@ export default function Profile() {
                     userId={currentUser.id}
                     asProfile
                     tiltFactor={2.5}
+                    gleamFollowsTilt
                   />
                 )}
               </div>
