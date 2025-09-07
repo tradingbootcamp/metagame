@@ -1,18 +1,15 @@
 'use server'
 
-import { FaGoogle } from 'react-icons/fa'
-import { IoCalendarNumberSharp } from 'react-icons/io5'
-
 import { MoonIcon } from 'lucide-react'
 import Link from 'next/link'
 
 import { URLS } from '@/utils/urls'
 
+import AddToCalendar from '@/components/AddToCalendar'
 import { Button } from '@/components/Button'
 import { Separator } from '@/components/ui/separator'
 
 import { getSessionById } from '@/app/actions/db/sessions'
-import { gCalLinkFromSession } from '@/app/schedule/scheduleUtils'
 
 const nightMarketSessionId = 'e0dfc2cf-b2b0-46c4-8a27-dc14d551be17'
 const nightMarketSession = await getSessionById({
@@ -56,24 +53,7 @@ export default async function Highlights() {
             <div className="flex gap-4">
               <span className="text-lg">7-10 PM Friday night</span>
               {nightMarketSession && (
-                <div className="flex items-center gap-2">
-                  <a
-                    title="Add to Google Calendar"
-                    rel="noreferrer"
-                    target="_blank"
-                    href={gCalLinkFromSession(nightMarketSession)}
-                  >
-                    <FaGoogle />
-                  </a>
-                  <a
-                    title="Download iCal/ICS"
-                    rel="noreferrer"
-                    target="_blank"
-                    href={`/api/queries/sessions/${nightMarketSessionId}/ics`}
-                  >
-                    <IoCalendarNumberSharp />
-                  </a>
-                </div>
+                <AddToCalendar session={nightMarketSession} />
               )}
             </div>
           </div>
