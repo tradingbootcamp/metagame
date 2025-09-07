@@ -239,7 +239,7 @@ export default function PlayerCard({
                   className="absolute inset-0 hidden group-hover:block"
                   style={{
                     background:
-                      'radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 12%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.0) 54%), radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 78%)',
+                      'radial-gradient(circle at calc(50% + (var(--tx, 0) * 60%)) calc(50% + (var(--ty, 0) * 60%)), rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 12%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.0) 54%), radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 78%)',
                     mixBlendMode: 'overlay',
                     filter: 'blur(1px)',
                   }}
