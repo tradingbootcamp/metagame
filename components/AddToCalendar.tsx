@@ -20,8 +20,9 @@ export function AddToCalendar({ session }: { session: DbFullSession }) {
       <PopoverTrigger
         className={buttonVariants({ variant: 'ghost', size: 'icon' })}
         aria-label="Add to calendar"
+        title="Add to calendar"
       >
-        <IoCalendarNumberSharp className="size-4 text-secondary-300" />
+        <IoCalendarNumberSharp className="size-4 text-white" />
       </PopoverTrigger>
       <PopoverContent align="end" className="w-auto p-1">
         <div className="flex items-center gap-2">
