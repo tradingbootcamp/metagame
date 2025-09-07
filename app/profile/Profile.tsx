@@ -273,18 +273,18 @@ export default function Profile() {
                     </p>
                   </div>
 
-                  {/* Under 18? */}
+                  {/* Over 18? */}
                   <div className="flex items-center justify-center gap-2">
                     <label className="block text-sm font-medium">
-                      Under 18?
+                      Over 18?
                     </label>
                     <p className="text-lg">
                       {currentUserProfile?.minor === null ? (
                         '—'
                       ) : currentUserProfile?.minor ? (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      ) : (
                         <XIcon className="h-4 w-4 text-red-500" />
+                      ) : (
+                        <CheckIcon className="h-4 w-4 text-green-500" />
                       )}
                     </p>
                   </div>
