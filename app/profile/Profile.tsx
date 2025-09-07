@@ -3,13 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 
 import { useMutation, useQueryClient } from '@tanstack/react-query'
-import {
-  CheckIcon,
-  ExternalLinkIcon,
-  InfoIcon,
-  LinkIcon,
-  XIcon,
-} from 'lucide-react'
+import { CheckIcon, ExternalLinkIcon, InfoIcon, XIcon } from 'lucide-react'
 import Image from 'next/image'
 import Link from 'next/link'
 import { toast } from 'sonner'
@@ -20,7 +14,7 @@ import {
   initialProfileFormData,
   profileFormSchema,
 } from '@/lib/schemas/profile'
-import { downscaleAndUploadImage, toExternalLink } from '@/lib/utils'
+import { downscaleAndUploadImage } from '@/lib/utils'
 
 import { URLS } from '@/utils/urls'
 
@@ -39,6 +33,7 @@ import {
   deleteCurrentUserProfilePicture,
   updateCurrentUserProfile,
 } from '@/app/actions/db/users'
+import PlayerCard from '@/app/profile/PlayerCard'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
 import { useProfileUpdate } from '@/app/profile/hooks/useProfileUpdate'
 
@@ -191,9 +186,6 @@ export default function Profile() {
     deletePictureMutation.mutate()
   }
 
-  const fullName =
-    `${currentUserProfile?.first_name || ''} ${currentUserProfile?.last_name || ''}`.trim() ||
-    'No name set'
   const isSaving =
     isUpdatingProfile ||
     uploadPictureMutation.isPending ||
@@ -230,33 +222,129 @@ export default function Profile() {
           )}
         </div>
 
-        <div className="w-full rounded-lg border border-border-primary bg-card p-6">
-          <div className="flex flex-col items-center gap-8 md:flex-row">
-            {/* Profile Picture Section */}
-            <div className="flex flex-col items-center space-y-4">
-              <div className="relative">
-                {currentUserProfile?.profile_pictures_url ? (
-                  <Image
-                    src={currentUserProfile.profile_pictures_url}
-                    alt="Profile picture"
-                    width={128}
-                    height={128}
-                    className="aspect-square rounded-full object-cover"
-                  />
-                ) : (
-                  <div className="flex h-32 w-32 items-center justify-center rounded-full bg-muted">
-                    <span className="text-2xl text-muted-foreground">
-                      {currentUserProfile?.first_name
-                        ?.charAt(0)
-                        ?.toUpperCase() ||
-                        currentUser?.email?.charAt(0)?.toUpperCase() ||
-                        '?'}
-                    </span>
-                  </div>
+        {/* Profile content */}
+        {!isEditMode ? (
+          <div className="w-full rounded-lg border border-border-primary bg-card p-6">
+            <div className="flex flex-col items-center gap-8">
+              {/* Player Card */}
+              <div className="flex-shrink-0">
+                {currentUser?.id && (
+                  <PlayerCard userId={currentUser.id} asProfile />
                 )}
               </div>
+              {/* Off-card details */}
+              <div className="mx-auto flex w-full max-w-xl flex-col items-center space-y-6 text-center">
+                {/* Email */}
+                <div className="flex flex-col items-center">
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <p className="text-lg">
+                    {currentUserProfile?.email || currentUser.email}
+                  </p>
+                </div>
 
-              {isEditMode && (
+                <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-6">
+                  {/* Homepage display */}
+                  <div className="flex items-center justify-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <label className="block text-sm font-medium">
+                        Show on Homepage?
+                      </label>
+                      <Tooltip clickable>
+                        <TooltipTrigger>
+                          <InfoIcon className="size-3" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Whether your profile card is displayed on the homepage
+                          attendee list. Opt-in.
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
+                    <p className="text-lg">
+                      {currentUserProfile?.opted_in_to_homepage_display ===
+                      null ? (
+                        'Default opted out'
+                      ) : currentUserProfile?.opted_in_to_homepage_display ? (
+                        <CheckIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XIcon className="h-4 w-4 text-red-500" />
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Under 18? */}
+                  <div className="flex items-center justify-center gap-2">
+                    <label className="block text-sm font-medium">
+                      Under 18?
+                    </label>
+                    <p className="text-lg">
+                      {currentUserProfile?.minor === null ? (
+                        '—'
+                      ) : currentUserProfile?.minor ? (
+                        <CheckIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XIcon className="h-4 w-4 text-red-500" />
+                      )}
+                    </p>
+                  </div>
+
+                  {/* Bringing kids */}
+                  <div className="flex items-center justify-center gap-2">
+                    <label className="block text-sm font-medium">
+                      Bringing Kids?
+                    </label>
+                    <p className="text-lg">
+                      {currentUserProfile?.bringing_kids ? (
+                        <CheckIcon className="h-4 w-4 text-green-500" />
+                      ) : (
+                        <XIcon className="h-4 w-4 text-red-500" />
+                      )}
+                    </p>
+                  </div>
+                </div>
+
+                {currentUserProfile?.bringing_kids && (
+                  <Link
+                    className={`mx-auto w-fit ${buttonVariants({ variant: 'default', size: 'sm' })}`}
+                    href={URLS.CHILDREN_REGISTRATION}
+                    target="_blank"
+                  >
+                    If you haven&apos;t, please fill out the children
+                    registration form
+                    <ExternalLinkIcon className="h-4 w-4" />
+                  </Link>
+                )}
+              </div>
+            </div>
+          </div>
+        ) : (
+          <div className="w-full rounded-lg border border-border-primary bg-card p-6">
+            <div className="flex flex-col items-center gap-8 md:flex-row">
+              {/* Profile Picture Section (edit) */}
+              <div className="flex flex-col items-center space-y-4">
+                <div className="relative">
+                  {currentUserProfile?.profile_pictures_url ? (
+                    <Image
+                      src={currentUserProfile.profile_pictures_url}
+                      alt="Profile picture"
+                      width={128}
+                      height={128}
+                      className="aspect-square rounded-full object-cover"
+                    />
+                  ) : (
+                    <div className="flex h-32 w-32 items-center justify-center rounded-full bg-muted">
+                      <span className="text-2xl text-muted-foreground">
+                        {currentUserProfile?.first_name
+                          ?.charAt(0)
+                          ?.toUpperCase() ||
+                          currentUser?.email?.charAt(0)?.toUpperCase() ||
+                          '?'}
+                      </span>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex flex-col gap-2">
                   <input
                     ref={fileInputRef}
@@ -284,17 +372,15 @@ export default function Profile() {
                     </Button>
                   )}
                 </div>
-              )}
-            </div>
+              </div>
 
-            {/* Profile Information Section */}
-            <div className="flex-1 space-y-6">
-              {/* Full Name */}
-              <div>
-                <label className="label">
-                  <span className="label-text">Name</span>
-                </label>
-                {isEditMode ? (
+              {/* Profile Information Section (edit) */}
+              <div className="flex-1 space-y-6">
+                {/* Full Name */}
+                <div>
+                  <label className="label">
+                    <span className="label-text">Name</span>
+                  </label>
                   <div className="grid grid-cols-2 gap-2">
                     <Input
                       placeholder="First name"
@@ -317,16 +403,12 @@ export default function Profile() {
                       }
                     />
                   </div>
-                ) : (
-                  <p className="text-lg">{fullName}</p>
-                )}
-              </div>
-              {/* Bio */}
-              <div>
-                <label className="label">
-                  <span className="label-text">Bio</span>
-                </label>
-                {isEditMode ? (
+                </div>
+                {/* Bio */}
+                <div>
+                  <label className="label">
+                    <span className="label-text">Bio</span>
+                  </label>
                   <Textarea
                     placeholder="Bio"
                     value={formData.bio ?? ''}
@@ -337,18 +419,12 @@ export default function Profile() {
                       }))
                     }
                   />
-                ) : (
-                  <p className="text-lg">
-                    {currentUserProfile?.bio || 'Not set'}
-                  </p>
-                )}
-              </div>
-              {/* Discord Handle */}
-              <div>
-                <label className="label">
-                  <span className="label-text">Discord Handle</span>
-                </label>
-                {isEditMode ? (
+                </div>
+                {/* Discord Handle */}
+                <div>
+                  <label className="label">
+                    <span className="label-text">Discord Handle</span>
+                  </label>
                   <Input
                     placeholder="Your Discord handle"
                     value={formData.discord_handle ?? ''}
@@ -359,19 +435,13 @@ export default function Profile() {
                       }))
                     }
                   />
-                ) : (
-                  <p className="text-lg">
-                    {currentUserProfile?.discord_handle || 'Not set'}
-                  </p>
-                )}
-              </div>
+                </div>
 
-              {/* Website */}
-              <div>
-                <label className="label">
-                  <span className="label-text">Website</span>
-                </label>
-                {isEditMode ? (
+                {/* Website */}
+                <div>
+                  <label className="label">
+                    <span className="label-text">Website</span>
+                  </label>
                   <div className="space-y-2">
                     <Input
                       placeholder="Website name"
@@ -394,37 +464,15 @@ export default function Profile() {
                       }
                     />
                   </div>
-                ) : (
-                  <div>
-                    {currentUserProfile?.site_name &&
-                    currentUserProfile?.site_url ? (
-                      <a
-                        href={toExternalLink(currentUserProfile.site_url)}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 hover:underline"
-                      >
-                        <LinkIcon className="h-4 w-4" />
-                        {currentUserProfile.site_name}
-                        <span className="text-gray-400">
-                          {currentUserProfile.site_url}
-                        </span>
-                      </a>
-                    ) : (
-                      <p className="text-lg">Not set</p>
-                    )}
-                  </div>
-                )}
-              </div>
+                </div>
 
-              <div>
-                <label className="label">
-                  <span className="label-text">Email</span>
-                </label>
-                <p className="text-lg">
-                  {currentUserProfile?.email || currentUser.email}
-                </p>
-                {isEditMode && (
+                <div>
+                  <label className="label">
+                    <span className="label-text">Email</span>
+                  </label>
+                  <p className="text-lg">
+                    {currentUserProfile?.email || currentUser.email}
+                  </p>
                   <Link href="/profile/change-email">
                     <div
                       className={buttonVariants({
@@ -435,26 +483,25 @@ export default function Profile() {
                       Change Email
                     </div>
                   </Link>
-                )}
-              </div>
-              <div className={`flex gap-4 ${isEditMode ? 'flex-col' : ''}`}>
-                {/* Homepage Display Radio Group */}
-                <div className="flex items-center gap-2">
-                  <span className="flex items-center gap-1">
-                    <label className="block text-sm font-medium">
-                      Show on Homepage?
-                    </label>
-                    <Tooltip clickable>
-                      <TooltipTrigger>
-                        <InfoIcon className="size-3" />
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        Whether your profile card is displayed on the homepage
-                        attendee list. Opt-in.
-                      </TooltipContent>
-                    </Tooltip>
-                  </span>
-                  {isEditMode ? (
+                </div>
+
+                <div className="flex flex-col gap-4">
+                  {/* Homepage Display */}
+                  <div className="flex items-center gap-2">
+                    <span className="flex items-center gap-1">
+                      <label className="block text-sm font-medium">
+                        Show on Homepage?
+                      </label>
+                      <Tooltip clickable>
+                        <TooltipTrigger>
+                          <InfoIcon className="size-3" />
+                        </TooltipTrigger>
+                        <TooltipContent>
+                          Whether your profile card is displayed on the homepage
+                          attendee list. Opt-in.
+                        </TooltipContent>
+                      </Tooltip>
+                    </span>
                     <RadioGroup
                       value={
                         formData.opted_in_to_homepage_display === null
@@ -486,23 +533,11 @@ export default function Profile() {
                         </label>
                       </div>
                     </RadioGroup>
-                  ) : (
-                    <p className="text-lg">
-                      {currentUserProfile?.opted_in_to_homepage_display ===
-                      null ? (
-                        'Default opted out'
-                      ) : currentUserProfile?.opted_in_to_homepage_display ? (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XIcon className="h-4 w-4 text-red-500" />
-                      )}
-                    </p>
-                  )}
-                </div>
-                {/* Age Status Radio Group */}
-                <div className="flex items-center gap-2">
-                  <label className="block text-sm font-medium">18+?</label>
-                  {isEditMode ? (
+                  </div>
+
+                  {/* Age Status */}
+                  <div className="flex items-center gap-2">
+                    <label className="block text-sm font-medium">18+?</label>
                     <RadioGroup
                       value={
                         formData.minor === null
@@ -531,23 +566,14 @@ export default function Profile() {
                         </label>
                       </div>
                     </RadioGroup>
-                  ) : (
-                    <p className="text-lg">
-                      {currentUserProfile?.minor ? (
-                        <XIcon className="h-4 w-4 text-red-500" />
-                      ) : (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      )}
-                    </p>
-                  )}
-                </div>
-                {/* Bringing Kids Radio Group */}
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-center gap-2">
-                    <label className="block text-sm font-medium">
-                      Bringing Kids?
-                    </label>
-                    {isEditMode ? (
+                  </div>
+
+                  {/* Bringing Kids */}
+                  <div className="flex flex-col gap-2">
+                    <div className="flex items-center gap-2">
+                      <label className="block text-sm font-medium">
+                        Bringing Kids?
+                      </label>
                       <RadioGroup
                         value={
                           formData.bringing_kids === null
@@ -583,30 +609,21 @@ export default function Profile() {
                           </label>
                         </div>
                       </RadioGroup>
-                    ) : (
-                      <p className="text-lg">
-                        {currentUserProfile?.bringing_kids ? (
-                          <CheckIcon className="h-4 w-4 text-green-500" />
-                        ) : (
-                          <XIcon className="h-4 w-4 text-red-500" />
-                        )}
-                      </p>
+                    </div>
+                    {formData.bringing_kids && (
+                      <Link
+                        className={`w-fit ${buttonVariants({ variant: 'default', size: 'sm' })}`}
+                        href={URLS.CHILDREN_REGISTRATION}
+                        target="_blank"
+                      >
+                        If you haven&apos;t, please fill out the children
+                        registration form
+                        <ExternalLinkIcon className="h-4 w-4" />
+                      </Link>
                     )}
                   </div>
-                  {formData.bringing_kids && (
-                    <Link
-                      className={`w-fit ${buttonVariants({ variant: 'default', size: 'sm' })}`}
-                      href={URLS.CHILDREN_REGISTRATION}
-                      target="_blank"
-                    >
-                      If you haven&apos;t, please fill out the children
-                      registration form
-                      <ExternalLinkIcon className="h-4 w-4" />
-                    </Link>
-                  )}
                 </div>
-              </div>
-              {isEditMode && (
+
                 <div className="flex flex-col gap-2">
                   <Link href="/profile/reset-password">
                     <Button variant="outline" size="sm">
@@ -614,10 +631,10 @@ export default function Profile() {
                     </Button>
                   </Link>
                 </div>
-              )}
+              </div>
             </div>
           </div>
-        </div>
+        )}
       </div>
     </>
   )
