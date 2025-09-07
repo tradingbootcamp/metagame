@@ -47,9 +47,12 @@ export default function PlayerCard({
     unassigned: '/images/cards/gray-wash.png',
     blue: '/images/cards/blue-wash.png',
   }
-
+  const playerNameLength =
+    (profile?.first_name?.length || 0) +
+    (profile?.last_name?.length || 0) +
+    (profile?.pronouns?.length || 0)
   // Loading state - show gray wash, question mark, and frame
-  if (profileLoading || profileError) {
+  if (profileLoading || profileError || !profile) {
     return (
       <div
         className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
@@ -111,7 +114,7 @@ export default function PlayerCard({
       >
         {/* Background card image */}
         <Image
-          src={washImageSrcs[profile?.team || 'unassigned']}
+          src={washImageSrcs[profile.team || 'unassigned']}
           alt="Celestial Base Color"
           fill
           className="z-1 object-cover"
@@ -180,7 +183,7 @@ export default function PlayerCard({
             </div>
           </span> */}
             <span className="text-opacity-50 font-cinzel text-gray-400">
-              #{profile?.player_id}
+              #{profile.player_id}
             </span>
           </div>
         }
@@ -188,16 +191,24 @@ export default function PlayerCard({
         <div
           style={{
             left: 210 * scale,
-            top: 35 * scale,
+            top: playerNameLength > 12 ? 20 * scale : 50 * scale,
             fontSize: 50 * scale,
           }}
-          className="absolute z-3 font-cinzel text-white"
+          className="absolute z-3 font-cinzel leading-none text-white"
         >
           <strong className="flex items-center gap-1">
             <span>
-              {profile?.first_name} {profile?.last_name}
+              {profile.first_name}
+              {playerNameLength > 12 && <br />} {profile.last_name}
             </span>
-            <span>{profile?.minor ? '🌱' : ''}</span>
+            <span>{!profile.minor ? '🌱' : ''}</span>
+            {profile.pronouns && (
+              <span
+                className={`${playerNameLength > 12 ? 'self-center' : 'self-end'} h-fit text-xs opacity-40`}
+              >
+                {profile.pronouns}
+              </span>
+            )}
           </strong>
         </div>
         {/* Player picture */}
@@ -223,7 +234,7 @@ export default function PlayerCard({
             <div className="relative size-full">
               <Image
                 id="player-picture"
-                src={profile?.profile_pictures_url ?? '/images/incognito.svg'}
+                src={profile.profile_pictures_url ?? '/images/incognito.svg'}
                 alt="Profile picture"
                 fill
                 className="z-2 rounded-sm object-cover"
@@ -248,9 +259,9 @@ export default function PlayerCard({
               const limit = asProfile
                 ? NO_ABILITY_BIO_CHAR_LIMIT
                 : BIO_CHAR_LIMIT
-              return profile?.bio && profile.bio.length > limit
-                ? (profile?.bio?.slice(0, limit) ?? '') + '...'
-                : profile?.bio
+              return profile.bio && profile.bio.length > limit
+                ? (profile.bio?.slice(0, limit) ?? '') + '...'
+                : profile.bio
             })()}
           </div>
           {/* Abilities? (hidden when used on Profile page) */}
@@ -304,11 +315,11 @@ export default function PlayerCard({
           <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
             <GlobeIcon className="size-3" />
             <a
-              href={profile?.site_url ?? ''}
+              href={profile.site_url ?? ''}
               target="_blank"
               rel="noopener noreferrer"
             >
-              {profile?.site_url}
+              {profile.site_url}
             </a>
           </div>
           {/* Bottom left */}
@@ -319,7 +330,7 @@ export default function PlayerCard({
               width={40 * scale}
               height={40 * scale}
             />
-            {profile?.discord_handle ?? 'Discord Handle'}
+            {profile.discord_handle ?? 'Discord Handle'}
           </div>
         </div>
       </div>
