@@ -1,19 +1,15 @@
 export function setFavicon(href: string) {
   if (typeof document === 'undefined') return
 
-  // Remove existing favicon links so we can append ours last
-  const existing = document.querySelectorAll<HTMLLinkElement>(
-    'link[rel="icon"], link[rel="shortcut icon"]',
-  )
-  existing.forEach((el) => el.parentNode?.removeChild(el))
-
-  const link = document.createElement('link')
-  link.rel = 'icon'
-  if (href.endsWith('.svg') || href.startsWith('data:image/svg+xml'))
-    link.type = 'image/svg+xml'
+  let link: HTMLLinkElement | null = Array.from(
+    document.querySelectorAll('link[rel="icon"]'),
+  ).at(-1) as HTMLLinkElement | null
+  if (!link) {
+    link = document.createElement('link')
+    link.rel = 'icon'
+    document.head.appendChild(link)
+  }
   link.href = href
-  link.id = 'dynamic-favicon'
-  document.head.appendChild(link)
 }
 
 // Ensures favicon is applied after potential head rehydration
@@ -22,9 +18,9 @@ export function setFaviconStabilized(href: string) {
   if (typeof window !== 'undefined') {
     // Re-apply on next frames and short timeouts to outlast head updates
     requestAnimationFrame(() => setFavicon(href))
-    setTimeout(() => setFavicon(href), 0)
-    setTimeout(() => setFavicon(href), 50)
-    setTimeout(() => setFavicon(href), 200)
+    // setTimeout(() => setFavicon(href), 0)
+    // setTimeout(() => setFavicon(href), 50)
+    // setTimeout(() => setFavicon(href), 200)
   }
 }
 
