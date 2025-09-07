@@ -9,12 +9,14 @@ interface CardProps {
   borderless?: boolean
   padless?: boolean
   children: React.ReactNode
+  tiltFactor?: number
 }
 
 export const Card: React.FC<CardProps> = ({
   className,
   borderless = false,
   padless = false,
+  tiltFactor = 1,
   children,
 }) => {
   const cardRef = useRef<HTMLDivElement>(null)
@@ -32,8 +34,8 @@ export const Card: React.FC<CardProps> = ({
       const XRel = e.clientX - rect.left
       const YRel = e.clientY - rect.top
 
-      const YAngle = (0.5 - XRel / width) * 10
-      const XAngle = -(0.5 - YRel / width) * 10
+      const YAngle = (0.5 - XRel / width) * (tiltFactor * 10)
+      const XAngle = -(0.5 - YRel / width) * (tiltFactor * 10)
 
       setProp('--dy', `${YAngle}deg`)
       setProp('--dx', `${XAngle}deg`)
