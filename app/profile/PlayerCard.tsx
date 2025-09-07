@@ -23,7 +23,13 @@ const ABILITY_COST_SIZE = 75
 
 const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
 
-export default function PlayerCard({ userId }: { userId: string }) {
+export default function PlayerCard({
+  userId,
+  asProfile = false,
+}: {
+  userId: string
+  asProfile?: boolean
+}) {
   const {
     data: profile,
     isLoading: profileLoading,
@@ -229,57 +235,60 @@ export default function PlayerCard({ userId }: { userId: string }) {
       >
         {/* Bio */}
         <div className="w-full p-1">
-          {profile?.bio && profile.bio.length > BIO_CHAR_LIMIT
-            ? profile?.bio?.slice(0, BIO_CHAR_LIMIT) + '...'
-            : profile?.bio}
+          {(() => {
+            const limit = (asProfile ? 2 : 1) * BIO_CHAR_LIMIT
+            return profile?.bio && profile.bio.length > limit
+              ? (profile?.bio?.slice(0, limit) ?? '') + '...'
+              : profile?.bio
+          })()}
         </div>
-        {/* Abilities? */}
-        <div className="flex flex-col gap-2">
-          <div className="flex items-start justify-start gap-1">
-            <div
-              className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
-              style={{
-                width: ABILITY_COST_SIZE * scale,
-                height: ABILITY_COST_SIZE * scale,
-              }}
-            >
-              <Image
-                src="/images/cards/fog.gif"
-                alt=""
-                fill
-                objectFit="cover"
-              />
-              {/* Idk Breatch cost here? */}
-              <span className="z-2"></span>
+        {/* Abilities? (hidden when used on Profile page) */}
+        {!asProfile && (
+          <div className="flex flex-col gap-2">
+            <div className="flex items-start justify-start gap-1">
+              <div
+                className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
+                style={{
+                  width: ABILITY_COST_SIZE * scale,
+                  height: ABILITY_COST_SIZE * scale,
+                }}
+              >
+                <Image
+                  src="/images/cards/fog.gif"
+                  alt=""
+                  fill
+                  objectFit="cover"
+                />
+                <span className="z-2"></span>
+              </div>
+              <span>
+                <strong>Ability 1:</strong> Your first ability, it probably
+                takes at least this many characters to describe
+              </span>
             </div>
-            <span>
-              <strong>Ability 1:</strong> Your first ability, it probably takes
-              at least this many characters to describe
-            </span>
-          </div>
-          <div className="flex items-center justify-start gap-1">
-            <div
-              className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
-              style={{
-                width: ABILITY_COST_SIZE * scale,
-                height: ABILITY_COST_SIZE * scale,
-              }}
-            >
-              <Image
-                src="/images/cards/fog.gif"
-                alt=""
-                fill
-                objectFit="cover"
-              />
-              {/* Idk Breatch cost here? */}
-              <span className="z-2"></span>
+            <div className="flex items-center justify-start gap-1">
+              <div
+                className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
+                style={{
+                  width: ABILITY_COST_SIZE * scale,
+                  height: ABILITY_COST_SIZE * scale,
+                }}
+              >
+                <Image
+                  src="/images/cards/fog.gif"
+                  alt=""
+                  fill
+                  objectFit="cover"
+                />
+                <span className="z-2"></span>
+              </div>
+              <span>
+                <strong>Ability 2:</strong> Your second ability, maybe this
+                one&apos;s shorter
+              </span>
             </div>
-            <span>
-              <strong>Ability 2:</strong> Your second ability, maybe this
-              one&apos;s shorter
-            </span>
           </div>
-        </div>
+        )}
         {/* Bottom right */}
         <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
           <GlobeIcon className="size-3" />
