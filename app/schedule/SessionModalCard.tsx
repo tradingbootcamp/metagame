@@ -4,22 +4,15 @@ import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
 import { AttendanceDisplay } from './RSVPList'
-import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
-import {
-  AppleIcon,
-  CalendarIcon,
-  CheckIcon,
-  EditIcon,
-  LinkIcon,
-  StarIcon,
-} from 'lucide-react'
+import { sessionLink } from './scheduleUtils'
+import { CheckIcon, EditIcon, LinkIcon, StarIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
 import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
 
+import AddToCalendar from '@/components/AddToCalendar'
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 
 import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
 import { useUser } from '@/hooks/useUser'
@@ -164,26 +157,7 @@ export default function SessionDetailsCard({
             )}
             <div className="flex items-center gap-4 font-medium text-secondary-300">
               <span>📅 {dateUtils.getStringDate(session.start_time)}</span>
-              <div className="flex items-center">
-                <a
-                  href={gCalLinkFromSession(session)}
-                  className={buttonVariants({ variant: 'ghost' })}
-                  title="Add to Google Calendar"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <CalendarIcon className={`size-4 text-secondary-300`} />
-                </a>
-                <a
-                  href={`/api/queries/sessions/${session.id}/ics`}
-                  className={buttonVariants({ variant: 'ghost' })}
-                  title="Download iCal/ICS"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  <AppleIcon className={`size-4 text-secondary-300`} />
-                </a>
-              </div>
+              <AddToCalendar session={session} />
             </div>
             <div className="text-secondary-300">
               🕐 {dateUtils.getStringTime(session.start_time)}
