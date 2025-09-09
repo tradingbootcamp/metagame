@@ -175,6 +175,23 @@ export default function SessionDetailsCard({
           </div>
         )}
 
+        {/* Admins and Hosts: Session Needs */}
+        {currentUserProfile &&
+          (currentUserProfile.is_admin ||
+            [session.host_1_id, session.host_2_id, session.host_3_id].includes(
+              currentUserProfile.id,
+            )) &&
+          session.needs && (
+            <div className="mt-2 space-y-1">
+              <div className="text-sm font-semibold text-secondary-200">
+                Session Needs:
+              </div>
+              <div className="text-sm whitespace-pre-wrap text-secondary-300">
+                {session.needs}
+              </div>
+            </div>
+          )}
+
         {/* Location and Attendance */}
         <div className="flex w-full justify-between gap-1">
           <div className="text-secondary-300">

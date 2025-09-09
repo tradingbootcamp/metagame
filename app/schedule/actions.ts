@@ -39,7 +39,8 @@ export async function userCanEditSession({
 // Fields that users can update on sessions; for admins editing sessinos more generally, we use adminUpdateSession
 const sessionUpdateSchema = z.object({
   title: z.string().min(1).optional(),
-  description: z.string().min(1).optional(),
+  description: z.string().optional().nullable(),
+  needs: z.string().optional().nullable(),
   min_capacity: z.number().min(1).optional(),
   max_capacity: z.number().min(1).optional(),
   ages: z.enum(SESSION_AGES).optional(),
