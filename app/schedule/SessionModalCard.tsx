@@ -182,13 +182,9 @@ export default function SessionDetailsCard({
               currentUserProfile.id,
             )) &&
           session.needs && (
-            <div className="mt-2 space-y-1">
-              <div className="text-sm font-semibold text-secondary-200">
-                Session Needs:
-              </div>
-              <div className="text-sm whitespace-pre-wrap text-secondary-300">
-                {session.needs}
-              </div>
+            <div className="mt-2 space-y-1 text-pink-500">
+              <div className="text-sm font-semibold">Session Needs:</div>
+              <div className="text-sm whitespace-pre-wrap">{session.needs}</div>
             </div>
           )}
 
