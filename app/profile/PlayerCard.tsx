@@ -386,14 +386,14 @@ export default function PlayerCard({
                 style={{
                   gap: 10 * scale,
                   paddingRight: 10 * scale,
-                  fontSize: isTiny ? 70 * scale : 40 * scale,
+                  fontSize: isTiny ? 90 * scale : 40 * scale,
                 }}
-                className="flex items-center"
+                className="flex items-center font-bold break-all"
               >
                 <GlobeIcon
                   style={{
-                    width: isTiny ? 70 * scale : 40 * scale,
-                    height: isTiny ? 70 * scale : 40 * scale,
+                    width: isTiny ? 90 * scale : 40 * scale,
+                    height: isTiny ? 90 * scale : 40 * scale,
                   }}
                   className="shrink-0"
                 />
