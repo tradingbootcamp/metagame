@@ -59,6 +59,7 @@ interface AddEventModalProps {
 type FormData = {
   title: string
   description: string
+  needs: string
   day: string
   startTime: string
   endTime: string
@@ -86,6 +87,7 @@ export function AddEventModal({
   const defaultFormData = {
     title: '',
     description: '',
+    needs: '',
     day: defaultDay || CONFERENCE_DAYS[0].date.getDate().toString(),
     startTime: '09:00',
     endTime: '09:30',
@@ -148,6 +150,7 @@ export function AddEventModal({
       const newFormData = {
         title: existingSession.title || '',
         description: existingSession.description || '',
+        needs: existingSession.needs || '',
         day: startDatePSTParts.day,
         startTime: startDatePSTParts.hour + ':' + startDatePSTParts.minute,
         endTime: endDatePSTParts
@@ -370,6 +373,7 @@ export function AddEventModal({
     const payload = {
       title: formData.title,
       description: formData.description || null,
+      needs: formData.needs || null,
       start_time: startDateTime.toISOString(),
       end_time: endDateTime.toISOString(),
       min_capacity: formData.minCapacity,
@@ -552,6 +556,25 @@ export function AddEventModal({
                 className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
               />
             </div>
+            {(currentUserProfile?.is_admin || canEdit) && (
+              <div>
+                <label
+                  htmlFor="needs"
+                  className="mb-1 block text-sm font-medium"
+                >
+                  Session Needs
+                </label>
+                <textarea
+                  id="needs"
+                  name="needs"
+                  rows={2}
+                  value={formData.needs}
+                  onChange={handleInputChange}
+                  placeholder="e.g., extra volunteers, materials, A/V setup"
+                  className="w-full rounded border p-2 dark:border-gray-600 dark:bg-gray-700"
+                />
+              </div>
+            )}
             <div className="flex w-full justify-between">
               <div>
                 <label htmlFor="day" className="mb-1 block text-sm font-medium">
