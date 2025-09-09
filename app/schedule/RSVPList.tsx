@@ -145,7 +145,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
             {currentUserProfile?.is_admin && (
               <button
                 title="Un-RSVP user"
-                className="hover:bg-bg-primary cursor-pointer rounded-xs p-0.5 text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
+                className="cursor-pointer rounded-xs p-0.5 text-red-400 hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={(e) => {
                   e.stopPropagation()
                   unrsvpUserMutation.mutate({
@@ -157,7 +157,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
                 <XIcon className="size-3" />
               </button>
             )}
-            <span>{nameDisplay(rsvp.user)}</span>
+            <span className="font-medium">{nameDisplay(rsvp.user)}</span>
           </li>
         ))}
       </ul>
