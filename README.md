@@ -20,6 +20,12 @@ Install pnpm if you don't have it already:
 npm install -g pnpm
 ```
 
+Install packages:
+
+```
+pnpm install
+```
+
 Start the local supabase database (requires docker & 12GB free space):
 
 ```
