@@ -27,6 +27,7 @@ export async function getSpeakersFromProfiles() {
       site_url: profile.site_url,
       site_name_2: profile.site_name_2,
       site_url_2: profile.site_url_2,
+      player_id: profile.player_id,
     }
   })
 

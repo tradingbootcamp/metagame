@@ -3,10 +3,11 @@
 import React, { useEffect, useState } from 'react'
 
 import { MetagamePopup } from '../../MetagamePopup'
-import { SpeakerCard } from '../../SpeakerCard'
 import { useQuery } from '@tanstack/react-query'
+import Link from 'next/link'
 
 import { getSpeakersFromProfiles } from '@/app/actions/db/profiles/queries'
+import PlayerCard from '@/app/profile/PlayerCard'
 
 export default function Speakers() {
   const [showMetagamePopup, setShowMetagamePopup] = useState(false)
@@ -54,7 +55,21 @@ export default function Speakers() {
               <div>Loading Speakers...</div>
             ) : (
               speakers?.map((speaker) => (
-                <SpeakerCard key={speaker.id} profile={speaker} />
+                <div key={speaker.id} className="relative">
+                  <Link
+                    className="absolute inset-0 z-0"
+                    href={`/profile/${speaker.player_id}`}
+                  />
+                  <div className="pointer-events-none relative">
+                    <PlayerCard
+                      userId={speaker.id}
+                      asProfile
+                      tiltFactor={1}
+                      gleamFollowsTilt
+                      width={150}
+                    />
+                  </div>
+                </div>
               ))
             )}
           </div>
