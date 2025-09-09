@@ -229,103 +229,110 @@ export default function Profile() {
 
         {/* Profile content */}
         {!isEditMode ? (
-          <div className="w-full rounded-lg border border-border-primary bg-card p-6">
-            <div className="flex flex-col items-center gap-8">
-              {/* Player Card */}
-              <div className="flex-shrink-0">
-                {currentUser?.id && (
-                  <PlayerCard
-                    userId={currentUser.id}
-                    asProfile
-                    tiltFactor={2.5}
-                    gleamFollowsTilt
-                  />
-                )}
+          <div className="flex flex-col items-center gap-8">
+            {/* Player Card */}
+            <div className="flex-shrink-0">
+              {currentUser?.id && (
+                <PlayerCard
+                  userId={currentUser.id}
+                  asProfile
+                  tiltFactor={2.5}
+                  gleamFollowsTilt
+                  showStatBoxes
+                  width={350}
+                />
+              )}
+              {currentUserProfile?.is_admin && (
+                <PlayerCard
+                  userId={currentUser.id}
+                  asProfile
+                  tiltFactor={2.5}
+                  gleamFollowsTilt
+                  width={150}
+                />
+              )}
+            </div>
+            {/* Off-card details */}
+            <div className="mx-auto flex w-full max-w-xl flex-col items-center space-y-6 text-center">
+              {/* Email */}
+              <div className="flex flex-col items-center">
+                <label className="label">
+                  <span className="label-text">Email</span>
+                </label>
+                <p className="text-lg">
+                  {currentUserProfile?.email || currentUser.email}
+                </p>
               </div>
-              {/* Off-card details */}
-              <div className="mx-auto flex w-full max-w-xl flex-col items-center space-y-6 text-center">
-                {/* Email */}
-                <div className="flex flex-col items-center">
-                  <label className="label">
-                    <span className="label-text">Email</span>
-                  </label>
+
+              <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-6">
+                {/* Homepage display */}
+                <div className="flex items-center justify-center gap-2">
+                  <span className="flex items-center gap-1">
+                    <label className="block text-sm font-medium">
+                      Show on Homepage?
+                    </label>
+                    <Tooltip clickable>
+                      <TooltipTrigger>
+                        <InfoIcon className="size-3" />
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        Whether your profile card is displayed on the homepage
+                        attendee list. Opt-in.
+                      </TooltipContent>
+                    </Tooltip>
+                  </span>
                   <p className="text-lg">
-                    {currentUserProfile?.email || currentUser.email}
+                    {currentUserProfile?.opted_in_to_homepage_display ===
+                    null ? (
+                      'Default opted out'
+                    ) : currentUserProfile?.opted_in_to_homepage_display ? (
+                      <CheckIcon className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <XIcon className="h-4 w-4 text-red-500" />
+                    )}
                   </p>
                 </div>
 
-                <div className="flex flex-col items-center justify-center gap-2 sm:flex-row sm:gap-6">
-                  {/* Homepage display */}
-                  <div className="flex items-center justify-center gap-2">
-                    <span className="flex items-center gap-1">
-                      <label className="block text-sm font-medium">
-                        Show on Homepage?
-                      </label>
-                      <Tooltip clickable>
-                        <TooltipTrigger>
-                          <InfoIcon className="size-3" />
-                        </TooltipTrigger>
-                        <TooltipContent>
-                          Whether your profile card is displayed on the homepage
-                          attendee list. Opt-in.
-                        </TooltipContent>
-                      </Tooltip>
-                    </span>
-                    <p className="text-lg">
-                      {currentUserProfile?.opted_in_to_homepage_display ===
-                      null ? (
-                        'Default opted out'
-                      ) : currentUserProfile?.opted_in_to_homepage_display ? (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XIcon className="h-4 w-4 text-red-500" />
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Over 18? */}
-                  <div className="flex items-center justify-center gap-2">
-                    <label className="block text-sm font-medium">
-                      Over 18?
-                    </label>
-                    <p className="text-lg">
-                      {currentUserProfile?.minor === null ? (
-                        '—'
-                      ) : currentUserProfile?.minor ? (
-                        <XIcon className="h-4 w-4 text-red-500" />
-                      ) : (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      )}
-                    </p>
-                  </div>
-
-                  {/* Bringing kids */}
-                  <div className="flex items-center justify-center gap-2">
-                    <label className="block text-sm font-medium">
-                      Bringing Kids?
-                    </label>
-                    <p className="text-lg">
-                      {currentUserProfile?.bringing_kids ? (
-                        <CheckIcon className="h-4 w-4 text-green-500" />
-                      ) : (
-                        <XIcon className="h-4 w-4 text-red-500" />
-                      )}
-                    </p>
-                  </div>
+                {/* Over 18? */}
+                <div className="flex items-center justify-center gap-2">
+                  <label className="block text-sm font-medium">Over 18?</label>
+                  <p className="text-lg">
+                    {currentUserProfile?.minor === null ? (
+                      '—'
+                    ) : currentUserProfile?.minor ? (
+                      <XIcon className="h-4 w-4 text-red-500" />
+                    ) : (
+                      <CheckIcon className="h-4 w-4 text-green-500" />
+                    )}
+                  </p>
                 </div>
 
-                {currentUserProfile?.bringing_kids && (
-                  <Link
-                    className={`mx-auto w-fit ${buttonVariants({ variant: 'default', size: 'sm' })}`}
-                    href={URLS.CHILDREN_REGISTRATION}
-                    target="_blank"
-                  >
-                    If you haven&apos;t, please fill out the children
-                    registration form
-                    <ExternalLinkIcon className="h-4 w-4" />
-                  </Link>
-                )}
+                {/* Bringing kids */}
+                <div className="flex items-center justify-center gap-2">
+                  <label className="block text-sm font-medium">
+                    Bringing Kids?
+                  </label>
+                  <p className="text-lg">
+                    {currentUserProfile?.bringing_kids ? (
+                      <CheckIcon className="h-4 w-4 text-green-500" />
+                    ) : (
+                      <XIcon className="h-4 w-4 text-red-500" />
+                    )}
+                  </p>
+                </div>
               </div>
+
+              {currentUserProfile?.bringing_kids && (
+                <Link
+                  className={`mx-auto w-fit ${buttonVariants({ variant: 'default', size: 'sm' })}`}
+                  href={URLS.CHILDREN_REGISTRATION}
+                  target="_blank"
+                >
+                  If you haven&apos;t, please fill out the children registration
+                  form
+                  <ExternalLinkIcon className="h-4 w-4" />
+                </Link>
+              )}
             </div>
           </div>
         ) : (

@@ -1,5 +1,7 @@
 'use client'
 
+import { FaDiscord } from 'react-icons/fa'
+
 import { usePublicProfile } from '../../hooks/useProfiles'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
@@ -16,27 +18,37 @@ const SQUARE_FROM_EDGE = 32
 const SQUARE_FROM_TOP = 235
 const SQUARE_SIZE = 143
 const INNER_WIDTH = CARD_WIDTH - FRAME_FROM_EDGE * 2 //between walls of inner gold frame
-const INNER_HEIGHT = 1147 // from bottom gold to top
+const INNER_HEIGHT = 1131 // from bottom gold to top
 const TOP_FROM_TOP = 121 // from top of card png to top of frame
-const PICTURE_HEIGHT = INNER_HEIGHT / 2
-const BIO_CHAR_LIMIT = 150
-const NO_ABILITY_BIO_CHAR_LIMIT = 475
-const BASELINE_CARD_WIDTH = 300
-const ABILITY_COST_SIZE = 75
+const PICTURE_HEIGHT = INNER_HEIGHT / 1.6
+const BIO_CHAR_LIMIT = 100
 
-const scale = BASELINE_CARD_WIDTH / CARD_WIDTH
+const NO_ABILITY_BIO_CHAR_LIMIT = 330
+const ABILITY_COST_SIZE = 75
 
 export default function PlayerCard({
   userId,
   asProfile = false,
   tiltFactor = 0,
   gleamFollowsTilt = false,
+  tiny = false,
+  width = 300,
+  showStatBoxes = false,
 }: {
   userId: string | null
   asProfile?: boolean
   tiltFactor?: number
   gleamFollowsTilt?: boolean
+  tiny?: boolean
+  width?: number
+  showStatBoxes?: boolean
 }) {
+  const scale = width / CARD_WIDTH
+  const isTiny = tiny || width < 200
+  const bioCharLimit =
+    (asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT) *
+    (isTiny ? 0.3 : 1)
+  const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
   const {
     data: profile,
     isLoading: profileLoading,
@@ -52,14 +64,14 @@ export default function PlayerCard({
   const playerNameLength =
     (profile?.first_name?.length || 0) +
     (profile?.last_name?.length || 0) +
-    (profile?.pronouns?.length || 0)
+    ((!isTiny && profile?.pronouns?.length) || 0)
   // Loading state - show gray wash, question mark, and frame
   if (profileLoading || profileError || !profile) {
     return (
       <div
-        className="relative max-w-full overflow-hidden rounded-[2px] font-imfell"
+        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell"
         style={{
-          width: BASELINE_CARD_WIDTH,
+          width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
           fontSize: 500 * scale,
         }}
@@ -79,10 +91,14 @@ export default function PlayerCard({
         />
         {/* Frame Overlay */}
         <Image
-          src="/images/cards/celestial-frame.png"
+          src={
+            showStatBoxes
+              ? '/images/cards/celestial-frame.png'
+              : '/images/cards/celestial-frame-bare.png'
+          }
           alt="Frame overlay"
           fill
-          className="z-3 object-cover"
+          className="pointer-events-none z-3 object-cover"
         />
         {/* Large question mark in center */}
         <div
@@ -110,7 +126,7 @@ export default function PlayerCard({
       <div
         className="group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell"
         style={{
-          width: BASELINE_CARD_WIDTH,
+          width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
         }}
       >
@@ -123,45 +139,53 @@ export default function PlayerCard({
         />
         {/* Frame Overlay */}
         <Image
-          src="/images/cards/celestial-frame.png"
+          src={
+            showStatBoxes
+              ? '/images/cards/celestial-frame.png'
+              : '/images/cards/celestial-frame-bare.png'
+          }
           alt="Frame overlay"
           fill
-          className="z-3 object-cover"
+          className="pointer-events-none z-3 object-cover"
         />
         {/* Breath Square icon */}
-        <div
-          style={{
-            width: SQUARE_SIZE * scale,
-            height: SQUARE_SIZE * scale,
-            top: SQUARE_FROM_TOP * scale,
-            left: SQUARE_FROM_EDGE * scale,
-          }}
-          className="absolute z-4"
-        >
-          <Image
-            src="/images/cards/fog.gif"
-            alt="Breath"
-            fill
-            objectFit="cover"
-          />
-        </div>
-        {/* Points? Cirlce icon */}
-        <div
-          style={{
-            width: CIRCLE_DIAMETER * scale,
-            height: CIRCLE_DIAMETER * scale,
-            top: CIRCLE_FROM_EDGE * scale,
-            left: CIRCLE_FROM_EDGE * scale,
-          }}
-          className="absolute z-4 overflow-hidden rounded-full"
-        >
-          <Image
-            src="/images/cards/fog.gif"
-            alt="Points"
-            fill
-            objectFit="cover"
-          />
-        </div>
+        {showStatBoxes && (
+          <>
+            <div
+              style={{
+                width: SQUARE_SIZE * scale,
+                height: SQUARE_SIZE * scale,
+                top: SQUARE_FROM_TOP * scale,
+                left: SQUARE_FROM_EDGE * scale,
+              }}
+              className="absolute z-4"
+            >
+              <Image
+                src="/images/cards/fog.gif"
+                alt="Breath"
+                fill
+                objectFit="cover"
+              />
+            </div>
+            {/* Points? Cirlce icon */}
+            <div
+              style={{
+                width: CIRCLE_DIAMETER * scale,
+                height: CIRCLE_DIAMETER * scale,
+                top: CIRCLE_FROM_EDGE * scale,
+                left: CIRCLE_FROM_EDGE * scale,
+              }}
+              className="absolute z-4 overflow-hidden rounded-full"
+            >
+              <Image
+                src="/images/cards/fog.gif"
+                alt="Points"
+                fill
+                objectFit="cover"
+              />
+            </div>
+          </>
+        )}
         {/* Hosting line */}
         {
           /*hostedSessions.length > 0 && */ <div
@@ -192,21 +216,26 @@ export default function PlayerCard({
         {/* Name */}
         <div
           style={{
-            left: 210 * scale,
-            top: playerNameLength > 12 ? 20 * scale : 50 * scale,
-            fontSize: 50 * scale,
+            left: showStatBoxes ? 210 * scale : 40 * scale,
+            top:
+              playerNameLength > oneLineNameLengthLimit
+                ? 20 * scale
+                : 30 * scale,
+            fontSize: isTiny ? 70 * scale : 50 * scale,
           }}
           className="absolute z-3 font-cinzel leading-none text-white"
         >
           <strong className="flex items-center gap-1">
             <span>
               {profile.first_name}
-              {playerNameLength > 12 && <br />} {profile.last_name}
+              {playerNameLength > oneLineNameLengthLimit && <br />}{' '}
+              {profile.last_name}
             </span>
-            <span>{!profile.minor ? '🌱' : ''}</span>
-            {profile.pronouns && (
+            <span>{profile.minor ? '🌱' : ''}</span>
+            {profile.pronouns && !isTiny && (
               <span
-                className={`${playerNameLength > 12 ? 'self-center' : 'self-end'} h-fit text-xs opacity-40`}
+                style={{ fontSize: isTiny ? 50 * scale : 40 * scale }}
+                className={`${playerNameLength > oneLineNameLengthLimit ? 'self-center' : 'self-end'} h-fit opacity-40`}
               >
                 {profile.pronouns}
               </span>
@@ -217,139 +246,170 @@ export default function PlayerCard({
         <div
           style={{
             width: INNER_WIDTH * scale,
-            height: PICTURE_HEIGHT * scale,
+            height: INNER_HEIGHT * scale,
             top: TOP_FROM_TOP * scale,
             left: FRAME_FROM_EDGE * scale,
           }}
-          className="relative z-2 overflow-hidden"
+          className="relative z-2 flex flex-col"
         >
-          <div className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400 p-2">
-            {/* Gray border */}
-            <Image
-              src={washImageSrcs.unassigned}
-              alt="border"
-              fill
-              className="z-1 object-cover"
-            />
-            {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
-            {gleamFollowsTilt ? (
-              <div className="pointer-events-none absolute inset-0 z-1 overflow-hidden">
-                {/* Spotlight (show only on hover) */}
-                <div
-                  className="absolute inset-0 hidden group-hover:block"
-                  style={{
-                    background:
-                      'radial-gradient(circle at calc(50% + (var(--tx, 0) * 60%)) calc(50% + (var(--ty, 0) * 60%)), rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 12%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.0) 54%), radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 78%)',
-                    mixBlendMode: 'overlay',
-                    filter: 'blur(1px)',
-                  }}
-                />
-                {/* Flash bar (hide on hover) */}
-                <div className="absolute inset-0 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent group-hover:hidden" />
-              </div>
-            ) : (
-              <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-            )}
-            <div className="relative size-full">
-              <Image
-                id="player-picture"
-                src={profile.profile_pictures_url ?? '/images/incognito.svg'}
-                alt="Profile picture"
-                fill
-                className="z-2 rounded-sm object-cover"
-              />
-            </div>
-          </div>
-        </div>
-        {/* Sub Profile Picture */}
-        <div
-          style={{
-            width: INNER_WIDTH * scale,
-            left: FRAME_FROM_EDGE * scale,
-            top: (PICTURE_HEIGHT + TOP_FROM_TOP) * scale,
-            bottom: FRAME_FROM_EDGE * scale,
-            fontSize: 40 * scale,
-          }}
-          className="absolute z-2 flex flex-col gap-1 leading-none break-words text-black"
-        >
-          {/* Bio */}
-          <div className="w-full p-1">
-            {(() => {
-              const limit = asProfile
-                ? NO_ABILITY_BIO_CHAR_LIMIT
-                : BIO_CHAR_LIMIT
-              return profile.bio && profile.bio.length > limit
-                ? (profile.bio?.slice(0, limit) ?? '') + '...'
-                : profile.bio
-            })()}
-          </div>
-          {/* Abilities? (hidden when used on Profile page) */}
-          {!asProfile && (
-            <div className="flex flex-col gap-2">
-              <div className="flex items-start justify-start gap-1">
-                <div
-                  className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
-                  style={{
-                    width: ABILITY_COST_SIZE * scale,
-                    height: ABILITY_COST_SIZE * scale,
-                  }}
-                >
-                  <Image
-                    src="/images/cards/fog.gif"
-                    alt=""
-                    fill
-                    objectFit="cover"
-                  />
-                  <span className="z-2"></span>
-                </div>
-                <span>
-                  <strong>Ability 1:</strong> Your first ability, it probably
-                  takes at least this many characters to describe
-                </span>
-              </div>
-              <div className="flex items-center justify-start gap-1">
-                <div
-                  className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
-                  style={{
-                    width: ABILITY_COST_SIZE * scale,
-                    height: ABILITY_COST_SIZE * scale,
-                  }}
-                >
-                  <Image
-                    src="/images/cards/fog.gif"
-                    alt=""
-                    fill
-                    objectFit="cover"
-                  />
-                  <span className="z-2"></span>
-                </div>
-                <span>
-                  <strong>Ability 2:</strong> Your second ability, maybe this
-                  one&apos;s shorter
-                </span>
-              </div>
-            </div>
-          )}
-          {/* Bottom right */}
-          <div className="absolute right-0 bottom-0 flex items-center gap-1 pr-1">
-            <GlobeIcon className="size-3" />
-            <a
-              href={profile.site_url ?? ''}
-              target="_blank"
-              rel="noopener noreferrer"
+          <div
+            style={{
+              height: PICTURE_HEIGHT * scale,
+            }}
+            className="relative w-full overflow-hidden"
+          >
+            <div
+              style={{ padding: 16 * scale }}
+              className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400"
             >
-              {profile.site_url}
-            </a>
+              {/* Gray border */}
+              <Image
+                src={washImageSrcs.unassigned}
+                alt="border"
+                fill
+                className="z-1 object-cover"
+              />
+              {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
+              {gleamFollowsTilt ? (
+                <div className="absolute inset-0 z-1 overflow-hidden">
+                  {/* Spotlight (show only on hover) */}
+                  <div
+                    className="absolute inset-0 hidden group-hover:block"
+                    style={{
+                      background:
+                        'radial-gradient(circle at calc(50% + (var(--tx, 0) * 60%)) calc(50% + (var(--ty, 0) * 60%)), rgba(255,255,255,0.85) 0%, rgba(255,255,255,0.55) 12%, rgba(255,255,255,0.25) 30%, rgba(255,255,255,0.0) 54%), radial-gradient(circle at calc(50% - (var(--tx, 0) * 60%)) calc(50% - (var(--ty, 0) * 60%)), rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.0) 78%)',
+                      mixBlendMode: 'overlay',
+                      filter: 'blur(1px)',
+                    }}
+                  />
+                  {/* Flash bar (hide on hover) */}
+                  <div className="absolute inset-0 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent group-hover:hidden" />
+                </div>
+              ) : (
+                <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+              )}
+              <div className="relative size-full">
+                <Image
+                  id="player-picture"
+                  src={profile.profile_pictures_url ?? '/images/incognito.svg'}
+                  alt="Profile picture"
+                  fill
+                  style={{ borderRadius: 12 * scale }}
+                  className="z-2 object-cover"
+                />
+              </div>
+            </div>
           </div>
-          {/* Bottom left */}
-          <div className="absolute bottom-0 left-0 flex items-center gap-1 pl-1">
-            <Image
-              src="/logos/discord-logo.svg"
-              alt="D"
-              width={40 * scale}
-              height={40 * scale}
-            />
-            {profile.discord_handle ?? 'Discord Handle'}
+          {/* Sub Profile Picture */}
+          <div
+            style={{
+              fontSize: isTiny ? 55 * scale : 40 * scale,
+            }}
+            className="z-10 flex grow flex-col justify-between leading-none break-words text-black"
+          >
+            {/* Bio */}
+            <div className="flex flex-col gap-1">
+              <div className="w-full p-1" title={profile.bio ?? ''}>
+                {(() => {
+                  return profile.bio && profile.bio.length > bioCharLimit
+                    ? (profile.bio?.slice(0, bioCharLimit) ?? '') + '...'
+                    : profile.bio
+                })()}
+              </div>
+              {/* Abilities? (hidden when used on Profile page) */}
+              {!asProfile && (
+                <div className="flex flex-col gap-2">
+                  <div className="flex items-start justify-start gap-1">
+                    <div
+                      className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
+                      style={{
+                        width: ABILITY_COST_SIZE * scale,
+                        height: ABILITY_COST_SIZE * scale,
+                      }}
+                    >
+                      <Image
+                        src="/images/cards/fog.gif"
+                        alt=""
+                        fill
+                        objectFit="cover"
+                      />
+                      <span className="z-2"></span>
+                    </div>
+                    <span>
+                      <strong>Ability 1:</strong> Your first ability, it
+                      probably takes at least this many characters to describe
+                    </span>
+                  </div>
+                  <div className="flex items-center justify-start gap-1">
+                    <div
+                      className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
+                      style={{
+                        width: ABILITY_COST_SIZE * scale,
+                        height: ABILITY_COST_SIZE * scale,
+                      }}
+                    >
+                      <Image
+                        src="/images/cards/fog.gif"
+                        alt=""
+                        fill
+                        objectFit="cover"
+                      />
+                      <span className="z-2"></span>
+                    </div>
+                    <span>
+                      <strong>Ability 2:</strong> Your second ability, maybe
+                      this one&apos;s shorter
+                    </span>
+                  </div>
+                </div>
+              )}
+            </div>
+            {/* Bottom */}
+            <div
+              style={{ gap: 10 * scale }}
+              className="flex w-full items-end justify-between"
+            >
+              {/* Bottom left */}
+              {!isTiny && (
+                <div
+                  style={{ gap: 10 * scale, paddingLeft: 10 * scale }}
+                  className="flex items-center"
+                >
+                  <FaDiscord
+                    style={{ width: 40 * scale, height: 40 * scale }}
+                  />
+                  {profile.discord_handle ?? 'Discord Handle'}
+                </div>
+              )}
+              {/* Bottom right */}
+              <div
+                style={{
+                  gap: 10 * scale,
+                  paddingRight: 10 * scale,
+                  fontSize: isTiny ? 70 * scale : 40 * scale,
+                }}
+                className="flex items-center"
+              >
+                <GlobeIcon
+                  style={{
+                    width: isTiny ? 70 * scale : 40 * scale,
+                    height: isTiny ? 70 * scale : 40 * scale,
+                  }}
+                  className="shrink-0"
+                />
+                <a
+                  href={profile.site_url ?? ''}
+                  onClick={(e) => {
+                    e.stopPropagation()
+                  }}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="pointer-events-auto z-10 cursor-pointer break-all underline"
+                >
+                  {profile.site_name}
+                </a>
+              </div>
+            </div>
           </div>
         </div>
       </div>

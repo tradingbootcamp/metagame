@@ -74,7 +74,7 @@ export const Card: React.FC<CardProps> = ({
     <div
       ref={cardRef}
       className={cn(
-        'card flex flex-col rounded-md border-amber-400 text-center transition-all',
+        'card flex w-fit flex-col rounded-md border-amber-400 text-center transition-all',
         !borderless && 'border-2',
         borderless && 'border-0',
         !padless && 'p-6',
