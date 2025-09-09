@@ -58,7 +58,19 @@ export const usersService = {
     }
     return data satisfies DbPublicProfile | null
   },
-
+  getSpeakerIds: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, player_id')
+      .eq('opted_in_to_homepage_display', true)
+      .not('homepage_order', 'is', null)
+      .order('homepage_order', { ascending: true })
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
   getUser: async (idOrEmail: IdXorEmail): Promise<UserResponse> => {
     const { id, email } = idOrEmail
     if (id) {

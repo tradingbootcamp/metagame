@@ -21,7 +21,7 @@ export const adminGetUserFullProfileById = adminExportWrapper(
 )
 
 export const adminGetUser = adminExportWrapper(usersService.getUser)
-
+export const getSpeakerIds = usersService.getSpeakerIds
 export const getAllUserPublicProfiles = usersService.getAllUserPublicProfiles
 export const getUserPublicProfileById = usersService.getUserPublicProfileById
 export const getUserPublicProfileByPlayerId =
