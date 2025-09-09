@@ -320,6 +320,7 @@ export type Database = {
           max_capacity: number | null
           megagame: boolean
           min_capacity: number | null
+          needs: string | null
           reserved_spots: number
           start_time: string | null
           title: string | null
@@ -337,6 +338,7 @@ export type Database = {
           max_capacity?: number | null
           megagame?: boolean
           min_capacity?: number | null
+          needs?: string | null
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
@@ -354,6 +356,7 @@ export type Database = {
           max_capacity?: number | null
           megagame?: boolean
           min_capacity?: number | null
+          needs?: string | null
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
