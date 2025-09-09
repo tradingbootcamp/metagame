@@ -1,6 +1,9 @@
 #!/usr/bin/env sh
 . "$(dirname -- "$0")/_/husky.sh"
 
+export PATH="$HOME/Library/pnpm:/opt/homebrew/bin:/usr/local/bin:$HOME/.local/share/pnpm:$PATH"
+
+
 echo "✨ Running typecheck..."
 pnpm typecheck || {
   echo "❌ typecheck failed"
