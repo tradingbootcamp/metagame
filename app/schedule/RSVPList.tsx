@@ -108,10 +108,10 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
   })
   const rsvps = session.rsvps
   const teamsToBgColors: Record<DbTeamColor, string> = {
-    orange: 'text-orange-500',
-    purple: 'text-fuchsia-800',
+    orange: 'text-orange-600',
+    purple: 'text-fuchsia-700',
     green: 'text-green-500',
-    unassigned: 'text-white',
+    unassigned: 'text-gray-600',
   }
 
   function nameDisplay(user: DbFullSession['rsvps'][number]['user']) {
@@ -157,7 +157,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
                 <XIcon className="size-3" />
               </button>
             )}
-            <span>{nameDisplay(rsvp.user)}</span>
+            <span className="font-medium">{nameDisplay(rsvp.user)}</span>
           </li>
         ))}
       </ul>

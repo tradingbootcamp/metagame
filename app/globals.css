@@ -38,6 +38,8 @@
     --color-slate-800
   ); /* Hover states, subtle highlights */
   --color-bg-surface: var(--color-dark-600); /* Alternative surface color */
+  --color-bg-tooltip: #fdfde9; /* Tooltip background */
+  --color-text-tooltip: #4b0736; /* Tooltip text */
 
   /* Semantic Text Colors */
   --color-text-primary: #ffffff; /* Main body text */
