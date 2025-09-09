@@ -400,7 +400,7 @@ export default function PlayerCard({
               className="flex w-full items-end justify-between"
             >
               {/* Bottom left */}
-              {!isTiny && (
+              {!isTiny && profile.discord_handle && (
                 <div
                   style={{ gap: 10 * scale, paddingLeft: 10 * scale }}
                   className="flex items-center"
@@ -408,7 +408,7 @@ export default function PlayerCard({
                   <FaDiscord
                     style={{ width: 40 * scale, height: 40 * scale }}
                   />
-                  {profile.discord_handle ?? 'Discord Handle'}
+                  {profile.discord_handle}
                 </div>
               )}
               {/* Bottom right */}
