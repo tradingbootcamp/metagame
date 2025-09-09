@@ -1,3 +1,5 @@
+import { Suspense } from 'react'
+
 import HomePageWrapper from '@/components/HomePageWrapper'
 import PacmanAnimation from '@/components/PacmanAnimation'
 import SetAnimation from '@/components/Set/SetAnimation'
@@ -7,7 +9,7 @@ import { ContactUs } from '@/components/sections/home/ContactUs'
 import { Hero } from '@/components/sections/home/Hero'
 import Highlights from '@/components/sections/home/Highlights'
 import ScheduleSection from '@/components/sections/home/ScheduleSection'
-import Speakers from '@/components/sections/home/Speakers'
+import Speakers, { SpeakersLoading } from '@/components/sections/home/Speakers'
 import Tickets from '@/components/tickets/Tickets'
 
 export default function Home() {
@@ -19,7 +21,9 @@ export default function Home() {
           <Calendar />
           <Highlights />
           <ScheduleSection />
-          <Speakers />
+          <Suspense fallback={<SpeakersLoading />}>
+            <Speakers />
+          </Suspense>
           <Sponsors />
           <div id="set-animation">
             <SetAnimation />
