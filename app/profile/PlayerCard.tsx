@@ -303,17 +303,47 @@ export default function PlayerCard({
           {/* Sub Profile Picture */}
           <div
             style={{
-              fontSize: isTiny ? 55 * scale : 40 * scale,
+              fontSize: isTiny ? 65 * scale : 40 * scale,
             }}
             className="z-10 flex grow flex-col justify-between leading-none break-words text-black"
           >
             {/* Bio */}
             <div className="flex flex-col gap-1">
-              <div className="w-full p-1" title={profile.bio ?? ''}>
+              <div
+                className="w-full p-1 whitespace-pre-line"
+                title={profile.bio ?? ''}
+              >
                 {(() => {
-                  return profile.bio && profile.bio.length > bioCharLimit
-                    ? (profile.bio?.slice(0, bioCharLimit) ?? '') + '...'
-                    : profile.bio
+                  if (!profile.bio) return ''
+                  // Count each newline as 24 extra characters
+                  const newlineCount = profile.bio.match(/\n/g)?.length || 0
+                  const effectiveLength = profile.bio.length + newlineCount * 24
+
+                  if (effectiveLength > bioCharLimit) {
+                    // Find where to truncate accounting for newlines
+                    let truncateAt = bioCharLimit
+                    let currentLength = 0
+                    let i = 0
+
+                    while (
+                      currentLength < bioCharLimit &&
+                      i < profile.bio.length
+                    ) {
+                      if (profile.bio[i] === '\n') {
+                        currentLength += 24
+                      } else {
+                        currentLength += 1
+                      }
+                      if (currentLength <= bioCharLimit) {
+                        truncateAt = i + 1
+                      }
+                      i++
+                    }
+
+                    return profile.bio.slice(0, truncateAt) + '...'
+                  }
+
+                  return profile.bio
                 })()}
               </div>
               {/* Abilities? (hidden when used on Profile page) */}
@@ -388,7 +418,7 @@ export default function PlayerCard({
                   paddingRight: 10 * scale,
                   fontSize: isTiny ? 90 * scale : 40 * scale,
                 }}
-                className="flex items-center font-bold break-all"
+                className={`flex items-center font-bold ${profile.site_name?.includes(' ') ? '' : 'break-all'}`}
               >
                 <GlobeIcon
                   style={{
