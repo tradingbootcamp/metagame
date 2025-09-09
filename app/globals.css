@@ -28,8 +28,9 @@
   --color-dark-800: #01000f;
   --color-dark-900: #000005;
   --color-dark-950: #000005;
-  --color-tesitng: #631 /* Semantic Background Colors */
-    --color-bg-primary: var(--color-dark-500); /* Main app background */
+
+  /* Semantic Background Colors */
+  --color-bg-primary: var(--color-dark-500); /* Main app background */
   --color-bg-secondary: var(
     --color-dark-400
   ); /* Cards, modals, elevated surfaces */
