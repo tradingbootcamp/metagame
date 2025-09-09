@@ -162,9 +162,7 @@ export default function Profile() {
 
   const handleSave = () => {
     updateProfile(formData)
-    console.log('formData', formData)
   }
-  console.log('formData', formData)
   const handleCancel = () => {
     setFormData(profileFormSchema.parse(currentUserProfile))
     setIsEditMode(false)
@@ -198,16 +196,18 @@ export default function Profile() {
       )}
 
       <div className="container mx-auto flex max-w-md flex-col items-center px-4 py-8 md:max-w-4xl">
-        <div className="mb-2 flex w-full items-center justify-between">
-          <div className="flex items-center gap-2">
-            <h1 className="text-3xl font-bold">Profile</h1>
+        <div className="mb-2 flex w-full justify-center">
+          <div className="mb-4 flex items-center gap-2">
             {!isEditMode && (
-              <button
-                className="flex cursor-pointer items-center justify-center rounded-md p-2"
-                onClick={() => setIsEditMode(true)}
-              >
-                <FaEdit className="size-4" />
-              </button>
+              <div className="flex items-center gap-2">
+                <h1 className="text-3xl font-bold">Profile</h1>
+                <button
+                  className="flex cursor-pointer items-center justify-center rounded-md p-2"
+                  onClick={() => setIsEditMode(true)}
+                >
+                  <FaEdit className="size-4" />
+                </button>
+              </div>
             )}
           </div>
 
@@ -240,15 +240,6 @@ export default function Profile() {
                   gleamFollowsTilt
                   showStatBoxes
                   width={350}
-                />
-              )}
-              {currentUserProfile?.is_admin && (
-                <PlayerCard
-                  userId={currentUser.id}
-                  asProfile
-                  tiltFactor={2.5}
-                  gleamFollowsTilt
-                  width={150}
                 />
               )}
             </div>
@@ -334,6 +325,14 @@ export default function Profile() {
                 </Link>
               )}
             </div>
+            <span>Homepage Display View</span>
+            <PlayerCard
+              userId={currentUser.id}
+              asProfile
+              tiltFactor={2.5}
+              gleamFollowsTilt
+              width={150}
+            />
           </div>
         ) : (
           <div className="w-full rounded-lg border border-border-primary bg-card p-6">
