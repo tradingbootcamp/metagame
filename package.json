@@ -7,6 +7,7 @@
     "db:migrate": "npx supabase migration up --local && pnpm types:supabase",
     "db:migrate:new": "npx supabase migration new",
     "db:migrate:prod": "npx supabase link --project-ref fkarmpoupazxnshofaeg && npx supabase db push && pnpm types:supabase:prod",
+    "db:migrate:sync": "npx supabase db diff --linked --use-migra -f prod_sync && pnpm types:supabase:prod && echo 'Synced prod db with a migration file; rename it.'",
     "db:reset": "npx supabase db reset --local && pnpm types:supabase",
     "dev": "next dev",
     "fmt": "pnpm format",
