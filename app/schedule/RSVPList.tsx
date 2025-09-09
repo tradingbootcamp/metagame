@@ -108,10 +108,10 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
   })
   const rsvps = session.rsvps
   const teamsToBgColors: Record<DbTeamColor, string> = {
-    orange: 'text-orange-500',
-    purple: 'text-fuchsia-800',
+    orange: 'text-orange-600',
+    purple: 'text-fuchsia-700',
     green: 'text-green-500',
-    unassigned: 'text-white',
+    unassigned: 'text-gray-600',
   }
 
   function nameDisplay(user: DbFullSession['rsvps'][number]['user']) {
@@ -145,7 +145,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
             {currentUserProfile?.is_admin && (
               <button
                 title="Un-RSVP user"
-                className="cursor-pointer rounded-xs p-0.5 text-red-400 hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
+                className="hover:bg-bg-primary cursor-pointer rounded-xs p-0.5 text-red-400 disabled:cursor-not-allowed disabled:opacity-50"
                 onClick={(e) => {
                   e.stopPropagation()
                   unrsvpUserMutation.mutate({

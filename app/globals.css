@@ -28,9 +28,8 @@
   --color-dark-800: #01000f;
   --color-dark-900: #000005;
   --color-dark-950: #000005;
-
-  /* Semantic Background Colors */
-  --color-bg-primary: var(--color-dark-500); /* Main app background */
+  --color-tesitng: #631 /* Semantic Background Colors */
+    --color-bg-primary: var(--color-dark-500); /* Main app background */
   --color-bg-secondary: var(
     --color-dark-400
   ); /* Cards, modals, elevated surfaces */
@@ -38,6 +37,8 @@
     --color-slate-800
   ); /* Hover states, subtle highlights */
   --color-bg-surface: var(--color-dark-600); /* Alternative surface color */
+  --color-bg-tooltip: #fdfde9; /* Tooltip background */
+  --color-text-tooltip: #4b0736; /* Tooltip text */
 
   /* Semantic Text Colors */
   --color-text-primary: #ffffff; /* Main body text */
