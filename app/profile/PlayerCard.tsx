@@ -404,7 +404,7 @@ export default function PlayerCard({
                   }}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="pointer-events-auto z-10 cursor-pointer break-all underline"
+                  className="pointer-events-auto z-10 cursor-pointer underline"
                 >
                   {profile.site_name}
                 </a>
