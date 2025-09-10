@@ -3,6 +3,7 @@
 import { useMemo } from 'react'
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 import { currentUserToggleSessionBookmark } from '@/app/actions/db/sessionBookmarks'
@@ -132,7 +133,13 @@ export function useScheduleStuff() {
 
   // RSVP mutation
   const rsvpMutation = useMutation({
-    mutationFn: rsvpCurrentUserToSession,
+    mutationFn: async ({ sessionId }: { sessionId: string }) => {
+      const firstName = (currentUserProfile?.first_name || '').trim()
+      if (!firstName) {
+        throw new Error('PROFILE_FIRST_NAME_REQUIRED')
+      }
+      return rsvpCurrentUserToSession({ sessionId })
+    },
     onMutate: async ({ sessionId }) => {
       // Cancel any outgoing refetches
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
@@ -141,6 +148,12 @@ export function useScheduleStuff() {
       const previousSessions = queryClient.getQueryData<DbFullSession[]>([
         'sessions',
       ])
+
+      // If profile missing first name, do not optimistically update
+      const firstName = (currentUserProfile?.first_name || '').trim()
+      if (!firstName) {
+        return { previousSessions, aborted: true as const }
+      }
 
       // Optimistically add RSVP (simplified - no waitlist logic)
       const newRsvp: DbFullSessionRsvp = {
@@ -180,6 +193,25 @@ export function useScheduleStuff() {
           ['sessions'],
           context.previousSessions,
         )
+      }
+      if (
+        err instanceof Error &&
+        err.message === 'PROFILE_FIRST_NAME_REQUIRED'
+      ) {
+        toast.error(
+          <div className="flex flex-col gap-1">
+            <span>Your profile is incomplete.</span>
+            <span>Please set your first name in order to RSVP.</span>
+            <Link
+              href="/profile"
+              className="mt-1 w-fit underline underline-offset-2 hover:opacity-90"
+            >
+              Go to your profile →
+            </Link>
+          </div>,
+          { duration: 6000 },
+        )
+        return
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
@@ -243,6 +275,24 @@ export function useScheduleStuff() {
     if (isUserRsvpd(sessionId)) {
       unrsvpCurrentUserFromSessionMutation.mutate({ sessionId })
     } else {
+      // Guard: require first name before allowing RSVP
+      const firstName = (currentUserProfile?.first_name || '').trim()
+      if (!firstName) {
+        toast.error(
+          <div className="flex flex-col gap-1">
+            <span>Your profile is incomplete.</span>
+            <span>Please set your first name in order to RSVP.</span>
+            <Link
+              href="/profile"
+              className="mt-1 w-fit underline underline-offset-2 hover:opacity-90"
+            >
+              Go to your profile →
+            </Link>
+          </div>,
+          { duration: 6000 },
+        )
+        return
+      }
       rsvpMutation.mutate({ sessionId })
     }
   }
