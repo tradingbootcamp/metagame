@@ -3,12 +3,13 @@
 import { useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import { HostListLinks } from './HostListLinks'
 import { AttendanceDisplay } from './RSVPList'
 import { sessionLink } from './scheduleUtils'
 import { CheckIcon, EditIcon, LinkIcon, StarIcon } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { SESSION_AGES, dbGetHostsFromSession } from '@/utils/dbUtils'
+import { SESSION_AGES } from '@/utils/dbUtils'
 
 import AddToCalendar from '@/components/AddToCalendar'
 import { SessionTitle } from '@/components/SessionTitle'
@@ -106,7 +107,7 @@ export default function SessionDetailsCard({
 
           {/* Hosts */}
           <div className="text-sm text-secondary-400">
-            {dbGetHostsFromSession(session).join(', ')}
+            <HostListLinks session={session} className="text-sm" />
           </div>
         </div>
 

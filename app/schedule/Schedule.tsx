@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
+import { HostListLinks } from './HostListLinks'
 import { AttendanceDisplay } from './RSVPList'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
@@ -21,12 +22,7 @@ import { usePathname } from 'next/navigation'
 import { toast } from 'sonner'
 
 import { dateUtils } from '@/utils/dateUtils'
-import {
-  SESSION_AGES,
-  SESSION_CATEGORIES,
-  // countRsvpsByTeamColor,
-  dbGetHostsFromSession,
-} from '@/utils/dbUtils'
+import { SESSION_AGES, SESSION_CATEGORIES } from '@/utils/dbUtils'
 
 import { BloodDrippingFrame } from '@/components/BloodDrippingFrame'
 import { SessionTitle } from '@/components/SessionTitle'
@@ -489,9 +485,7 @@ export default function Schedule({
                               <div className="text-sm leading-tight font-bold">
                                 <SessionTitle title={session.title} />
                               </div>
-                              <div className="font-sans text-xs">
-                                {dbGetHostsFromSession(session).join(', ')}
-                              </div>
+                              <HostListLinks session={session} />
                               {currentUser && (
                                 <div className="absolute bottom-0 left-0 flex min-h-[20px] items-center gap-1 font-sans text-xs opacity-80">
                                   <button
