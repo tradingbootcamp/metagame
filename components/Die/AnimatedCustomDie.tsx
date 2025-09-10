@@ -85,7 +85,6 @@ export default function AnimatedCustomDie({
     const el = svgRef.current
     if (!el) return
     enforceFavicon(svgToDataUrl(el))
-     
   }, [])
 
   // When animation completes, set favicon to the final custom die
@@ -113,7 +112,12 @@ export default function AnimatedCustomDie({
           : {}
       }
     >
-      <CustomDie ref={svgRef} dieIdentifier={dieIdentifier} size={40} />
+      <CustomDie
+        ref={svgRef}
+        dieIdentifier={dieIdentifier}
+        size={40}
+        showDownloadButton={false}
+      />
     </button>
   )
 }

@@ -1,3 +1,5 @@
+'use client'
+
 import { useEffect, useState } from 'react'
 
 import { CustomDie } from './CustomDie'
@@ -9,6 +11,7 @@ export function DieTest() {
     fill: '#ff0000',
     stroke: '#0000ff',
   })
+  const [strokeWidth, setStrokeWidth] = useState(13.824)
   const [currentNumbers, setCurrentNumbers] = useState<Record<Face, number>>({
     left: 1,
     top: 1,
@@ -53,6 +56,8 @@ export function DieTest() {
         size={200}
         fill={colors.fill}
         stroke={colors.stroke}
+        showDownloadButton={true}
+        strokeWidth={strokeWidth}
       />
 
       <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
@@ -85,6 +90,16 @@ export function DieTest() {
             onChange={(e) =>
               setColors((prev) => ({ ...prev, stroke: e.target.value }))
             }
+            style={{ marginLeft: '0.5rem' }}
+          />
+        </label>
+
+        <label>
+          Stroke Width:
+          <input
+            type="number"
+            value={strokeWidth}
+            onChange={(e) => setStrokeWidth(Number(e.target.value))}
             style={{ marginLeft: '0.5rem' }}
           />
         </label>
