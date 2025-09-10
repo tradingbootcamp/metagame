@@ -108,6 +108,9 @@ export function useScheduleStuff() {
         'sessions',
       ])
 
+      // Get session info before optimistic update
+      const session = previousSessions?.find((s) => s.id === sessionId)
+
       // Optimistically update RSVPs
       queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
@@ -127,7 +130,7 @@ export function useScheduleStuff() {
         )
       })
 
-      return { previousSessions }
+      return { previousSessions, session }
     },
     onError: (err, variables, context) => {
       // Rollback on error
@@ -211,7 +214,7 @@ export function useScheduleStuff() {
         )
       })
 
-      return { previousSessions }
+      return { previousSessions, session }
     },
     onError: (err, variables, context) => {
       // Rollback on error
@@ -242,11 +245,15 @@ export function useScheduleStuff() {
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
-    onSuccess: (result) => {
+    onSuccess: (result, variables, context) => {
       if (result && result.on_waitlist) {
-        const team = result.user.team
-        const teamLabel = team.charAt(0).toUpperCase() + team.slice(1)
-        toast.info(`Added to waitlist for ${teamLabel}.`)
+        if (context?.session?.megagame) {
+          const team = result.user.team
+          const teamLabel = team.charAt(0).toUpperCase() + team.slice(1)
+          toast.info(`Added to ${teamLabel} team waitlist.`)
+        } else {
+          toast.info('Added to waitlist.')
+        }
       } else {
         toast.success('RSVP successful!')
       }

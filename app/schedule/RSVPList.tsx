@@ -88,6 +88,10 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       const previousSessions = queryClient.getQueryData<DbFullSession[]>([
         'sessions',
       ])
+
+      // Get session info before optimistic update
+      const session = previousSessions?.find((s) => s.id === sessionId)
+
       queryClient.setQueryData<DbFullSession[]>(
         ['sessions'],
         (old) =>
@@ -102,7 +106,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
               : session,
           ) || [],
       )
-      return { previousSessions }
+      return { previousSessions, session }
     },
     onError: (err, variables, context) => {
       if (context?.previousSessions) {
