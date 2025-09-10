@@ -10,6 +10,7 @@ import {
   DbFullProfile,
   DbProfileUpdate,
   DbPublicProfile,
+  DbTeamColor,
 } from '@/types/database/dbTypeAliases'
 
 const publicProfileSelectIncludes = `
@@ -242,5 +243,34 @@ export const usersService = {
       throw new Error(error.message)
     }
     return data satisfies DbPublicProfile[]
+  },
+  /** Get public profiles for users on a specific team */
+  getPublicProfilesByTeam: async ({ team }: { team: DbTeamColor }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select(publicProfileSelectIncludes)
+      .eq('team', team)
+      .order('first_name', { ascending: true })
+      .order('last_name', { ascending: true })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbPublicProfile[]
+  },
+  /** Get IDs and player IDs for users on a specific team */
+  getUsersIdsByTeam: async ({ team }: { team: DbTeamColor }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('profiles')
+      .select('id, player_id')
+      .eq('team', team)
+      .order('first_name', { ascending: true })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data as { id: string; player_id: number }[]
   },
 }
