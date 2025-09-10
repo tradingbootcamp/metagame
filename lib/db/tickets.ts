@@ -63,6 +63,17 @@ export const ticketsService = {
     }
     return data
   },
+  getTicketsByOwnerId: async ({ ownerId }: { ownerId: string }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .eq('owner_id', ownerId)
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
   updateTicketOwner: async ({
     ticketCode,
     ownerId,
