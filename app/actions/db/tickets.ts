@@ -37,6 +37,16 @@ export const signupByTicketCode = async ({
   const existingUser = await usersService.getUserFullProfileByEmail({ email })
   if (existingUser) {
     userId = existingUser.id
+    const userHasTicket = await ticketsService.getTicketsByOwnerId({
+      ownerId: userId,
+    })
+    if (userHasTicket.length > 0) {
+      return {
+        success: false,
+        error: 'This email already has an account with a ticket!',
+        ticket: null,
+      }
+    }
   } else {
     const {
       data: { user },
