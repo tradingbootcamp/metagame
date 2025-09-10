@@ -76,10 +76,24 @@ export function useScheduleStuff() {
   const isSessionFull = (sessionId: string) => {
     const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
     const session = sessions?.find((s) => s.id === sessionId)
-    if (!session || !session.max_capacity || !session.rsvps?.length)
-      return false
+    if (!session || !session.max_capacity) return false
 
-    return session.rsvps.length >= session.max_capacity
+    if (session.megagame) {
+      const team = currentUserProfile?.team
+      if (team === 'orange' || team === 'purple') {
+        const teamCap = Math.floor(session.max_capacity / 2)
+        const currentTeamGoing = (session.rsvps || []).filter(
+          (r) => r.user.team === team && !r.on_waitlist,
+        ).length
+        return currentTeamGoing >= teamCap
+      }
+      return false
+    }
+
+    const goingCount = (session.rsvps || []).filter(
+      (r) => !r.on_waitlist,
+    ).length
+    return goingCount >= session.max_capacity
   }
 
   // UnRSVP mutation
@@ -156,10 +170,23 @@ export function useScheduleStuff() {
       }
 
       // Optimistically add RSVP (simplified - no waitlist logic)
+      // Determine optimistic waitlist based on megagame team caps
+      const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
+      const session = sessions?.find((s) => s.id === sessionId)
+      const userTeam = currentUserProfile?.team || 'unassigned'
+      let optimisticWaitlist = false
+      if (session?.megagame && session.max_capacity) {
+        const teamCap = Math.floor(session.max_capacity / 2)
+        const currentTeamGoing = (session.rsvps || []).filter(
+          (r) => r.user.team === userTeam && !r.on_waitlist,
+        ).length
+        optimisticWaitlist = currentTeamGoing >= teamCap
+      }
+
       const newRsvp: DbFullSessionRsvp = {
         session_id: sessionId,
         user_id: currentUserProfile?.id || '',
-        on_waitlist: false, // Let server handle waitlist logic
+        on_waitlist: optimisticWaitlist, // Server will confirm
         created_at: new Date().toISOString(),
         user: {
           id: currentUserProfile?.id || '',
@@ -215,8 +242,14 @@ export function useScheduleStuff() {
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
-    onSuccess: () => {
-      toast.success('RSVP successful!')
+    onSuccess: (result) => {
+      if (result && result.on_waitlist) {
+        const team = result.user.team
+        const teamLabel = team.charAt(0).toUpperCase() + team.slice(1)
+        toast.info(`Added to waitlist for ${teamLabel}.`)
+      } else {
+        toast.success('RSVP successful!')
+      }
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
@@ -292,6 +325,22 @@ export function useScheduleStuff() {
           { duration: 6000 },
         )
         return
+      }
+      // Pre-check megagame rules client-side for better UX
+      const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
+      const session = sessions?.find((s) => s.id === sessionId)
+      if (session?.megagame) {
+        const team = currentUserProfile?.team
+        if (team === 'green') {
+          toast.error("Green team can't RSVP for megagame events!")
+          return
+        }
+        if (!team || team === 'unassigned') {
+          toast.error(
+            'Assign yourself to Orange or Purple to RSVP for a megagame.',
+          )
+          return
+        }
       }
       rsvpMutation.mutate({ sessionId })
     }
