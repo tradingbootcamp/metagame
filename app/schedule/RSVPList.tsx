@@ -168,7 +168,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
                 <XIcon className="size-3" />
               </button>
             )}
-            <span className="min-w-0 flex-1 truncate font-medium">
+            <span className="min-w-0 flex-1 truncate text-left font-medium">
               {nameDisplay(rsvp.user)}
             </span>
           </li>
