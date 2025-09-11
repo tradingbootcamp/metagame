@@ -2,11 +2,12 @@
 
 import { FaDiscord } from 'react-icons/fa'
 
-import { usePublicProfile } from '../../hooks/useProfiles'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 
 import { Card } from '@/components/Card'
+
+import { usePublicProfile } from '@/hooks/useProfiles'
 
 // Establish some base numbers
 const CARD_WIDTH = 800 // width of the card image unscaled
