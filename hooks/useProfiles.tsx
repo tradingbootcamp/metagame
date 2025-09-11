@@ -74,6 +74,10 @@ export const usePublicProfiles = ({
 
       return profiles
     },
+    staleTime: 5 * 60 * 1000, // 5 minutes - profiles don't change often
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep longer for nav between pages
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     placeholderData: (prev) => prev,
   })
 
@@ -91,5 +95,9 @@ export const usePublicProfile = (userId: string | null | undefined) => {
     queryKey: ['users', 'profile', userId, 'public'],
     enabled: !!userId,
     queryFn: async () => fetchPublicProfile(userId!),
+    staleTime: 5 * 60 * 1000, // 5 minutes - profiles don't change often
+    gcTime: 30 * 60 * 1000, // 30 minutes - keep longer for nav between pages
+    retry: 3, // Retry failed requests
+    retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000), // Exponential backoff
   })
 }
