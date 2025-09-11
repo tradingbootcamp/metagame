@@ -25,14 +25,16 @@ const countGoingForTeam = async ({
   team: DbTeamColor
 }) => {
   const supabase = createServiceClient()
-  const { data, error } = await supabase
+  const { data: allSessionRsvps, error: allSessionRsvpsError } = await supabase
     .from('session_rsvps')
     .select('on_waitlist, user:profiles!session_rsvps_user_id_fkey ( team )')
     .eq('session_id', sessionId)
     .eq('on_waitlist', false)
-    .eq('user.team', team)
-  if (error) throw new Error(error.message)
-  return data.length
+  if (allSessionRsvpsError) throw new Error(allSessionRsvpsError.message)
+  const teamCount = allSessionRsvps.filter(
+    (rsvp) => rsvp.user.team === team,
+  ).length
+  return teamCount
 }
 
 const countGoing = async ({ sessionId }: { sessionId: string }) => {
