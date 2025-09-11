@@ -11,27 +11,26 @@ export const HostListLinks = ({
   session: DbFullSession
   className?: string
 }) => {
+  const hosts = [session.host_1, session.host_2, session.host_3].filter(
+    Boolean,
+  ) as NonNullable<DbFullSession['host_1']>[]
   return (
-    <div>
-      {[
-        { host: session.host_1, id: session.host_1_id },
-        { host: session.host_2, id: session.host_2_id },
-        { host: session.host_3, id: session.host_3_id },
-      ]
-        .filter(({ host }) => host?.first_name) // Only include hosts with names
-        .map(({ host, id }) => {
-          const hostName = `${host?.first_name} ${host?.last_name || ''}`.trim()
-          return (
+    <div className="leading-none">
+      {hosts.map(({ first_name, last_name, id }, idx) => {
+        const hostName = `${first_name} ${last_name || ''}`.trim()
+        return (
+          <span key={id} className="font-sans text-xs">
             <Link
               href={`/profile/${id}`}
-              key={id}
-              className={cn('font-sans text-xs hover:underline', className)}
+              className={cn('hover:underline', className)}
               onClick={(e) => e.stopPropagation()}
             >
               {hostName}
             </Link>
-          )
-        })}
+            {idx < hosts.length - 1 && ', '}
+          </span>
+        )
+      })}
     </div>
   )
 }
