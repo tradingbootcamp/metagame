@@ -87,7 +87,7 @@ export type Database = {
           id: string
           image_url: string | null
           lh_name: string | null
-          map_name: string | null
+          map_info: Json | null
           name: string
           schedule_display_order: number
           thumbnail_url: string | null
@@ -99,7 +99,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           lh_name?: string | null
-          map_name?: string | null
+          map_info?: Json | null
           name?: string
           schedule_display_order?: number
           thumbnail_url?: string | null
@@ -111,7 +111,7 @@ export type Database = {
           id?: string
           image_url?: string | null
           lh_name?: string | null
-          map_name?: string | null
+          map_info?: Json | null
           name?: string
           schedule_display_order?: number
           thumbnail_url?: string | null
@@ -525,7 +525,7 @@ export type Database = {
           host_3_last_name: string | null
           id: string | null
           location_id: string | null
-          location_map_name: string | null
+          location_map_info: Json | null
           location_name: string | null
           max_capacity: number | null
           megagame: boolean | null

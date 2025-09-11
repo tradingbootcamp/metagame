@@ -37,8 +37,9 @@ rsvps:session_rsvps!session_rsvps_session_id_fkey (
   )
 ),
 location:locations!sessions_location_id_fkey (
+  id,
   name,
-  map_name
+  map_info
 )
 `
 export const sessionsService = {
