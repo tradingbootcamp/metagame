@@ -37,3 +37,7 @@ export const adminUnRsvpUserFromSession = adminExportWrapper(
 export const adminRsvpUserToSession = adminExportWrapper(
   sessionRsvpsService.rsvpUserToSession,
 )
+
+export const repairSessionWaitlists = adminExportWrapper(
+  sessionRsvpsService.repairSessionWaitlists,
+)

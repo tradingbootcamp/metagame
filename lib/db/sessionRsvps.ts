@@ -39,11 +39,12 @@ const countGoing = async ({ sessionId }: { sessionId: string }) => {
   const supabase = createServiceClient()
   const { data, error } = await supabase
     .from('session_rsvps')
-    .select('id')
+    .select('count')
     .eq('session_id', sessionId)
     .eq('on_waitlist', false)
+    .single()
   if (error) throw new Error(error.message)
-  return data.length
+  return data.count
 }
 
 const getSessionCapacityAndType = async ({
@@ -345,5 +346,87 @@ export const sessionRsvpsService = {
       id: session.id,
       rsvp_count: session.session_rsvps[0].count,
     }))
+  },
+
+  /**
+   * Repair waitlist drift by promoting waitlisted users to fill available capacity.
+   * This handles cases where RSVPs were deleted by cascade operations, leaving
+   * sessions with open spots but users still on waitlist.
+   */
+  repairSessionWaitlists: async () => {
+    const supabase = createServiceClient()
+
+    // Get all sessions with capacity limits
+    const sessionsQuery = supabase
+      .from('sessions')
+      .select('id, max_capacity, megagame')
+      .not('max_capacity', 'is', null)
+
+    const { data: sessions, error } = await sessionsQuery
+    if (error) throw new Error(error.message)
+
+    const repairedSessions: Array<{
+      sessionId: string
+      promoted: string[]
+      type: 'regular' | 'megagame'
+    }> = []
+
+    for (const session of sessions) {
+      if (!session.max_capacity || session.max_capacity <= 0) continue
+
+      const promoted: string[] = []
+
+      if (!session.megagame) {
+        // Regular session - promote waitlist to fill capacity
+        const goingCount = await countGoing({ sessionId: session.id })
+        const openSlots = Math.max(0, session.max_capacity - goingCount)
+
+        if (openSlots > 0) {
+          const promotedUsers = await sessionRsvpsService.popSessionWaitlist({
+            sessionId: session.id,
+            limit: openSlots,
+          })
+          promoted.push(...promotedUsers)
+        }
+
+        if (promoted.length > 0) {
+          repairedSessions.push({
+            sessionId: session.id,
+            promoted,
+            type: 'regular',
+          })
+        }
+      } else {
+        // Megagame - promote waitlist for each team
+        const teamCap = Math.floor(session.max_capacity / 2)
+        const teams: DbTeamColor[] = ['orange', 'purple']
+        for (const team of teams) {
+          const currentTeamGoing = await countGoingForTeam({
+            sessionId: session.id,
+            team,
+          })
+          const openSlots = Math.max(0, teamCap - currentTeamGoing)
+
+          if (openSlots > 0) {
+            const promotedUsers = await sessionRsvpsService.popSessionWaitlist({
+              sessionId: session.id,
+              team,
+              limit: openSlots,
+            })
+            promoted.push(...promotedUsers)
+          }
+        }
+
+        if (promoted.length > 0) {
+          repairedSessions.push({
+            sessionId: session.id,
+            promoted,
+            type: 'megagame',
+          })
+        }
+      }
+    }
+
+    return repairedSessions
   },
 }

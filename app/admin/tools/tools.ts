@@ -5,6 +5,7 @@ import { IssueTicketForm } from './issue-tickets/IssueTicketForm'
 import OpenNodeChargeTool from './opennode-charge/OpenNodeChargeTool'
 import UserProfileTool from './user-profile/UserProfileTool'
 import UserTeamsTool from './user-teams/UserTeamsTool'
+import WaitlistRepairTool from './waitlist-repair/WaitlistRepairTool'
 
 export type AdminTool = {
   label: string
@@ -62,6 +63,13 @@ export const ADMIN_TOOLS = {
     longDescription:
       'Create or update coupon codes, toggle enabled state, set global max uses, and manage allowed purchaser emails with per-email limits.',
     component: CouponTool,
+  },
+  'waitlist-repair': {
+    label: 'Waitlist Repair',
+    menuDescription: 'Fix waitlist drift issues',
+    longDescription:
+      'Repair waitlist drift caused by cascade deletions. Promotes waitlisted users to fill available capacity when RSVPs are deleted by database cascades.',
+    component: WaitlistRepairTool,
   },
 } satisfies Record<string, AdminTool>
 
