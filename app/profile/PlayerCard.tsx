@@ -259,7 +259,7 @@ export default function PlayerCard({
               </div>
             ) : (
               <span className="grow-0" id="namesing">
-                {`${profile.first_name} ${profile.last_name}`}
+                {`${profile.first_name || ""} ${profile.last_name || ""}`}
               </span>
             )}
             <span>{profile.minor ? '🌱' : ''}</span>
