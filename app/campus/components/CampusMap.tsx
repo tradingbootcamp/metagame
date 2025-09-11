@@ -433,7 +433,7 @@ export default function CampusMap({
     const mappedLocations: Location[] = effectiveDbLocations
       .filter((loc: DbLocation) => loc.map_info)
       .map((loc: DbLocation) => {
-        const mapInfo = loc.map_info as MapInfo
+        const mapInfo = loc.map_info as unknown as MapInfo
         return {
           id: mapInfo.id || loc.id,
           name: mapInfo.name || loc.name,
@@ -860,7 +860,7 @@ export default function CampusMap({
                       dbLocation.map_info,
                   )
                   .map((dbLocation) => {
-                    const mapInfo = dbLocation.map_info as MapInfo
+                    const mapInfo = dbLocation.map_info as unknown as MapInfo
                     const location = {
                       id: mapInfo.id || dbLocation.id,
                       name: mapInfo.name || dbLocation.name,
