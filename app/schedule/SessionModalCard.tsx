@@ -6,16 +6,13 @@ import { createPortal } from 'react-dom'
 import { AddEventModal } from './EditEventModal'
 import { HostListLinks } from './HostListLinks'
 import { AttendanceDisplay } from './RSVPList'
-import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
+import { sessionLink } from './scheduleUtils'
 import {
-  AppleIcon,
-  CalendarIcon,
   CheckIcon,
   EditIcon,
   ExpandIcon,
   LinkIcon,
   StarIcon,
-  UserIcon,
   XIcon,
 } from 'lucide-react'
 
