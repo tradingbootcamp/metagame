@@ -1,18 +1,12 @@
-import {
-  HydrationBoundary,
-  QueryClient,
-  dehydrate,
-} from '@tanstack/react-query'
-import Link from 'next/link'
 import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
 
-import PlayerCard from '@/components/PlayerCard'
+import TeamGrid from '@/components/sections/team/TeamGrid'
 
 import {
   getCurrentUserFullProfile,
-  getPublicProfilesByTeam,
+  getUsersIdsByTeam,
 } from '@/app/actions/db/users'
 
 export default async function TeamPage() {
@@ -42,41 +36,17 @@ export default async function TeamPage() {
     )
   }
 
-  // Prefetch public profiles for all team members and seed the query cache
-  const queryClient = new QueryClient()
-  const members = await getPublicProfilesByTeam({ team })
-  members.forEach((p) => {
-    queryClient.setQueryData(['users', 'profile', p.id], p)
-  })
-  const shuffledMembers = members.sort(() => Math.random() - 0.5)
-  return (
-    <HydrationBoundary state={dehydrate(queryClient)}>
-      <section className="mb-[40px] pt-10 text-center">
-        <div className="relative container mx-auto">
-          <h2 className="mb-8 text-center text-3xl font-bold">Your Team</h2>
+  const teamMembers = await getUsersIdsByTeam({ team })
+  const memberIds = teamMembers?.map((m) => m.id) || []
 
-          <div className="max-w-8xl mx-auto flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-6">
-            {shuffledMembers?.map((member) => (
-              <div key={member.id} className="relative">
-                <Link
-                  className="absolute inset-0 z-0"
-                  href={`/profile/${member.player_id}`}
-                />
-                <div className="pointer-events-none relative">
-                  <PlayerCard
-                    userId={member.id}
-                    asProfile
-                    tiltFactor={1}
-                    gleamFollowsTilt
-                    showStatBoxes={true}
-                    width={150}
-                  />
-                </div>
-              </div>
-            ))}
-          </div>
+  return (
+    <section className="mb-[40px] pt-10 text-center">
+      <div className="relative container mx-auto">
+        <h2 className="mb-8 text-center text-3xl font-bold">Your Team</h2>
+        <div className="max-w-8xl mx-auto flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-6">
+          <TeamGrid memberIds={memberIds} />
         </div>
-      </section>
-    </HydrationBoundary>
+      </div>
+    </section>
   )
 }
