@@ -47,7 +47,7 @@ export default async function TeamPage() {
   members.forEach((p) => {
     queryClient.setQueryData(['users', 'profile', p.id], p)
   })
-
+  const shuffledMembers = members.sort(() => Math.random() - 0.5)
   return (
     <HydrationBoundary state={dehydrate(queryClient)}>
       <section className="mb-[40px] pt-10 text-center">
@@ -55,7 +55,7 @@ export default async function TeamPage() {
           <h2 className="mb-8 text-center text-3xl font-bold">Your Team</h2>
 
           <div className="max-w-8xl mx-auto flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-6">
-            {members?.map((member) => (
+            {shuffledMembers?.map((member) => (
               <div key={member.id} className="relative">
                 <Link
                   className="absolute inset-0 z-0"
