@@ -98,6 +98,9 @@ export default function Nav() {
               <NavItem href="/schedule" closeMenu={closeMenu}>
                 Schedule
               </NavItem>
+              <NavItem href="/campus" closeMenu={closeMenu}>
+                Map
+              </NavItem>
               <NavItem href="/#sponsors" closeMenu={closeMenu}>
                 Sponsors
               </NavItem>

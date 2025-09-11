@@ -45,7 +45,7 @@ const getEdgeColor = (color: BuildingColor): string => {
   return teamColorToHex(color)
 }
 
-const megagameLocations: MegagameLocation[] = [
+export const megagameLocations: MegagameLocation[] = [
   {
     id: 'A',
     name: 'A',
@@ -153,33 +153,68 @@ const buildingNames = [
   { id: 'F', name: 'F', center: [747, 225] },
 ]
 
-const locations: Location[] = [
+export const locations: Location[] = [
   {
     id: 'thePark',
     name: 'The Park',
     path: 'm 153.64706,314 176.79207,-11.86605 v 100.01422 l 15.34617,-0.22403 31.39117,123.84057 h -33.33333 l -29.82792,0.91096 -28.92568,-0.49026 0.49027,7.84425 h -41.18233 v 12.72677 h -81.27416 -11.09187 z',
     center: [238, 425],
-    description: 'this is desc',
+    description: '',
   },
   {
     id: 'eigenHall',
     name: 'Eigen Hall',
     path: 'M 800.46957,442.34191 800.99844,357.0331 680.5,355.57292 l -0.1875,21.41927 -28.25903,-0.48647 v 43.02797 L 679.9375,419.83073 679.75,441.25 Z',
-    center: [740, 399],
+    center: [730, 402],
     description: '',
   },
   {
     id: 'theClocktower',
     name: 'The Clocktower',
     path: 'm 384.45467,768.65968 -102.17693,-1.94454 1.06066,-126.92567 100.58594,0.35356 z',
-    center: [333, 704],
+    center: [340, 740],
     description: '3rd Floor',
   },
   {
     id: 'playtestingPlaza',
     name: 'Playtesting Plaza',
     path: 'm 330.43913,302.13395 v 100.01422 l 67.16641,-0.98053 2.94159,26.47435 100.99475,-0.49027 1.4708,-86.46839 -103.35521,1.23744 0.17414,-41.47417 z',
-    center: [412, 374],
+    center: [430, 260],
+    description: '1st floor',
+  },
+  {
+    id: 'escapeRoomZone',
+    name: 'Escape Room Zone',
+    path: 'm 605.2834,645.5 h 66.11449 l 0.35355,56.30348 -8.48528,0.35355 v 0 l -0.35355,85.20637 -55.50789,-0.70711 0.35356,-51.61879 6.0104,0.35355 -0.35355,-61.16474 -16.26346,0.35356 0.35356,-29.07987 z',
+    center: [648, 854],
+    description: '2nd floor',
+  },
+  {
+    id: 'theDen',
+    name: 'The Den',
+    path: 'm 683.173030,275.169300 0.257450,-102.465500 25.984080,-7.844300 32.357540,5.883200 74.064970,-0.371300 1.639040,63.759200 -1.428740,53.050200 -25.493820,0.000000 -0.735400,-12.939700 z',
+    center: [640, 145],
+    description: '',
+  },
+  {
+    id: 'theGardens',
+    name: 'The Gardens',
+    path: 'm 736.98204,349.31075 v -57.09887 h 90.86322 v -62.93251 h 135.58773 v 120.03138 z',
+    center: [990, 200],
+    description: '',
+  },
+  {
+    id: 'unconferenceCavern',
+    name: 'Unconference Cavern',
+    path: 'm 318.18248,784.55546 85.30625,0.49027 1.77774,-83.24204 -138.80703,-2.1e-4 v 25.63602 m 51.72304,57.11596 c 0,0 -23.67982,18.31452 -47.06551,-5.63805 -23.52579,-24.09606 -4.65753,-51.47791 -4.65753,-51.47791',
+    center: [340, 854],
+    description: '1st floor',
+  },
+  {
+    id: 'theUtilityRoom',
+    name: 'The Utility Room',
+    path: 'M 794.84337,596.41598 671.75144,599.5 l -0.22011,67.25 125.88594,-0.22602 z',
+    center: [750, 560],
     description: '',
   },
 ]
@@ -375,6 +410,8 @@ interface CampusMapProps {
   showMegagameElements?: boolean
   showMegagameColor?: boolean
   textScale?: number
+  cropped?: boolean
+  disableInteractions?: boolean
 }
 
 export default function CampusMap({
@@ -388,8 +425,9 @@ export default function CampusMap({
   showMegagameElements = true,
   showMegagameColor = true,
   textScale = 1,
+  cropped = false,
+  disableInteractions = false,
 }: CampusMapProps = {}) {
-  const [selectedBuilding, setSelectedBuilding] = useState<string | null>(null)
   const [edgePositions, setEdgePositions] = useState(edges)
   const [dragState, setDragState] = useState<{
     edgeIndex: number
@@ -546,9 +584,23 @@ export default function CampusMap({
   }
 
   return (
-    <div className="w-full max-w-6xl mx-auto">
-      <div className="relative w-full max-w-4xl mx-auto">
-        <div className="relative w-full aspect-square overflow-hidden">
+    <div className="mx-auto w-full max-w-6xl">
+      <div
+        className={`relative mx-auto w-full max-w-4xl overflow-hidden ${cropped ? 'aspect-[100/94]' : ''}`}
+        style={cropped ? { height: '30%' } : {}}
+      >
+        <div
+          className="relative aspect-square w-full"
+          style={
+            cropped
+              ? {
+                  marginTop: '-8%',
+                  marginLeft: '-13%',
+                  width: '123%',
+                }
+              : {}
+          }
+        >
           <Image
             src="/images/lighthaven.png"
             alt="Lighthaven Campus"
@@ -559,12 +611,12 @@ export default function CampusMap({
 
           <svg
             viewBox="0 0 1263 1291"
-            className="absolute inset-0 w-full h-full pointer-events-auto"
+            className="pointer-events-auto absolute inset-0 h-full w-full"
             preserveAspectRatio="xMidYMid meet"
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUp}
-            onMouseLeave={handleMouseUp}
-            onClick={handleSvgClick}
+            onMouseMove={disableInteractions ? undefined : handleMouseMove}
+            onMouseUp={disableInteractions ? undefined : handleMouseUp}
+            onMouseLeave={disableInteractions ? undefined : handleMouseUp}
+            onClick={disableInteractions ? undefined : handleSvgClick}
           >
             <defs>
               {/* Create a mask that excludes building areas */}
@@ -666,10 +718,14 @@ export default function CampusMap({
                         strokeWidth="15"
                         strokeLinecap="round"
                         className="cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleEdgeColor(index, 'from')
-                        }}
+                        onClick={
+                          disableInteractions
+                            ? undefined
+                            : (e) => {
+                                e.stopPropagation()
+                                toggleEdgeColor(index, 'from')
+                              }
+                        }
                       />
 
                       {/* Clickable area for "to" half */}
@@ -682,10 +738,14 @@ export default function CampusMap({
                         strokeWidth="15"
                         strokeLinecap="round"
                         className="cursor-pointer"
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          toggleEdgeColor(index, 'to')
-                        }}
+                        onClick={
+                          disableInteractions
+                            ? undefined
+                            : (e) => {
+                                e.stopPropagation()
+                                toggleEdgeColor(index, 'to')
+                              }
+                        }
                       />
 
                       {/* Center image */}
@@ -710,22 +770,17 @@ export default function CampusMap({
                   <g
                     key={megagameLocation.id}
                     className="group cursor-pointer"
-                    onClick={() => {
-                      toggleBuildingColor(megagameLocation.id)
-                      setSelectedBuilding(
-                        selectedBuilding === megagameLocation.id
-                          ? null
-                          : megagameLocation.id,
-                      )
-                    }}
+                    onClick={
+                      disableInteractions
+                        ? undefined
+                        : () => {
+                            toggleBuildingColor(megagameLocation.id)
+                          }
+                    }
                   >
                     <path
                       d={megagameLocation.path}
-                      className={`${getBuildingColorClasses(getBuildingDisplayColor(megagameLocation.id))} transition-all duration-200 ${
-                        selectedBuilding === megagameLocation.id
-                          ? 'drop-shadow-lg'
-                          : ''
-                      }`}
+                      className={`${getBuildingColorClasses(getBuildingDisplayColor(megagameLocation.id))} transition-all duration-200`}
                       style={{
                         transformOrigin: 'center',
                         stroke: 'white',
@@ -735,6 +790,15 @@ export default function CampusMap({
                       }}
                     />
                     <title>{megagameLocation.name}</title>
+                    {megagameLocation.name == 'A' && (
+                      <Image
+                        src="/images/building/A_test.svg"
+                        alt="Lighthaven Campus"
+                        fill
+                        className="object-contain"
+                        priority
+                      />
+                    )}
                   </g>
                 ))}
               </g>
@@ -799,7 +863,7 @@ export default function CampusMap({
                     <g key={location.id}>
                       <path
                         d={location.path}
-                        className="fill-green-500/70 hover:fill-green-600/90 transition-all duration-200"
+                        className="fill-green-500/70 transition-all duration-200 hover:fill-green-600/90"
                         style={{
                           transformOrigin: 'center',
                           stroke: 'white',
@@ -815,7 +879,7 @@ export default function CampusMap({
                           y={
                             location.center[1] -
                             (showLocationDescription && location.description
-                              ? 10
+                              ? 30
                               : 0)
                           }
                           textAnchor="middle"
@@ -835,7 +899,7 @@ export default function CampusMap({
                       {showLocationDescription && location.description && (
                         <text
                           x={location.center[0]}
-                          y={location.center[1] + (showLocationNames ? 10 : 0)}
+                          y={location.center[1] + (showLocationNames ? 20 : 0)}
                           textAnchor="middle"
                           dominantBaseline="middle"
                           fill="white"
@@ -875,7 +939,7 @@ export default function CampusMap({
                 dominantBaseline="middle"
                 fill="white"
                 style={{
-                  fontSize: `${32 * textScale}px`,
+                  fontSize: `${28 * textScale}px`,
                   fontWeight: 'bold',
                   filter:
                     'drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
@@ -900,7 +964,11 @@ export default function CampusMap({
                       stroke="white"
                       strokeWidth="2"
                       className="cursor-move hover:fill-red-600"
-                      onMouseDown={(e) => handleMouseDown(e, index, 'from')}
+                      onMouseDown={
+                        disableInteractions
+                          ? undefined
+                          : (e) => handleMouseDown(e, index, 'from')
+                      }
                     />
                     {/* To endpoint */}
                     <circle
@@ -912,7 +980,11 @@ export default function CampusMap({
                       stroke="white"
                       strokeWidth="2"
                       className="cursor-move hover:fill-blue-600"
-                      onMouseDown={(e) => handleMouseDown(e, index, 'to')}
+                      onMouseDown={
+                        disableInteractions
+                          ? undefined
+                          : (e) => handleMouseDown(e, index, 'to')
+                      }
                     />
                   </g>
                 ))}
@@ -921,17 +993,6 @@ export default function CampusMap({
           </svg>
         </div>
       </div>
-
-      {selectedBuilding && (
-        <div className="mt-6 p-4 bg-white rounded-lg shadow-md border">
-          <h3 className="text-xl font-semibold mb-2">
-            {megagameLocations.find((b) => b.id === selectedBuilding)?.name}
-          </h3>
-          <p className="text-gray-600">
-            Click on a building to see more information about it.
-          </p>
-        </div>
-      )}
     </div>
   )
 }
