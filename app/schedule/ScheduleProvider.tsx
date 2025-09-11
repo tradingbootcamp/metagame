@@ -35,7 +35,7 @@ export default async function ScheduleProvider({
   const userPrefetchQueries = [
     () =>
       queryClient.prefetchQuery({
-        queryKey: ['users', 'profile', 'current'],
+        queryKey: ['users', 'profile', user?.id ?? null],
         queryFn: () => getCurrentUserFullProfile(),
       }),
     () =>

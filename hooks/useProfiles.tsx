@@ -54,7 +54,7 @@ export const usePublicProfiles = ({
   const idsKey = useMemo(() => ids.join(','), [ids]) // 'id1, id2, id3
 
   const query = useQuery({
-    queryKey: ['users', 'profiles', idsKey],
+    queryKey: ['users', 'profiles', idsKey, 'public'],
     enabled: ids.length > 0,
     queryFn: async () => {
       const profiles: DbPublicProfile[] = includeFullProfiles
@@ -65,7 +65,10 @@ export const usePublicProfiles = ({
       profiles.forEach((p, i) => {
         const id = ids[i]
         if (p && id) {
-          qc.setQueryData<DbPublicProfile>(['users', 'profile', id], p)
+          qc.setQueryData<DbPublicProfile>(
+            ['users', 'profile', id, 'public'],
+            p,
+          )
         }
       })
 
@@ -85,7 +88,7 @@ export const usePublicProfiles = ({
 
 export const usePublicProfile = (userId: string | null | undefined) => {
   return useQuery<DbPublicProfile | null>({
-    queryKey: ['users', 'profile', userId],
+    queryKey: ['users', 'profile', userId, 'public'],
     enabled: !!userId,
     queryFn: async () => fetchPublicProfile(userId!),
   })
