@@ -31,7 +31,7 @@ export const HostListLinks = ({
               {hostName}
             </Link>
           )
-        })}
+        }).join(', '}
     </div>
   )
 }
