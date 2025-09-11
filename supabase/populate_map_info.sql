@@ -73,13 +73,13 @@ WHERE "name" = 'The Gardens';
 
 UPDATE "public"."locations" 
 SET "map_info" = '{
-  "id": "unconferenceCavern",
-  "name": "Unconference Cavern",
+  "id": "mindMansion",
+  "name": "Mind Mansion",
   "path": "m 318.18248,784.55546 85.30625,0.49027 1.77774,-83.24204 -138.80703,-2.1e-4 v 25.63602 m 51.72304,57.11596 c 0,0 -23.67982,18.31452 -47.06551,-5.63805 -23.52579,-24.09606 -4.65753,-51.47791 -4.65753,-51.47791",
   "center": [340, 854],
   "description": "1st floor"
 }'::jsonb
-WHERE "name" = 'Unconference Cavern';
+WHERE "name" = 'Mind Mansion';
 
 UPDATE "public"."locations" 
 SET "map_info" = '{
