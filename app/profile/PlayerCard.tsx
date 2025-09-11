@@ -254,8 +254,8 @@ export default function PlayerCard({
           <strong className="flex items-center justify-start gap-1">
             {playerNameLength > oneLineNameLengthLimit ? (
               <div className="flex grow-0 flex-col" id="namecol">
-                <span>{profile.first_name}</span>
-                <span>{profile.last_name}</span>
+                <span>{profile.first_name || ""}</span>
+                <span>{profile.last_name || ""}</span>
               </div>
             ) : (
               <span className="grow-0" id="namesing">
