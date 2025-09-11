@@ -1,5 +1,6 @@
+import PlayerCard from '@/components/PlayerCard'
+
 import { getUserPublicProfileByPlayerId } from '@/app/actions/db/users'
-import PlayerCard from '@/app/profile/PlayerCard'
 
 export default async function ProfilePage({
   params,

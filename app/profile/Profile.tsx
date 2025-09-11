@@ -19,6 +19,7 @@ import { downscaleAndUploadImage } from '@/lib/utils'
 
 import { URLS } from '@/utils/urls'
 
+import PlayerCard from '@/components/PlayerCard'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
@@ -34,7 +35,6 @@ import {
   deleteCurrentUserProfilePicture,
   updateCurrentUserProfile,
 } from '@/app/actions/db/users'
-import PlayerCard from '@/app/profile/PlayerCard'
 import { ProfileInfoModal } from '@/app/profile/ProfileInfoModal'
 import { useProfileUpdate } from '@/app/profile/hooks/useProfileUpdate'
 

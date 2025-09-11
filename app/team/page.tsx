@@ -8,11 +8,12 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/utils/supabase/server'
 
+import PlayerCard from '@/components/PlayerCard'
+
 import {
   getCurrentUserFullProfile,
   getPublicProfilesByTeam,
 } from '@/app/actions/db/users'
-import PlayerCard from '@/app/profile/PlayerCard'
 
 export default async function TeamPage() {
   // Ensure the user is logged in; otherwise, send to login
