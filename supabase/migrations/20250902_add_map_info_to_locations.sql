@@ -1,13 +1,13 @@
--- Add optional map_name column to locations table
+-- Add optional map_info JSON column to locations table
 DO $$ BEGIN
-    ALTER TABLE "public"."locations" ADD COLUMN "map_name" text;
+    ALTER TABLE "public"."locations" ADD COLUMN "map_info" jsonb;
 EXCEPTION
     WHEN duplicate_column THEN null;
 END $$;
 
-COMMENT ON COLUMN "public"."locations"."map_name" IS 'Optional name identifier for the location on map displays';
+COMMENT ON COLUMN "public"."locations"."map_info" IS 'JSON data containing map display information including id, name, path, center coordinates, and description';
 
--- Recreate sessions_view to include map_name
+-- Recreate sessions_view to include map_info
 DROP VIEW IF EXISTS "public"."sessions_view";
 
 CREATE VIEW "public"."sessions_view" WITH ("security_invoker"='on') AS
@@ -35,7 +35,7 @@ CREATE VIEW "public"."sessions_view" WITH ("security_invoker"='on') AS
     "p3"."last_name" AS "host_3_last_name",
     "p3"."email" AS "host_3_email",
     "l"."name" AS "location_name",
-    "l"."map_name" AS "location_map_name",
+    "l"."map_info" AS "location_map_info",
     "count"("sr"."session_id") AS "rsvp_count"
    FROM ((((("public"."sessions" "s"
      LEFT JOIN "public"."profiles" "p1" ON (("p1"."id" = "s"."host_1_id")))
@@ -43,4 +43,4 @@ CREATE VIEW "public"."sessions_view" WITH ("security_invoker"='on') AS
      LEFT JOIN "public"."profiles" "p3" ON (("p3"."id" = "s"."host_3_id")))
      LEFT JOIN "public"."locations" "l" ON (("l"."id" = "s"."location_id")))
      LEFT JOIN "public"."session_rsvps" "sr" ON (("sr"."session_id" = "s"."id")))
-  GROUP BY "s"."id", "p1"."first_name", "p1"."last_name", "p1"."email", "p2"."first_name", "p2"."last_name", "p2"."email", "p3"."first_name", "p3"."last_name", "p3"."email", "l"."name", "l"."map_name";
+  GROUP BY "s"."id", "p1"."first_name", "p1"."last_name", "p1"."email", "p2"."first_name", "p2"."last_name", "p2"."email", "p3"."first_name", "p3"."last_name", "p3"."email", "l"."name", "l"."map_info";

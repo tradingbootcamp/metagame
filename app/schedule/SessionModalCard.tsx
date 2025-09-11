@@ -304,11 +304,11 @@ export default function SessionDetailsCard({
         </div>
 
         {/* Campus Map */}
-        {session.location?.map_name && (
+        {session.location?.map_info && (
           <div className="space-y-2">
             <div className="relative">
               <CampusMap
-                highlightLocation={session.location?.map_name || undefined}
+                highlightLocation={session.location?.id || undefined}
                 showBuildingNames={true}
                 showLocationNames={true}
                 showLocationDescription={true}
@@ -386,7 +386,7 @@ export default function SessionDetailsCard({
                 }
               >
                 <CampusMap
-                  highlightLocation={session.location?.map_name || undefined}
+                  highlightLocation={session.location?.id || undefined}
                   showBuildingNames={true}
                   showLocationNames={true}
                   showLocationDescription={true}

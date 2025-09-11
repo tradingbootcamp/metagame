@@ -1,12 +1,17 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 
 import Image from 'next/image'
 
-import { TEAM_COLORS_ENUM, teamColorToHex } from '@/utils/dbUtils'
+import {
+  TEAM_COLORS_ENUM,
+  teamColorToBadgeClass,
+  teamColorToHex,
+} from '@/utils/dbUtils'
 
-import { DbTeamColor } from '@/types/database/dbTypeAliases'
+import { useLocations } from '@/hooks/useLocations'
+import { DbLocation, DbTeamColor } from '@/types/database/dbTypeAliases'
 
 type BuildingColor = DbTeamColor
 
@@ -27,18 +32,18 @@ interface Location {
   description: string
 }
 
+interface MapInfo {
+  id: string
+  name: string
+  path: string
+  center: [number, number]
+  description: string
+}
+
 const getBuildingColorClasses = (color: BuildingColor): string => {
-  switch (color) {
-    case 'orange':
-      return 'fill-orange-500/70 hover:fill-orange-600/90'
-    case 'purple':
-      return 'fill-purple-500/70 hover:fill-purple-600/90'
-    case 'green':
-      return 'fill-green-500/70 hover:fill-green-600/90'
-    case 'unassigned':
-    default:
-      return 'fill-gray-500/30 hover:fill-gray-600/40'
-  }
+  const baseClass = teamColorToBadgeClass(color).replace('bg-', 'fill-')
+  const opacity = color === 'unassigned' ? '/30' : '/70'
+  return `${baseClass}${opacity}`
 }
 
 const getEdgeColor = (color: BuildingColor): string => {
@@ -151,72 +156,6 @@ const buildingNames = [
   { id: 'D', name: 'D', center: [565, 426] },
   { id: 'E', name: 'E', center: [861, 425] },
   { id: 'F', name: 'F', center: [747, 225] },
-]
-
-export const locations: Location[] = [
-  {
-    id: 'thePark',
-    name: 'The Park',
-    path: 'm 153.64706,314 176.79207,-11.86605 v 100.01422 l 15.34617,-0.22403 31.39117,123.84057 h -33.33333 l -29.82792,0.91096 -28.92568,-0.49026 0.49027,7.84425 h -41.18233 v 12.72677 h -81.27416 -11.09187 z',
-    center: [238, 425],
-    description: '',
-  },
-  {
-    id: 'eigenHall',
-    name: 'Eigen Hall',
-    path: 'M 800.46957,442.34191 800.99844,357.0331 680.5,355.57292 l -0.1875,21.41927 -28.25903,-0.48647 v 43.02797 L 679.9375,419.83073 679.75,441.25 Z',
-    center: [730, 402],
-    description: '',
-  },
-  {
-    id: 'theClocktower',
-    name: 'The Clocktower',
-    path: 'm 384.45467,768.65968 -102.17693,-1.94454 1.06066,-126.92567 100.58594,0.35356 z',
-    center: [340, 740],
-    description: '3rd Floor',
-  },
-  {
-    id: 'playtestingPlaza',
-    name: 'Playtesting Plaza',
-    path: 'm 330.43913,302.13395 v 100.01422 l 67.16641,-0.98053 2.94159,26.47435 100.99475,-0.49027 1.4708,-86.46839 -103.35521,1.23744 0.17414,-41.47417 z',
-    center: [430, 260],
-    description: '1st floor',
-  },
-  {
-    id: 'escapeRoomZone',
-    name: 'Escape Room Zone',
-    path: 'm 605.2834,645.5 h 66.11449 l 0.35355,56.30348 -8.48528,0.35355 v 0 l -0.35355,85.20637 -55.50789,-0.70711 0.35356,-51.61879 6.0104,0.35355 -0.35355,-61.16474 -16.26346,0.35356 0.35356,-29.07987 z',
-    center: [648, 854],
-    description: '2nd floor',
-  },
-  {
-    id: 'theDen',
-    name: 'The Den',
-    path: 'm 683.173030,275.169300 0.257450,-102.465500 25.984080,-7.844300 32.357540,5.883200 74.064970,-0.371300 1.639040,63.759200 -1.428740,53.050200 -25.493820,0.000000 -0.735400,-12.939700 z',
-    center: [640, 145],
-    description: '',
-  },
-  {
-    id: 'theGardens',
-    name: 'The Gardens',
-    path: 'm 736.98204,349.31075 v -57.09887 h 90.86322 v -62.93251 h 135.58773 v 120.03138 z',
-    center: [990, 200],
-    description: '',
-  },
-  {
-    id: 'unconferenceCavern',
-    name: 'Unconference Cavern',
-    path: 'm 318.18248,784.55546 85.30625,0.49027 1.77774,-83.24204 -138.80703,-2.1e-4 v 25.63602 m 51.72304,57.11596 c 0,0 -23.67982,18.31452 -47.06551,-5.63805 -23.52579,-24.09606 -4.65753,-51.47791 -4.65753,-51.47791',
-    center: [340, 854],
-    description: '1st floor',
-  },
-  {
-    id: 'theUtilityRoom',
-    name: 'The Utility Room',
-    path: 'M 794.84337,596.41598 671.75144,599.5 l -0.22011,67.25 125.88594,-0.22602 z',
-    center: [750, 560],
-    description: '',
-  },
 ]
 
 interface Edge {
@@ -412,6 +351,7 @@ interface CampusMapProps {
   textScale?: number
   cropped?: boolean
   disableInteractions?: boolean
+  onLocationsLoaded?: (locations: Location[]) => void
 }
 
 export default function CampusMap({
@@ -427,6 +367,7 @@ export default function CampusMap({
   textScale = 1,
   cropped = false,
   disableInteractions = false,
+  onLocationsLoaded,
 }: CampusMapProps = {}) {
   const [edgePositions, setEdgePositions] = useState(edges)
   const [dragState, setDragState] = useState<{
@@ -446,8 +387,63 @@ export default function CampusMap({
       {},
     ),
   )
+  // Try to use prefetched locations if available, otherwise manage our own state
+  let dbLocations: DbLocation[] = []
+  let usesPrefetchedData = false
+
+  try {
+    const locationsContext = useLocations()
+    dbLocations = locationsContext.locations
+    usesPrefetchedData = true
+  } catch {
+    // useLocations hook not available, we'll fetch our own data
+  }
+
+  const [selfFetchedLocations, setSelfFetchedLocations] = useState<
+    DbLocation[]
+  >([])
+  //const [dbLocationsMapped, setDbLocationsMapped] = useState<Location[]>([])
 
   const cycleColors: BuildingColor[] = TEAM_COLORS_ENUM
+
+  // Fetch locations ourselves if not using prefetched data
+  useEffect(() => {
+    if (!usesPrefetchedData) {
+      const fetchLocations = async () => {
+        try {
+          const response = await fetch('/api/queries/locations')
+          const locations = await response.json()
+          setSelfFetchedLocations(locations)
+        } catch (error) {
+          console.error('Error fetching locations:', error)
+          setSelfFetchedLocations([])
+        }
+      }
+      fetchLocations()
+    }
+  }, [usesPrefetchedData])
+
+  // Use prefetched locations or self-fetched locations
+  const effectiveDbLocations = usesPrefetchedData
+    ? dbLocations
+    : selfFetchedLocations
+
+  // Map database locations to Location format using map_info when locations change
+  useEffect(() => {
+    const mappedLocations: Location[] = effectiveDbLocations
+      .filter((loc: DbLocation) => loc.map_info)
+      .map((loc: DbLocation) => {
+        const mapInfo = loc.map_info as MapInfo
+        return {
+          id: mapInfo.id || loc.id,
+          name: mapInfo.name || loc.name,
+          path: mapInfo.path || '',
+          center: mapInfo.center || [0, 0],
+          description: mapInfo.description || '',
+        }
+      })
+    onLocationsLoaded?.(mappedLocations)
+  }, [effectiveDbLocations, onLocationsLoaded])
 
   const getBuildingDisplayColor = (buildingId: string): BuildingColor => {
     if (highlightBuilding) {
@@ -857,65 +853,81 @@ export default function CampusMap({
             {/* Locations layer - renders on top of buildings */}
             {highlightLocation && (
               <g className="locations-layer">
-                {locations
-                  .filter((location) => location.id === highlightLocation)
-                  .map((location) => (
-                    <g key={location.id}>
-                      <path
-                        d={location.path}
-                        className="fill-green-500/70 transition-all duration-200 hover:fill-green-600/90"
-                        style={{
-                          transformOrigin: 'center',
-                          stroke: 'white',
-                          strokeWidth: '3',
-                          strokeLinejoin: 'round',
-                          strokeLinecap: 'round',
-                        }}
-                      />
-                      <title>{location.name}</title>
-                      {showLocationNames && (
-                        <text
-                          x={location.center[0]}
-                          y={
-                            location.center[1] -
-                            (showLocationDescription && location.description
-                              ? 30
-                              : 0)
-                          }
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
+                {effectiveDbLocations
+                  .filter(
+                    (dbLocation) =>
+                      dbLocation.id === highlightLocation &&
+                      dbLocation.map_info,
+                  )
+                  .map((dbLocation) => {
+                    const mapInfo = dbLocation.map_info as MapInfo
+                    const location = {
+                      id: mapInfo.id || dbLocation.id,
+                      name: mapInfo.name || dbLocation.name,
+                      path: mapInfo.path || '',
+                      center: mapInfo.center || [0, 0],
+                      description: mapInfo.description || '',
+                    }
+                    return (
+                      <g key={dbLocation.id}>
+                        <path
+                          d={location.path}
+                          className="fill-green-500/70 transition-all duration-200 hover:fill-green-600/90"
                           style={{
-                            fontSize: `${20 * textScale}px`,
-                            fontWeight: 'bold',
-                            pointerEvents: 'none',
-                            filter:
-                              'drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
+                            transformOrigin: 'center',
+                            stroke: 'white',
+                            strokeWidth: '3',
+                            strokeLinejoin: 'round',
+                            strokeLinecap: 'round',
                           }}
-                        >
-                          {location.name}
-                        </text>
-                      )}
-                      {showLocationDescription && location.description && (
-                        <text
-                          x={location.center[0]}
-                          y={location.center[1] + (showLocationNames ? 20 : 0)}
-                          textAnchor="middle"
-                          dominantBaseline="middle"
-                          fill="white"
-                          style={{
-                            fontSize: `${17 * textScale}px`,
-                            fontWeight: 'bold',
-                            pointerEvents: 'none',
-                            filter:
-                              'drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
-                          }}
-                        >
-                          {location.description}
-                        </text>
-                      )}
-                    </g>
-                  ))}
+                        />
+                        <title>{location.name}</title>
+                        {showLocationNames && (
+                          <text
+                            x={location.center[0]}
+                            y={
+                              location.center[1] -
+                              (showLocationDescription && location.description
+                                ? 30
+                                : 0)
+                            }
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            style={{
+                              fontSize: `${20 * textScale}px`,
+                              fontWeight: 'bold',
+                              pointerEvents: 'none',
+                              filter:
+                                'drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
+                            }}
+                          >
+                            {location.name}
+                          </text>
+                        )}
+                        {showLocationDescription && location.description && (
+                          <text
+                            x={location.center[0]}
+                            y={
+                              location.center[1] + (showLocationNames ? 20 : 0)
+                            }
+                            textAnchor="middle"
+                            dominantBaseline="middle"
+                            fill="white"
+                            style={{
+                              fontSize: `${17 * textScale}px`,
+                              fontWeight: 'bold',
+                              pointerEvents: 'none',
+                              filter:
+                                'drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
+                            }}
+                          >
+                            {location.description}
+                          </text>
+                        )}
+                      </g>
+                    )
+                  })}
               </g>
             )}
 
