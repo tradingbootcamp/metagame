@@ -10,9 +10,9 @@ export type DbSessionInsert = TablesInsert<'sessions'>
 export type DbSessionUpdate = TablesUpdate<'sessions'>
 
 export type DbFullSession = Tables<'sessions'> & {
-  host_1: Pick<DbPublicProfile, 'first_name' | 'last_name'> | null
-  host_2: Pick<DbPublicProfile, 'first_name' | 'last_name'> | null
-  host_3: Pick<DbPublicProfile, 'first_name' | 'last_name'> | null
+  host_1: Pick<DbPublicProfile, 'first_name' | 'last_name' | 'id'> | null
+  host_2: Pick<DbPublicProfile, 'first_name' | 'last_name' | 'id'> | null
+  host_3: Pick<DbPublicProfile, 'first_name' | 'last_name' | 'id'> | null
   bookmarks: Pick<DbSessionBookmark, 'user_id'>[]
   rsvps: (DbSessionRsvp & {
     user: Pick<DbPublicProfile, 'id' | 'team' | 'first_name' | 'last_name'>

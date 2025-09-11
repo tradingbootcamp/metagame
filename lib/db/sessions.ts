@@ -10,14 +10,17 @@ import {
 const sessionsSelectIncludes = `
 *,
 host_1:profiles!sessions_host_1_id_fkey (
+  id,
   first_name,
   last_name
 ),
 host_2:profiles!sessions_host_2_id_fkey (
+  id,
   first_name,
   last_name
 ),
 host_3:profiles!sessions_host_3_id_fkey (
+  id,
   first_name,
   last_name
 ),
