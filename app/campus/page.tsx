@@ -1,39 +1,29 @@
 'use client'
 
-import { useState } from 'react'
-
-import CampusMap from './components/CampusMap'
+//import { useState } from 'react'
+import CampusMap /*, { locations, megagameLocations }*/ from './components/CampusMap'
 
 export default function CampusPage() {
-  const [showMegagameNames, setShowMegagameNames] = useState(false)
-  const [showBuildingNames, setShowBuildingNames] = useState(false)
+  /*const [showMegagameNames, setShowMegagameNames] = useState(false)
+  const [showBuildingNames, setShowBuildingNames] = useState(true)
   const [showLocationNames, setShowLocationNames] = useState(false)
   const [showLocationDescription, setShowLocationDescription] = useState(false)
   const [highlightBuilding, setHighlightBuilding] = useState('')
   const [highlightLocation, setHighlightLocation] = useState('')
-  const [showMegagame, setShowMegagame] = useState(true)
+  const [showMegagame, setShowMegagame] = useState(false)
   const [showMegagameElements, setShowMegagameElements] = useState(true)
   const [showMegagameColor, setShowMegagameColor] = useState(true)
-  const [textScale, setTextScale] = useState(1)
-
-  const buildings = ['A', 'B', 'C', 'D', 'E', 'F']
-  const locations = [
-    { id: 'thePark', name: 'The Park' },
-    { id: 'eigenHall', name: 'Eigen Hall' },
-    { id: 'theClocktower', name: 'The Clocktower' },
-    { id: 'playtestingPlaza', name: 'Playtesting Plaza' },
-  ]
+  const [textScale, setTextScale] = useState(2)*/
 
   return (
     <div className="min-h-screen p-4">
-      <h1 className="text-4xl font-bold mb-8 text-center">Campus Map</h1>
+      <h1 className="mb-8 text-center text-4xl font-bold">Lighthaven Campus</h1>
 
-      <div className="max-w-6xl mx-auto mb-6 p-4 bg-white rounded-lg shadow border border-gray-300">
+      {/*<div className="max-w-6xl mx-auto mb-6 p-4 bg-white rounded-lg shadow border border-gray-300">
         <h2 className="text-lg font-semibold mb-4 text-gray-900">
           Map Controls
         </h2>
         <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
-          {/* Megagame Controls */}
           <div className="flex items-center space-x-2">
             <input
               type="checkbox"
@@ -128,9 +118,9 @@ export default function CampusPage() {
               className="px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500 text-gray-900 bg-white"
             >
               <option value="">None</option>
-              {buildings.map((building) => (
-                <option key={building} value={building}>
-                  Building {building}
+              {megagameLocations.map((megagameLocation) => (
+                <option key={megagameLocation.id} value={megagameLocation.id}>
+                  Building {megagameLocation.name}
                 </option>
               ))}
             </select>
@@ -225,6 +215,16 @@ export default function CampusPage() {
         showMegagameElements={showMegagameElements}
         showMegagameColor={showMegagameColor}
         textScale={textScale}
+      />*/}
+      <CampusMap
+        showMegagameNames={false}
+        showBuildingNames={true}
+        showLocationNames={false}
+        showLocationDescription={false}
+        showMegagame={false}
+        showMegagameElements={false}
+        showMegagameColor={false}
+        textScale={2.0}
       />
     </div>
   )

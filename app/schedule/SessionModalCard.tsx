@@ -1,12 +1,23 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { createPortal } from 'react-dom'
 
 import { AddEventModal } from './EditEventModal'
 import { HostListLinks } from './HostListLinks'
 import { AttendanceDisplay } from './RSVPList'
-import { sessionLink } from './scheduleUtils'
-import { CheckIcon, EditIcon, LinkIcon, StarIcon } from 'lucide-react'
+import { gCalLinkFromSession, sessionLink } from './scheduleUtils'
+import {
+  AppleIcon,
+  CalendarIcon,
+  CheckIcon,
+  EditIcon,
+  ExpandIcon,
+  LinkIcon,
+  StarIcon,
+  UserIcon,
+  XIcon,
+} from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
 import { SESSION_AGES } from '@/utils/dbUtils'
@@ -14,6 +25,9 @@ import { SESSION_AGES } from '@/utils/dbUtils'
 import AddToCalendar from '@/components/AddToCalendar'
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
+import { buttonVariants } from '@/components/ui/button'
+
+import CampusMap from '@/app/campus/components/CampusMap'
 
 import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
 import { useUser } from '@/hooks/useUser'
@@ -32,6 +46,63 @@ export default function SessionDetailsCard({
   const [showCopiedMessage, setShowCopiedMessage] = useState(false)
   const [copyError, setCopyError] = useState(false)
   const [showEditModal, setShowEditModal] = useState(false)
+  const [showExpandedMap, setShowExpandedMap] = useState(false)
+  const [mounted, setMounted] = useState(false)
+  const [mapTransform, setMapTransform] = useState({ scale: 1, x: 0, y: 0 })
+  const [isDragging, setIsDragging] = useState(false)
+  const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
+  const [isDesktop, setIsDesktop] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+    // Check if device is desktop (has mouse)
+    setIsDesktop(
+      window.matchMedia('(hover: hover) and (pointer: fine)').matches,
+    )
+  }, [])
+
+  const handleWheel = (e: React.WheelEvent) => {
+    if (!isDesktop) return
+    e.preventDefault()
+    const delta = e.deltaY > 0 ? 0.9 : 1.1
+
+    setMapTransform((prev) => {
+      const newScale = Math.min(Math.max(prev.scale * delta, 0.8), 3)
+      return {
+        ...prev,
+        scale: newScale,
+      }
+    })
+  }
+
+  const handleMouseDown = (e: React.MouseEvent) => {
+    if (!isDesktop) return
+    e.preventDefault()
+    setIsDragging(true)
+    setDragStart({
+      x: e.clientX - mapTransform.x,
+      y: e.clientY - mapTransform.y,
+    })
+  }
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!isDesktop || !isDragging) return
+    e.preventDefault()
+    setMapTransform((prev) => ({
+      ...prev,
+      x: e.clientX - dragStart.x,
+      y: e.clientY - dragStart.y,
+    }))
+  }
+
+  const handleMouseUp = () => {
+    if (!isDesktop) return
+    setIsDragging(false)
+  }
+
+  const resetMapTransform = () => {
+    setMapTransform({ scale: 1, x: 0, y: 0 })
+  }
 
   // Use the comprehensive schedule hook
   const {
@@ -192,7 +263,11 @@ export default function SessionDetailsCard({
         {/* Location and Attendance */}
         <div className="flex w-full justify-between gap-1">
           <div className="text-secondary-300">
-            📍 {session.location?.name || 'TBD'}
+            This event is located at:{' '}
+            <span className="font-bold">
+              {' '}
+              {session.location?.name || 'TBD'}
+            </span>
           </div>
           {session.max_capacity && (
             <div className="text-secondary-300">
@@ -227,6 +302,32 @@ export default function SessionDetailsCard({
             </div>
           )}
         </div>
+
+        {/* Campus Map */}
+        {session.location?.map_name && (
+          <div className="space-y-2">
+            <div className="relative">
+              <CampusMap
+                highlightLocation={session.location?.map_name || undefined}
+                showBuildingNames={true}
+                showLocationNames={true}
+                showLocationDescription={true}
+                showMegagame={false}
+                showMegagameElements={false}
+                showMegagameColor={false}
+                cropped={true}
+                textScale={1.7}
+              />
+              <button
+                onClick={() => setShowExpandedMap(true)}
+                className="absolute top-2 right-2 rounded-md bg-dark-500/80 p-2 transition-colors hover:bg-dark-400/90"
+                title="Expand map"
+              >
+                <ExpandIcon className="size-4 text-secondary-300" />
+              </button>
+            </div>
+          </div>
+        )}
       </div>
 
       {/* Edit Modal */}
@@ -236,6 +337,71 @@ export default function SessionDetailsCard({
         existingSessionId={session.id}
         canEdit={canEdit}
       />
+
+      {/* Expanded Map Modal - rendered via portal to cover entire screen */}
+      {mounted &&
+        showExpandedMap &&
+        createPortal(
+          <div
+            className={`fixed inset-0 z-[9999] flex items-center justify-center bg-black/90 backdrop-blur-md ${isDesktop ? 'cursor-grab active:cursor-grabbing' : ''}`}
+            onWheel={isDesktop ? handleWheel : undefined}
+            onMouseDown={isDesktop ? handleMouseDown : undefined}
+            onMouseMove={isDesktop ? handleMouseMove : undefined}
+            onMouseUp={isDesktop ? handleMouseUp : undefined}
+            onMouseLeave={isDesktop ? handleMouseUp : undefined}
+          >
+            <div
+              className={`relative h-full w-full bg-dark-700 ${isDesktop ? 'overflow-hidden' : 'overflow-auto'}`}
+            >
+              <button
+                onClick={() => setShowExpandedMap(false)}
+                className="absolute top-6 right-6 z-10 rounded-md bg-dark-500/90 p-3 shadow-lg transition-colors hover:bg-dark-400"
+                title="Close expanded map"
+              >
+                <XIcon className="size-6 text-white" />
+              </button>
+
+              {isDesktop && (
+                <button
+                  onClick={resetMapTransform}
+                  className="absolute top-6 left-6 z-10 rounded-md bg-dark-500/90 p-3 text-sm text-white shadow-lg transition-colors hover:bg-dark-400"
+                  title="Reset zoom and position"
+                >
+                  Reset View
+                </button>
+              )}
+
+              <div
+                className="flex h-full w-full items-center justify-center p-6"
+                style={
+                  isDesktop
+                    ? {
+                        transform: `translate(${mapTransform.x}px, ${mapTransform.y}px) scale(${mapTransform.scale})`,
+                        transformOrigin: 'center center',
+                        transition: isDragging
+                          ? 'none'
+                          : 'transform 0.1s ease-out',
+                      }
+                    : {}
+                }
+              >
+                <CampusMap
+                  highlightLocation={session.location?.map_name || undefined}
+                  showBuildingNames={true}
+                  showLocationNames={true}
+                  showLocationDescription={true}
+                  showMegagame={false}
+                  showMegagameElements={false}
+                  showMegagameColor={false}
+                  cropped={false}
+                  textScale={2.5}
+                  disableInteractions={!isDesktop}
+                />
+              </div>
+            </div>
+          </div>,
+          document.body,
+        )}
     </div>
   )
 }
