@@ -286,6 +286,8 @@ export default function PlayerCard({
           <div
             style={{
               height: PICTURE_HEIGHT * scale,
+              minHeight: PICTURE_HEIGHT * scale,
+              maxHeight: PICTURE_HEIGHT * scale,
             }}
             className="relative w-full overflow-hidden"
           >
