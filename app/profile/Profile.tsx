@@ -65,7 +65,7 @@ export default function Profile() {
   // Update form data when profile loads
   useEffect(() => {
     if (currentUserProfile && !isEditMode) {
-      setFormData(currentUserProfile)
+      setFormData(profileFormSchema.parse(currentUserProfile))
     }
   }, [currentUserProfile, isEditMode])
 
