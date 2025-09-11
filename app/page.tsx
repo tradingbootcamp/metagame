@@ -9,7 +9,7 @@ import { ContactUs } from '@/components/sections/home/ContactUs'
 import { Hero } from '@/components/sections/home/Hero'
 import Highlights from '@/components/sections/home/Highlights'
 import ScheduleSection from '@/components/sections/home/ScheduleSection'
-import Speakers, { SpeakersLoading } from '@/components/sections/home/Speakers'
+import Speakers, { SpeakersLoading } from '@/components/sections/home/speakers'
 import Tickets from '@/components/tickets/Tickets'
 
 export default function Home() {

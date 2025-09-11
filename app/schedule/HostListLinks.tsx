@@ -21,7 +21,7 @@ export const HostListLinks = ({
         return (
           <span key={id} className="font-sans text-xs">
             <Link
-              href={`/profile/${id}`}
+              href={`/player/${id}`}
               className={cn('hover:underline', className)}
               onClick={(e) => e.stopPropagation()}
             >
