@@ -9,23 +9,24 @@ import Image from 'next/image'
 import { Card } from '@/components/Card'
 
 // Establish some base numbers
-const CARD_WIDTH = 941
-const CARD_HEIGHT = 1341
-const FRAME_FROM_EDGE = 92
-const CIRCLE_FROM_EDGE = 19
-const CIRCLE_DIAMETER = 173
-const SQUARE_FROM_EDGE = 32
-const SQUARE_FROM_TOP = 235
-const SQUARE_SIZE = 143
+const CARD_WIDTH = 800 // width of the card image unscaled
+const CARD_HEIGHT = 1200 // height of the card image unscaled
+const FRAME_FROM_EDGE = 82 // distance from edge of card image to the inside of the frame where content lives
+const CIRCLE_FROM_EDGE = 12 // placement of Breath circle left from left and top from top of card
+const CIRCLE_DIAMETER = 182 // width of Breath circle
+const SQUARE_FROM_EDGE = 12 // placement of Points square left from left of card
+const SQUARE_FROM_TOP = 205 // placement of Points square top from top of card
+const SQUARE_SIZE = 182 // width of Points square
 const INNER_WIDTH = CARD_WIDTH - FRAME_FROM_EDGE * 2 //between walls of inner gold frame
-const INNER_HEIGHT = 1131 // from bottom gold to top
-const TOP_FROM_TOP = 121 // from top of card png to top of frame
-const PICTURE_HEIGHT = INNER_HEIGHT / 1.6
-const BIO_CHAR_LIMIT = 100
-
-const NO_ABILITY_BIO_CHAR_LIMIT = 330
-const ABILITY_COST_SIZE = 75
-
+const TOP_FROM_TOP_TALL_BANNER = 211 // distance from top of card to top of inner content section
+const TOP_FROM_TOP_SHORT_BANNER = 107 // distance from top of card to top of inner content section
+const BIO_CHAR_LIMIT = 100 // baseline bio character limit based on ___?
+const SHORT_BANNER_HEIGHT = 99 // the inside height of the short top banner (holds name)
+const TALL_BANNER_HEIGHT = 203 // the inside height of the tall top banner (holds name)
+const TIP_TOP_FRAME = 6 // the width of the very outermost frame edge of the frame
+const NO_ABILITY_BIO_CHAR_LIMIT = 330 // different char limit for when we do not need space for abilities
+const ABILITY_COST_SIZE = 75 // width of Ability cost square
+const PICTURE_HEIGHT = CARD_HEIGHT / 2 // height of framed profile picture
 export default function PlayerCard({
   userId,
   asProfile = false,
@@ -45,10 +46,25 @@ export default function PlayerCard({
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
+
+  // Calculate some of our constants based on card tinystatus
+  const TOP_FROM_TOP = isTiny
+    ? TOP_FROM_TOP_TALL_BANNER
+    : TOP_FROM_TOP_SHORT_BANNER
+
+  // derive calculate inner height inside the frame based on which banner we use
+  const INNER_HEIGHT = CARD_HEIGHT - TOP_FROM_TOP - FRAME_FROM_EDGE
+
+  const NAME_DIV_WIDTH =
+    CARD_WIDTH -
+    TIP_TOP_FRAME * 2 -
+    (showStatBoxes ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
+    (isTiny ? 0 : CIRCLE_DIAMETER) // ~estimates size of player_id, this could be its own placeholder prob
+
   const bioCharLimit =
     (asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT) *
     (isTiny ? 0.3 : 1)
-  const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
+  const oneLineNameLengthLimit = showStatBoxes ? 11 : 17
   const {
     data: profile,
     isLoading: profileLoading,
@@ -61,10 +77,12 @@ export default function PlayerCard({
     unassigned: '/images/cards/gray-wash.png',
     blue: '/images/cards/blue-wash.png',
   }
+  //effective length of name for spacing concerns, factoring in pronouns
   const playerNameLength =
     (profile?.first_name?.length || 0) +
     (profile?.last_name?.length || 0) +
-    ((!isTiny && profile?.pronouns?.length) || 0)
+    ((!isTiny && profile?.pronouns?.length) || 0) +
+    (profile?.minor ? 1 : 0)
   // Loading state - show gray wash, question mark, and frame
   if (profileLoading || profileError || !profile) {
     return (
@@ -91,15 +109,12 @@ export default function PlayerCard({
         />
         {/* Frame Overlay */}
         <Image
-          src={
-            showStatBoxes
-              ? '/images/cards/celestial-frame.png'
-              : '/images/cards/celestial-frame-bare.png'
-          }
+          src="/images/cards/celestial-frame-2x3.png"
           alt="Frame overlay"
           fill
           className="pointer-events-none z-3 object-cover"
         />
+
         {/* Large question mark in center */}
         <div
           // style={{
@@ -140,9 +155,9 @@ export default function PlayerCard({
         {/* Frame Overlay */}
         <Image
           src={
-            showStatBoxes
-              ? '/images/cards/celestial-frame.png'
-              : '/images/cards/celestial-frame-bare.png'
+            isTiny
+              ? '/images/cards/celestial-frame-2x3-tallbanner.png'
+              : '/images/cards/celestial-frame-2x3-shortbanner.png'
           }
           alt="Frame overlay"
           fill
@@ -153,18 +168,31 @@ export default function PlayerCard({
           <>
             <div
               style={{
-                width: SQUARE_SIZE * scale,
-                height: SQUARE_SIZE * scale,
-                top: SQUARE_FROM_TOP * scale,
-                left: SQUARE_FROM_EDGE * scale,
+                width: Math.floor(SQUARE_SIZE * scale),
+                height: Math.floor(SQUARE_SIZE * scale),
+                top: Math.floor(SQUARE_FROM_TOP * scale),
+                left: Math.floor(SQUARE_FROM_EDGE * scale),
+                clipPath: `polygon(
+                  5px 0, calc(100% - 5px) 0, 100% 5px, 
+                  100% calc(100% - 5px), calc(100% - 5px) 100%, 
+                  5px 100%, 0 calc(100% - 5px), 0 5px
+                )`,
               }}
-              className="absolute z-4"
+              className="absolute z-4 overflow-hidden"
             >
               <Image
-                src="/images/cards/fog.gif"
-                alt="Breath"
+                src="/images/cards/celestial-square-section.png"
+                alt="Points"
                 fill
                 objectFit="cover"
+                className="z-2"
+              />
+              <Image
+                src="/images/cards/fog.gif"
+                alt="FogPoints"
+                fill
+                objectFit="cover"
+                className="z-1"
               />
             </div>
             {/* Points? Cirlce icon */}
@@ -178,59 +206,62 @@ export default function PlayerCard({
               className="absolute z-4 overflow-hidden rounded-full"
             >
               <Image
-                src="/images/cards/fog.gif"
-                alt="Points"
+                src="/images/cards/celestial-circle-cost.png"
+                alt="Breath"
                 fill
                 objectFit="cover"
+                className="z-2"
+              />
+              <Image
+                src="/images/cards/fog.gif"
+                alt="FogBreath"
+                fill
+                objectFit="cover"
+                className="z-1"
               />
             </div>
           </>
         )}
-        {/* Hosting line */}
-        {
-          /*hostedSessions.length > 0 && */ <div
+        {/* Player ID */}
+        {!isTiny && (
+          <div
             style={{
-              top: 35 * scale,
+              top: TIP_TOP_FRAME * scale,
               right: 55 * scale,
               fontSize: 50 * scale,
+              height: SHORT_BANNER_HEIGHT * scale,
             }}
-            className="absolute z-4 text-white"
+            className="absolute z-4 flex items-center text-white"
           >
-            {/* <span className="flex items-center gap-1">
-            Hosting:
-            <div
-              style={{
-                width: 50 * scale,
-                height: 50 * scale,
-              }}
-              className="flex items-center justify-center rounded-full bg-gray-500 p-1 text-secondary-300"
-            >
-              <strong className="font-serif">{hostedSessions.length}</strong>
-            </div>
-          </span> */}
             <span className="text-opacity-50 font-cinzel text-gray-400">
               #{profile.player_id}
             </span>
           </div>
-        }
+        )}
         {/* Name */}
         <div
           style={{
             left: showStatBoxes ? 210 * scale : 40 * scale,
-            top:
-              playerNameLength > oneLineNameLengthLimit
-                ? 20 * scale
-                : 30 * scale,
-            fontSize: isTiny ? 70 * scale : 50 * scale,
+            top: TIP_TOP_FRAME * scale,
+            height: isTiny
+              ? TALL_BANNER_HEIGHT * scale
+              : SHORT_BANNER_HEIGHT * scale,
+            width: NAME_DIV_WIDTH * scale,
+            fontSize: isTiny ? 75 * scale : 50 * scale,
           }}
-          className="absolute z-3 font-cinzel leading-none text-white"
+          className="absolute z-3 flex items-center font-cinzel leading-none text-white"
         >
-          <strong className="flex items-center gap-1">
-            <span>
-              {profile.first_name}
-              {playerNameLength > oneLineNameLengthLimit && <br />}{' '}
-              {profile.last_name}
-            </span>
+          <strong className="flex items-center justify-start gap-1">
+            {playerNameLength > oneLineNameLengthLimit ? (
+              <div className="flex grow-0 flex-col" id="namecol">
+                <span>{profile.first_name}</span>
+                <span>{profile.last_name}</span>
+              </div>
+            ) : (
+              <span className="grow-0" id="namesing">
+                {`${profile.first_name} ${profile.last_name}`}
+              </span>
+            )}
             <span>{profile.minor ? '🌱' : ''}</span>
             {profile.pronouns && !isTiny && (
               <span
@@ -242,7 +273,7 @@ export default function PlayerCard({
             )}
           </strong>
         </div>
-        {/* Player picture */}
+        {/* Card Content */}
         <div
           style={{
             width: INNER_WIDTH * scale,
