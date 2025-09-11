@@ -16,7 +16,7 @@ jobs:
           response=$(curl -s -w "%{http_code}" -X POST \
             -H "Authorization: Bearer ${{ secrets.CRON_SECRET }}" \
             -H "Content-Type: application/json" \
-            "https://metagame.games/api/cron/repair-waitlists")
+            "https://www.metagame.games/api/cron/repair-waitlists")
 
           http_code="${response: -3}"
           body="${response%???}"
