@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useRef, useState } from 'react'
+import { useRef, useState } from 'react'
 
 export default function PlayWord({
   children = 'played',
@@ -9,17 +9,19 @@ export default function PlayWord({
   differentColor = '#e0f7fa',
 }) {
   const [active, setActive] = useState(false)
+  const [audioLoaded, setAudioLoaded] = useState(false)
   const audioRef = useRef<HTMLAudioElement | null>(null)
 
-  useEffect(() => {
-    audioRef.current = new Audio(sound)
-    audioRef.current.preload = 'auto'
-    return () => {
-      if (audioRef.current) audioRef.current.remove()
+  const loadAudio = () => {
+    if (!audioRef.current && !audioLoaded) {
+      audioRef.current = new Audio(sound)
+      audioRef.current.preload = 'auto'
+      setAudioLoaded(true)
     }
-  }, [sound])
+  }
 
   const handleClick = () => {
+    loadAudio()
     if (!audioRef.current) return
     setActive(true)
     audioRef.current.currentTime = 0
@@ -29,20 +31,24 @@ export default function PlayWord({
     }
   }
 
+  const handleMouseEnter = () => {
+    setHovered(true)
+    loadAudio()
+  }
+
   const [hovered, setHovered] = useState(false)
 
-  
   let color = differentColor
   if (active) {
-    color = '#22d3ee' 
+    color = '#22d3ee'
   } else if (hovered) {
-    color = hoverColor  
+    color = hoverColor
   }
 
   return (
     <span
       onClick={handleClick}
-      onMouseEnter={() => setHovered(true)}
+      onMouseEnter={handleMouseEnter}
       onMouseLeave={() => setHovered(false)}
       style={{
         cursor: 'pointer',
