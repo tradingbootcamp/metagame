@@ -67,6 +67,7 @@ export default async function TeamPage() {
                     asProfile
                     tiltFactor={1}
                     gleamFollowsTilt
+                    showStatBoxes={true}
                     width={150}
                   />
                 </div>

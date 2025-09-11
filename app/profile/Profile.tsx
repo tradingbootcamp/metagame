@@ -332,6 +332,7 @@ export default function Profile() {
               tiltFactor={2.5}
               gleamFollowsTilt
               width={150}
+              showStatBoxes={false}
             />
           </div>
         ) : (
