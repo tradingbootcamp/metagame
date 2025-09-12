@@ -55,6 +55,8 @@ export type DbPublicProfileKeys =
   | 'profile_pictures_url'
   | 'player_id'
   | 'pronouns'
+  | 'volunteer'
+  | 'checked_in'
 export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys>
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>
