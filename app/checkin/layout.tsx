@@ -8,5 +8,7 @@ export default async function CheckinLayout({
   children: React.ReactNode
 }) {
   await redirectIfNotAuthed({ authLevel: 'volunteer' })
-  return <>{children}</>
+  return (
+    <div className="sticky inset-0 size-full bg-bg-primary">{children}</div>
+  )
 }
