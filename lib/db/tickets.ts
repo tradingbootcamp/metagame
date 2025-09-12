@@ -1,7 +1,11 @@
 import { createServiceClient } from '@/utils/supabase/service'
 
-import { DbTicketInsert } from '@/types/database/dbTypeAliases'
+import { DbFullTicket, DbTicketInsert } from '@/types/database/dbTypeAliases'
 
+const ticketsSelectIncludes = `
+  *,
+  owner:profiles!tickets_owner_id_fkey(*)
+`
 export const ticketsService = {
   getAllTickets: async () => {
     const supabase = createServiceClient()
@@ -13,6 +17,17 @@ export const ticketsService = {
       throw new Error(error.message)
     }
     return data
+  },
+  getAllFullTickets: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('tickets')
+      .select(ticketsSelectIncludes)
+      .order('created_at', { ascending: true })
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data satisfies DbFullTicket[]
   },
   createTicket: async ({
     ticket,

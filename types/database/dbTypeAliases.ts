@@ -29,6 +29,9 @@ export type DbLocationInsert = TablesInsert<'locations'>
 export type DbLocationUpdate = TablesUpdate<'locations'>
 
 export type DbTicket = Tables<'tickets'>
+export type DbFullTicket = DbTicket & {
+  owner: DbFullProfile | null
+}
 export type DbTicketInsert = TablesInsert<'tickets'>
 export type DbTicketUpdate = TablesUpdate<'tickets'>
 
