@@ -14,21 +14,29 @@ export const authLevelsToRanks: Record<AuthLevel, number> = {
   VOLUNTEER: 1,
   NONE: 0,
 }
-export const getUserAuthLevelFromProfile = async (
-  userProfile: DbPublicProfile,
-): Promise<AuthLevel> => {
+export const profileAuthLevel = (
+  userProfile: DbPublicProfile | null | undefined,
+): AuthLevel => {
+  if (!userProfile) return 'NONE'
   if (userProfile.is_admin) return 'ADMIN'
   if (userProfile.team === 'green') return 'GREEN'
   if (userProfile.volunteer) return 'VOLUNTEER'
   return 'NONE'
 }
+export const profileAuthRank = (
+  userProfile: DbPublicProfile | null | undefined,
+): number => {
+  if (!userProfile) return 0
+  return authLevelsToRanks[profileAuthLevel(userProfile)]
+}
+/** Async auth level by lookup of a user id */
 export const getUserAuthLevelById = async (
   userId: string,
 ): Promise<AuthLevel> => {
   const userProfile = await getUserPublicProfileById({ userId })
-  if (!userProfile) return 'NONE'
-  return getUserAuthLevelFromProfile(userProfile)
+  return profileAuthLevel(userProfile)
 }
+/** Async lookup for current user's auth level with supabase */
 export const getCurrentUserAuthLevel = async (): Promise<AuthLevel> => {
   const user = await getCurrentUser()
   if (!user) return 'NONE'
@@ -37,7 +45,40 @@ export const getCurrentUserAuthLevel = async (): Promise<AuthLevel> => {
 export const getCurrentUserAuthRank = async (): Promise<number> => {
   return authLevelsToRanks[await getCurrentUserAuthLevel()]
 }
-
+/** Whether the current user has >= the specified auth level */
+export const currentUserHasAuthLevel = async ({
+  authLevel = 'ADMIN',
+}: { authLevel?: AuthLevel } = {}) => {
+  return (await getCurrentUserAuthRank()) >= authLevelsToRanks[authLevel]
+}
+/** Whether the current user has >= the specified auth rank number */
+export const currentUserHasAuthRank = async ({
+  authRank = 3,
+}: { authRank?: number } = {}) => {
+  return (await getCurrentUserAuthRank()) >= authRank
+}
+/** Whether the provided user profile has >= the specified auth rank number */
+export const profileHasAuthRank = async ({
+  profile,
+  authRank = 3,
+}: {
+  profile: DbPublicProfile | null | undefined
+  authRank?: number
+}) => {
+  if (!profile) return false
+  return profileAuthRank(profile) >= authRank
+}
+/** Whether the provided user profile has auth level at or above specified */
+export const profileHasAuthLevel = ({
+  profile,
+  authLevel = 'ADMIN',
+}: {
+  profile: DbPublicProfile | null | undefined
+  authLevel?: AuthLevel
+}) => {
+  if (!profile) return false
+  return profileAuthRank(profile) >= authLevelsToRanks[authLevel]
+}
 export const redirectIfNotAuthed = async ({
   authLevel = 'ADMIN',
   redirectTo = '/not-authorized',
