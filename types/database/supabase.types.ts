@@ -14,6 +14,33 @@ export type Database = {
   }
   public: {
     Tables: {
+      celestial_cards: {
+        Row: {
+          cost: number
+          created_at: string
+          id: number
+          name: string
+          points: number
+          text: string
+        }
+        Insert: {
+          cost: number
+          created_at?: string
+          id?: number
+          name: string
+          points: number
+          text?: string
+        }
+        Update: {
+          cost?: number
+          created_at?: string
+          id?: number
+          name?: string
+          points?: number
+          text?: string
+        }
+        Relationships: []
+      }
       coupon_emails: {
         Row: {
           coupon_id: string
@@ -179,6 +206,7 @@ export type Database = {
           site_url: string | null
           site_url_2: string | null
           team: Database["public"]["Enums"]["TEAM_COLORS"]
+          volunteer: boolean
         }
         Insert: {
           bio?: string | null
@@ -201,6 +229,7 @@ export type Database = {
           site_url?: string | null
           site_url_2?: string | null
           team?: Database["public"]["Enums"]["TEAM_COLORS"]
+          volunteer?: boolean
         }
         Update: {
           bio?: string | null
@@ -223,6 +252,7 @@ export type Database = {
           site_url?: string | null
           site_url_2?: string | null
           team?: Database["public"]["Enums"]["TEAM_COLORS"]
+          volunteer?: boolean
         }
         Relationships: []
       }
@@ -452,6 +482,13 @@ export type Database = {
             referencedRelation: "opennode_orders"
             referencedColumns: ["id"]
           },
+          {
+            foreignKeyName: "tickets_owner_id_fkey"
+            columns: ["owner_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
         ]
       }
     }
@@ -473,6 +510,14 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      ricki_speaker_emails: {
+        Row: {
+          host_1_email: string | null
+          host_2_email: string | null
+          host_3_email: string | null
+        }
+        Relationships: []
       }
       session_rsvps_view: {
         Row: {
@@ -525,12 +570,10 @@ export type Database = {
           host_3_last_name: string | null
           id: string | null
           location_id: string | null
-          location_map_info: Json | null
           location_name: string | null
           max_capacity: number | null
           megagame: boolean | null
           min_capacity: number | null
-          reserved_spots: number | null
           rsvp_count: number | null
           start_time: string | null
           title: string | null
@@ -740,4 +783,3 @@ export const Constants = {
     },
   },
 } as const
-
