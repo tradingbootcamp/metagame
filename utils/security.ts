@@ -1,47 +1,50 @@
-import { createClient } from './supabase/server'
-import { createServiceClient } from './supabase/service'
 import { redirect } from 'next/navigation'
 
-export type AuthLevel = 'admin' | 'green' | 'volunteer'
+import {
+  getCurrentUser,
+  getUserPublicProfileById,
+} from '@/app/actions/db/users'
+
+import { DbPublicProfile } from '@/types/database/dbTypeAliases'
+
+export type AuthLevel = 'ADMIN' | 'GREEN' | 'VOLUNTEER' | 'NONE'
+export const authLevelsToRanks: Record<AuthLevel, number> = {
+  ADMIN: 3,
+  GREEN: 2,
+  VOLUNTEER: 1,
+  NONE: 0,
+}
+export const getUserAuthLevelFromProfile = async (
+  userProfile: DbPublicProfile,
+): Promise<AuthLevel> => {
+  if (userProfile.is_admin) return 'ADMIN'
+  if (userProfile.team === 'green') return 'GREEN'
+  if (userProfile.volunteer) return 'VOLUNTEER'
+  return 'NONE'
+}
+export const getUserAuthLevelById = async (
+  userId: string,
+): Promise<AuthLevel> => {
+  const userProfile = await getUserPublicProfileById({ userId })
+  if (!userProfile) return 'NONE'
+  return getUserAuthLevelFromProfile(userProfile)
+}
+export const getCurrentUserAuthLevel = async (): Promise<AuthLevel> => {
+  const user = await getCurrentUser()
+  if (!user) return 'NONE'
+  return getUserAuthLevelById(user.id)
+}
+export const getCurrentUserAuthRank = async (): Promise<number> => {
+  return authLevelsToRanks[await getCurrentUserAuthLevel()]
+}
+
 export const redirectIfNotAuthed = async ({
-  authLevel = 'admin',
+  authLevel = 'ADMIN',
   redirectTo = '/not-authorized',
 }: { authLevel?: AuthLevel; redirectTo?: string } = {}) => {
-  const supabase = await createClient()
-
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
-
-  if (!user) {
-    redirect('/')
-  }
-
-  const serviceClient = createServiceClient()
-  const { data, error } = await serviceClient
-    .from('profiles')
-    .select('is_admin, team, volunteer')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-  if (!data) {
-    redirect('/')
-  }
-  let authed = false
-  switch (authLevel) {
-    case 'admin':
-      authed = data.is_admin
-      break
-    case 'green':
-      authed = data.team === 'green' || data.is_admin
-      break
-    case 'volunteer':
-      authed = data.volunteer || data.team === 'green' || data.is_admin
-      break
-  }
+  const currentUserAuthRank = await getCurrentUserAuthRank()
+  const requiredAuthRank = authLevelsToRanks[authLevel]
+  const authed = currentUserAuthRank >= requiredAuthRank
 
   if (!authed) {
     redirect(redirectTo)
