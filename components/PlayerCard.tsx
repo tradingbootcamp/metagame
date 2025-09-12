@@ -8,6 +8,7 @@ import Image from 'next/image'
 import { Card } from '@/components/Card'
 
 import { usePublicProfile } from '@/hooks/useProfiles'
+import { DbCelestialCard } from '@/types/database/dbTypeAliases'
 
 // Establish some base numbers
 const CARD_WIDTH = 800 // width of the card image unscaled
@@ -35,6 +36,7 @@ export default function PlayerCard({
   width = 300,
   showStatBoxes = false,
   asCelestialCard = false,
+  overrideCelestialCard = null,
 }: {
   userId: string | null
   tiltFactor?: number
@@ -43,10 +45,10 @@ export default function PlayerCard({
   width?: number
   showStatBoxes?: boolean
   asCelestialCard?: boolean
+  overrideCelestialCard?: DbCelestialCard | null
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
-
   // Calculate some of our constants based on card tinystatus
   const TOP_FROM_TOP = isTiny
     ? TOP_FROM_TOP_TALL_BANNER
@@ -135,6 +137,7 @@ export default function PlayerCard({
       </div>
     )
   }
+  const celestialCard = overrideCelestialCard ?? profile?.celestial_card ?? null
 
   return (
     <Card borderless padless tiltFactor={tiltFactor}>
@@ -193,7 +196,7 @@ export default function PlayerCard({
                   style={{ fontSize: 130 * scale }}
                   className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
                 >
-                  {profile.celestial_card?.points ?? ''}
+                  {celestialCard?.points ?? ''}
                 </span>
               )}
             </div>
@@ -221,7 +224,7 @@ export default function PlayerCard({
                   style={{ fontSize: 130 * scale }}
                   className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
                 >
-                  {profile.celestial_card?.cost ?? ''}
+                  {celestialCard?.cost ?? ''}
                 </span>
               )}
             </div>
@@ -346,7 +349,7 @@ export default function PlayerCard({
                     }}
                     className="absolute bottom-0 z-3 w-full text-center leading-tight text-celestial-primary"
                   >
-                    {profile.celestial_card?.name ?? ''}
+                    {celestialCard?.name ?? ''}
                   </div>
                 )}
               </div>
@@ -402,7 +405,7 @@ export default function PlayerCard({
                 </div>
               )}
               {/* Abilities? (hidden when used on Profile page) */}
-              {asCelestialCard && profile.celestial_card && (
+              {asCelestialCard && celestialCard && (
                 <div
                   style={{
                     backgroundImage: `url('/images/cards/gray-wash.png')`,
@@ -417,17 +420,13 @@ export default function PlayerCard({
                     fontSize: isTiny
                       ? 55 *
                         scale *
-                        ((profile.celestial_card.text?.length ?? 0) < 70
-                          ? 1
-                          : 0.9)
+                        ((celestialCard.text?.length ?? 0) < 70 ? 1 : 0.9)
                       : 40 * scale,
                   }}
                   className="text-center text-balance whitespace-pre-line"
-                  title={
-                    profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''
-                  }
+                  title={celestialCard.text?.replace(/\\n/g, '\n') ?? ''}
                 >
-                  {profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''}
+                  {celestialCard.text?.replace(/\\n/g, '\n') ?? ''}
                 </div>
               )}
             </div>
