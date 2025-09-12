@@ -144,7 +144,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -260,7 +260,7 @@ export function useScheduleStuff() {
     },
     onSettled: () => {
       // Always refetch after error or success to ensure consistency
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -306,7 +306,10 @@ export function useScheduleStuff() {
       toast.error(err.message)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['bookmarks', 'current'] })
+      queryClient.invalidateQueries({
+        queryKey: ['bookmarks', 'current'],
+        exact: false,
+      })
     },
   })
 

@@ -67,6 +67,7 @@ export function useProfileUpdate({
     onSettled: () => {
       queryClient.invalidateQueries({
         queryKey: profileQueryKey,
+        exact: false,
       })
     },
   })

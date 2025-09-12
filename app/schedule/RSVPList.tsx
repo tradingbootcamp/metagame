@@ -119,7 +119,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       toast.success('User un-RSVPed from session')
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
   const rsvps = session.rsvps

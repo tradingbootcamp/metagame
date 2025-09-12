@@ -231,7 +231,7 @@ export function AddEventModal({
   const addEventMutation = useMutation({
     mutationFn: adminAddSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
       toast.success('Event created successfully!')
       onClose()
       // Reset form
@@ -270,7 +270,7 @@ export function AddEventModal({
       onClose()
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -304,7 +304,7 @@ export function AddEventModal({
       toast.error(`Failed to update event: ${error.message}`)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -330,7 +330,7 @@ export function AddEventModal({
       onClose()
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
