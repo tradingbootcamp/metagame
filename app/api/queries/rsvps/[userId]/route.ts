@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { getUserRsvps } from '@/app/actions/db/sessionRsvps'
 
@@ -7,7 +7,7 @@ import { DbSessionRsvp } from '@/types/database/dbTypeAliases'
 export type ApiUserRsvpsResponse = DbSessionRsvp[]
 
 export async function GET(
-  request: Request,
+  _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {

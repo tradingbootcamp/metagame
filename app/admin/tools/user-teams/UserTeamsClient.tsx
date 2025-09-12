@@ -111,8 +111,11 @@ export default function UserTeamsClient() {
       userId: string
       team: DbTeamColor
     }) => adminUpdateUserProfile({ userId, data: { team } }),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['profiles'] })
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: ['users', 'profiles', variables.userId],
+        exact: false,
+      })
     },
   })
 
@@ -142,7 +145,10 @@ export default function UserTeamsClient() {
           adminUpdateUserProfile({ userId, data: { team: bulkTeam } }),
         ),
       )
-      await queryClient.invalidateQueries({ queryKey: ['profiles'] })
+      await queryClient.invalidateQueries({
+        queryKey: ['users', 'profiles'],
+        exact: false,
+      })
       setSelectedIds(new Set())
       setBulkTeam('')
     } finally {

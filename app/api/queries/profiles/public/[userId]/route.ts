@@ -6,7 +6,7 @@ import { DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 export type ApiUserPublicProfileResponse = DbPublicProfile | null
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {

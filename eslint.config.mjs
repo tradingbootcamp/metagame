@@ -14,8 +14,18 @@ const eslintConfig = [
   {
     rules: {
       'react-hooks/exhaustive-deps': 'off',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          args: 'all', // only error on unused args after the last used one
+          argsIgnorePattern: '^_', // ignore params starting with "_"
+          varsIgnorePattern: '^_', // also ignore local vars starting with "_"
+          caughtErrorsIgnorePattern: '^_', // ignore caught errors like `catch (_err)`
+        },
+      ],
     },
   },
+  { ignores: ['dist/**/*', 'node_modules/**/*', '.next/**/*'] },
 ]
 
 export default eslintConfig

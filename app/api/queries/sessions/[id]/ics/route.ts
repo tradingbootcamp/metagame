@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { getSessionById } from '@/app/actions/db/sessions'
 import {
@@ -7,7 +7,7 @@ import {
 } from '@/app/schedule/scheduleUtils'
 
 export async function GET(
-  request: Request,
+  _request: NextRequest,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {

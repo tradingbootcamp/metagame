@@ -29,6 +29,9 @@ export type DbLocationInsert = TablesInsert<'locations'>
 export type DbLocationUpdate = TablesUpdate<'locations'>
 
 export type DbTicket = Tables<'tickets'>
+export type DbFullTicket = DbTicket & {
+  owner: DbFullProfile | null
+}
 export type DbTicketInsert = TablesInsert<'tickets'>
 export type DbTicketUpdate = TablesUpdate<'tickets'>
 
@@ -52,6 +55,8 @@ export type DbPublicProfileKeys =
   | 'profile_pictures_url'
   | 'player_id'
   | 'pronouns'
+  | 'volunteer'
+  | 'checked_in'
 export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys>
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>

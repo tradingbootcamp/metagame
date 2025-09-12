@@ -1,30 +1,93 @@
-import { createClient } from './supabase/server'
-import { createServiceClient } from './supabase/service'
 import { redirect } from 'next/navigation'
 
-export const redirectHomeIfNotAdmin = async () => {
-  const supabase = await createClient()
+import {
+  getCurrentUser,
+  getUserPublicProfileById,
+} from '@/app/actions/db/users'
 
-  const {
-    data: { user },
-  } = await supabase.auth.getUser()
+import { DbPublicProfile } from '@/types/database/dbTypeAliases'
 
-  if (!user) {
-    redirect('/')
-  }
+export type AuthLevel = 'ADMIN' | 'GREEN' | 'VOLUNTEER' | 'NONE'
+export const authLevelsToRanks: Record<AuthLevel, number> = {
+  ADMIN: 3,
+  GREEN: 2,
+  VOLUNTEER: 1,
+  NONE: 0,
+}
+export const profileAuthLevel = (
+  userProfile: DbPublicProfile | null | undefined,
+): AuthLevel => {
+  if (!userProfile) return 'NONE'
+  if (userProfile.is_admin) return 'ADMIN'
+  if (userProfile.team === 'green') return 'GREEN'
+  if (userProfile.volunteer) return 'VOLUNTEER'
+  return 'NONE'
+}
+export const profileAuthRank = (
+  userProfile: DbPublicProfile | null | undefined,
+): number => {
+  if (!userProfile) return 0
+  return authLevelsToRanks[profileAuthLevel(userProfile)]
+}
+/** Async auth level by lookup of a user id */
+export const getUserAuthLevelById = async (
+  userId: string,
+): Promise<AuthLevel> => {
+  const userProfile = await getUserPublicProfileById({ userId })
+  return profileAuthLevel(userProfile)
+}
+/** Async lookup for current user's auth level with supabase */
+export const getCurrentUserAuthLevel = async (): Promise<AuthLevel> => {
+  const user = await getCurrentUser()
+  if (!user) return 'NONE'
+  return getUserAuthLevelById(user.id)
+}
+export const getCurrentUserAuthRank = async (): Promise<number> => {
+  return authLevelsToRanks[await getCurrentUserAuthLevel()]
+}
+/** Whether the current user has >= the specified auth level */
+export const currentUserHasAuthLevel = async ({
+  authLevel = 'ADMIN',
+}: { authLevel?: AuthLevel } = {}) => {
+  return (await getCurrentUserAuthRank()) >= authLevelsToRanks[authLevel]
+}
+/** Whether the current user has >= the specified auth rank number */
+export const currentUserHasAuthRank = async ({
+  authRank = 3,
+}: { authRank?: number } = {}) => {
+  return (await getCurrentUserAuthRank()) >= authRank
+}
+/** Whether the provided user profile has >= the specified auth rank number */
+export const profileHasAuthRank = async ({
+  profile,
+  authRank = 3,
+}: {
+  profile: DbPublicProfile | null | undefined
+  authRank?: number
+}) => {
+  if (!profile) return false
+  return profileAuthRank(profile) >= authRank
+}
+/** Whether the provided user profile has auth level at or above specified */
+export const profileHasAuthLevel = ({
+  profile,
+  authLevel = 'ADMIN',
+}: {
+  profile: DbPublicProfile | null | undefined
+  authLevel?: AuthLevel
+}) => {
+  if (!profile) return false
+  return profileAuthRank(profile) >= authLevelsToRanks[authLevel]
+}
+export const redirectIfNotAuthed = async ({
+  authLevel = 'ADMIN',
+  redirectTo = '/not-authorized',
+}: { authLevel?: AuthLevel; redirectTo?: string } = {}) => {
+  const currentUserAuthRank = await getCurrentUserAuthRank()
+  const requiredAuthRank = authLevelsToRanks[authLevel]
+  const authed = currentUserAuthRank >= requiredAuthRank
 
-  const serviceClient = createServiceClient()
-  const { data, error } = await serviceClient
-    .from('profiles')
-    .select('is_admin')
-    .eq('id', user.id)
-    .maybeSingle()
-
-  if (error) {
-    throw new Error(error.message)
-  }
-
-  if (!data?.is_admin) {
-    redirect('/')
+  if (!authed) {
+    redirect(redirectTo)
   }
 }

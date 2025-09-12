@@ -3,7 +3,7 @@
 import { useRef, useState } from 'react'
 
 import { useMutation } from '@tanstack/react-query'
-import { CheckIcon, MinusIcon, XIcon } from 'lucide-react'
+import { CheckIcon, KeyIcon, MinusIcon, XIcon } from 'lucide-react'
 import Image from 'next/image'
 import { toast } from 'sonner'
 
@@ -16,13 +16,24 @@ import {
 import { downscaleAndUploadImage, toExternalLink } from '@/lib/utils'
 
 import { Button } from '@/components/ui/button'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog'
 import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 import { Textarea } from '@/components/ui/textarea'
 
 import { adminGetUserProfilePictureUploadUrl } from '@/app/actions/db/storage'
 import {
   adminDeleteUserProfilePicture,
+  adminUpdateUserPassword,
   adminUpdateUserProfile,
 } from '@/app/actions/db/users'
 
@@ -44,6 +55,10 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
     }
   })
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // Password update state
+  const [isPasswordDialogOpen, setIsPasswordDialogOpen] = useState(false)
+  const [newPassword, setNewPassword] = useState('')
 
   const updateMutation = useMutation({
     mutationFn: async () => {
@@ -113,10 +128,32 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
     },
   })
 
+  const updatePasswordMutation = useMutation({
+    mutationFn: async () => {
+      if (!newPassword || newPassword.length < 6) {
+        throw new Error('Password must be at least 6 characters long')
+      }
+      await adminUpdateUserPassword({
+        userId: current.id,
+        password: newPassword,
+      })
+    },
+    onSuccess: () => {
+      setNewPassword('')
+      setIsPasswordDialogOpen(false)
+      toast.success('Password updated successfully!')
+    },
+    onError: (error) => {
+      console.error('Error updating password:', error)
+      toast.error('Failed to update password')
+    },
+  })
+
   const isSaving =
     updateMutation.isPending ||
     uploadPictureMutation.isPending ||
-    deletePictureMutation.isPending
+    deletePictureMutation.isPending ||
+    updatePasswordMutation.isPending
 
   const fullName =
     `${current.first_name || ''} ${current.last_name || ''}`.trim() ||
@@ -136,6 +173,15 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
     const file = e.target.files?.[0]
     if (!file) return
     uploadPictureMutation.mutate(file)
+  }
+
+  const onPasswordUpdate = () => {
+    updatePasswordMutation.mutate()
+  }
+
+  const onPasswordCancel = () => {
+    setNewPassword('')
+    setIsPasswordDialogOpen(false)
   }
 
   const renderTrueFalseNull = (value: boolean | null) => {
@@ -175,7 +221,59 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
           </div>
         </div>
         {!isEditMode ? (
-          <Button onClick={() => setIsEditMode(true)}>Edit Profile</Button>
+          <div className="flex gap-2">
+            <Dialog
+              open={isPasswordDialogOpen}
+              onOpenChange={setIsPasswordDialogOpen}
+            >
+              <DialogTrigger asChild>
+                <Button variant="outline" size="sm">
+                  <KeyIcon className="mr-2 h-4 w-4" />
+                  Set Password
+                </Button>
+              </DialogTrigger>
+              <DialogContent>
+                <DialogHeader>
+                  <DialogTitle>Set New Password</DialogTitle>
+                  <DialogDescription>
+                    Set a new password for {fullName}. The password must be at
+                    least 6 characters long.
+                  </DialogDescription>
+                </DialogHeader>
+                <div className="space-y-4 py-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="new-password">New Password</Label>
+                    <Input
+                      id="new-password"
+                      type="password"
+                      value={newPassword}
+                      onChange={(e) => setNewPassword(e.target.value)}
+                      placeholder="Enter new password"
+                      disabled={updatePasswordMutation.isPending}
+                    />
+                  </div>
+                </div>
+                <DialogFooter>
+                  <Button
+                    variant="outline"
+                    onClick={onPasswordCancel}
+                    disabled={updatePasswordMutation.isPending}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={onPasswordUpdate}
+                    disabled={updatePasswordMutation.isPending || !newPassword}
+                  >
+                    {updatePasswordMutation.isPending
+                      ? 'Setting...'
+                      : 'Set Password'}
+                  </Button>
+                </DialogFooter>
+              </DialogContent>
+            </Dialog>
+            <Button onClick={() => setIsEditMode(true)}>Edit Profile</Button>
+          </div>
         ) : (
           <div className="flex gap-2">
             <Button variant="outline" onClick={onCancel} disabled={isSaving}>

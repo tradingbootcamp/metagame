@@ -103,6 +103,7 @@ export default function Profile() {
     onSuccess: () => {
       queryClient.invalidateQueries({
         queryKey: ['users', 'profile', currentUser?.id],
+        exact: false,
       })
       toast.success('Profile picture updated successfully!')
     },

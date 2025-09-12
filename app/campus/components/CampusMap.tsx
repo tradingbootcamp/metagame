@@ -5,6 +5,9 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 import { teamColorToHex } from '@/utils/dbUtils'
+  teamColorToHex,
+} from '@/utils/dbUtils'
+
 
 import { useLocations } from '@/hooks/useLocations'
 import { DbLocation, DbTeamColor } from '@/types/database/dbTypeAliases'
@@ -337,7 +340,6 @@ export const locations = [
     description: loc.description,
   })),
 ]
-
 export default function CampusMap({
   showMegagameNames = false,
   showBuildingNames = false,
@@ -372,6 +374,7 @@ export default function CampusMap({
     ),
   )
   setBuildingColors((prev) => ({ ...prev }))
+
   // Try to use prefetched locations if available, otherwise manage our own state
   let dbLocations: DbLocation[] = []
   let usesPrefetchedData = false
@@ -718,7 +721,6 @@ export default function CampusMap({
                 ))}
               </g>
             )}
-
             {/* Edge center images layer - renders above buildings */}
             {showMegagame && showMegagameElements && (
               <g className="edge-images-layer">
@@ -740,7 +742,6 @@ export default function CampusMap({
                 })}
               </g>
             )}
-
             {/* Building names layer - always visible when showBuildingNames is true */}
             {showBuildingNames && (
               <g className="building-names-layer">

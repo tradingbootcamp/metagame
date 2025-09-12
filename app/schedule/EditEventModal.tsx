@@ -231,7 +231,7 @@ export function AddEventModal({
   const addEventMutation = useMutation({
     mutationFn: adminAddSession,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
       toast.success('Event created successfully!')
       onClose()
       // Reset form
@@ -259,7 +259,7 @@ export function AddEventModal({
       })
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       if (context?.oldData) {
         queryClient.setQueryData(['sessions'], context.oldData)
       }
@@ -270,7 +270,7 @@ export function AddEventModal({
       onClose()
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -296,7 +296,7 @@ export function AddEventModal({
       // Return context for rollback
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       // Rollback to previous state on error
       if (context?.oldData) {
         queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
@@ -304,7 +304,7 @@ export function AddEventModal({
       toast.error(`Failed to update event: ${error.message}`)
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 
@@ -319,7 +319,7 @@ export function AddEventModal({
       })
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       if (context?.oldData) {
         queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
       }
@@ -330,7 +330,7 @@ export function AddEventModal({
       onClose()
     },
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: ['sessions'] })
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
 

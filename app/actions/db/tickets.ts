@@ -5,7 +5,8 @@ import { adminExportWrapper } from './auth'
 import { ticketsService } from '@/lib/db/tickets'
 import { usersService } from '@/lib/db/users'
 
-import { TEAM_COLORS_ENUM } from '@/utils/dbUtils'
+import { TEAM_COLORS } from '@/utils/dbUtils'
+import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
 import { createServiceClient } from '@/utils/supabase/service'
 
 import { DbTicket } from '@/types/database/dbTypeAliases'
@@ -70,10 +71,15 @@ export const signupByTicketCode = async ({
   await usersService.updateUserProfile({
     userId,
     data: {
-      team: TEAM_COLORS_ENUM[
-        Math.floor(Math.random() * TEAM_COLORS_ENUM.length)
+      team: [TEAM_COLORS.ORANGE, TEAM_COLORS.PURPLE][
+        Math.floor(Math.random() * 2)
       ],
     },
   })
   return { success: true, error: null, ticket: ticket }
+}
+export const volunteerGetAllFullTickets = async () => {
+  if ((await getCurrentUserAuthRank()) < authLevelsToRanks.VOLUNTEER)
+    throw new Error('Unauthorized')
+  return await ticketsService.getAllFullTickets()
 }

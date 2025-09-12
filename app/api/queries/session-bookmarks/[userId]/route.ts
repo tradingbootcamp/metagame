@@ -1,4 +1,4 @@
-import { NextResponse } from 'next/server'
+import { NextRequest, NextResponse } from 'next/server'
 
 import { getUserSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
@@ -6,7 +6,7 @@ import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
 
 export type ApiUserSessionBookmarksResponse = DbSessionBookmark[]
 export async function GET(
-  request: Request,
+  _request: NextRequest,
   { params }: { params: Promise<{ userId: string }> },
 ) {
   try {
