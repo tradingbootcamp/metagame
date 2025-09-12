@@ -3,6 +3,7 @@ import { UserIcon, XIcon } from 'lucide-react'
 import { toast } from 'sonner'
 
 import { countRsvpsByTeamColor } from '@/utils/dbUtils'
+import { profileHasAuthLevel } from '@/utils/security'
 
 import { Separator } from '@/components/ui/separator'
 import {
@@ -11,7 +12,7 @@ import {
   TooltipTrigger,
 } from '@/components/ui/tooltip'
 
-import { adminUnRsvpUserFromSession } from '@/app/actions/db/sessionRsvps'
+import { greenUnRsvpUserFromSession } from '@/app/actions/db/sessionRsvps'
 
 import { useUser } from '@/hooks/useUser'
 import { DbFullSession, DbTeamColor } from '@/types/database/dbTypeAliases'
@@ -82,7 +83,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
   const { currentUserProfile } = useUser()
   const queryClient = useQueryClient()
   const unrsvpUserMutation = useMutation({
-    mutationFn: adminUnRsvpUserFromSession,
+    mutationFn: greenUnRsvpUserFromSession,
     onMutate: async ({ sessionId, userId }) => {
       await queryClient.cancelQueries({ queryKey: ['sessions'] })
       const previousSessions = queryClient.getQueryData<DbFullSession[]>([
@@ -149,6 +150,12 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       (a, b) =>
         new Date(a.created_at).getTime() - new Date(b.created_at).getTime(),
     )
+  const unrsvpPrivileged = () => {
+    return profileHasAuthLevel({
+      profile: currentUserProfile,
+      authLevel: 'GREEN',
+    })
+  }
   const rsvpListUl = (rsvpArray: DbFullSession['rsvps']) => {
     return (
       <ul className="flex w-full flex-col items-start">
@@ -157,7 +164,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
             key={rsvp.session_id + rsvp.user_id}
             className={`${teamsToBgColors[rsvp.user.team]} flex w-full items-center gap-2 py-1`}
           >
-            {currentUserProfile?.is_admin && (
+            {unrsvpPrivileged() && (
               <button
                 title="Un-RSVP user"
                 className="cursor-pointer rounded-xs p-0.5 text-red-400 hover:bg-bg-primary disabled:cursor-not-allowed disabled:opacity-50"
