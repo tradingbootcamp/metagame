@@ -22,7 +22,6 @@ import { SESSION_AGES } from '@/utils/dbUtils'
 import AddToCalendar from '@/components/AddToCalendar'
 import { SessionTitle } from '@/components/SessionTitle'
 import { Badge } from '@/components/ui/badge'
-import { buttonVariants } from '@/components/ui/button'
 
 import CampusMap from '@/app/campus/components/CampusMap'
 
