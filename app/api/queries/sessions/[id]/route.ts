@@ -6,7 +6,7 @@ import { DbFullSession } from '@/types/database/dbTypeAliases'
 
 export type ApiSessionResponse = DbFullSession | null
 export async function GET(
-  request: Request,
+  _request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
