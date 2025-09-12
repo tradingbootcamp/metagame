@@ -4,6 +4,8 @@ import { adminExportWrapper, currentUserWrapper } from './auth'
 
 import { usersService } from '@/lib/db/users'
 
+import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
+
 /* Queries */
 export const getCurrentUser = usersService.getCurrentUser
 export const getCurrentUserFullProfile = async () =>
@@ -32,6 +34,18 @@ export const getPublicProfilesByTeam = usersService.getPublicProfilesByTeam
 export const updateCurrentUserProfile = currentUserWrapper(
   usersService.updateUserProfile,
 )
+/** Updates a user's checked in status if the current user has any admin privileges */
+export const volunteerUpdateUserCheckin = async ({
+  userId,
+  checked_in,
+}: {
+  userId: string
+  checked_in: boolean
+}) => {
+  if ((await getCurrentUserAuthRank()) < authLevelsToRanks.VOLUNTEER)
+    throw new Error('Unauthorized')
+  await usersService.updateUserProfile({ userId, data: { checked_in } })
+}
 export const deleteCurrentUserProfilePicture = async () =>
   currentUserWrapper(usersService.deleteProfilePicture)({})
 export const adminDeleteUserProfilePicture = adminExportWrapper(
