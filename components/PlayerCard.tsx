@@ -87,7 +87,7 @@ export default function PlayerCard({
   if (profileLoading || profileError || !profile) {
     return (
       <div
-        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell"
+        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell text-celestial-primary"
         style={{
           width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
@@ -125,7 +125,7 @@ export default function PlayerCard({
           // }}
           className="absolute inset-0 z-2 flex items-center justify-center"
         >
-          <div className="flex flex-col items-center text-gray-200">
+          <div className="flex flex-col items-center text-celestial-gray">
             <span>{profileLoading ? '?' : 'X'}</span>
             <span style={{ fontSize: 100 * scale }}>
               {profileLoading ? 'Loading...' : 'Error'}
@@ -191,7 +191,7 @@ export default function PlayerCard({
               {asCelestialCard && (
                 <span
                   style={{ fontSize: 130 * scale }}
-                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
                 >
                   {profile.celestial_card?.points ?? ''}
                 </span>
@@ -219,7 +219,7 @@ export default function PlayerCard({
               {asCelestialCard && (
                 <span
                   style={{ fontSize: 130 * scale }}
-                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
                 >
                   {profile.celestial_card?.cost ?? ''}
                 </span>
@@ -231,14 +231,14 @@ export default function PlayerCard({
         {!isTiny && (
           <div
             style={{
-              top: TIP_TOP_FRAME * scale,
+              top: (TOP_FROM_TOP / 2) * scale,
               right: 55 * scale,
               fontSize: 50 * scale,
               height: SHORT_BANNER_HEIGHT * scale,
             }}
-            className="absolute z-4 flex items-center text-white"
+            className="absolute z-4 flex -translate-y-1/2 items-center"
           >
-            <span className="text-opacity-50 font-cinzel text-gray-400">
+            <span className="text-opacity-50 font-cinzel leading-none text-gray-400">
               #{profile.player_id}
             </span>
           </div>
@@ -254,7 +254,7 @@ export default function PlayerCard({
             width: NAME_DIV_WIDTH * scale,
             fontSize: isTiny ? 75 * scale : 50 * scale,
           }}
-          className="absolute z-3 flex items-center font-cinzel leading-none text-white"
+          className="absolute z-3 flex items-center font-cinzel leading-none text-celestial-primary"
         >
           <strong className="flex items-center justify-start gap-1">
             {playerNameLength > oneLineNameLengthLimit ? (
@@ -288,6 +288,7 @@ export default function PlayerCard({
           }}
           className="relative z-4 flex flex-col"
         >
+          {/* Profile Picture */}
           <div
             style={{
               height: PICTURE_HEIGHT * scale,
@@ -336,6 +337,18 @@ export default function PlayerCard({
                   style={{ borderRadius: 12 * scale }}
                   className="z-2 object-cover"
                 />
+                {asCelestialCard && (
+                  <div
+                    style={{
+                      fontSize: 70 * scale,
+                      padding: 1 * scale,
+                      backgroundColor: 'rgba(50, 50, 80, 0.5)',
+                    }}
+                    className="absolute bottom-0 z-3 w-full text-center leading-tight text-celestial-primary"
+                  >
+                    {profile.celestial_card?.name ?? ''}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -401,14 +414,20 @@ export default function PlayerCard({
                     borderStyle: 'solid',
                     borderImageSource: `linear-gradient(to top right, #FFD700, #B8860B)`,
                     borderImageSlice: 1,
+                    fontSize: isTiny
+                      ? 55 *
+                        scale *
+                        ((profile.celestial_card.text?.length ?? 0) < 70
+                          ? 1
+                          : 0.9)
+                      : 40 * scale,
                   }}
+                  className="text-center text-balance whitespace-pre-line"
+                  title={
+                    profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''
+                  }
                 >
-                  <span>
-                    <strong>{profile.celestial_card.name}:</strong>{' '}
-                    <span className="whitespace-pre-line">
-                      {profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''}
-                    </span>
-                  </span>
+                  {profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''}
                 </div>
               )}
             </div>
@@ -430,33 +449,48 @@ export default function PlayerCard({
                 </div>
               )}
               {/* Bottom right */}
-              <div
-                style={{
-                  gap: 10 * scale,
-                  paddingRight: 10 * scale,
-                  fontSize: isTiny ? 90 * scale : 40 * scale,
-                }}
-                className={`flex items-center font-bold ${profile.site_name?.includes(' ') ? '' : 'break-all'}`}
-              >
-                <GlobeIcon
+              {profile.site_url && (
+                <div
                   style={{
-                    width: isTiny ? 90 * scale : 40 * scale,
-                    height: isTiny ? 90 * scale : 40 * scale,
+                    gap: 10 * scale,
+                    paddingRight: 10 * scale,
+                    fontSize: isTiny
+                      ? asCelestialCard
+                        ? 50 * scale
+                        : 90 * scale
+                      : 40 * scale,
                   }}
-                  className="shrink-0"
-                />
-                <a
-                  href={profile.site_url ?? ''}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                  }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="pointer-events-auto z-10 cursor-pointer underline"
+                  className={`flex items-center font-bold ${profile.site_name?.includes(' ') ? '' : 'break-all'}`}
                 >
-                  {profile.site_name}
-                </a>
-              </div>
+                  <GlobeIcon
+                    style={{
+                      width: isTiny
+                        ? asCelestialCard
+                          ? 50 * scale
+                          : 90 * scale
+                        : 40 * scale,
+                      height: isTiny
+                        ? asCelestialCard
+                          ? 50 * scale
+                          : 90 * scale
+                        : 40 * scale,
+                    }}
+                    className="shrink-0"
+                  />
+                  <a
+                    href={profile.site_url ?? ''}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pointer-events-auto z-10 cursor-pointer underline"
+                  >
+                    {profile.site_name ||
+                      profile.site_url?.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>
