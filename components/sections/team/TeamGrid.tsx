@@ -57,7 +57,7 @@ export default function TeamGrid({ memberIds }: TeamGridProps) {
         <div key={member.id} className="relative">
           <Link
             className="absolute inset-0 z-0"
-            href={`/profile/${member.player_id}`}
+            href={`/player/${member.player_id}`}
           />
           <div className="pointer-events-none relative">
             <PlayerCard
