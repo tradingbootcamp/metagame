@@ -2,6 +2,7 @@
 
 import { adminExportWrapper, currentUserWrapper } from './auth'
 
+import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 
 import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
@@ -69,4 +70,52 @@ export const adminGetUsersFullProfiles = adminExportWrapper(
 // Admin mutation for updating any user's password
 export const adminUpdateUserPassword = adminExportWrapper(
   usersService.updateUserPassword,
+)
+
+export const currentUserSelectCardReward = currentUserWrapper(
+  async ({
+    userId,
+    celestialCardId,
+    sessionId,
+  }: {
+    userId: string
+    celestialCardId: number
+    sessionId: string
+  }) => {
+    // look up which team won session and check that user is on that team and rsvpd to that session
+    const session = await sessionsService.getSessionById({ sessionId })
+    if (!session) {
+      throw new Error('Session not found. Please refresh and try again.')
+    }
+    const winningTeam = session.winning_team
+    if (!winningTeam) {
+      throw new Error(
+        'This session has no winning team yet. Card rewards are not available.',
+      )
+    }
+    const userProfile = await usersService.getUserPublicProfileById({ userId })
+    if (!userProfile) {
+      throw new Error('User profile not found. Please refresh and try again.')
+    }
+    if (userProfile.team !== winningTeam) {
+      throw new Error(
+        'Only members of the winning team can claim card rewards.',
+      )
+    }
+    const rsvps = session.rsvps
+    const userRsvp = rsvps.find((rsvp) => rsvp.user_id === userId)
+    if (!userRsvp) {
+      throw new Error('You must have RSVPd to this session to claim rewards.')
+    }
+    const cardRewards = session.card_rewards
+    if (!cardRewards.map((card) => card.id).includes(celestialCardId)) {
+      throw new Error(
+        'The selected card is not available as a reward for this session.',
+      )
+    }
+    return usersService.updateUserProfile({
+      userId,
+      data: { celestial_card_id: celestialCardId },
+    })
+  },
 )
