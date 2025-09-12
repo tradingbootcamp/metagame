@@ -188,6 +188,7 @@ export type Database = {
         Row: {
           bio: string | null
           bringing_kids: boolean | null
+          checked_in: boolean
           discord_handle: string | null
           dismissed_info_request: boolean
           email: string | null
@@ -211,6 +212,7 @@ export type Database = {
         Insert: {
           bio?: string | null
           bringing_kids?: boolean | null
+          checked_in?: boolean
           discord_handle?: string | null
           dismissed_info_request?: boolean
           email?: string | null
@@ -234,6 +236,7 @@ export type Database = {
         Update: {
           bio?: string | null
           bringing_kids?: boolean | null
+          checked_in?: boolean
           discord_handle?: string | null
           dismissed_info_request?: boolean
           email?: string | null

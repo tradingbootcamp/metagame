@@ -31,7 +31,9 @@ const publicProfileSelectIncludes = `
   minor,
   profile_pictures_url,
   player_id,
-  pronouns
+  pronouns,
+  volunteer,
+  checked_in
 `
 export const usersService = {
   /** Get the current authenticated user */
