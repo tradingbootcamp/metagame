@@ -6,10 +6,7 @@ import { DbSessionRsvp } from '@/types/database/dbTypeAliases'
 
 export type ApiUserRsvpsResponse = DbSessionRsvp[]
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function GET({ params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
 

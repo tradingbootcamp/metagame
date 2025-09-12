@@ -5,10 +5,7 @@ import { getUserPublicProfileById } from '@/app/actions/db/users'
 import { DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 export type ApiUserPublicProfileResponse = DbPublicProfile | null
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function GET({ params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
 

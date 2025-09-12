@@ -5,10 +5,7 @@ import { getUserSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
 
 export type ApiUserSessionBookmarksResponse = DbSessionBookmark[]
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ userId: string }> },
-) {
+export async function GET({ params }: { params: Promise<{ userId: string }> }) {
   try {
     const { userId } = await params
     const bookmarks = await getUserSessionBookmarks({ userId })

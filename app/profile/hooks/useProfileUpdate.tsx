@@ -35,7 +35,7 @@ export function useProfileUpdate({
       toast.success('Profile updated successfully!')
       onSuccess?.()
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       if (context?.oldData) {
         queryClient.setQueryData(profileQueryKey, context.oldData)
       }

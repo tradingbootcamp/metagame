@@ -6,10 +6,7 @@ import {
   sessionCalendarDescription,
 } from '@/app/schedule/scheduleUtils'
 
-export async function GET(
-  request: Request,
-  { params }: { params: Promise<{ id: string }> },
-) {
+export async function GET({ params }: { params: Promise<{ id: string }> }) {
   try {
     const session = await getSessionById({ sessionId: (await params).id })
     if (!session) {

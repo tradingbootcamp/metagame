@@ -108,7 +108,7 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       )
       return { previousSessions, session }
     },
-    onError: (err, variables, context) => {
+    onError: (err, _variables, context) => {
       if (context?.previousSessions) {
         queryClient.setQueryData(['sessions'], context.previousSessions)
       }

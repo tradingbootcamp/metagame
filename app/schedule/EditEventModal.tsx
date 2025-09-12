@@ -259,7 +259,7 @@ export function AddEventModal({
       })
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       if (context?.oldData) {
         queryClient.setQueryData(['sessions'], context.oldData)
       }
@@ -296,7 +296,7 @@ export function AddEventModal({
       // Return context for rollback
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       // Rollback to previous state on error
       if (context?.oldData) {
         queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
@@ -319,7 +319,7 @@ export function AddEventModal({
       })
       return { oldData }
     },
-    onError: (error, variables, context) => {
+    onError: (error, _variables, context) => {
       if (context?.oldData) {
         queryClient.setQueryData<DbFullSession[]>(['sessions'], context.oldData)
       }

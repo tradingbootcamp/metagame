@@ -132,7 +132,7 @@ export function useScheduleStuff() {
 
       return { previousSessions, session }
     },
-    onError: (err, variables, context) => {
+    onError: (err, _variables, context) => {
       // Rollback on error
       if (context?.previousSessions) {
         queryClient.setQueryData(['sessions'], context.previousSessions)
@@ -216,7 +216,7 @@ export function useScheduleStuff() {
 
       return { previousSessions, session }
     },
-    onError: (err, variables, context) => {
+    onError: (err, _variables, context) => {
       // Rollback on error
       if (context?.previousSessions) {
         queryClient.setQueryData<DbFullSession[]>(
@@ -245,7 +245,7 @@ export function useScheduleStuff() {
       }
       toast.error(`RSVP failed: ${err.message}`)
     },
-    onSuccess: (result, variables, context) => {
+    onSuccess: (result, _variables, context) => {
       if (result && result.on_waitlist) {
         if (context?.session?.megagame) {
           const team = result.user.team
