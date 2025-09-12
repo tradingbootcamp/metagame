@@ -1,10 +1,10 @@
-import { redirectHomeIfNotAdmin } from '@/utils/security'
+import { redirectIfNotAuthed } from '@/utils/security'
 
 export default async function AdminLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
-  await redirectHomeIfNotAdmin()
+  await redirectIfNotAuthed()
   return <div>{children}</div>
 }
