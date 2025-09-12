@@ -406,13 +406,15 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
 
       {/* Confirmation Dialog */}
       <Dialog open={confirmation.isOpen} onOpenChange={cancelCheckinChange}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent
+          className={`text-lg text-black sm:max-w-lg ${confirmation.ticket?.owner?.team ? teamColorToBadgeClass(confirmation.ticket.owner.team) : ''}`}
+        >
           <DialogHeader className="text-center">
             <DialogTitle className="text-2xl">
               {confirmation.newCheckedInStatus ? 'Check In' : 'Check Out'}{' '}
               Confirmation
             </DialogTitle>
-            <DialogDescription className="mt-2 text-base">
+            <DialogDescription className="mt-2 text-base text-black">
               {confirmation.newCheckedInStatus
                 ? 'Please confirm you want to check in this attendee'
                 : "Please confirm you want to reverse this attendee's check-in status"}
@@ -439,25 +441,15 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
               )}
 
               <div className="flex flex-col items-center space-y-1 text-center">
-                <h3 className="text-xl font-bold">
+                <h3 className="text-3xl font-bold">
                   {confirmation.ticket.owner.first_name}{' '}
                   {confirmation.ticket.owner.last_name}
                 </h3>
-                <p className="text-sm text-muted-foreground">
-                  {confirmation.ticket.owner.email}
-                </p>
-                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                <p className="text-xl">{confirmation.ticket.owner.email}</p>
+                <div className="flex items-center gap-1 text-xl">
                   <span className="capitalize">
                     {confirmation.ticket.ticket_type}
                   </span>
-                  {confirmation.ticket.owner.team && (
-                    <>
-                      <span>•</span>
-                      <div
-                        className={`h-4 w-4 ${teamColorToBadgeClass(confirmation.ticket.owner.team)}`}
-                      ></div>
-                    </>
-                  )}
                 </div>
               </div>
             </div>
@@ -467,7 +459,7 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
             <Button
               variant="outline"
               onClick={cancelCheckinChange}
-              className="flex-1"
+              className="flex-1 text-white"
             >
               Cancel
             </Button>
