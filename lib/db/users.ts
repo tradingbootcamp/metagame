@@ -273,4 +273,22 @@ export const usersService = {
     }
     return data as { id: string; player_id: number }[]
   },
+
+  /** Update a user's password (admin only) */
+  updateUserPassword: async ({
+    userId,
+    password,
+  }: {
+    userId: string
+    password: string
+  }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.auth.admin.updateUserById(userId, {
+      password: password,
+    })
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
 }

@@ -51,3 +51,8 @@ export const getUsersPublicProfiles = usersService.getUsersPublicProfiles
 export const adminGetUsersFullProfiles = adminExportWrapper(
   usersService.getUsersFullProfiles,
 )
+
+// Admin mutation for updating any user's password
+export const adminUpdateUserPassword = adminExportWrapper(
+  usersService.updateUserPassword,
+)
