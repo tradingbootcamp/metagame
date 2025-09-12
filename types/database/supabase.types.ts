@@ -418,7 +418,6 @@ export type Database = {
         Row: {
           ages: Database["public"]["Enums"]["AGES"] | null
           category: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
-          celestial_rewards: number[] | null
           description: string | null
           end_time: string | null
           host_1_id: string | null
@@ -438,7 +437,6 @@ export type Database = {
         Insert: {
           ages?: Database["public"]["Enums"]["AGES"] | null
           category?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
-          celestial_rewards?: number[] | null
           description?: string | null
           end_time?: string | null
           host_1_id?: string | null
@@ -458,7 +456,6 @@ export type Database = {
         Update: {
           ages?: Database["public"]["Enums"]["AGES"] | null
           category?: Database["public"]["Enums"]["SESSION_CATEGORY"] | null
-          celestial_rewards?: number[] | null
           description?: string | null
           end_time?: string | null
           host_1_id?: string | null

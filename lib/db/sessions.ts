@@ -40,7 +40,8 @@ location:locations!sessions_location_id_fkey (
   id,
   name,
   map_info
-)
+),
+card_rewards:celestial_cards(*)
 `
 export const sessionsService = {
   getSessionById: async ({ sessionId }: { sessionId: string }) => {
