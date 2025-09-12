@@ -5,9 +5,6 @@ import React, { useEffect, useState } from 'react'
 import Image from 'next/image'
 
 import { teamColorToHex } from '@/utils/dbUtils'
-  teamColorToHex,
-} from '@/utils/dbUtils'
-
 
 import { useLocations } from '@/hooks/useLocations'
 import { DbLocation, DbTeamColor } from '@/types/database/dbTypeAliases'
