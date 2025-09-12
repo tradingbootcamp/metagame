@@ -179,7 +179,7 @@ export default function PlayerCard({
                 )`,
                 backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden bg-cover"
+              className="absolute z-5 overflow-hidden bg-cover"
             >
               <Image
                 src="/images/cards/celestial-square-section.png"
@@ -206,7 +206,7 @@ export default function PlayerCard({
                 left: CIRCLE_FROM_EDGE * scale,
                 backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden rounded-full bg-cover"
+              className="absolute z-5 overflow-hidden rounded-full bg-cover"
             >
               <Image
                 src="/images/cards/celestial-circle-cost.png"
@@ -286,7 +286,7 @@ export default function PlayerCard({
             top: TOP_FROM_TOP * scale,
             left: FRAME_FROM_EDGE * scale,
           }}
-          className="relative z-2 flex flex-col"
+          className="relative z-4 flex flex-col"
         >
           <div
             style={{
@@ -348,43 +348,46 @@ export default function PlayerCard({
           >
             {/* Bio */}
             <div className="flex flex-col gap-1">
-              <div
-                className="w-full p-1 whitespace-pre-line"
-                title={profile.bio ?? ''}
-              >
-                {(() => {
-                  if (isTiny || !profile.bio) return ''
-                  // Count each newline as 24 extra characters
-                  const newlineCount = profile.bio.match(/\n/g)?.length || 0
-                  const effectiveLength = profile.bio.length + newlineCount * 24
+              {!isTiny && profile.bio && (
+                <div
+                  className="w-full p-1 whitespace-pre-line"
+                  title={profile.bio ?? ''}
+                >
+                  {(() => {
+                    if (isTiny || !profile.bio) return ''
+                    // Count each newline as 24 extra characters
+                    const newlineCount = profile.bio.match(/\n/g)?.length || 0
+                    const effectiveLength =
+                      profile.bio.length + newlineCount * 24
 
-                  if (effectiveLength > bioCharLimit) {
-                    // Find where to truncate accounting for newlines
-                    let truncateAt = bioCharLimit
-                    let currentLength = 0
-                    let i = 0
+                    if (effectiveLength > bioCharLimit) {
+                      // Find where to truncate accounting for newlines
+                      let truncateAt = bioCharLimit
+                      let currentLength = 0
+                      let i = 0
 
-                    while (
-                      currentLength < bioCharLimit &&
-                      i < profile.bio.length
-                    ) {
-                      if (profile.bio[i] === '\n') {
-                        currentLength += 24
-                      } else {
-                        currentLength += 1
+                      while (
+                        currentLength < bioCharLimit &&
+                        i < profile.bio.length
+                      ) {
+                        if (profile.bio[i] === '\n') {
+                          currentLength += 24
+                        } else {
+                          currentLength += 1
+                        }
+                        if (currentLength <= bioCharLimit) {
+                          truncateAt = i + 1
+                        }
+                        i++
                       }
-                      if (currentLength <= bioCharLimit) {
-                        truncateAt = i + 1
-                      }
-                      i++
+
+                      return profile.bio.slice(0, truncateAt) + '...'
                     }
 
-                    return profile.bio.slice(0, truncateAt) + '...'
-                  }
-
-                  return profile.bio
-                })()}
-              </div>
+                    return profile.bio
+                  })()}
+                </div>
+              )}
               {/* Abilities? (hidden when used on Profile page) */}
               {asCelestialCard && profile.celestial_card && (
                 <div
@@ -393,7 +396,7 @@ export default function PlayerCard({
                     backgroundSize: 'cover',
                     backgroundPosition: 'center',
                     padding: 16 * scale,
-                    margin: 16 * scale,
+                    margin: (isTiny ? 10 : 16) * scale,
                     borderWidth: 6 * scale,
                     borderStyle: 'solid',
                     borderImageSource: `linear-gradient(to top right, #FFD700, #B8860B)`,
