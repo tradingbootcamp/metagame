@@ -62,10 +62,8 @@ export default function PlayerCard({
     (showStatBoxes ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
     (isTiny ? 0 : CIRCLE_DIAMETER) // ~estimates size of player_id, this could be its own placeholder prob
 
-  const bioCharLimit =
-    (asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT) *
-    (isTiny ? 0.3 : 1)
-  const oneLineNameLengthLimit = showStatBoxes ? 11 : 17
+  const bioCharLimit = asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT
+  const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
   const {
     data: profile,
     isLoading: profileLoading,
@@ -255,12 +253,12 @@ export default function PlayerCard({
           <strong className="flex items-center justify-start gap-1">
             {playerNameLength > oneLineNameLengthLimit ? (
               <div className="flex grow-0 flex-col" id="namecol">
-                <span>{profile.first_name || ""}</span>
-                <span>{profile.last_name || ""}</span>
+                <span>{profile.first_name || ''}</span>
+                <span>{profile.last_name || ''}</span>
               </div>
             ) : (
               <span className="grow-0" id="namesing">
-                {`${profile.first_name || ""} ${profile.last_name || ""}`}
+                {`${profile.first_name || ''} ${profile.last_name || ''}`}
               </span>
             )}
             <span>{profile.minor ? '🌱' : ''}</span>
@@ -349,7 +347,7 @@ export default function PlayerCard({
                 title={profile.bio ?? ''}
               >
                 {(() => {
-                  if (!profile.bio) return ''
+                  if (isTiny || !profile.bio) return ''
                   // Count each newline as 24 extra characters
                   const newlineCount = profile.bio.match(/\n/g)?.length || 0
                   const effectiveLength = profile.bio.length + newlineCount * 24
