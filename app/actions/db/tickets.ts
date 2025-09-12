@@ -5,6 +5,7 @@ import { adminExportWrapper } from './auth'
 import { ticketsService } from '@/lib/db/tickets'
 import { usersService } from '@/lib/db/users'
 
+import { TEAM_COLORS_ENUM } from '@/utils/dbUtils'
 import { createServiceClient } from '@/utils/supabase/service'
 
 import { DbTicket } from '@/types/database/dbTypeAliases'
@@ -66,5 +67,13 @@ export const signupByTicketCode = async ({
     userId = user.id
   }
   await ticketsService.updateTicketOwner({ ticketCode, ownerId: userId })
+  await usersService.updateUserProfile({
+    userId,
+    data: {
+      team: TEAM_COLORS_ENUM[
+        Math.floor(Math.random() * TEAM_COLORS_ENUM.length)
+      ],
+    },
+  })
   return { success: true, error: null, ticket: ticket }
 }
