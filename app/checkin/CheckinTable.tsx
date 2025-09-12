@@ -2,10 +2,22 @@
 
 import { useMemo, useState } from 'react'
 
+import { useCheckin } from './useCheckin'
 import { CheckIcon } from 'lucide-react'
+import Image from 'next/image'
 
 import { teamColorToBadgeClass } from '@/utils/dbUtils'
 
+import { Button } from '@/components/ui/button'
+import { Checkbox } from '@/components/ui/checkbox'
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog'
 import {
   Select,
   SelectContent,
@@ -35,6 +47,12 @@ type ColumnConfig = {
   render: (ticket: DbFullTicket) => React.ReactNode
 }
 
+type ConfirmationState = {
+  isOpen: boolean
+  ticket: DbFullTicket | null
+  newCheckedInStatus: boolean
+}
+
 export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
   const [filterStatus, setFilterStatus] = useState<
     'all' | 'claimed' | 'unclaimed'
@@ -43,6 +61,41 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
   const [sortBy, setSortBy] = useState<
     'owner_email' | 'owner_name' | 'purchaser_email' | 'purchaser_name'
   >('owner_name')
+  const [confirmation, setConfirmation] = useState<ConfirmationState>({
+    isOpen: false,
+    ticket: null,
+    newCheckedInStatus: false,
+  })
+
+  const { updateCheckinStatus, isUpdating } = useCheckin()
+
+  const handleCheckinChange = (ticket: DbFullTicket, checked: boolean) => {
+    if (!ticket.owner) return
+
+    setConfirmation({
+      isOpen: true,
+      ticket,
+      newCheckedInStatus: checked,
+    })
+  }
+
+  const confirmCheckinChange = async () => {
+    if (!confirmation.ticket?.owner) return
+
+    await updateCheckinStatus.mutateAsync({
+      userId: confirmation.ticket.owner.id,
+      checked_in: confirmation.newCheckedInStatus,
+    })
+    setConfirmation({
+      isOpen: false,
+      ticket: null,
+      newCheckedInStatus: false,
+    })
+  }
+
+  const cancelCheckinChange = () => {
+    setConfirmation({ isOpen: false, ticket: null, newCheckedInStatus: false })
+  }
 
   // Get unique ticket types for filter
   const ticketTypes = useMemo(() => {
@@ -110,6 +163,34 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
   }, [tickets, ticketTypes])
 
   const columns: ColumnConfig[] = [
+    {
+      id: 'checked_in',
+      header: 'Checked In',
+      render: (ticket) => (
+        <div className="flex items-center justify-center">
+          {!ticket.owner ? (
+            <Tooltip>
+              <TooltipTrigger asChild>
+                <div>
+                  <Checkbox checked={false} disabled={true} />
+                </div>
+              </TooltipTrigger>
+              <TooltipContent>
+                Cannot check in a ticket that hasn&apos;t been claimed
+              </TooltipContent>
+            </Tooltip>
+          ) : (
+            <Checkbox
+              checked={ticket.owner.checked_in || false}
+              disabled={isUpdating}
+              onCheckedChange={(checked) =>
+                handleCheckinChange(ticket, checked as boolean)
+              }
+            />
+          )}
+        </div>
+      ),
+    },
     {
       id: 'claimed_status',
       header: 'Claimed',
@@ -322,6 +403,91 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
           ))}
         </TableBody>
       </Table>
+
+      {/* Confirmation Dialog */}
+      <Dialog open={confirmation.isOpen} onOpenChange={cancelCheckinChange}>
+        <DialogContent className="sm:max-w-lg">
+          <DialogHeader className="text-center">
+            <DialogTitle className="text-2xl">
+              {confirmation.newCheckedInStatus ? 'Check In' : 'Check Out'}{' '}
+              Confirmation
+            </DialogTitle>
+            <DialogDescription className="mt-2 text-base">
+              {confirmation.newCheckedInStatus
+                ? 'Please confirm you want to check in this attendee'
+                : "Please confirm you want to reverse this attendee's check-in status"}
+            </DialogDescription>
+          </DialogHeader>
+
+          {confirmation.ticket?.owner && (
+            <div className="flex flex-col items-center space-y-4 py-6">
+              {confirmation.ticket.owner.profile_pictures_url ? (
+                <Image
+                  src={confirmation.ticket.owner.profile_pictures_url}
+                  alt="Profile"
+                  width={180}
+                  height={180}
+                  className="rounded-full border-4 border-gray-200 object-cover"
+                />
+              ) : (
+                <div className="flex h-45 w-45 items-center justify-center rounded-full border-4 border-gray-300 bg-gray-200">
+                  <span className="text-6xl font-bold text-gray-600">
+                    {confirmation.ticket.owner.first_name?.[0]?.toUpperCase() ||
+                      '?'}
+                  </span>
+                </div>
+              )}
+
+              <div className="flex flex-col items-center space-y-1 text-center">
+                <h3 className="text-xl font-bold">
+                  {confirmation.ticket.owner.first_name}{' '}
+                  {confirmation.ticket.owner.last_name}
+                </h3>
+                <p className="text-sm text-muted-foreground">
+                  {confirmation.ticket.owner.email}
+                </p>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <span className="capitalize">
+                    {confirmation.ticket.ticket_type}
+                  </span>
+                  {confirmation.ticket.owner.team && (
+                    <>
+                      <span>•</span>
+                      <div
+                        className={`h-4 w-4 ${teamColorToBadgeClass(confirmation.ticket.owner.team)}`}
+                      ></div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </div>
+          )}
+
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              onClick={cancelCheckinChange}
+              className="flex-1"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={confirmCheckinChange}
+              disabled={isUpdating}
+              variant={
+                confirmation.newCheckedInStatus ? 'default' : 'destructive'
+              }
+              className="flex-1"
+            >
+              {isUpdating
+                ? 'Updating...'
+                : confirmation.newCheckedInStatus
+                  ? 'Confirm Check In'
+                  : 'Confirm Check Out'}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   )
 }
