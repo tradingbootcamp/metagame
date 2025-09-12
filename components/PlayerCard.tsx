@@ -193,7 +193,7 @@ export default function PlayerCard({
                   style={{ fontSize: 130 * scale }}
                   className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
                 >
-                  {profile.celestial_card?.points || ''}
+                  {profile.celestial_card?.points ?? ''}
                 </span>
               )}
             </div>
@@ -221,7 +221,7 @@ export default function PlayerCard({
                   style={{ fontSize: 130 * scale }}
                   className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
                 >
-                  {profile.celestial_card?.cost || ''}
+                  {profile.celestial_card?.cost ?? ''}
                 </span>
               )}
             </div>
