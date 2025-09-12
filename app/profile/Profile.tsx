@@ -236,7 +236,7 @@ export default function Profile() {
               {currentUser?.id && (
                 <PlayerCard
                   userId={currentUser.id}
-                  asProfile
+                  asCelestialCard={true}
                   tiltFactor={2.5}
                   gleamFollowsTilt
                   showStatBoxes
@@ -329,7 +329,7 @@ export default function Profile() {
             <span>Homepage Display View</span>
             <PlayerCard
               userId={currentUser.id}
-              asProfile
+              asCelestialCard={true}
               tiltFactor={2.5}
               gleamFollowsTilt
               width={150}

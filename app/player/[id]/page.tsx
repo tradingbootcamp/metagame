@@ -19,7 +19,12 @@ export default async function ProfilePage({
   }
   return (
     <div className="flex w-full flex-col items-center gap-8 p-24">
-      <PlayerCard userId={uuid} tiltFactor={2.5} gleamFollowsTilt asProfile />
+      <PlayerCard
+        userId={uuid}
+        tiltFactor={2.5}
+        gleamFollowsTilt
+        asCelestialCard={false}
+      />
     </div>
   )
 }

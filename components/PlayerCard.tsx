@@ -26,24 +26,23 @@ const SHORT_BANNER_HEIGHT = 99 // the inside height of the short top banner (hol
 const TALL_BANNER_HEIGHT = 203 // the inside height of the tall top banner (holds name)
 const TIP_TOP_FRAME = 6 // the width of the very outermost frame edge of the frame
 const NO_ABILITY_BIO_CHAR_LIMIT = 330 // different char limit for when we do not need space for abilities
-const ABILITY_COST_SIZE = 75 // width of Ability cost square
 const PICTURE_HEIGHT = CARD_HEIGHT / 2 // height of framed profile picture
 export default function PlayerCard({
   userId,
-  asProfile = false,
   tiltFactor = 0,
   gleamFollowsTilt = false,
   tiny = false,
   width = 300,
   showStatBoxes = false,
+  asCelestialCard = false,
 }: {
   userId: string | null
-  asProfile?: boolean
   tiltFactor?: number
   gleamFollowsTilt?: boolean
   tiny?: boolean
   width?: number
   showStatBoxes?: boolean
+  asCelestialCard?: boolean
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
@@ -62,7 +61,9 @@ export default function PlayerCard({
     (showStatBoxes ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
     (isTiny ? 0 : CIRCLE_DIAMETER) // ~estimates size of player_id, this could be its own placeholder prob
 
-  const bioCharLimit = asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT
+  const bioCharLimit = asCelestialCard
+    ? BIO_CHAR_LIMIT
+    : NO_ABILITY_BIO_CHAR_LIMIT
   const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
   const {
     data: profile,
@@ -176,8 +177,9 @@ export default function PlayerCard({
                   100% calc(100% - 5px), calc(100% - 5px) 100%, 
                   5px 100%, 0 calc(100% - 5px), 0 5px
                 )`,
+                backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden"
+              className="absolute z-4 overflow-hidden bg-cover"
             >
               <Image
                 src="/images/cards/celestial-square-section.png"
@@ -186,13 +188,14 @@ export default function PlayerCard({
                 objectFit="cover"
                 className="z-2"
               />
-              <Image
-                src="/images/cards/fog.gif"
-                alt="FogPoints"
-                fill
-                objectFit="cover"
-                className="z-1"
-              />
+              {asCelestialCard && (
+                <span
+                  style={{ fontSize: 130 * scale }}
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
+                >
+                  {profile.celestial_card?.points || ''}
+                </span>
+              )}
             </div>
             {/* Points? Cirlce icon */}
             <div
@@ -201,8 +204,9 @@ export default function PlayerCard({
                 height: CIRCLE_DIAMETER * scale,
                 top: CIRCLE_FROM_EDGE * scale,
                 left: CIRCLE_FROM_EDGE * scale,
+                backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden rounded-full"
+              className="absolute z-4 overflow-hidden rounded-full bg-cover"
             >
               <Image
                 src="/images/cards/celestial-circle-cost.png"
@@ -211,13 +215,15 @@ export default function PlayerCard({
                 objectFit="cover"
                 className="z-2"
               />
-              <Image
-                src="/images/cards/fog.gif"
-                alt="FogBreath"
-                fill
-                objectFit="cover"
-                className="z-1"
-              />
+
+              {asCelestialCard && (
+                <span
+                  style={{ fontSize: 130 * scale }}
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel"
+                >
+                  {profile.celestial_card?.cost || ''}
+                </span>
+              )}
             </div>
           </>
         )}
@@ -380,50 +386,26 @@ export default function PlayerCard({
                 })()}
               </div>
               {/* Abilities? (hidden when used on Profile page) */}
-              {!asProfile && (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-start justify-start gap-1">
-                    <div
-                      className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
-                      style={{
-                        width: ABILITY_COST_SIZE * scale,
-                        height: ABILITY_COST_SIZE * scale,
-                      }}
-                    >
-                      <Image
-                        src="/images/cards/fog.gif"
-                        alt=""
-                        fill
-                        objectFit="cover"
-                      />
-                      <span className="z-2"></span>
-                    </div>
-                    <span>
-                      <strong>Ability 1:</strong> Your first ability, it
-                      probably takes at least this many characters to describe
+              {asCelestialCard && profile.celestial_card && (
+                <div
+                  style={{
+                    backgroundImage: `url('/images/cards/gray-wash.png')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    padding: 16 * scale,
+                    margin: 16 * scale,
+                    borderWidth: 6 * scale,
+                    borderStyle: 'solid',
+                    borderImageSource: `linear-gradient(to top right, #FFD700, #B8860B)`,
+                    borderImageSlice: 1,
+                  }}
+                >
+                  <span>
+                    <strong>{profile.celestial_card.name}:</strong>{' '}
+                    <span className="whitespace-pre-line">
+                      {profile.celestial_card.text?.replace(/\\n/g, '\n') ?? ''}
                     </span>
-                  </div>
-                  <div className="flex items-center justify-start gap-1">
-                    <div
-                      className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
-                      style={{
-                        width: ABILITY_COST_SIZE * scale,
-                        height: ABILITY_COST_SIZE * scale,
-                      }}
-                    >
-                      <Image
-                        src="/images/cards/fog.gif"
-                        alt=""
-                        fill
-                        objectFit="cover"
-                      />
-                      <span className="z-2"></span>
-                    </div>
-                    <span>
-                      <strong>Ability 2:</strong> Your second ability, maybe
-                      this one&apos;s shorter
-                    </span>
-                  </div>
+                  </span>
                 </div>
               )}
             </div>
