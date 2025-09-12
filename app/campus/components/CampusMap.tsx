@@ -359,18 +359,13 @@ export default function CampusMap({
     offset: [number, number]
   } | null>(null)
   const [showDragHandles, setShowDragHandles] = useState(false)
-  const [buildingColors, setBuildingColors] = useState<
-    Record<string, BuildingColor>
-  >(
-    megagameLocations.reduce(
-      (acc, megagameLocation) => ({
-        ...acc,
-        [megagameLocation.id]: megagameLocation.color,
-      }),
-      {},
-    ),
+  const buildingColors = megagameLocations.reduce(
+    (acc, megagameLocation) => ({
+      ...acc,
+      [megagameLocation.id]: megagameLocation.color,
+    }),
+    {} as Record<string, BuildingColor>,
   )
-  setBuildingColors((prev) => ({ ...prev }))
 
   // Try to use prefetched locations if available, otherwise manage our own state
   let dbLocations: DbLocation[] = []
@@ -388,8 +383,6 @@ export default function CampusMap({
     DbLocation[]
   >([])
   //const [dbLocationsMapped, setDbLocationsMapped] = useState<Location[]>([])
-
-  // const cycleColors: BuildingColor[] = TEAM_COLORS_ENUM
 
   // Fetch locations ourselves if not using prefetched data
   useEffect(() => {
