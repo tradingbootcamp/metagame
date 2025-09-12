@@ -3,8 +3,6 @@
 //import { useState } from 'react'
 import CampusMap /*, { locations, megagameLocations }*/ from './components/CampusMap'
 
-import { URLS } from '@/utils/urls'
-
 export default function CampusPage() {
   /*const [showMegagameNames, setShowMegagameNames] = useState(false)
   const [showBuildingNames, setShowBuildingNames] = useState(true)
@@ -18,7 +16,7 @@ export default function CampusPage() {
   const [textScale, setTextScale] = useState(2)*/
 
   return (
-    <div className="flex min-h-screen flex-col items-center p-4">
+    <div className="min-h-screen p-4">
       <h1 className="mb-8 text-center text-4xl font-bold">Lighthaven Campus</h1>
 
       {/*<div className="max-w-6xl mx-auto mb-6 p-4 bg-white rounded-lg shadow border border-gray-300">
@@ -217,8 +215,8 @@ export default function CampusPage() {
         showMegagameElements={showMegagameElements}
         showMegagameColor={showMegagameColor}
         textScale={textScale}
-      />*/}
-      <CampusMap
+      /> 
+	  <CampusMap
         showMegagameNames={false}
         showBuildingNames={true}
         showLocationNames={false}
@@ -227,15 +225,17 @@ export default function CampusPage() {
         showMegagameElements={false}
         showMegagameColor={false}
         textScale={2.0}
+      />*/}
+      <CampusMap
+        showMegagameNames={true}
+        showBuildingNames={false}
+        showLocationNames={false}
+        showLocationDescription={false}
+        showMegagame={true}
+        showMegagameElements={true}
+        showMegagameColor={true}
+        textScale={1.0}
       />
-      <a
-        href={URLS.CAMPUS_GOOGLE_MAPS}
-        rel="noopener noreferrer"
-        target="_blank"
-        className="mt-8 text-4xl text-white underline decoration-1 hover:opacity-90"
-      >
-        2740 Telegraph Ave, Berkeley CA 94705
-      </a>
     </div>
   )
 }
