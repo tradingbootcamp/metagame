@@ -54,6 +54,55 @@ const faqs: FAQ[] = [
       </>
     ),
   },
+
+  {
+    id: 'food',
+    question: 'What can I eat?',
+    contentHtml: (
+      <>
+        <p className="flex flex-col gap-2">
+          <span>
+            Snacks, drinks, coffee and tea are available on campus and included
+            with your ticket.{' '}
+          </span>
+          <span>
+            Food trucks will be available on-site with food available for
+            purchase throughout the conference:
+          </span>
+        </p>
+        <ul className="list-outside list-disc pl-8">
+          <li>
+            <strong>Friday (2pm-9pm)</strong>:{' '}
+            <a
+              href="https://bayareamunchiez.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              Bay Area Munchiez
+            </a>{' '}
+            (American)
+          </li>
+          <li>
+            <strong>Saturday (11am-9pm)</strong>:{' '}
+            <a
+              href="https://casablancamoroccanfood.com/food-truck-menu/"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="link"
+            >
+              Casablanca
+            </a>{' '}
+            (Mediterranean), with a potential second truck
+          </li>
+          <li>
+            <strong>Sunday (11am-9pm)</strong>: Both Bay Area Munchiez and
+            Casablanca
+          </li>
+        </ul>
+      </>
+    ),
+  },
   {
     id: 'schedule',
     question: 'What time does Metagame start and end?',
