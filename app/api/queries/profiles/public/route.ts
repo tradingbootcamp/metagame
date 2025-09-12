@@ -12,7 +12,17 @@ export async function GET() {
   try {
     const profiles = await getAllUserPublicProfiles()
 
-    return NextResponse.json(profiles satisfies ApiAllPublicProfilesResponse)
+    const response = NextResponse.json(
+      profiles satisfies ApiAllPublicProfilesResponse,
+    )
+
+    // Add cache headers - profiles don't change often
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=300, stale-while-revalidate=86400',
+    )
+
+    return response
   } catch (error) {
     console.error('Error fetching profiles:', error)
 
@@ -39,7 +49,17 @@ export async function POST(request: NextRequest) {
     const { userIds } = (await request.json()) as { userIds: string[] }
     const profiles = await getUsersPublicProfiles({ userIds })
 
-    return NextResponse.json(profiles satisfies ApiUsersPublicProfilesResponse)
+    const response = NextResponse.json(
+      profiles satisfies ApiUsersPublicProfilesResponse,
+    )
+
+    // Add cache headers - profiles don't change often
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=300, stale-while-revalidate=86400',
+    )
+
+    return response
   } catch (error) {
     console.error('Error fetching profiles:', error)
 

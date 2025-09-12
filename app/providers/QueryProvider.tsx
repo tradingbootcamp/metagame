@@ -24,9 +24,12 @@ export default function QueryProvider({
       new QueryClient({
         defaultOptions: {
           queries: {
-            staleTime: 1000 * 60, // 1 minute
+            staleTime: 2 * 60 * 1000, // 2 minutes default
             gcTime: 1000 * 60 * 60 * 24, // 1 day
             refetchOnWindowFocus: false,
+            retry: 3,
+            retryDelay: (attemptIndex) =>
+              Math.min(1000 * 2 ** attemptIndex, 30000),
           },
         },
       }),

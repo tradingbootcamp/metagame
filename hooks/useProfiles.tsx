@@ -79,6 +79,8 @@ export const usePublicProfiles = ({
     retry: 3,
     retryDelay: (attemptIndex) => Math.min(1000 * 2 ** attemptIndex, 30000),
     placeholderData: (prev) => prev,
+    // Return empty array instead of undefined when query is disabled
+    select: (data) => data ?? [],
   })
 
   const {

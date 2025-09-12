@@ -14,7 +14,17 @@ export async function GET(
 
     const profile = await getUserPublicProfileById({ userId })
 
-    return NextResponse.json(profile satisfies ApiUserPublicProfileResponse)
+    const response = NextResponse.json(
+      profile satisfies ApiUserPublicProfileResponse,
+    )
+
+    // Add cache headers - profiles don't change often
+    response.headers.set(
+      'Cache-Control',
+      'public, s-maxage=300, stale-while-revalidate=86400',
+    )
+
+    return response
   } catch (error) {
     console.error('Error fetching user profile:', error)
 
