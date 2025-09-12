@@ -62,14 +62,11 @@ export const usePublicProfiles = ({
         : await fetchBulkPublicProfiles(ids)
 
       // Seed per-item caches so useProfile(id) (single) is instant later
-      profiles.forEach((p, i) => {
-        const id = ids[i]
-        if (p && id) {
-          qc.setQueryData<DbPublicProfile>(
-            ['users', 'profile', id, 'public'],
-            p,
-          )
-        }
+      profiles.forEach((p) => {
+        qc.setQueryData<DbPublicProfile>(
+          ['users', 'profile', p.id, 'public'],
+          p,
+        )
       })
 
       return profiles
