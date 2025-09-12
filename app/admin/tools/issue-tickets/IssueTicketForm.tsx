@@ -234,9 +234,7 @@ export function IssueTicketForm({}: {
             id="purchaserEmail"
             type="email"
             value={formData.purchaserEmail}
-            onChange={(e) =>
-              updateFormData({ purchaserEmail: e.target.value.trim() })
-            }
+            onChange={(e) => updateFormData({ purchaserEmail: e.target.value })}
             placeholder="Enter purchaser/destination email address"
             className="mt-1"
           />
