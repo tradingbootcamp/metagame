@@ -4,11 +4,7 @@ import React, { useEffect, useState } from 'react'
 
 import Image from 'next/image'
 
-import {
-  TEAM_COLORS_ENUM,
-  teamColorToBadgeClass,
-  teamColorToHex,
-} from '@/utils/dbUtils'
+import { teamColorToHex } from '@/utils/dbUtils'
 
 import { useLocations } from '@/hooks/useLocations'
 import { DbLocation, DbTeamColor } from '@/types/database/dbTypeAliases'
@@ -40,14 +36,37 @@ interface MapInfo {
   description: string
 }
 
-const getBuildingColorClasses = (color: BuildingColor): string => {
-  const baseClass = teamColorToBadgeClass(color).replace('bg-', 'fill-')
-  const opacity = color === 'unassigned' ? '/30' : '/70'
-  return `${baseClass}${opacity}`
+const getBuildingFillColor = (color: BuildingColor): string => {
+  const opacity = color === 'unassigned' ? 0.3 : 0.7
+  switch (color) {
+    case 'orange':
+      return `rgba(249, 115, 22, ${opacity})` // orange-500
+    case 'purple':
+      return `rgba(168, 85, 247, ${opacity})` // purple-500
+    case 'green':
+      return `rgba(34, 197, 94, ${opacity})` // green-500
+    case 'unassigned':
+    default:
+      return `rgba(107, 114, 128, ${opacity})` // gray-500
+  }
 }
 
-const getEdgeColor = (color: BuildingColor): string => {
-  return teamColorToHex(color)
+const getEdgeRenderInfo = (orangeClaimed: boolean, purpleClaimed: boolean) => {
+  if (!orangeClaimed && !purpleClaimed) {
+    return { type: 'single', color: 'rgba(107, 114, 128, 0.7)' } // gray-500
+  }
+  if (orangeClaimed && !purpleClaimed) {
+    return { type: 'single', color: teamColorToHex('orange') }
+  }
+  if (!orangeClaimed && purpleClaimed) {
+    return { type: 'single', color: teamColorToHex('purple') }
+  }
+  // Both claimed - render two lines
+  return {
+    type: 'double',
+    orangeColor: teamColorToHex('orange'),
+    purpleColor: teamColorToHex('purple'),
+  }
 }
 
 export const megagameLocations: MegagameLocation[] = [
@@ -100,51 +119,35 @@ export const megagameLocations: MegagameLocation[] = [
     description: '',
   },
   {
-    id: 'X',
-    name: 'X',
-    path: 'm 969.398100,151.686997 16.731400,28.979670 -16.731400,28.979671 -33.462900,0.000002 -16.731400,-28.979670 16.731400,-28.979671 z',
+    id: 'theGardens',
+    name: 'The Gardens',
+    path: 'm 983.95233,326.8509 c 139.38517,2.91398 126.75787,-98.05719 126.75787,-98.05719 l 6.7993,-76.78133 H 911.10295 v 132.58588 c 0,0 -13.59855,35.45337 72.84938,42.25264 z',
     color: 'unassigned',
-    center: [953, 185],
+    center: [973, 125],
     description: '',
   },
   {
-    id: 'Y',
-    name: 'Y',
-    path: 'm 1086.458013,167.200224 8.660801,32.322617 -23.661782,23.661808 -32.322680,-8.660834 -8.660801,-32.322617 23.661782,-23.661808 z',
+    id: 'theBughouse',
+    name: 'The Bughouse',
+    path: 'm 177.024,843.59586 15.15723,-56.56754 89.71698,24.03959 -15.43811,57.6158 z',
     color: 'unassigned',
-    center: [1063, 195],
+    center: [270, 820],
     description: '',
   },
   {
-    id: 'Z',
-    name: 'Z',
-    path: 'm 1117.625673,287.098037 16.731400,28.979670 -16.731400,28.979671 -33.462900,0.000002 -16.731400,-28.979670 16.731400,-28.979671 z',
+    id: 'thePark',
+    name: 'The Park',
+    path: 'm 178.11674,328.91496 -3.27822,181.94134 h 125.66519 l 21.85481,-16.93748 -1.09274,-163.85439 z',
     color: 'unassigned',
-    center: [1101, 320],
+    center: [238, 425],
     description: '',
   },
   {
-    id: 'Q',
-    name: 'Q',
-    path: 'm 212.331520,797.470587 16.731400,28.979670 -16.731400,28.979671 -33.462900,0.000002 -16.731400,-28.979670 16.731400,-28.979671 z',
+    id: 'foodCourt',
+    name: 'Food Court',
+    path: 'm 1004.5546,356.55345 7.8442,68.14694 -7.8442,81.87439 v 19.03352 l 137.9059,2.18548 -0.5464,-172.22086 z',
     color: 'unassigned',
-    center: [195, 829],
-    description: '',
-  },
-  {
-    id: 'R',
-    name: 'R',
-    path: 'm 201.370740,621.294117 16.731400,28.979670 -16.731400,28.979671 -33.462900,0.000002 -16.731400,-28.979670 16.731400,-28.979671 z',
-    color: 'unassigned',
-    center: [185, 654],
-    description: '',
-  },
-  {
-    id: 'S',
-    name: 'S',
-    path: 'm 203.351140,464.235287 16.731400,28.979670 -16.731400,28.979671 -33.462900,0.000002 -16.731400,-28.979670 16.731400,-28.979671 z',
-    color: 'unassigned',
-    center: [186, 497],
+    center: [987, 567],
     description: '',
   },
 ]
@@ -163,8 +166,8 @@ interface Edge {
   toMegagameLocation: string
   from: [number, number]
   to: [number, number]
-  fromColor: BuildingColor
-  toColor: BuildingColor
+  orangeClaimed: boolean
+  purpleClaimed: boolean
 }
 
 const edges: Edge[] = [
@@ -173,168 +176,136 @@ const edges: Edge[] = [
     toMegagameLocation: 'B',
     from: [397, 653],
     to: [550, 661],
-    fromColor: 'purple',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'B',
-    toMegagameLocation: 'C',
-    from: [313, 570],
-    to: [412, 414],
-    fromColor: 'purple',
-    toColor: 'unassigned',
+    fromMegagameLocation: 'theBughouse',
+    toMegagameLocation: 'A',
+    from: [262, 843],
+    to: [674, 855],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'C',
     toMegagameLocation: 'D',
     from: [444, 445],
     to: [523, 444],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'D',
     toMegagameLocation: 'E',
     from: [670, 448],
     to: [600, 519],
-    fromColor: 'orange',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'E',
-    toMegagameLocation: 'F',
-    from: [794, 373],
-    to: [804, 278],
-    fromColor: 'orange',
-    toColor: 'unassigned',
+    fromMegagameLocation: 'foodCourt',
+    toMegagameLocation: 'A',
+    from: [1059, 517],
+    to: [724, 694],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'A',
     toMegagameLocation: 'D',
     from: [606, 603],
     to: [593, 544],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'B',
     toMegagameLocation: 'D',
     from: [432, 547],
     to: [520, 500],
-    fromColor: 'purple',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'D',
     toMegagameLocation: 'F',
     from: [702, 258],
     to: [598, 356],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
     fromMegagameLocation: 'A',
     toMegagameLocation: 'E',
     from: [788, 429],
     to: [737, 582],
-    fromColor: 'orange',
-    toColor: 'unassigned',
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'S',
-    toMegagameLocation: 'R',
-    from: [187, 493],
-    to: [185, 650],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    fromMegagameLocation: 'B',
+    toMegagameLocation: 'thePark',
+    from: [326, 568],
+    to: [316, 482],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'R',
-    toMegagameLocation: 'Q',
-    from: [185, 650],
-    to: [196, 826],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    fromMegagameLocation: 'C',
+    toMegagameLocation: 'thePark',
+    from: [412, 390],
+    to: [311, 457],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'S',
-    toMegagameLocation: 'C',
-    from: [187, 493],
-    to: [349, 379],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
+    fromMegagameLocation: 'E',
+    toMegagameLocation: 'theGardens',
+    from: [977, 373],
+    to: [984, 309],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'S',
+    fromMegagameLocation: 'F',
+    toMegagameLocation: 'theGardens',
+    from: [792, 216],
+    to: [920, 222],
+    orangeClaimed: false,
+    purpleClaimed: false,
+  },
+  {
+    fromMegagameLocation: 'theBughouse',
     toMegagameLocation: 'B',
-    from: [187, 493],
-    to: [261, 600],
-    fromColor: 'unassigned',
-    toColor: 'purple',
+    from: [227, 808],
+    to: [258, 702],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'R',
-    toMegagameLocation: 'B',
-    from: [196, 664],
-    to: [268, 748],
-    fromColor: 'unassigned',
-    toColor: 'purple',
+    fromMegagameLocation: 'theBughouse',
+    toMegagameLocation: 'thePark',
+    from: [206, 803],
+    to: [192, 491],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'Q',
-    toMegagameLocation: 'B',
-    from: [196, 826],
-    to: [292, 758],
-    fromColor: 'unassigned',
-    toColor: 'purple',
-  },
-  {
-    fromMegagameLocation: 'X',
-    toMegagameLocation: 'Y',
-    from: [953, 181],
-    to: [1063, 191],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
-  },
-  {
-    fromMegagameLocation: 'Y',
-    toMegagameLocation: 'Z',
-    from: [1063, 191],
-    to: [1101, 316],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
-  },
-  {
-    fromMegagameLocation: 'X',
-    toMegagameLocation: 'F',
-    from: [953, 181],
-    to: [786, 213],
-    fromColor: 'unassigned',
-    toColor: 'unassigned',
-  },
-  {
-    fromMegagameLocation: 'X',
+    fromMegagameLocation: 'foodCourt',
     toMegagameLocation: 'E',
-    from: [953, 181],
-    to: [875, 389],
-    fromColor: 'unassigned',
-    toColor: 'orange',
+    from: [1016, 520],
+    to: [848, 494],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
   {
-    fromMegagameLocation: 'Y',
-    toMegagameLocation: 'E',
-    from: [1063, 191],
-    to: [920, 382],
-    fromColor: 'unassigned',
-    toColor: 'orange',
-  },
-  {
-    fromMegagameLocation: 'Z',
-    toMegagameLocation: 'E',
-    from: [1101, 316],
-    to: [981, 390],
-    fromColor: 'unassigned',
-    toColor: 'orange',
+    fromMegagameLocation: 'foodCourt',
+    toMegagameLocation: 'theGardens',
+    from: [1024, 378],
+    to: [1023, 313],
+    orangeClaimed: false,
+    purpleClaimed: false,
   },
 ]
 
@@ -353,6 +324,19 @@ interface CampusMapProps {
   disableInteractions?: boolean
   onLocationsLoaded?: (locations: Location[]) => void
 }
+
+// Create a locations array from the hardcoded data for now
+export const locations = [
+  // This will be populated by the database locations when available
+  // For now, we'll use the megagame locations as fallback
+  ...megagameLocations.map((loc) => ({
+    id: loc.id,
+    name: loc.name,
+    path: loc.path,
+    center: loc.center,
+    description: loc.description,
+  })),
+]
 
 export default function CampusMap({
   showMegagameNames = false,
@@ -387,6 +371,7 @@ export default function CampusMap({
       {},
     ),
   )
+  setBuildingColors((prev) => ({ ...prev }))
   // Try to use prefetched locations if available, otherwise manage our own state
   let dbLocations: DbLocation[] = []
   let usesPrefetchedData = false
@@ -404,7 +389,7 @@ export default function CampusMap({
   >([])
   //const [dbLocationsMapped, setDbLocationsMapped] = useState<Location[]>([])
 
-  const cycleColors: BuildingColor[] = TEAM_COLORS_ENUM
+  // const cycleColors: BuildingColor[] = TEAM_COLORS_ENUM
 
   // Fetch locations ourselves if not using prefetched data
   useEffect(() => {
@@ -453,35 +438,6 @@ export default function CampusMap({
       return buildingColors[buildingId]
     }
     return 'unassigned'
-  }
-
-  const toggleBuildingColor = (buildingId: string) => {
-    const currentColor = buildingColors[buildingId]
-    const currentIndex = cycleColors.indexOf(currentColor)
-    const nextIndex = (currentIndex + 1) % cycleColors.length
-    const newColor = cycleColors[nextIndex]
-
-    // Update building color
-    setBuildingColors((prev) => ({ ...prev, [buildingId]: newColor }))
-  }
-
-  const toggleEdgeColor = (edgeIndex: number, side: 'from' | 'to') => {
-    setEdgePositions((prevEdges) =>
-      prevEdges.map((edge, index) => {
-        if (index === edgeIndex) {
-          const currentColor = side === 'from' ? edge.fromColor : edge.toColor
-          const currentIndex = cycleColors.indexOf(currentColor)
-          const nextIndex = (currentIndex + 1) % cycleColors.length
-          const newColor = cycleColors[nextIndex]
-
-          return {
-            ...edge,
-            [side === 'from' ? 'fromColor' : 'toColor']: newColor,
-          }
-        }
-        return edge
-      }),
-    )
   }
 
   // Make toggle function available globally
@@ -559,7 +515,7 @@ export default function CampusMap({
       console.log('const edges = [')
       edgePositions.forEach((edge, i) => {
         console.log(
-          `  { fromMegagameLocation: '${edge.fromMegagameLocation}', toMegagameLocation: '${edge.toMegagameLocation}', from: [${Math.round(edge.from[0])}, ${Math.round(edge.from[1])}], to: [${Math.round(edge.to[0])}, ${Math.round(edge.to[1])}], fromColor: '${edge.fromColor}', toColor: '${edge.toColor}' }${i < edgePositions.length - 1 ? ',' : ''}`,
+          `  { fromMegagameLocation: '${edge.fromMegagameLocation}', toMegagameLocation: '${edge.toMegagameLocation}', from: [${Math.round(edge.from[0])}, ${Math.round(edge.from[1])}], to: [${Math.round(edge.to[0])}, ${Math.round(edge.to[1])}], orangeClaimed: ${edge.orangeClaimed}, purpleClaimed: ${edge.purpleClaimed} }${i < edgePositions.length - 1 ? ',' : ''}`,
         )
       })
       console.log(']')
@@ -628,47 +584,6 @@ export default function CampusMap({
                   />
                 ))}
               </mask>
-
-              {/* Create gradients for each edge with sharp division along the line */}
-              {edgePositions.map((edge, index) => {
-                // Calculate the gradient direction along the line
-                const dx = edge.to[0] - edge.from[0]
-                const dy = edge.to[1] - edge.from[1]
-                const length = Math.sqrt(dx * dx + dy * dy)
-                const unitX = length > 0 ? dx / length : 1
-                const unitY = length > 0 ? dy / length : 0
-
-                // Set gradient to follow the line direction
-                const x1 = 50 - unitX * 50
-                const y1 = 50 - unitY * 50
-                const x2 = 50 + unitX * 50
-                const y2 = 50 + unitY * 50
-
-                return (
-                  <linearGradient
-                    key={`gradient-${index}`}
-                    id={`edgeGradient-${index}`}
-                    x1={`${x1}%`}
-                    y1={`${y1}%`}
-                    x2={`${x2}%`}
-                    y2={`${y2}%`}
-                  >
-                    <stop
-                      offset="0%"
-                      stopColor={getEdgeColor(edge.fromColor)}
-                    />
-                    <stop
-                      offset="50%"
-                      stopColor={getEdgeColor(edge.fromColor)}
-                    />
-                    <stop offset="50%" stopColor={getEdgeColor(edge.toColor)} />
-                    <stop
-                      offset="100%"
-                      stopColor={getEdgeColor(edge.toColor)}
-                    />
-                  </linearGradient>
-                )
-              })}
             </defs>
 
             {/* Edges layer - masked to hide under buildings */}
@@ -676,83 +591,94 @@ export default function CampusMap({
               <g className="edges-layer" mask="url(#edgesMask)">
                 {edgePositions.map((edge, index) => {
                   // Calculate center point of the edge
-                  const centerX = (edge.from[0] + edge.to[0]) / 2
-                  const centerY = (edge.from[1] + edge.to[1]) / 2
+                  // const centerX = (edge.from[0] + edge.to[0]) / 2
+                  // const centerY = (edge.from[1] + edge.to[1]) / 2
+
+                  const renderInfo = getEdgeRenderInfo(
+                    edge.orangeClaimed,
+                    edge.purpleClaimed,
+                  )
 
                   return (
                     <g key={`edge-group-${index}`}>
-                      {/* White outline */}
-                      <line
-                        x1={edge.from[0]}
-                        y1={edge.from[1]}
-                        x2={edge.to[0]}
-                        y2={edge.to[1]}
-                        stroke="white"
-                        strokeWidth="11"
-                        strokeOpacity="1.0"
-                        strokeLinecap="round"
-                      />
-                      {/* Colored line */}
-                      <line
-                        x1={edge.from[0]}
-                        y1={edge.from[1]}
-                        x2={edge.to[0]}
-                        y2={edge.to[1]}
-                        stroke={`url(#edgeGradient-${index})`}
-                        strokeWidth="5"
-                        strokeOpacity="1.0"
-                        strokeLinecap="round"
-                      />
+                      {renderInfo.type === 'single' ? (
+                        <>
+                          {/* White outline */}
+                          <line
+                            x1={edge.from[0]}
+                            y1={edge.from[1]}
+                            x2={edge.to[0]}
+                            y2={edge.to[1]}
+                            stroke="white"
+                            strokeWidth="14"
+                            strokeOpacity="1.0"
+                            strokeLinecap="round"
+                          />
+                          {/* Single colored line */}
+                          <line
+                            x1={edge.from[0]}
+                            y1={edge.from[1]}
+                            x2={edge.to[0]}
+                            y2={edge.to[1]}
+                            stroke={renderInfo.color}
+                            strokeWidth="8"
+                            strokeOpacity="1.0"
+                            strokeLinecap="round"
+                          />
+                        </>
+                      ) : (
+                        <>
+                          {/* White outline */}
+                          <line
+                            x1={edge.from[0]}
+                            y1={edge.from[1]}
+                            x2={edge.to[0]}
+                            y2={edge.to[1]}
+                            stroke="white"
+                            strokeWidth="14"
+                            strokeOpacity="1.0"
+                            strokeLinecap="round"
+                          />
+                          {/* Calculate perpendicular offset for double lines */}
+                          {(() => {
+                            const dx = edge.to[0] - edge.from[0]
+                            const dy = edge.to[1] - edge.from[1]
+                            const length = Math.sqrt(dx * dx + dy * dy)
+                            const unitX = length > 0 ? dx / length : 1
+                            const unitY = length > 0 ? dy / length : 0
+                            // Perpendicular vector for offset
+                            const perpX = -unitY * 2 // 1.5px offset
+                            const perpY = unitX * 2
 
-                      {/* Clickable area for "from" half */}
-                      <line
-                        x1={edge.from[0]}
-                        y1={edge.from[1]}
-                        x2={centerX}
-                        y2={centerY}
-                        stroke="transparent"
-                        strokeWidth="15"
-                        strokeLinecap="round"
-                        className="cursor-pointer"
-                        onClick={
-                          disableInteractions
-                            ? undefined
-                            : (e) => {
-                                e.stopPropagation()
-                                toggleEdgeColor(index, 'from')
-                              }
-                        }
-                      />
-
-                      {/* Clickable area for "to" half */}
-                      <line
-                        x1={centerX}
-                        y1={centerY}
-                        x2={edge.to[0]}
-                        y2={edge.to[1]}
-                        stroke="transparent"
-                        strokeWidth="15"
-                        strokeLinecap="round"
-                        className="cursor-pointer"
-                        onClick={
-                          disableInteractions
-                            ? undefined
-                            : (e) => {
-                                e.stopPropagation()
-                                toggleEdgeColor(index, 'to')
-                              }
-                        }
-                      />
-
-                      {/* Center image */}
-                      <image
-                        x={centerX - 10}
-                        y={centerY - 10}
-                        width="20"
-                        height="20"
-                        href="/2x2.png"
-                        style={{ pointerEvents: 'none' }}
-                      />
+                            return (
+                              <>
+                                {/* Orange line */}
+                                <line
+                                  x1={edge.from[0] + perpX}
+                                  y1={edge.from[1] + perpY}
+                                  x2={edge.to[0] + perpX}
+                                  y2={edge.to[1] + perpY}
+                                  stroke={renderInfo.orangeColor}
+                                  strokeWidth="4"
+                                  strokeOpacity="1.0"
+                                  strokeLinecap="round"
+                                />
+                                {/* Purple line */}
+                                <line
+                                  x1={edge.from[0] - perpX}
+                                  y1={edge.from[1] - perpY}
+                                  x2={edge.to[0] - perpX}
+                                  y2={edge.to[1] - perpY}
+                                  stroke={renderInfo.purpleColor}
+                                  strokeWidth="4"
+                                  strokeOpacity="1.0"
+                                  strokeLinecap="round"
+                                />
+                              </>
+                            )
+                          })()}
+                        </>
+                      )}
                     </g>
                   )
                 })}
@@ -763,21 +689,14 @@ export default function CampusMap({
             {showMegagame && (
               <g className="buildings-layer">
                 {megagameLocations.map((megagameLocation) => (
-                  <g
-                    key={megagameLocation.id}
-                    className="group cursor-pointer"
-                    onClick={
-                      disableInteractions
-                        ? undefined
-                        : () => {
-                            toggleBuildingColor(megagameLocation.id)
-                          }
-                    }
-                  >
+                  <g key={megagameLocation.id}>
                     <path
                       d={megagameLocation.path}
-                      className={`${getBuildingColorClasses(getBuildingDisplayColor(megagameLocation.id))} transition-all duration-200`}
+                      className="transition-all duration-200"
                       style={{
+                        fill: getBuildingFillColor(
+                          getBuildingDisplayColor(megagameLocation.id),
+                        ),
                         transformOrigin: 'center',
                         stroke: 'white',
                         strokeWidth: '3',
@@ -797,6 +716,28 @@ export default function CampusMap({
                     )}
                   </g>
                 ))}
+              </g>
+            )}
+
+            {/* Edge center images layer - renders above buildings */}
+            {showMegagame && showMegagameElements && (
+              <g className="edge-images-layer">
+                {edgePositions.map((edge, index) => {
+                  const centerX = (edge.from[0] + edge.to[0]) / 2
+                  const centerY = (edge.from[1] + edge.to[1]) / 2
+
+                  return (
+                    <image
+                      key={`edge-image-${index}`}
+                      x={centerX - 20}
+                      y={centerY - 20}
+                      width="40"
+                      height="40"
+                      href="/building/Locked.png"
+                      style={{ pointerEvents: 'none' }}
+                    />
+                  )
+                })}
               </g>
             )}
 
@@ -837,7 +778,7 @@ export default function CampusMap({
                     dominantBaseline="middle"
                     fill="white"
                     style={{
-                      fontSize: `${40 * textScale}px`,
+                      fontSize: `${(megagameLocation.name.length == 1 ? 60 : 40) * textScale}px`,
                       fontWeight: 'bold',
                       pointerEvents: 'none',
                       filter:

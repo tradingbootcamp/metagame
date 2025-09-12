@@ -215,8 +215,8 @@ export default function CampusPage() {
         showMegagameElements={showMegagameElements}
         showMegagameColor={showMegagameColor}
         textScale={textScale}
-      />*/}
-      <CampusMap
+      /> 
+	  <CampusMap
         showMegagameNames={false}
         showBuildingNames={true}
         showLocationNames={false}
@@ -225,6 +225,16 @@ export default function CampusPage() {
         showMegagameElements={false}
         showMegagameColor={false}
         textScale={2.0}
+      />*/}
+      <CampusMap
+        showMegagameNames={true}
+        showBuildingNames={false}
+        showLocationNames={false}
+        showLocationDescription={false}
+        showMegagame={true}
+        showMegagameElements={true}
+        showMegagameColor={true}
+        textScale={1.0}
       />
     </div>
   )
