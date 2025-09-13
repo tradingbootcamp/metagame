@@ -197,6 +197,7 @@ export default function Schedule({
     startTime: string
     locationId: string
   } | null>(null)
+  const [, setCurrentTimeForceUpdate] = useState(0)
 
   const openedSession = useMemo(() => {
     return sessions.find((s) => s.id === openedSessionId) ?? null
@@ -279,6 +280,49 @@ export default function Schedule({
         return scheduleColors[userIsRsvpd].category[SESSION_CATEGORIES.OTHER]
     }
   }
+
+  // Calculate current time position for the red line
+  const getCurrentTimePosition = () => {
+    const now = new Date()
+    const currentDay = CONFERENCE_DAYS[currentDayIndex]
+
+    // Check if current day matches the selected day
+    const todayParts = dateUtils.getPacificParts(now)
+    const selectedDayParts = dateUtils.getPacificParts(currentDay.date)
+
+    if (
+      todayParts.day !== selectedDayParts.day ||
+      todayParts.month !== selectedDayParts.month ||
+      todayParts.year !== selectedDayParts.year
+    ) {
+      return null // Not today, don't show the line
+    }
+
+    const currentMinutes = dateUtils.getPSTMinutes(now.toISOString())
+    const startMinutes = SCHEDULE_START_TIMES[currentDayIndex] * 60
+    const endMinutes = SCHEDULE_END_TIMES[currentDayIndex] * 60
+
+    // Only show if within schedule hours
+    if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
+      return null
+    }
+
+    // Calculate offset from start of schedule in pixels (2px per minute)
+    const offsetFromStart = (currentMinutes - startMinutes) * 2
+    return offsetFromStart
+  }
+
+  const currentTimePosition = getCurrentTimePosition()
+
+  // Update current time position every minute
+  useEffect(() => {
+    const interval = setInterval(() => {
+      // Force re-render to update current time position every minute
+      setCurrentTimeForceUpdate((prev) => prev + 1)
+    }, 60000) // Update every minute
+
+    return () => clearInterval(interval)
+  }, [])
 
   return (
     <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
@@ -431,7 +475,7 @@ export default function Schedule({
 
           {/* Time Slots Grid */}
           <div
-            className="grid bg-dark-400"
+            className="relative grid bg-dark-400"
             style={{
               gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
             }}
@@ -579,6 +623,26 @@ export default function Schedule({
                 })}
               </div>
             ))}
+
+            {/* Current Time Indicator - Red horizontal line */}
+            {currentTimePosition !== null && (
+              <div
+                className="pointer-events-none absolute right-0 left-0 z-[100] h-[2px] bg-red-600 shadow-lg"
+                style={{
+                  top: `${currentTimePosition}px`,
+                }}
+              >
+                {/* Time label on the left */}
+                <div className="absolute top-[-12px] left-2 rounded bg-red-600 px-1 py-0.5 text-xs font-medium text-white shadow-lg">
+                  {new Intl.DateTimeFormat('en-US', {
+                    timeZone: 'America/Los_Angeles',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false,
+                  }).format(new Date())}
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>
