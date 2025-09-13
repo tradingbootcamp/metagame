@@ -59,6 +59,11 @@ export function IssueTicketForm({}: {
   const [existingUsers, setExistingUsers] = useState<DbFullProfile[]>([])
   const [loadingUsers, setLoadingUsers] = useState(false)
   const [extraFieldsOpen, setExtraFieldsOpen] = useState(false)
+  const [usdPaidInput, setUsdPaidInput] = useState('')
+  const [btcPaidInput, setBtcPaidInput] = useState('')
+
+  const USD_DECIMAL = /^\d*\.?\d{0,2}$/
+  const BTC_DECIMAL = /^\d*\.?\d{0,8}$/
   useEffect(() => {
     const loadUsers = async () => {
       setLoadingUsers(true)
@@ -84,6 +89,8 @@ export function IssueTicketForm({}: {
 
   const resetForm = () => {
     setFormData(initialFormData)
+    setUsdPaidInput('')
+    setBtcPaidInput('')
   }
 
   const validateForm = (): string | null => {
@@ -124,7 +131,11 @@ export function IssueTicketForm({}: {
     setSuccess(null)
 
     try {
-      const result = await adminIssueTicket(formData)
+      const payload = {
+        ...formData,
+        purchaserName: (formData.purchaserName || '').trim(),
+      }
+      const result = await adminIssueTicket(payload)
       setSuccess(
         `Ticket issued successfully! Ticket code: ${result.dbTicket.ticket_code}. Full result: ${JSON.stringify(result, null, 2)}`,
       )
@@ -247,9 +258,7 @@ export function IssueTicketForm({}: {
             id="purchaserName"
             type="text"
             value={formData.purchaserName}
-            onChange={(e) =>
-              updateFormData({ purchaserName: e.target.value.trim() })
-            }
+            onChange={(e) => updateFormData({ purchaserName: e.target.value })}
             placeholder="Enter purchaser name (optional)"
             className="mt-1"
           />
@@ -289,36 +298,50 @@ export function IssueTicketForm({}: {
                 <Label htmlFor="usdPaid">USD Paid</Label>
                 <Input
                   id="usdPaid"
-                  type="number"
-                  step="0.01"
-                  value={formData.usdPaid || ''}
-                  onChange={(e) =>
-                    updateFormData({
-                      usdPaid: e.target.value
-                        ? parseFloat(e.target.value)
-                        : undefined,
-                    })
-                  }
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0.00"
                   className="mt-1"
+                  value={usdPaidInput}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(',', '.')
+                    if (v === '' || USD_DECIMAL.test(v)) {
+                      setUsdPaidInput(v)
+                      updateFormData({
+                        usdPaid:
+                          v === ''
+                            ? undefined
+                            : Number.isFinite(parseFloat(v))
+                              ? parseFloat(v)
+                              : undefined,
+                      })
+                    }
+                  }}
                 />
               </div>
               <div>
                 <Label htmlFor="btcPaid">BTC Paid</Label>
                 <Input
                   id="btcPaid"
-                  type="number"
-                  step="0.00000001"
-                  value={formData.btcPaid || ''}
-                  onChange={(e) =>
-                    updateFormData({
-                      btcPaid: e.target.value
-                        ? parseFloat(e.target.value)
-                        : undefined,
-                    })
-                  }
+                  type="text"
+                  inputMode="decimal"
                   placeholder="0.00000000"
                   className="mt-1"
+                  value={btcPaidInput}
+                  onChange={(e) => {
+                    const v = e.target.value.replace(',', '.')
+                    if (v === '' || BTC_DECIMAL.test(v)) {
+                      setBtcPaidInput(v)
+                      updateFormData({
+                        btcPaid:
+                          v === ''
+                            ? undefined
+                            : Number.isFinite(parseFloat(v))
+                              ? parseFloat(v)
+                              : undefined,
+                      })
+                    }
+                  }}
                 />
               </div>
             </div>
