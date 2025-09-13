@@ -575,6 +575,27 @@ export default function CampusMap({
                   />
                 ))}
               </mask>
+              <filter id="glow">
+                <feFlood floodColor="black" floodOpacity="1" result="flood" />
+                <feComposite
+                  in="flood"
+                  in2="SourceAlpha"
+                  operator="in"
+                  result="blackVersion"
+                />
+                <feGaussianBlur
+                  in="blackVersion"
+                  stdDeviation="4"
+                  result="blur"
+                />
+                <feMerge>
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="blur" />
+                  <feMergeNode in="SourceGraphic" />
+                </feMerge>
+              </filter>
             </defs>
 
             {/* Edges layer - masked to hide under buildings */}
@@ -772,8 +793,7 @@ export default function CampusMap({
                       fontSize: `${(megagameLocation.name.length == 1 ? 60 : 40) * textScale}px`,
                       fontWeight: 'bold',
                       pointerEvents: 'none',
-                      filter:
-                        'drop-shadow(0px 0px 5px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black) drop-shadow(0px 0px 2px black)',
+                      filter: 'url(#glow)',
                     }}
                   >
                     {megagameLocation.name}
