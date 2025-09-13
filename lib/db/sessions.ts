@@ -40,6 +40,10 @@ location:locations!sessions_location_id_fkey (
   id,
   name,
   map_info
+),
+megagame_location:megagame_locations!sessions_megagame_location_fkey (
+  id,
+  name
 )
 `
 export const sessionsService = {

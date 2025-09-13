@@ -18,6 +18,7 @@ export type DbFullSession = Tables<'sessions'> & {
     user: Pick<DbPublicProfile, 'id' | 'team' | 'first_name' | 'last_name'>
   })[]
   location: Pick<DbLocation, 'name' | 'map_info' | 'id'> | null
+  megagame_location: Pick<DbMegagameLocation, 'id' | 'name'> | null
 }
 
 export type DbSessionCategory = Enums<'SESSION_CATEGORY'>

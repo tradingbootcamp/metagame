@@ -454,6 +454,7 @@ export type Database = {
           start_time: string | null
           title: string | null
           winning_team: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location: string | null
         }
         Insert: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -473,6 +474,7 @@ export type Database = {
           start_time?: string | null
           title?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location?: string | null
         }
         Update: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -492,6 +494,7 @@ export type Database = {
           start_time?: string | null
           title?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location?: string | null
         }
         Relationships: [
           {
@@ -520,6 +523,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_megagame_location_fkey"
+            columns: ["megagame_location"]
+            isOneToOne: false
+            referencedRelation: "megagame_locations"
             referencedColumns: ["id"]
           },
         ]
