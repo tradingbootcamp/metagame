@@ -42,7 +42,10 @@ location:locations!sessions_location_id_fkey (
   name,
   map_info
 ),
-card_rewards:celestial_cards(*)
+card_rewards:celestial_cards(
+*,
+details:session_card_rewards(loser_option)
+)
 `
 export const sessionsService = {
   getSessionById: async ({ sessionId }: { sessionId: string }) => {

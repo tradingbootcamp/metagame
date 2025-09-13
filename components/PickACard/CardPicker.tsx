@@ -24,10 +24,8 @@ export default function CardPicker({
   userId: string
   onClose?: () => void
 }) {
-  const cards = session.card_rewards
   const [selectedCard, setSelectedCard] = useState<DbCelestialCard | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
-
   const { selectCard, isSelecting } = useCardSelection({
     userId,
     onSuccess: () => {
@@ -35,6 +33,17 @@ export default function CardPicker({
       onClose?.()
     },
   })
+
+  const winningTeam = session.winning_team
+  const userRsvp = session.rsvps.find((rsvp) => rsvp.user_id === userId)
+  if (!userRsvp) return null
+  const allCards = session.card_rewards
+  const isWinner = userRsvp.user.team === winningTeam
+  const loserOption =
+    allCards.find((card) =>
+      card.details.some((detail) => detail.loser_option),
+    ) ?? allCards[0]
+  const cards = isWinner ? allCards : [loserOption]
 
   return (
     <>

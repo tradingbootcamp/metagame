@@ -17,7 +17,7 @@ export type DbFullSession = Tables<'sessions'> & {
   rsvps: (DbSessionRsvp & {
     user: Pick<DbPublicProfile, 'id' | 'team' | 'first_name' | 'last_name'>
   })[]
-  card_rewards: DbCelestialCard[]
+  card_rewards: (DbCelestialCard & { details: { loser_option: boolean }[] })[]
   location: Pick<DbLocation, 'name' | 'map_info' | 'id'> | null
 }
 

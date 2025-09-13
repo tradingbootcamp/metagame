@@ -378,16 +378,19 @@ export type Database = {
         Row: {
           celestial_card_id: number
           created_at: string
+          loser_option: boolean
           session_id: string
         }
         Insert: {
           celestial_card_id: number
           created_at?: string
+          loser_option?: boolean
           session_id: string
         }
         Update: {
           celestial_card_id?: number
           created_at?: string
+          loser_option?: boolean
           session_id?: string
         }
         Relationships: [
