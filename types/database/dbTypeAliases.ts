@@ -85,5 +85,6 @@ export type DbCouponEmailInsert = TablesInsert<'coupon_emails'>
 export type DbCouponEmailUpdate = TablesUpdate<'coupon_emails'>
 
 export type DbSudoku = Tables<'sudoku'>
+export type DbSudokuInfo = Omit<DbSudoku, 'solution'>
 export type DbSudokuInsert = TablesInsert<'sudoku'>
 export type DbSudokuUpdate = TablesUpdate<'sudoku'>
