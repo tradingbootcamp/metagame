@@ -1,9 +1,11 @@
-'use client'
+'use server'
 
 //import { useState } from 'react'
 import CampusMap /*, { locations, megagameLocations }*/ from './components/CampusMap'
 
-export default function CampusPage() {
+import { sudokuService } from '@/lib/db/sudoku'
+
+export default async function CampusPage() {
   /*const [showMegagameNames, setShowMegagameNames] = useState(false)
   const [showBuildingNames, setShowBuildingNames] = useState(true)
   const [showLocationNames, setShowLocationNames] = useState(false)
@@ -14,7 +16,7 @@ export default function CampusPage() {
   const [showMegagameElements, setShowMegagameElements] = useState(true)
   const [showMegagameColor, setShowMegagameColor] = useState(true)
   const [textScale, setTextScale] = useState(2)*/
-
+  const sudokus = await sudokuService.getSudokus()
   return (
     <div className="min-h-screen p-4">
       <h1 className="mb-8 text-center text-4xl font-bold">Lighthaven Campus</h1>
@@ -234,6 +236,7 @@ export default function CampusPage() {
         showMegagame={true}
         showMegagameElements={true}
         showMegagameColor={true}
+        sudokus={sudokus}
         textScale={1.0}
       />
     </div>

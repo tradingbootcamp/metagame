@@ -21,7 +21,7 @@ export type Database = {
           id: number
           name: string
           points: number
-          text: string
+          text: string | null
         }
         Insert: {
           cost: number
@@ -29,7 +29,7 @@ export type Database = {
           id?: number
           name: string
           points: number
-          text?: string
+          text?: string | null
         }
         Update: {
           cost?: number
@@ -37,7 +37,7 @@ export type Database = {
           id?: number
           name?: string
           points?: number
-          text?: string
+          text?: string | null
         }
         Relationships: []
       }
@@ -188,6 +188,7 @@ export type Database = {
         Row: {
           bio: string | null
           bringing_kids: boolean | null
+          celestial_card_id: number | null
           checked_in: boolean
           discord_handle: string | null
           dismissed_info_request: boolean
@@ -212,6 +213,7 @@ export type Database = {
         Insert: {
           bio?: string | null
           bringing_kids?: boolean | null
+          celestial_card_id?: number | null
           checked_in?: boolean
           discord_handle?: string | null
           dismissed_info_request?: boolean
@@ -236,6 +238,7 @@ export type Database = {
         Update: {
           bio?: string | null
           bringing_kids?: boolean | null
+          celestial_card_id?: number | null
           checked_in?: boolean
           discord_handle?: string | null
           dismissed_info_request?: boolean
@@ -257,7 +260,15 @@ export type Database = {
           team?: Database["public"]["Enums"]["TEAM_COLORS"]
           volunteer?: boolean
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_celestial_card_id_fkey"
+            columns: ["celestial_card_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_cards"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       session_bookmarks: {
         Row: {
@@ -280,6 +291,13 @@ export type Database = {
             foreignKeyName: "session_bookmarks_session_id_fkey"
             columns: ["session_id"]
             isOneToOne: false
+            referencedRelation: "session_card_rewards_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "session_bookmarks_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
             referencedRelation: "sessions"
             referencedColumns: ["id"]
           },
@@ -295,6 +313,53 @@ export type Database = {
             columns: ["user_id"]
             isOneToOne: false
             referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      session_card_rewards: {
+        Row: {
+          celestial_card_id: number
+          created_at: string
+          session_id: string
+        }
+        Insert: {
+          celestial_card_id: number
+          created_at?: string
+          session_id: string
+        }
+        Update: {
+          celestial_card_id?: number
+          created_at?: string
+          session_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "session_card_rewards_celestial_card_id_fkey"
+            columns: ["celestial_card_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_card_rewards_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_card_rewards_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "session_card_rewards_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "session_card_rewards_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions_view"
             referencedColumns: ["id"]
           },
         ]
@@ -319,6 +384,13 @@ export type Database = {
           user_id?: string
         }
         Relationships: [
+          {
+            foreignKeyName: "session_rsvps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_card_rewards_view"
+            referencedColumns: ["session_id"]
+          },
           {
             foreignKeyName: "session_rsvps_session_id_fkey"
             columns: ["session_id"]
@@ -360,6 +432,7 @@ export type Database = {
           reserved_spots: number
           start_time: string | null
           title: string | null
+          winning_team: Database["public"]["Enums"]["TEAM_COLORS"] | null
         }
         Insert: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -378,6 +451,7 @@ export type Database = {
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
+          winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
         }
         Update: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -396,6 +470,7 @@ export type Database = {
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
+          winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
         }
         Relationships: [
           {
@@ -427,6 +502,36 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      sudoku: {
+        Row: {
+          created_at: string
+          id: string
+          image_url: string
+          solution: string
+          solved_orange: boolean
+          solved_purple: boolean
+          title: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          image_url: string
+          solution: string
+          solved_orange?: boolean
+          solved_purple?: boolean
+          title: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          image_url?: string
+          solution?: string
+          solved_orange?: boolean
+          solved_purple?: boolean
+          title?: string
+        }
+        Relationships: []
       }
       tickets: {
         Row: {
@@ -522,6 +627,14 @@ export type Database = {
         }
         Relationships: []
       }
+      session_card_rewards_view: {
+        Row: {
+          reward_card_names: string[] | null
+          session_id: string | null
+          session_name: string | null
+        }
+        Relationships: []
+      }
       session_rsvps_view: {
         Row: {
           created_at: string | null
@@ -531,6 +644,13 @@ export type Database = {
           user_id: string | null
         }
         Relationships: [
+          {
+            foreignKeyName: "session_rsvps_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_card_rewards_view"
+            referencedColumns: ["session_id"]
+          },
           {
             foreignKeyName: "session_rsvps_session_id_fkey"
             columns: ["session_id"]
@@ -573,12 +693,10 @@ export type Database = {
           host_3_last_name: string | null
           id: string | null
           location_id: string | null
-          location_map_info: Json | null
           location_name: string | null
           max_capacity: number | null
           megagame: boolean | null
           min_capacity: number | null
-          reserved_spots: number | null
           rsvp_count: number | null
           start_time: string | null
           title: string | null
@@ -788,4 +906,3 @@ export const Constants = {
     },
   },
 } as const
-
