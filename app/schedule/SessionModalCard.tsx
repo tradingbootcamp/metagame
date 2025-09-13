@@ -257,6 +257,14 @@ export default function SessionDetailsCard({
           </div>
         )}
 
+        {/* Megagame Location */}
+        {session.megagame_location && (
+          <div className="text-secondary-300">
+            This subgame is for control of{' '}
+            <span className="font-bold">{session.megagame_location.name}</span>
+          </div>
+        )}
+
         {/* Admins and Hosts: Session Needs */}
         {currentUserProfile &&
           (currentUserProfile.is_admin ||

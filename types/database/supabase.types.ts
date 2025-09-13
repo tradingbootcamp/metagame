@@ -145,6 +145,27 @@ export type Database = {
         }
         Relationships: []
       }
+      megagame_locations: {
+        Row: {
+          aerial_map_info: Json
+          control: Database["public"]["Enums"]["TEAM_COLORS"]
+          id: string
+          name: string
+        }
+        Insert: {
+          aerial_map_info: Json
+          control?: Database["public"]["Enums"]["TEAM_COLORS"]
+          id?: string
+          name: string
+        }
+        Update: {
+          aerial_map_info?: Json
+          control?: Database["public"]["Enums"]["TEAM_COLORS"]
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       opennode_orders: {
         Row: {
           created_at: string
@@ -494,6 +515,7 @@ export type Database = {
           title: string | null
           win_timestamp: string | null
           winning_team: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location: string | null
         }
         Insert: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -514,6 +536,7 @@ export type Database = {
           title?: string | null
           win_timestamp?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location?: string | null
         }
         Update: {
           ages?: Database["public"]["Enums"]["AGES"] | null
@@ -534,6 +557,7 @@ export type Database = {
           title?: string | null
           win_timestamp?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
+          megagame_location?: string | null
         }
         Relationships: [
           {
@@ -562,6 +586,13 @@ export type Database = {
             columns: ["location_id"]
             isOneToOne: false
             referencedRelation: "locations"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "sessions_megagame_location_fkey"
+            columns: ["megagame_location"]
+            isOneToOne: false
+            referencedRelation: "megagame_locations"
             referencedColumns: ["id"]
           },
         ]

@@ -1,72 +1,35 @@
 'use client'
 
-import React, { createContext, useContext, useEffect, useState } from 'react'
+import { ApiAllLocationsResponse } from '../app/api/queries/locations/route'
+import { ApiAllMegagameLocationsResponse } from '../app/api/queries/megagame_locations/route'
+import { useQuery } from '@tanstack/react-query'
 
-import { DbLocation } from '@/types/database/dbTypeAliases'
-
-interface LocationsContextType {
-  locations: DbLocation[]
-  isLoading: boolean
-  error: string | null
-  refetch: () => Promise<void>
+const fetchLocations = async (): Promise<ApiAllLocationsResponse> => {
+  const response = await fetch('/api/queries/locations')
+  if (!response.ok) {
+    throw new Error('Failed to fetch locations')
+  }
+  return await response.json()
 }
 
-const LocationsContext = createContext<LocationsContextType | undefined>(
-  undefined,
-)
+const fetchMegagameLocations =
+  async (): Promise<ApiAllMegagameLocationsResponse> => {
+    const response = await fetch('/api/queries/megagame_locations')
+    if (!response.ok) {
+      throw new Error('Failed to fetch locations')
+    }
+    return await response.json()
+  }
 
 export const useLocations = () => {
-  const context = useContext(LocationsContext)
-  if (context === undefined) {
-    throw new Error('useLocations must be used within a LocationsProvider')
-  }
-  return context
-}
-
-interface LocationsProviderProps {
-  children: React.ReactNode
-}
-
-export const LocationsProvider: React.FC<LocationsProviderProps> = ({
-  children,
-}) => {
-  const [locations, setLocations] = useState<DbLocation[]>([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
-
-  const fetchLocations = async () => {
-    try {
-      setIsLoading(true)
-      setError(null)
-      const response = await fetch('/api/queries/locations')
-      if (!response.ok) {
-        throw new Error('Failed to fetch locations')
-      }
-      const data = await response.json()
-      setLocations(data)
-    } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Unknown error'
-      setError(errorMessage)
-      console.error('Error fetching locations:', err)
-    } finally {
-      setIsLoading(false)
-    }
-  }
-
-  useEffect(() => {
-    fetchLocations()
-  }, [])
-
-  const value: LocationsContextType = {
-    locations,
-    isLoading,
-    error,
-    refetch: fetchLocations,
-  }
-
-  return (
-    <LocationsContext.Provider value={value}>
-      {children}
-    </LocationsContext.Provider>
-  )
+  const { data: locations = [] } = useQuery({
+    queryKey: ['locations'],
+    queryFn: fetchLocations,
+  })
+  const { data: megagame_locations = [] } = useQuery({
+    queryKey: ['megagame_locations'],
+    queryFn: fetchMegagameLocations,
+    refetchInterval: 1 * 60 * 1000, // Refetch every minute to keep data fresh
+  })
+  return { locations, megagame_locations }
 }

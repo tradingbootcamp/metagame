@@ -42,9 +42,13 @@ location:locations!sessions_location_id_fkey (
   name,
   map_info
 ),
+megagame_location:megagame_locations!sessions_megagame_location_fkey (
+  id,
+  name
+),
 card_rewards:celestial_cards(
-*,
-details:session_card_rewards(loser_option)
+  *,
+  details:session_card_rewards(loser_option)
 )
 `
 export const sessionsService = {
@@ -174,9 +178,10 @@ export const sessionsService = {
     winningTeam: DbTeamColor
   }) => {
     const supabase = createServiceClient()
+
     const { data: session, error } = await supabase
       .from('sessions')
-      .select('megagame, winning_team')
+      .select('megagame, winning_team, megagame_location')
       .eq('id', sessionId)
       .single()
     if (error) {
@@ -188,6 +193,19 @@ export const sessionsService = {
     if (session.winning_team) {
       throw new Error('Winning team already declared')
     }
+
+    if (session.megagame_location) {
+      const { error: locationError } = await supabase
+        .from('megagame_locations')
+        .update({
+          control: winningTeam,
+        })
+        .eq('id', session.megagame_location)
+      if (locationError) {
+        throw new Error(locationError.message)
+      }
+    }
+
     const { data, error: updateError } = await supabase
       .from('sessions')
       .update({

@@ -19,6 +19,7 @@ export type DbFullSession = Tables<'sessions'> & {
   })[]
   card_rewards: (DbCelestialCard & { details: { loser_option: boolean }[] })[]
   location: Pick<DbLocation, 'name' | 'map_info' | 'id'> | null
+  megagame_location: Pick<DbMegagameLocation, 'id' | 'name'> | null
 }
 
 export type DbSessionCategory = Enums<'SESSION_CATEGORY'>
@@ -28,6 +29,8 @@ export type DbTicketType = Enums<'ticket_type'>
 export type DbLocation = Tables<'locations'>
 export type DbLocationInsert = TablesInsert<'locations'>
 export type DbLocationUpdate = TablesUpdate<'locations'>
+
+export type DbMegagameLocation = Tables<'megagame_locations'>
 
 export type DbTicket = Tables<'tickets'>
 export type DbFullTicket = DbTicket & {

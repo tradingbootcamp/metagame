@@ -10,6 +10,17 @@ export const locationsService = {
     return data
   },
 
+  getAllMegagameLocations: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('megagame_locations')
+      .select('*')
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
+
   getOrderedScheduleLocations: async () => {
     const supabase = createServiceClient()
     const { data, error } = await supabase

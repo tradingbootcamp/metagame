@@ -251,11 +251,16 @@ export function AddEventModal({
       if (!oldData) return { oldData: oldData }
       queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.map((session: DbFullSession) =>
-          session.id === data.sessionId
-            ? { ...session, ...data.sessionUpdate }
-            : session,
-        )
+        return old.map((session: DbFullSession) => {
+          if (session.id === data.sessionId) {
+            const {
+              megagame_location: _megagame_location,
+              ...updateWithoutMegagameLocation
+            } = data.sessionUpdate
+            return { ...session, ...updateWithoutMegagameLocation }
+          }
+          return session
+        })
       })
       return { oldData }
     },
@@ -286,11 +291,16 @@ export function AddEventModal({
       if (!oldData) return { oldData: oldData }
       queryClient.setQueryData<DbFullSession[]>(['sessions'], (old) => {
         if (!old) return old
-        return old.map((session) =>
-          session.id === data.sessionId
-            ? { ...session, ...data.payload }
-            : session,
-        )
+        return old.map((session) => {
+          if (session.id === data.sessionId) {
+            const {
+              megagame_location: _megagame_location,
+              ...updateWithoutMegagameLocation
+            } = data.payload
+            return { ...session, ...updateWithoutMegagameLocation }
+          }
+          return session
+        })
       })
 
       // Return context for rollback
