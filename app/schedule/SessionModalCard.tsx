@@ -3,6 +3,7 @@
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 
+import DeclareWinnerButton from './DeclareWinningTeamButton'
 import { AddEventModal } from './EditEventModal'
 import { HostListLinks } from './HostListLinks'
 import { AttendanceDisplay } from './RSVPList'
@@ -48,7 +49,6 @@ export default function SessionDetailsCard({
   const [isDragging, setIsDragging] = useState(false)
   const [dragStart, setDragStart] = useState({ x: 0, y: 0 })
   const [isDesktop, setIsDesktop] = useState(false)
-
   useEffect(() => {
     setMounted(true)
     // Check if device is desktop (has mouse)
@@ -133,6 +133,16 @@ export default function SessionDetailsCard({
       })
   }
 
+  const userIsSessionHost =
+    session.host_1_id === currentUserProfile?.id ||
+    session.host_2_id === currentUserProfile?.id ||
+    session.host_3_id === currentUserProfile?.id
+  const canDeclareWinningTeam =
+    session.megagame &&
+    currentUserProfile &&
+    (currentUserProfile.is_admin ||
+      userIsSessionHost ||
+      currentUserProfile.team === 'green')
   return (
     <div className="relative max-h-[calc(100vh-100px)] w-full max-w-xl overflow-auto rounded-xl border border-secondary-300 bg-dark-600 p-4 shadow-2xl lg:min-w-[480px] lg:p-6">
       {/* Content */}
@@ -144,29 +154,33 @@ export default function SessionDetailsCard({
               <SessionTitle title={session.title || 'Untitled Session'} />
             </h2>
             {showButtons && (
-              <div className="flex w-fit gap-1 self-start">
-                {showCopiedMessage ? (
-                  <span className="text-light p-1 text-green-400">✓</span>
-                ) : (
-                  <button
-                    onClick={copyLink}
-                    className="cursor-pointer rounded-md p-1 transition-colors hover:bg-dark-400"
-                  >
-                    <LinkIcon
-                      className={`size-4 ${copyError ? 'text-red-500' : 'text-secondary-300'}`}
-                    />
-                  </button>
-                )}
-
-                {/* Edit button for admins */}
-                {canEdit && (
-                  <button
-                    onClick={() => setShowEditModal(true)}
-                    className="cursor-pointer rounded-md p-1 transition-colors hover:bg-dark-400"
-                    title="Edit Event"
-                  >
-                    <EditIcon className="size-4 text-secondary-300" />
-                  </button>
+              <div className="flex flex-col gap-1">
+                <div className="flex w-fit gap-1 self-start">
+                  {showCopiedMessage ? (
+                    <span className="text-light p-1 text-green-400">✓</span>
+                  ) : (
+                    <button
+                      onClick={copyLink}
+                      className="cursor-pointer rounded-md p-1 transition-colors hover:bg-dark-400"
+                    >
+                      <LinkIcon
+                        className={`size-4 ${copyError ? 'text-red-500' : 'text-secondary-300'}`}
+                      />
+                    </button>
+                  )}
+                  {/* Edit button for admins */}
+                  {canEdit && (
+                    <button
+                      onClick={() => setShowEditModal(true)}
+                      className="cursor-pointer rounded-md p-1 transition-colors hover:bg-dark-400"
+                      title="Edit Event"
+                    >
+                      <EditIcon className="size-4 text-secondary-300" />
+                    </button>
+                  )}
+                </div>
+                {canDeclareWinningTeam && (
+                  <DeclareWinnerButton sessionId={session.id!} />
                 )}
               </div>
             )}

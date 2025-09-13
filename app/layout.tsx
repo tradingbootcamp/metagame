@@ -8,6 +8,7 @@ import { prefetchState } from '@/lib/prefetch'
 import Footer from '@/components/Footer'
 import { KbarApp } from '@/components/Kbar/App'
 import Nav from '@/components/Nav'
+import PickACardMetaProvider from '@/components/PickACard/PickACardMetaProvider'
 
 import '@/app/globals.css'
 import QueryProvider from '@/app/providers/QueryProvider'
@@ -87,6 +88,7 @@ export default async function RootLayout({
         className={`${jura.variable} relative flex min-h-screen flex-col overflow-x-hidden font-sans antialiased`}
       >
         <QueryProvider state={prefetchedState}>
+          <PickACardMetaProvider />
           <KbarApp>
             <Nav />
             <div className="relative flex-grow overflow-x-hidden pt-[72px]">

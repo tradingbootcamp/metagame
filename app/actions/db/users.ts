@@ -2,6 +2,8 @@
 
 import { adminExportWrapper, currentUserWrapper } from './auth'
 
+import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
+import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 
 import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
@@ -70,3 +72,75 @@ export const adminGetUsersFullProfiles = adminExportWrapper(
 export const adminUpdateUserPassword = adminExportWrapper(
   usersService.updateUserPassword,
 )
+
+export const currentUserSelectCardReward = currentUserWrapper(
+  async ({
+    userId,
+    celestialCardId,
+    sessionId,
+  }: {
+    userId: string
+    celestialCardId: number
+    sessionId: string
+  }) => {
+    // look up which team won session and check that user is on that team and rsvpd to that session
+    const session = await sessionsService.getSessionById({ sessionId })
+    if (!session) {
+      throw new Error('Session not found. Please refresh and try again.')
+    }
+    const winningTeam = session.winning_team
+    if (!winningTeam) {
+      throw new Error(
+        'This session has no winning team yet. Card rewards are not available.',
+      )
+    }
+    const userProfile = await usersService.getUserPublicProfileById({ userId })
+    if (!userProfile) {
+      throw new Error('User profile not found. Please refresh and try again.')
+    }
+    const userCardClaim =
+      await playerCardClaimsService.getPlayerCardClaimsByUserIdAndSessionId({
+        userId,
+        sessionId,
+      })
+    if (!userCardClaim) {
+      throw new Error('No valid card claim found for this user and session')
+    }
+    if (userCardClaim.new_card_id) {
+      throw new Error(
+        'You have already claimed a card reward for this session.',
+      )
+    }
+    const cardRewards = session.card_rewards
+    if (!cardRewards.map((card) => card.id).includes(celestialCardId)) {
+      throw new Error(
+        'The selected card is not available as a reward for this session.',
+      )
+    }
+    return playerCardClaimsService.makePlayerCardClaim({
+      userId,
+      sessionId,
+      newCardId: celestialCardId,
+    })
+  },
+)
+
+export const currentUserLatestUnclaimedVictory = async ({
+  timeWindow,
+}: {
+  timeWindow: number
+}) => {
+  const user = await usersService.getCurrentUser()
+  if (!user) {
+    return null
+  }
+  const playerCardClaims =
+    await playerCardClaimsService.getOpenPlayerCardClaimsByPlayerId({
+      userId: user.id,
+      timeWindow,
+    })
+  if (playerCardClaims.length === 0) {
+    return null
+  }
+  return playerCardClaims[0] // throw away all but most recent
+}

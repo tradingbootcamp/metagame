@@ -4,7 +4,7 @@ import { DbFullTicket, DbTicketInsert } from '@/types/database/dbTypeAliases'
 
 const ticketsSelectIncludes = `
   *,
-  owner:profiles!tickets_owner_id_fkey(*)
+  owner:profiles!tickets_owner_id_fkey(*, celestial_card:celestial_cards!profiles_celestial_card_id_fkey(*))
 `
 export const ticketsService = {
   getAllTickets: async () => {

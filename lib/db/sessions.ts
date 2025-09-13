@@ -5,6 +5,7 @@ import {
   DbFullSession,
   DbSessionInsert,
   DbSessionUpdate,
+  DbTeamColor,
 } from '@/types/database/dbTypeAliases'
 
 const sessionsSelectIncludes = `
@@ -44,6 +45,10 @@ location:locations!sessions_location_id_fkey (
 megagame_location:megagame_locations!sessions_megagame_location_fkey (
   id,
   name
+)
+card_rewards:celestial_cards(
+  *,
+  details:session_card_rewards(loser_option)
 )
 `
 export const sessionsService = {
@@ -163,5 +168,58 @@ export const sessionsService = {
       throw new Error(error.message)
     }
     return dbGetHostsFromSession(data)
+  },
+
+  declareWinningTeam: async ({
+    sessionId,
+    winningTeam,
+  }: {
+    sessionId: string
+    winningTeam: DbTeamColor
+  }) => {
+    const supabase = createServiceClient()
+    const { data: session, error } = await supabase
+      .from('sessions')
+      .select('megagame, winning_team')
+      .eq('id', sessionId)
+      .single()
+    if (error) {
+      throw new Error(error.message)
+    }
+    if (!session.megagame) {
+      throw new Error('Session is not a megagame')
+    }
+    if (session.winning_team) {
+      throw new Error('Winning team already declared')
+    }
+    const { data, error: updateError } = await supabase
+      .from('sessions')
+      .update({
+        winning_team: winningTeam,
+        win_timestamp: new Date().toISOString(),
+      })
+      .eq('id', sessionId)
+      .select()
+      .single()
+    if (updateError) {
+      throw new Error(updateError.message)
+    }
+    return data
+  },
+  /** Get a list of sessions whose victory timesamps are within the specified timewindow */
+  getRecentWins: async ({
+    timeWindow = 1000 * 60 * 15,
+  }: {
+    timeWindow?: number
+  }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('sessions')
+      .select('winning_team, win_timestamp')
+      .gte('win_timestamp', new Date(Date.now() - timeWindow).toISOString())
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
   },
 }
