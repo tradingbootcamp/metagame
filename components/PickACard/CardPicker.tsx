@@ -2,6 +2,8 @@
 
 import { useState } from 'react'
 
+import { useRouter } from 'next/navigation'
+
 import PlayerCard from '@/components/PlayerCard'
 import { Button } from '@/components/ui/button'
 import {
@@ -12,45 +14,47 @@ import {
 } from '@/components/ui/dialog'
 
 import { useCardSelection } from '@/hooks/useCardSelection'
-import { DbFullSession } from '@/types/database/dbTypeAliases'
+import { DbFullSession, DbPublicProfile } from '@/types/database/dbTypeAliases'
 import { DbCelestialCard } from '@/types/database/dbTypeAliases'
 
 export default function CardPicker({
   session,
-  userId,
-  onClose,
+  user,
 }: {
   session: DbFullSession
-  userId: string
-  onClose?: () => void
+  user: DbPublicProfile
 }) {
   const [selectedCard, setSelectedCard] = useState<DbCelestialCard | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const router = useRouter()
   const { selectCard, isSelecting } = useCardSelection({
-    userId,
+    userId: user.id,
     onSuccess: () => {
-      setShowConfirmation(false)
-      onClose?.()
+      setTimeout(() => {
+        setShowConfirmation(false)
+        // Force server components to refetch, which should close the modal
+        router.refresh()
+      }, 2000)
     },
   })
 
   const winningTeam = session.winning_team
-  const userRsvp = session.rsvps.find((rsvp) => rsvp.user_id === userId)
-  if (!userRsvp) return null
   const allCards = session.card_rewards
-  const isWinner = userRsvp.user.team === winningTeam
+  const isWinner = user.team === winningTeam
   const loserOption =
     allCards.find((card) =>
       card.details.some((detail) => detail.loser_option),
     ) ?? allCards[0]
   const cards = isWinner ? allCards : [loserOption]
-
+  console.log('cards', cards)
   return (
     <>
       <Dialog open={true} onOpenChange={() => {}}>
         <DialogContent
           className="w-[90%]] mx-4 flex max-w-4xl flex-col !p-1 pb-6 sm:!max-w-4xl"
           style={{ maxWidth: '896px', width: 'calc(100vw - 2rem)' }}
+          id="card-picker"
+          showCloseButton={false}
         >
           <DialogTitle>Pick a Card</DialogTitle>
           <DialogDescription>
@@ -70,7 +74,7 @@ export default function CardPicker({
                 Keep Current
               </span>
               <PlayerCard
-                userId={userId}
+                userId={user.id}
                 asCelestialCard={true}
                 overrideCelestialCard={null}
                 width={150}
@@ -89,7 +93,7 @@ export default function CardPicker({
                   }}
                 >
                   <PlayerCard
-                    userId={userId}
+                    userId={user.id}
                     asCelestialCard={true}
                     overrideCelestialCard={card}
                     width={150}
@@ -118,7 +122,7 @@ export default function CardPicker({
                 Current
               </span>
               <PlayerCard
-                userId={userId}
+                userId={user.id}
                 asCelestialCard={true}
                 overrideCelestialCard={null}
                 width={120}
@@ -137,7 +141,7 @@ export default function CardPicker({
                 {selectedCard ? 'New' : 'Keeping'}
               </span>
               <PlayerCard
-                userId={userId}
+                userId={user.id}
                 asCelestialCard={true}
                 overrideCelestialCard={selectedCard}
                 width={120}
@@ -161,9 +165,9 @@ export default function CardPicker({
                     celestialCardId: selectedCard.id,
                   })
                 } else {
-                  // If keeping current card, just close
+                  // If keeping current card, refresh to close the modal
                   setShowConfirmation(false)
-                  onClose?.()
+                  router.refresh()
                 }
               }}
               disabled={isSelecting}
