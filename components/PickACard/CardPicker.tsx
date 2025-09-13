@@ -46,7 +46,6 @@ export default function CardPicker({
       card.details.some((detail) => detail.loser_option),
     ) ?? allCards[0]
   const cards = isWinner ? allCards : [loserOption]
-  console.log('cards', cards)
   return (
     <>
       <Dialog open={true} onOpenChange={() => {}}>
@@ -165,9 +164,10 @@ export default function CardPicker({
                     celestialCardId: selectedCard.id,
                   })
                 } else {
-                  // If keeping current card, refresh to close the modal
-                  setShowConfirmation(false)
-                  router.refresh()
+                  selectCard({
+                    sessionId: session.id,
+                    celestialCardId: user.celestial_card_id || 99999,
+                  })
                 }
               }}
               disabled={isSelecting}

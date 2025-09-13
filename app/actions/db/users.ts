@@ -112,7 +112,11 @@ export const currentUserSelectCardReward = currentUserWrapper(
       )
     }
     const cardRewards = session.card_rewards
-    if (!cardRewards.map((card) => card.id).includes(celestialCardId)) {
+    // verify that the card is in the list of allowed card rewards or the user is keeping their current celestial card
+    if (
+      !cardRewards.map((card) => card.id).includes(celestialCardId) &&
+      !(celestialCardId == userProfile.celestial_card_id)
+    ) {
       throw new Error(
         'The selected card is not available as a reward for this session.',
       )
