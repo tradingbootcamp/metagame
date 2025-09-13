@@ -2,6 +2,7 @@
 
 import React, { useState } from 'react'
 
+import SudokuAnswerDialog from './SudokuAnswerDialog'
 import Image from 'next/image'
 
 import { teamColorToHex } from '@/utils/dbUtils'
@@ -10,6 +11,7 @@ import { useLocations } from '@/hooks/useLocations'
 import {
   DbLocation,
   DbMegagameLocation,
+  DbSudokuInfo,
   DbTeamColor,
 } from '@/types/database/dbTypeAliases'
 
@@ -55,14 +57,14 @@ const getBuildingFillColor = (color: BuildingColor): string => {
   }
 }
 
-const getEdgeRenderInfo = (orangeClaimed: boolean, purpleClaimed: boolean) => {
-  if (!orangeClaimed && !purpleClaimed) {
+const getEdgeRenderInfo = (sudoku: DbSudokuInfo | null) => {
+  if (!sudoku || (!sudoku.solved_purple && !sudoku.solved_orange)) {
     return { type: 'single', color: 'rgba(107, 114, 128, 0.7)' } // gray-500
   }
-  if (orangeClaimed && !purpleClaimed) {
+  if (sudoku.solved_orange && !sudoku.solved_purple) {
     return { type: 'single', color: teamColorToHex('orange') }
   }
-  if (!orangeClaimed && purpleClaimed) {
+  if (!sudoku.solved_orange && sudoku.solved_purple) {
     return { type: 'single', color: teamColorToHex('purple') }
   }
   // Both claimed - render two lines
@@ -170,8 +172,7 @@ interface Edge {
   toMegagameLocation: string
   from: [number, number]
   to: [number, number]
-  orangeClaimed: boolean
-  purpleClaimed: boolean
+  sudokuTitle: string
 }
 
 const edges: Edge[] = [
@@ -180,136 +181,119 @@ const edges: Edge[] = [
     toMegagameLocation: 'B',
     from: [397, 653],
     to: [550, 661],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Desert',
   },
   {
     fromMegagameLocation: 'theBughouse',
     toMegagameLocation: 'A',
     from: [262, 843],
     to: [674, 855],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Frog',
   },
   {
     fromMegagameLocation: 'C',
     toMegagameLocation: 'D',
     from: [444, 445],
     to: [523, 444],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Typha',
   },
   {
     fromMegagameLocation: 'D',
     toMegagameLocation: 'E',
     from: [670, 448],
     to: [600, 519],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Caravan',
   },
   {
     fromMegagameLocation: 'foodCourt',
     toMegagameLocation: 'A',
     from: [1059, 517],
     to: [724, 694],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Monument',
   },
   {
     fromMegagameLocation: 'A',
     toMegagameLocation: 'D',
     from: [606, 603],
     to: [593, 544],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Tree of Life',
   },
   {
     fromMegagameLocation: 'B',
     toMegagameLocation: 'D',
     from: [432, 547],
     to: [520, 500],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Savannah',
   },
   {
     fromMegagameLocation: 'D',
     toMegagameLocation: 'F',
     from: [702, 258],
     to: [598, 356],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Grove',
   },
   {
     fromMegagameLocation: 'A',
     toMegagameLocation: 'E',
     from: [788, 429],
     to: [737, 582],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Pond',
   },
   {
     fromMegagameLocation: 'B',
     toMegagameLocation: 'thePark',
     from: [326, 568],
     to: [316, 482],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Leap!',
   },
   {
     fromMegagameLocation: 'C',
     toMegagameLocation: 'thePark',
     from: [412, 390],
     to: [311, 457],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Exhume',
   },
   {
     fromMegagameLocation: 'E',
     toMegagameLocation: 'theGardens',
     from: [877, 373],
     to: [984, 309],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Baobab',
   },
   {
     fromMegagameLocation: 'F',
     toMegagameLocation: 'theGardens',
     from: [792, 216],
     to: [920, 222],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Frogs',
   },
   {
     fromMegagameLocation: 'theBughouse',
     toMegagameLocation: 'B',
     from: [227, 808],
     to: [258, 702],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Stem',
   },
   {
     fromMegagameLocation: 'theBughouse',
     toMegagameLocation: 'thePark',
     from: [206, 803],
     to: [192, 491],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Lake',
   },
   {
     fromMegagameLocation: 'foodCourt',
     toMegagameLocation: 'E',
     from: [1016, 520],
     to: [848, 494],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Sprout',
   },
   {
     fromMegagameLocation: 'foodCourt',
     toMegagameLocation: 'theGardens',
     from: [1124, 378],
     to: [1023, 313],
-    orangeClaimed: false,
-    purpleClaimed: false,
+    sudokuTitle: 'Creek',
   },
 ]
 
@@ -326,6 +310,7 @@ interface CampusMapProps {
   textScale?: number
   cropped?: boolean
   disableInteractions?: boolean
+  sudokus?: DbSudokuInfo[]
 }
 
 export default function CampusMap({
@@ -341,8 +326,18 @@ export default function CampusMap({
   textScale = 1,
   cropped = false,
   disableInteractions = false,
+  sudokus,
 }: CampusMapProps = {}) {
-  const [edgePositions, setEdgePositions] = useState(edges)
+  const [edgePositions, setEdgePositions] = useState(
+    edges.map((edge) => {
+      const sudoku =
+        sudokus?.find((sudoku) => sudoku.title === edge.sudokuTitle) ?? null
+      return {
+        ...edge,
+        sudoku: sudoku,
+      }
+    }),
+  )
   const [dragState, setDragState] = useState<{
     edgeIndex: number
     endpoint: 'from' | 'to'
@@ -466,7 +461,7 @@ export default function CampusMap({
       console.log('const edges = [')
       edgePositions.forEach((edge, i) => {
         console.log(
-          `  { fromMegagameLocation: '${edge.fromMegagameLocation}', toMegagameLocation: '${edge.toMegagameLocation}', from: [${Math.round(edge.from[0])}, ${Math.round(edge.from[1])}], to: [${Math.round(edge.to[0])}, ${Math.round(edge.to[1])}], orangeClaimed: ${edge.orangeClaimed}, purpleClaimed: ${edge.purpleClaimed} }${i < edgePositions.length - 1 ? ',' : ''}`,
+          `  { fromMegagameLocation: '${edge.fromMegagameLocation}', toMegagameLocation: '${edge.toMegagameLocation}', from: [${Math.round(edge.from[0])}, ${Math.round(edge.from[1])}], to: [${Math.round(edge.to[0])}, ${Math.round(edge.to[1])}], orangeClaimed: ${edge.sudoku?.solved_orange ?? '?'}, purpleClaimed: ${edge.sudoku?.solved_purple ?? '?'} }${i < edgePositions.length - 1 ? ',' : ''}`,
         )
       })
       console.log(']')
@@ -545,10 +540,7 @@ export default function CampusMap({
                   // const centerX = (edge.from[0] + edge.to[0]) / 2
                   // const centerY = (edge.from[1] + edge.to[1]) / 2
 
-                  const renderInfo = getEdgeRenderInfo(
-                    edge.orangeClaimed,
-                    edge.purpleClaimed,
-                  )
+                  const renderInfo = getEdgeRenderInfo(edge.sudoku ?? null)
 
                   return (
                     <g key={`edge-group-${index}`}>
@@ -656,7 +648,7 @@ export default function CampusMap({
                       }}
                     />
                     <title>{megagameLocation.name}</title>
-                    {megagameLocation.name == 'A' && (
+                    {/* {megagameLocation.name == 'A' && (
                       <Image
                         src="/images/building/A_test.svg"
                         alt="Lighthaven Campus"
@@ -664,7 +656,7 @@ export default function CampusMap({
                         className="object-contain"
                         priority
                       />
-                    )}
+                    )} */}
                   </g>
                 ))}
               </g>
@@ -677,15 +669,20 @@ export default function CampusMap({
                   const centerY = (edge.from[1] + edge.to[1]) / 2
 
                   return (
-                    <image
+                    <SudokuAnswerDialog
+                      sudoku={edge.sudoku ?? null}
                       key={`edge-image-${index}`}
-                      x={centerX - 20}
-                      y={centerY - 20}
-                      width="40"
-                      height="40"
-                      href="/building/Locked.png"
-                      style={{ pointerEvents: 'none' }}
-                    />
+                    >
+                      <image
+                        key={`edge-image-${index}`}
+                        x={centerX - 20}
+                        y={centerY - 20}
+                        width="40"
+                        height="40"
+                        href="/building/Locked.png"
+                        className="cursor-pointer"
+                      />
+                    </SudokuAnswerDialog>
                   )
                 })}
               </g>
