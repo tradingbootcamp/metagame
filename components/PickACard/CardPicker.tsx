@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -20,13 +20,48 @@ import { DbCelestialCard } from '@/types/database/dbTypeAliases'
 export default function CardPicker({
   session,
   user,
+  claimCreatedAt,
 }: {
   session: DbFullSession
   user: DbPublicProfile
+  claimCreatedAt: string
 }) {
   const [selectedCard, setSelectedCard] = useState<DbCelestialCard | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [timeRemaining, setTimeRemaining] = useState<string>('')
   const router = useRouter()
+
+  const CLAIM_WINDOW_MS = 2 * 60 * 60 * 1000 // 2 hours
+
+  useEffect(() => {
+    const updateTimer = () => {
+      const claimTime = new Date(claimCreatedAt).getTime()
+      const expirationTime = claimTime + CLAIM_WINDOW_MS
+      const now = Date.now()
+      const remaining = expirationTime - now
+
+      if (remaining <= 0) {
+        setTimeRemaining('Expired')
+        return
+      }
+
+      const hours = Math.floor(remaining / (1000 * 60 * 60))
+      const minutes = Math.floor((remaining % (1000 * 60 * 60)) / (1000 * 60))
+      const seconds = Math.floor((remaining % (1000 * 60)) / 1000)
+
+      if (hours > 0) {
+        setTimeRemaining(`${hours}h ${minutes}m ${seconds}s`)
+      } else if (minutes > 0) {
+        setTimeRemaining(`${minutes}m ${seconds}s`)
+      } else {
+        setTimeRemaining(`${seconds}s`)
+      }
+    }
+
+    updateTimer()
+    const interval = setInterval(updateTimer, 1000)
+    return () => clearInterval(interval)
+  }, [claimCreatedAt])
   const { selectCard, isSelecting } = useCardSelection({
     userId: user.id,
     onSuccess: () => {
@@ -60,6 +95,16 @@ export default function CardPicker({
             Your victory in {session.title} has earned you a reward! You may
             transform your card into any of the following, or keep your existing
             card.
+            <div className="mt-2 flex items-center gap-2">
+              <span className="text-sm font-semibold">
+                Time remaining to choose card:
+              </span>
+              <span
+                className={`font-mono text-sm ${timeRemaining === 'Expired' ? 'text-red-500' : timeRemaining.includes('m') && !timeRemaining.includes('h') ? 'text-yellow-500' : 'text-green-500'}`}
+              >
+                {timeRemaining || 'Loading...'}
+              </span>
+            </div>
           </DialogDescription>
           <div className="grid max-h-[70vh] grid-cols-2 gap-4 self-center overflow-y-auto sm:grid-cols-4">
             <div
