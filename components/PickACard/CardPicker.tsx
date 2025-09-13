@@ -166,7 +166,10 @@ export default function CardPicker({
                 } else {
                   selectCard({
                     sessionId: session.id,
-                    celestialCardId: user.celestial_card_id || 99999,
+                    celestialCardId:
+                      user.celestial_card_id == null
+                        ? 9999
+                        : user.celestial_card_id,
                   })
                 }
               }}
