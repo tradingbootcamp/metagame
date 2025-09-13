@@ -188,7 +188,7 @@ export default function Schedule({
       ),
     }))
   }, [sessions, filterForUserEvents, bookmarks])
-  const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 0)
+  const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 1)
   const [openedSessionId, setOpenedSessionId] = useState<
     DbFullSession['id'] | null
   >(sessionId ?? null)
