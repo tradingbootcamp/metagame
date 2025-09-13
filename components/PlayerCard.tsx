@@ -340,8 +340,8 @@ export default function PlayerCard({
                 className="z-1 object-cover"
               />
               {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
-              {profile.profile_pictures_url &&
-                (gleamFollowsTilt ? (
+              {profile.profile_pictures_url ? (
+                gleamFollowsTilt ? (
                   <div className="absolute inset-0 z-1 overflow-hidden">
                     {/* Spotlight (show only on hover) */}
                     <div
@@ -358,14 +358,24 @@ export default function PlayerCard({
                   </div>
                 ) : (
                   <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                ))}
-              <div className="relative size-full">
+                )
+              ) : (
                 <span
                   style={{ fontSize: 225 * scale }}
                   className="absolute inset-0 z-3 flex h-full w-full items-center justify-center text-celestial-gray"
                 >
                   ?
                 </span>
+              )}
+              <div className="relative size-full">
+                <Image
+                  id="player-picture"
+                  src={profile.profile_pictures_url ?? '/images/incognito.svg'}
+                  alt="Profile picture"
+                  fill
+                  style={{ borderRadius: 12 * scale }}
+                  className="z-2 object-cover"
+                />
                 {asCelestialCard && (
                   <div
                     style={{
