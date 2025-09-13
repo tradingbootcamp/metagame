@@ -15,6 +15,7 @@ export default async function PickACardMetaProvider() {
     <PickACard
       sessionId={unclaimedVictory.session_id}
       userId={unclaimedVictory.user_id}
+      claimCreatedAt={unclaimedVictory.created_at}
     />
   )
 }
