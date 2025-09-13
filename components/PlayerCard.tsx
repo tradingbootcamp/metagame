@@ -403,7 +403,7 @@ export default function PlayerCard({
                 </div>
               )}
               {/* Abilities? (hidden when used on Profile page) */}
-              {asCelestialCard && celestialCard && (
+              {asCelestialCard && celestialCard && celestialCard.text && (
                 <div
                   style={{
                     backgroundImage: `url('/images/cards/gray-wash.png')`,
