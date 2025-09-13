@@ -368,14 +368,16 @@ export default function PlayerCard({
                 </span>
               )}
               <div className="relative size-full">
-                <Image
-                  id="player-picture"
-                  src={profile.profile_pictures_url ?? '/images/incognito.svg'}
-                  alt="Profile picture"
-                  fill
-                  style={{ borderRadius: 12 * scale }}
-                  className="z-2 object-cover"
-                />
+                {profile.profile_pictures_url && (
+                  <Image
+                    id="player-picture"
+                    src={profile.profile_pictures_url}
+                    alt="Profile picture"
+                    fill
+                    style={{ borderRadius: 12 * scale }}
+                    className="z-2 object-cover"
+                  />
+                )}
                 {asCelestialCard && (
                   <div
                     style={{
