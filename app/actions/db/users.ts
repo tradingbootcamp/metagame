@@ -2,6 +2,7 @@
 
 import { adminExportWrapper, currentUserWrapper } from './auth'
 
+import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 
@@ -97,15 +98,18 @@ export const currentUserSelectCardReward = currentUserWrapper(
     if (!userProfile) {
       throw new Error('User profile not found. Please refresh and try again.')
     }
-    if (userProfile.team !== winningTeam) {
-      throw new Error(
-        'Only members of the winning team can claim card rewards.',
-      )
+    const userCardClaim =
+      await playerCardClaimsService.getPlayerCardClaimsByUserIdAndSessionId({
+        userId,
+        sessionId,
+      })
+    if (!userCardClaim) {
+      throw new Error('No valid card claim found for this user and session')
     }
-    const rsvps = session.rsvps
-    const userRsvp = rsvps.find((rsvp) => rsvp.user_id === userId)
-    if (!userRsvp) {
-      throw new Error('You must have RSVPd to this session to claim rewards.')
+    if (userCardClaim.new_card_id) {
+      throw new Error(
+        'You have already claimed a card reward for this session.',
+      )
     }
     const cardRewards = session.card_rewards
     if (!cardRewards.map((card) => card.id).includes(celestialCardId)) {
@@ -113,9 +117,30 @@ export const currentUserSelectCardReward = currentUserWrapper(
         'The selected card is not available as a reward for this session.',
       )
     }
-    return usersService.updateUserProfile({
+    return playerCardClaimsService.makePlayerCardClaim({
       userId,
-      data: { celestial_card_id: celestialCardId },
+      sessionId,
+      newCardId: celestialCardId,
     })
   },
 )
+
+export const currentUserLatestUnclaimedVictory = async ({
+  timeWindow,
+}: {
+  timeWindow: number
+}) => {
+  const user = await usersService.getCurrentUser()
+  if (!user) {
+    return null
+  }
+  const playerCardClaims =
+    await playerCardClaimsService.getOpenPlayerCardClaimsByPlayerId({
+      userId: user.id,
+      timeWindow,
+    })
+  if (playerCardClaims.length === 0) {
+    return null
+  }
+  return playerCardClaims[0] // throw away all but most recent
+}
