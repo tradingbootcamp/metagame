@@ -8,7 +8,35 @@ import Image from 'next/image'
 import { Card } from '@/components/Card'
 
 import { usePublicProfile } from '@/hooks/useProfiles'
+import {
+  DbCelestialCard,
+  DbPublicProfile,
+} from '@/types/database/dbTypeAliases'
 
+const dummyProfile: DbPublicProfile = {
+  id: '1',
+  first_name: '',
+  last_name: '',
+  pronouns: null,
+  minor: false,
+  team: 'green',
+  discord_handle: null,
+  opted_in_to_homepage_display: true,
+  bio: null,
+  is_admin: false,
+  homepage_order: 0,
+  site_name: null,
+  site_url: null,
+  site_name_2: null,
+  site_url_2: null,
+  dismissed_info_request: false,
+  profile_pictures_url: null,
+  player_id: 3141,
+  volunteer: false,
+  celestial_card_id: null,
+  celestial_card: null,
+  checked_in: false,
+}
 // Establish some base numbers
 const CARD_WIDTH = 800 // width of the card image unscaled
 const CARD_HEIGHT = 1200 // height of the card image unscaled
@@ -26,28 +54,28 @@ const SHORT_BANNER_HEIGHT = 99 // the inside height of the short top banner (hol
 const TALL_BANNER_HEIGHT = 203 // the inside height of the tall top banner (holds name)
 const TIP_TOP_FRAME = 6 // the width of the very outermost frame edge of the frame
 const NO_ABILITY_BIO_CHAR_LIMIT = 330 // different char limit for when we do not need space for abilities
-const ABILITY_COST_SIZE = 75 // width of Ability cost square
 const PICTURE_HEIGHT = CARD_HEIGHT / 2 // height of framed profile picture
 export default function PlayerCard({
   userId,
-  asProfile = false,
   tiltFactor = 0,
   gleamFollowsTilt = false,
   tiny = false,
   width = 300,
   showStatBoxes = false,
+  asCelestialCard = false,
+  overrideCelestialCard = null,
 }: {
   userId: string | null
-  asProfile?: boolean
   tiltFactor?: number
   gleamFollowsTilt?: boolean
   tiny?: boolean
   width?: number
   showStatBoxes?: boolean
+  asCelestialCard?: boolean
+  overrideCelestialCard?: DbCelestialCard | null
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
-
   // Calculate some of our constants based on card tinystatus
   const TOP_FROM_TOP = isTiny
     ? TOP_FROM_TOP_TALL_BANNER
@@ -62,15 +90,16 @@ export default function PlayerCard({
     (showStatBoxes ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
     (isTiny ? 0 : CIRCLE_DIAMETER) // ~estimates size of player_id, this could be its own placeholder prob
 
-  const bioCharLimit =
-    (asProfile ? NO_ABILITY_BIO_CHAR_LIMIT : BIO_CHAR_LIMIT) *
-    (isTiny ? 0.3 : 1)
-  const oneLineNameLengthLimit = showStatBoxes ? 11 : 17
+  const bioCharLimit = asCelestialCard
+    ? BIO_CHAR_LIMIT
+    : NO_ABILITY_BIO_CHAR_LIMIT
+  const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
   const {
-    data: profile,
+    data: profileData,
     isLoading: profileLoading,
     isError: profileError,
   } = usePublicProfile(userId)
+  const profile = userId === null ? dummyProfile : profileData
   const washImageSrcs = {
     orange: '/images/cards/orange-wash.png',
     purple: '/images/cards/purple-wash.png',
@@ -88,7 +117,7 @@ export default function PlayerCard({
   if (profileLoading || profileError || !profile) {
     return (
       <div
-        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell"
+        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell text-celestial-primary"
         style={{
           width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
@@ -126,7 +155,7 @@ export default function PlayerCard({
           // }}
           className="absolute inset-0 z-2 flex items-center justify-center"
         >
-          <div className="flex flex-col items-center text-gray-200">
+          <div className="flex flex-col items-center text-celestial-gray">
             <span>{profileLoading ? '?' : 'X'}</span>
             <span style={{ fontSize: 100 * scale }}>
               {profileLoading ? 'Loading...' : 'Error'}
@@ -136,6 +165,7 @@ export default function PlayerCard({
       </div>
     )
   }
+  const celestialCard = overrideCelestialCard ?? profile?.celestial_card ?? null
 
   return (
     <Card borderless padless tiltFactor={tiltFactor}>
@@ -178,8 +208,9 @@ export default function PlayerCard({
                   100% calc(100% - 5px), calc(100% - 5px) 100%, 
                   5px 100%, 0 calc(100% - 5px), 0 5px
                 )`,
+                backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden"
+              className="absolute z-5 overflow-hidden bg-cover"
             >
               <Image
                 src="/images/cards/celestial-square-section.png"
@@ -188,13 +219,14 @@ export default function PlayerCard({
                 objectFit="cover"
                 className="z-2"
               />
-              <Image
-                src="/images/cards/fog.gif"
-                alt="FogPoints"
-                fill
-                objectFit="cover"
-                className="z-1"
-              />
+              {asCelestialCard && (
+                <span
+                  style={{ fontSize: 130 * scale }}
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
+                >
+                  {celestialCard?.points ?? ''}
+                </span>
+              )}
             </div>
             {/* Points? Cirlce icon */}
             <div
@@ -203,8 +235,9 @@ export default function PlayerCard({
                 height: CIRCLE_DIAMETER * scale,
                 top: CIRCLE_FROM_EDGE * scale,
                 left: CIRCLE_FROM_EDGE * scale,
+                backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-4 overflow-hidden rounded-full"
+              className="absolute z-5 overflow-hidden rounded-full bg-cover"
             >
               <Image
                 src="/images/cards/celestial-circle-cost.png"
@@ -213,13 +246,15 @@ export default function PlayerCard({
                 objectFit="cover"
                 className="z-2"
               />
-              <Image
-                src="/images/cards/fog.gif"
-                alt="FogBreath"
-                fill
-                objectFit="cover"
-                className="z-1"
-              />
+
+              {asCelestialCard && (
+                <span
+                  style={{ fontSize: 130 * scale }}
+                  className="absolute top-1/2 left-1/2 z-3 -translate-x-1/2 -translate-y-1/2 font-cinzel text-celestial-primary"
+                >
+                  {celestialCard?.cost ?? ''}
+                </span>
+              )}
             </div>
           </>
         )}
@@ -227,14 +262,14 @@ export default function PlayerCard({
         {!isTiny && (
           <div
             style={{
-              top: TIP_TOP_FRAME * scale,
+              top: (TOP_FROM_TOP / 2) * scale,
               right: 55 * scale,
               fontSize: 50 * scale,
               height: SHORT_BANNER_HEIGHT * scale,
             }}
-            className="absolute z-4 flex items-center text-white"
+            className="absolute z-4 flex -translate-y-1/2 items-center"
           >
-            <span className="text-opacity-50 font-cinzel text-gray-400">
+            <span className="text-opacity-50 font-cinzel leading-none text-gray-400">
               #{profile.player_id}
             </span>
           </div>
@@ -250,17 +285,17 @@ export default function PlayerCard({
             width: NAME_DIV_WIDTH * scale,
             fontSize: isTiny ? 75 * scale : 50 * scale,
           }}
-          className="absolute z-3 flex items-center font-cinzel leading-none text-white"
+          className="absolute z-3 flex items-center font-cinzel leading-none text-celestial-primary"
         >
           <strong className="flex items-center justify-start gap-1">
             {playerNameLength > oneLineNameLengthLimit ? (
               <div className="flex grow-0 flex-col" id="namecol">
-                <span>{profile.first_name || ""}</span>
-                <span>{profile.last_name || ""}</span>
+                <span>{profile.first_name || ''}</span>
+                <span>{profile.last_name || ''}</span>
               </div>
             ) : (
               <span className="grow-0" id="namesing">
-                {`${profile.first_name || ""} ${profile.last_name || ""}`}
+                {`${profile.first_name || ''} ${profile.last_name || ''}`}
               </span>
             )}
             <span>{profile.minor ? '🌱' : ''}</span>
@@ -282,8 +317,9 @@ export default function PlayerCard({
             top: TOP_FROM_TOP * scale,
             left: FRAME_FROM_EDGE * scale,
           }}
-          className="relative z-2 flex flex-col"
+          className="relative z-4 flex flex-col"
         >
+          {/* Profile Picture */}
           <div
             style={{
               height: PICTURE_HEIGHT * scale,
@@ -304,8 +340,8 @@ export default function PlayerCard({
                 className="z-1 object-cover"
               />
               {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
-              {profile.profile_pictures_url &&
-                (gleamFollowsTilt ? (
+              {profile.profile_pictures_url ? (
+                gleamFollowsTilt ? (
                   <div className="absolute inset-0 z-1 overflow-hidden">
                     {/* Spotlight (show only on hover) */}
                     <div
@@ -322,7 +358,15 @@ export default function PlayerCard({
                   </div>
                 ) : (
                   <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
-                ))}
+                )
+              ) : (
+                <span
+                  style={{ fontSize: 225 * scale }}
+                  className="absolute inset-0 z-3 flex h-full w-full items-center justify-center text-celestial-gray"
+                >
+                  ?
+                </span>
+              )}
               <div className="relative size-full">
                 <Image
                   id="player-picture"
@@ -332,6 +376,18 @@ export default function PlayerCard({
                   style={{ borderRadius: 12 * scale }}
                   className="z-2 object-cover"
                 />
+                {asCelestialCard && (
+                  <div
+                    style={{
+                      fontSize: 70 * scale,
+                      padding: 1 * scale,
+                      backgroundColor: 'rgba(50, 50, 80, 0.5)',
+                    }}
+                    className="absolute bottom-0 z-3 w-full text-center leading-tight text-celestial-primary"
+                  >
+                    {celestialCard?.name ?? ''}
+                  </div>
+                )}
               </div>
             </div>
           </div>
@@ -344,88 +400,69 @@ export default function PlayerCard({
           >
             {/* Bio */}
             <div className="flex flex-col gap-1">
-              <div
-                className="w-full p-1 whitespace-pre-line"
-                title={profile.bio ?? ''}
-              >
-                {(() => {
-                  if (!profile.bio) return ''
-                  // Count each newline as 24 extra characters
-                  const newlineCount = profile.bio.match(/\n/g)?.length || 0
-                  const effectiveLength = profile.bio.length + newlineCount * 24
+              {!isTiny && profile.bio && (
+                <div
+                  className="w-full p-1 whitespace-pre-line"
+                  title={profile.bio ?? ''}
+                >
+                  {(() => {
+                    if (isTiny || !profile.bio) return ''
+                    // Count each newline as 24 extra characters
+                    const newlineCount = profile.bio.match(/\n/g)?.length || 0
+                    const effectiveLength =
+                      profile.bio.length + newlineCount * 24
 
-                  if (effectiveLength > bioCharLimit) {
-                    // Find where to truncate accounting for newlines
-                    let truncateAt = bioCharLimit
-                    let currentLength = 0
-                    let i = 0
+                    if (effectiveLength > bioCharLimit) {
+                      // Find where to truncate accounting for newlines
+                      let truncateAt = bioCharLimit
+                      let currentLength = 0
+                      let i = 0
 
-                    while (
-                      currentLength < bioCharLimit &&
-                      i < profile.bio.length
-                    ) {
-                      if (profile.bio[i] === '\n') {
-                        currentLength += 24
-                      } else {
-                        currentLength += 1
+                      while (
+                        currentLength < bioCharLimit &&
+                        i < profile.bio.length
+                      ) {
+                        if (profile.bio[i] === '\n') {
+                          currentLength += 24
+                        } else {
+                          currentLength += 1
+                        }
+                        if (currentLength <= bioCharLimit) {
+                          truncateAt = i + 1
+                        }
+                        i++
                       }
-                      if (currentLength <= bioCharLimit) {
-                        truncateAt = i + 1
-                      }
-                      i++
+
+                      return profile.bio.slice(0, truncateAt) + '...'
                     }
 
-                    return profile.bio.slice(0, truncateAt) + '...'
-                  }
-
-                  return profile.bio
-                })()}
-              </div>
+                    return profile.bio
+                  })()}
+                </div>
+              )}
               {/* Abilities? (hidden when used on Profile page) */}
-              {!asProfile && (
-                <div className="flex flex-col gap-2">
-                  <div className="flex items-start justify-start gap-1">
-                    <div
-                      className="relative z-1 flex flex-shrink-0 items-center justify-center overflow-hidden rounded-sm"
-                      style={{
-                        width: ABILITY_COST_SIZE * scale,
-                        height: ABILITY_COST_SIZE * scale,
-                      }}
-                    >
-                      <Image
-                        src="/images/cards/fog.gif"
-                        alt=""
-                        fill
-                        objectFit="cover"
-                      />
-                      <span className="z-2"></span>
-                    </div>
-                    <span>
-                      <strong>Ability 1:</strong> Your first ability, it
-                      probably takes at least this many characters to describe
-                    </span>
-                  </div>
-                  <div className="flex items-center justify-start gap-1">
-                    <div
-                      className="justify-cente relative flex flex-shrink-0 items-center overflow-hidden rounded-sm"
-                      style={{
-                        width: ABILITY_COST_SIZE * scale,
-                        height: ABILITY_COST_SIZE * scale,
-                      }}
-                    >
-                      <Image
-                        src="/images/cards/fog.gif"
-                        alt=""
-                        fill
-                        objectFit="cover"
-                      />
-                      <span className="z-2"></span>
-                    </div>
-                    <span>
-                      <strong>Ability 2:</strong> Your second ability, maybe
-                      this one&apos;s shorter
-                    </span>
-                  </div>
+              {asCelestialCard && celestialCard && celestialCard.text && (
+                <div
+                  style={{
+                    backgroundImage: `url('/images/cards/gray-wash.png')`,
+                    backgroundSize: 'cover',
+                    backgroundPosition: 'center',
+                    padding: 16 * scale,
+                    margin: (isTiny ? 10 : 16) * scale,
+                    borderWidth: 6 * scale,
+                    borderStyle: 'solid',
+                    borderImageSource: `linear-gradient(to top right, #FFD700, #B8860B)`,
+                    borderImageSlice: 1,
+                    fontSize: isTiny
+                      ? 55 *
+                        scale *
+                        ((celestialCard.text?.length ?? 0) < 70 ? 1 : 0.9)
+                      : 40 * scale,
+                  }}
+                  className="text-center text-balance whitespace-pre-line"
+                  title={celestialCard.text?.replace(/\\n/g, '\n') ?? ''}
+                >
+                  {celestialCard.text?.replace(/\\n/g, '\n') ?? ''}
                 </div>
               )}
             </div>
@@ -447,33 +484,48 @@ export default function PlayerCard({
                 </div>
               )}
               {/* Bottom right */}
-              <div
-                style={{
-                  gap: 10 * scale,
-                  paddingRight: 10 * scale,
-                  fontSize: isTiny ? 90 * scale : 40 * scale,
-                }}
-                className={`flex items-center font-bold ${profile.site_name?.includes(' ') ? '' : 'break-all'}`}
-              >
-                <GlobeIcon
+              {profile.site_url && (
+                <div
                   style={{
-                    width: isTiny ? 90 * scale : 40 * scale,
-                    height: isTiny ? 90 * scale : 40 * scale,
+                    gap: 10 * scale,
+                    paddingRight: 10 * scale,
+                    fontSize: isTiny
+                      ? asCelestialCard
+                        ? 50 * scale
+                        : 90 * scale
+                      : 40 * scale,
                   }}
-                  className="shrink-0"
-                />
-                <a
-                  href={profile.site_url ?? ''}
-                  onClick={(e) => {
-                    e.stopPropagation()
-                  }}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="pointer-events-auto z-10 cursor-pointer underline"
+                  className={`flex items-center font-bold ${profile.site_name?.includes(' ') ? '' : 'break-all'}`}
                 >
-                  {profile.site_name}
-                </a>
-              </div>
+                  <GlobeIcon
+                    style={{
+                      width: isTiny
+                        ? asCelestialCard
+                          ? 50 * scale
+                          : 90 * scale
+                        : 40 * scale,
+                      height: isTiny
+                        ? asCelestialCard
+                          ? 50 * scale
+                          : 90 * scale
+                        : 40 * scale,
+                    }}
+                    className="shrink-0"
+                  />
+                  <a
+                    href={profile.site_url ?? ''}
+                    onClick={(e) => {
+                      e.stopPropagation()
+                    }}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="pointer-events-auto z-10 cursor-pointer underline"
+                  >
+                    {profile.site_name ||
+                      profile.site_url?.replace(/^https?:\/\//, '')}
+                  </a>
+                </div>
+              )}
             </div>
           </div>
         </div>

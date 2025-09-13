@@ -29,6 +29,15 @@
   --color-dark-900: #000005;
   --color-dark-950: #000005;
 
+  /* Celestial Card Colors */
+  --color-celestial-primary: #f0e3ca;
+  --color-celestial-teal: #4b7962;
+  --color-celestial-gray: #42413c;
+  --color-celestial-blue: #5e5f73;
+  --color-celestial-orange: #bc6c31;
+  --color-celestial-gold: #836c43;
+  --color-celestial-rose: #b5627b;
+
   /* Semantic Background Colors */
   --color-bg-primary: var(--color-dark-500); /* Main app background */
   --color-bg-secondary: var(

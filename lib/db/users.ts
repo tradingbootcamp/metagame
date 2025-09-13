@@ -13,6 +13,10 @@ import {
   DbTeamColor,
 } from '@/types/database/dbTypeAliases'
 
+const fullProfileSelectIncludes = `
+  *,
+  celestial_card: celestial_cards!profiles_celestial_card_id_fkey(*)
+`
 const publicProfileSelectIncludes = `
   id,
   first_name,
@@ -33,7 +37,9 @@ const publicProfileSelectIncludes = `
   player_id,
   pronouns,
   volunteer,
-  checked_in
+  checked_in,
+  celestial_card_id,
+  celestial_card: celestial_cards!profiles_celestial_card_id_fkey(*)
 `
 export const usersService = {
   /** Get the current authenticated user */
@@ -119,13 +125,13 @@ export const usersService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select(fullProfileSelectIncludes)
       .eq('id', userId)
       .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
-    return data
+    return data satisfies DbFullProfile | null
   },
   getUsersPublicProfiles: async ({ userIds }: { userIds: string[] }) => {
     const supabase = createServiceClient()
@@ -142,7 +148,7 @@ export const usersService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select(fullProfileSelectIncludes)
       .in('id', userIds)
     if (error) {
       throw new Error(error.message)
@@ -172,13 +178,13 @@ export const usersService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select(fullProfileSelectIncludes)
       .eq('email', email)
       .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
-    return data
+    return data satisfies DbFullProfile | null
   },
 
   /** Get a signed URL for uploading a user's profile picture */
@@ -217,12 +223,12 @@ export const usersService = {
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('profiles')
-      .select('*')
+      .select(fullProfileSelectIncludes)
       .order('first_name', { ascending: true })
     if (error) {
       throw new Error(error.message)
     }
-    return data
+    return data satisfies DbFullProfile[]
   },
   getUserPublicProfileById: async ({ userId }: { userId: string }) => {
     const supabase = createServiceClient()
