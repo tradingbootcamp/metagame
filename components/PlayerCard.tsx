@@ -8,8 +8,35 @@ import Image from 'next/image'
 import { Card } from '@/components/Card'
 
 import { usePublicProfile } from '@/hooks/useProfiles'
-import { DbCelestialCard } from '@/types/database/dbTypeAliases'
+import {
+  DbCelestialCard,
+  DbPublicProfile,
+} from '@/types/database/dbTypeAliases'
 
+const dummyProfile: DbPublicProfile = {
+  id: '1',
+  first_name: '',
+  last_name: '',
+  pronouns: null,
+  minor: false,
+  team: 'green',
+  discord_handle: null,
+  opted_in_to_homepage_display: true,
+  bio: null,
+  is_admin: false,
+  homepage_order: 0,
+  site_name: null,
+  site_url: null,
+  site_name_2: null,
+  site_url_2: null,
+  dismissed_info_request: false,
+  profile_pictures_url: null,
+  player_id: 3141,
+  volunteer: false,
+  celestial_card_id: null,
+  celestial_card: null,
+  checked_in: false,
+}
 // Establish some base numbers
 const CARD_WIDTH = 800 // width of the card image unscaled
 const CARD_HEIGHT = 1200 // height of the card image unscaled
@@ -68,10 +95,11 @@ export default function PlayerCard({
     : NO_ABILITY_BIO_CHAR_LIMIT
   const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
   const {
-    data: profile,
+    data: profileData,
     isLoading: profileLoading,
     isError: profileError,
   } = usePublicProfile(userId)
+  const profile = userId === null ? dummyProfile : profileData
   const washImageSrcs = {
     orange: '/images/cards/orange-wash.png',
     purple: '/images/cards/purple-wash.png',
