@@ -62,7 +62,7 @@ export default function TeamGrid({ memberIds }: TeamGridProps) {
           <div className="pointer-events-none relative">
             <PlayerCard
               userId={member.id}
-              asProfile
+              asCelestialCard={true}
               tiltFactor={1}
               gleamFollowsTilt
               showStatBoxes={true}

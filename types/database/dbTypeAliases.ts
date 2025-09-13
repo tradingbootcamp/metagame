@@ -17,6 +17,7 @@ export type DbFullSession = Tables<'sessions'> & {
   rsvps: (DbSessionRsvp & {
     user: Pick<DbPublicProfile, 'id' | 'team' | 'first_name' | 'last_name'>
   })[]
+  card_rewards: (DbCelestialCard & { details: { loser_option: boolean }[] })[]
   location: Pick<DbLocation, 'name' | 'map_info' | 'id'> | null
   megagame_location: Pick<DbMegagameLocation, 'id' | 'name'> | null
 }
@@ -38,7 +39,9 @@ export type DbFullTicket = DbTicket & {
 export type DbTicketInsert = TablesInsert<'tickets'>
 export type DbTicketUpdate = TablesUpdate<'tickets'>
 
-export type DbFullProfile = Tables<'profiles'>
+export type DbFullProfile = Tables<'profiles'> & {
+  celestial_card: DbCelestialCard | null
+}
 export type DbPublicProfileKeys =
   | 'id'
   | 'first_name'
@@ -60,7 +63,10 @@ export type DbPublicProfileKeys =
   | 'pronouns'
   | 'volunteer'
   | 'checked_in'
-export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys>
+  | 'celestial_card_id'
+export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys> & {
+  celestial_card: DbCelestialCard | null
+}
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>
 export type DbTeamColor = Enums<'TEAM_COLORS'>
@@ -91,3 +97,7 @@ export type DbSudoku = Tables<'sudoku'>
 export type DbSudokuInfo = Omit<DbSudoku, 'solution'>
 export type DbSudokuInsert = TablesInsert<'sudoku'>
 export type DbSudokuUpdate = TablesUpdate<'sudoku'>
+
+export type DbCelestialCard = Tables<'celestial_cards'>
+export type DbCelestialCardInsert = TablesInsert<'celestial_cards'>
+export type DbCelestialCardUpdate = TablesUpdate<'celestial_cards'>

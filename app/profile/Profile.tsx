@@ -101,9 +101,14 @@ export default function Profile() {
       return { success: true }
     },
     onSuccess: () => {
+      // Invalidate both private and public profile caches
       queryClient.invalidateQueries({
         queryKey: ['users', 'profile', currentUser?.id],
         exact: false,
+      })
+      // Also explicitly invalidate the public profile used by PlayerCard
+      queryClient.invalidateQueries({
+        queryKey: ['users', 'profile', currentUser?.id, 'public'],
       })
       toast.success('Profile picture updated successfully!')
     },
@@ -119,8 +124,14 @@ export default function Profile() {
       await deleteCurrentUserProfilePicture()
     },
     onSuccess: () => {
+      // Invalidate both private and public profile caches
       queryClient.invalidateQueries({
         queryKey: ['users', 'profile', currentUser?.id],
+        exact: false,
+      })
+      // Also explicitly invalidate the public profile used by PlayerCard
+      queryClient.invalidateQueries({
+        queryKey: ['users', 'profile', currentUser?.id, 'public'],
       })
       toast.success('Profile picture removed successfully!')
     },
@@ -236,7 +247,7 @@ export default function Profile() {
               {currentUser?.id && (
                 <PlayerCard
                   userId={currentUser.id}
-                  asProfile
+                  asCelestialCard={true}
                   tiltFactor={2.5}
                   gleamFollowsTilt
                   showStatBoxes
@@ -329,7 +340,7 @@ export default function Profile() {
             <span>Homepage Display View</span>
             <PlayerCard
               userId={currentUser.id}
-              asProfile
+              asCelestialCard={true}
               tiltFactor={2.5}
               gleamFollowsTilt
               width={150}

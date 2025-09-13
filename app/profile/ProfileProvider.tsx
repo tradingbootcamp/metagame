@@ -8,6 +8,8 @@ import {
 
 import { createClient } from '@/utils/supabase/server'
 
+// import PickACard from '@/components/PickACard/PickACardProvider'
+
 export default async function ProfileProvider() {
   const queryClient = new QueryClient()
 

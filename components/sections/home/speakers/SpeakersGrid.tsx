@@ -57,7 +57,7 @@ export default function SpeakersGrid({ speakerIds }: SpeakersGridProps) {
           <div className="pointer-events-none relative">
             <PlayerCard
               userId={profile.id}
-              asProfile
+              asCelestialCard={false}
               tiltFactor={1}
               gleamFollowsTilt
               width={150}

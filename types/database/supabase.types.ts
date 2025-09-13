@@ -205,6 +205,63 @@ export type Database = {
         }
         Relationships: []
       }
+      player_card_claims: {
+        Row: {
+          created_at: string
+          new_card_id: number | null
+          session_id: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          new_card_id?: number | null
+          session_id: string
+          user_id?: string
+        }
+        Update: {
+          created_at?: string
+          new_card_id?: number | null
+          session_id?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "user_card_claims_new_card_id_fkey"
+            columns: ["new_card_id"]
+            isOneToOne: false
+            referencedRelation: "celestial_cards"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_card_claims_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "session_card_rewards_view"
+            referencedColumns: ["session_id"]
+          },
+          {
+            foreignKeyName: "user_card_claims_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_card_claims_session_id_fkey"
+            columns: ["session_id"]
+            isOneToOne: false
+            referencedRelation: "sessions_view"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "user_card_claims_user_id_fkey"
+            columns: ["user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           bio: string | null
@@ -342,16 +399,19 @@ export type Database = {
         Row: {
           celestial_card_id: number
           created_at: string
+          loser_option: boolean
           session_id: string
         }
         Insert: {
           celestial_card_id: number
           created_at?: string
+          loser_option?: boolean
           session_id: string
         }
         Update: {
           celestial_card_id?: number
           created_at?: string
+          loser_option?: boolean
           session_id?: string
         }
         Relationships: [
@@ -453,6 +513,7 @@ export type Database = {
           reserved_spots: number
           start_time: string | null
           title: string | null
+          win_timestamp: string | null
           winning_team: Database["public"]["Enums"]["TEAM_COLORS"] | null
           megagame_location: string | null
         }
@@ -473,6 +534,7 @@ export type Database = {
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
+          win_timestamp?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
           megagame_location?: string | null
         }
@@ -493,6 +555,7 @@ export type Database = {
           reserved_spots?: number
           start_time?: string | null
           title?: string | null
+          win_timestamp?: string | null
           winning_team?: Database["public"]["Enums"]["TEAM_COLORS"] | null
           megagame_location?: string | null
         }
