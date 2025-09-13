@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
 
   try {
     const rawBody = await req.text()
-
+    console.log('opennode webhook received body: ', rawBody)
     // Check if it looks like form data (contains = and &)
     if (rawBody.includes('=') && !rawBody.trim().startsWith('{')) {
       // Parse as URL-encoded form data
