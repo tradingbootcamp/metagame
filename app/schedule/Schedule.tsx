@@ -627,7 +627,7 @@ export default function Schedule({
             {/* Current Time Indicator - Red horizontal line */}
             {currentTimePosition !== null && (
               <div
-                className="pointer-events-none absolute right-0 left-0 z-[100] h-[2px] bg-red-600 shadow-lg"
+                className="pointer-events-none absolute right-0 left-0 z-[50] h-[2px] bg-red-600 shadow-lg"
                 style={{
                   top: `${currentTimePosition}px`,
                 }}
