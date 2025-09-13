@@ -145,6 +145,27 @@ export type Database = {
         }
         Relationships: []
       }
+      megagame_locations: {
+        Row: {
+          aerial_map_info: Json
+          control: Database["public"]["Enums"]["TEAM_COLORS"]
+          id: string
+          name: string
+        }
+        Insert: {
+          aerial_map_info: Json
+          control?: Database["public"]["Enums"]["TEAM_COLORS"]
+          id?: string
+          name: string
+        }
+        Update: {
+          aerial_map_info?: Json
+          control?: Database["public"]["Enums"]["TEAM_COLORS"]
+          id?: string
+          name?: string
+        }
+        Relationships: []
+      }
       opennode_orders: {
         Row: {
           created_at: string

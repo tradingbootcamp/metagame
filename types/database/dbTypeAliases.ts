@@ -28,6 +28,8 @@ export type DbLocation = Tables<'locations'>
 export type DbLocationInsert = TablesInsert<'locations'>
 export type DbLocationUpdate = TablesUpdate<'locations'>
 
+export type DbMegagameLocation = Tables<'megagame_locations'>
+
 export type DbTicket = Tables<'tickets'>
 export type DbFullTicket = DbTicket & {
   owner: DbFullProfile | null

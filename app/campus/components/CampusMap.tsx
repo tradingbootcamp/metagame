@@ -1,13 +1,17 @@
 'use client'
 
-import React, { useEffect, useState } from 'react'
+import React, { useState } from 'react'
 
 import Image from 'next/image'
 
 import { teamColorToHex } from '@/utils/dbUtils'
 
 import { useLocations } from '@/hooks/useLocations'
-import { DbLocation, DbTeamColor } from '@/types/database/dbTypeAliases'
+import {
+  DbLocation,
+  DbMegagameLocation,
+  DbTeamColor,
+} from '@/types/database/dbTypeAliases'
 
 type BuildingColor = DbTeamColor
 
@@ -69,7 +73,7 @@ const getEdgeRenderInfo = (orangeClaimed: boolean, purpleClaimed: boolean) => {
   }
 }
 
-export const megagameLocations: MegagameLocation[] = [
+export const _megagameLocations: MegagameLocation[] = [
   {
     id: 'A',
     name: 'A',
@@ -262,7 +266,7 @@ const edges: Edge[] = [
   {
     fromMegagameLocation: 'E',
     toMegagameLocation: 'theGardens',
-    from: [977, 373],
+    from: [877, 373],
     to: [984, 309],
     orangeClaimed: false,
     purpleClaimed: false,
@@ -302,7 +306,7 @@ const edges: Edge[] = [
   {
     fromMegagameLocation: 'foodCourt',
     toMegagameLocation: 'theGardens',
-    from: [1024, 378],
+    from: [1124, 378],
     to: [1023, 313],
     orangeClaimed: false,
     purpleClaimed: false,
@@ -322,21 +326,8 @@ interface CampusMapProps {
   textScale?: number
   cropped?: boolean
   disableInteractions?: boolean
-  onLocationsLoaded?: (locations: Location[]) => void
 }
 
-// Create a locations array from the hardcoded data for now
-export const locations = [
-  // This will be populated by the database locations when available
-  // For now, we'll use the megagame locations as fallback
-  ...megagameLocations.map((loc) => ({
-    id: loc.id,
-    name: loc.name,
-    path: loc.path,
-    center: loc.center,
-    description: loc.description,
-  })),
-]
 export default function CampusMap({
   showMegagameNames = false,
   showBuildingNames = false,
@@ -350,7 +341,6 @@ export default function CampusMap({
   textScale = 1,
   cropped = false,
   disableInteractions = false,
-  onLocationsLoaded,
 }: CampusMapProps = {}) {
   const [edgePositions, setEdgePositions] = useState(edges)
   const [dragState, setDragState] = useState<{
@@ -359,73 +349,41 @@ export default function CampusMap({
     offset: [number, number]
   } | null>(null)
   const [showDragHandles, setShowDragHandles] = useState(false)
-  const buildingColors = megagameLocations.reduce(
-    (acc, megagameLocation) => ({
-      ...acc,
-      [megagameLocation.id]: megagameLocation.color,
-    }),
+
+  let dbLocations: DbLocation[] = []
+  let dbMegagameLocations: DbMegagameLocation[] = []
+  let megagameLocations: Location[] = []
+
+  const locations = useLocations()
+  if (highlightLocation) {
+    dbLocations = locations.locations
+  }
+  if (showMegagame || highlightBuilding) {
+    dbMegagameLocations = locations.megagame_locations
+    megagameLocations = dbMegagameLocations.map((dbLocation) => {
+      const mapInfo = dbLocation.aerial_map_info as unknown as MapInfo
+      return {
+        id: dbLocation.id, // Use the database ID to match buildingColors
+        name: mapInfo.name || dbLocation.name,
+        path: mapInfo.path || '',
+        center: mapInfo.center || [0, 0],
+        description: mapInfo.description || '',
+      }
+    })
+  }
+  const buildingColors = dbMegagameLocations.reduce(
+    (acc, dbMegagameLocation) => {
+      return {
+        ...acc,
+        [dbMegagameLocation.id]: dbMegagameLocation.control as BuildingColor,
+      }
+    },
     {} as Record<string, BuildingColor>,
   )
 
-  // Try to use prefetched locations if available, otherwise manage our own state
-  let dbLocations: DbLocation[] = []
-  let usesPrefetchedData = false
-
-  try {
-    const locationsContext = useLocations()
-    dbLocations = locationsContext.locations
-    usesPrefetchedData = true
-  } catch {
-    // useLocations hook not available, we'll fetch our own data
-  }
-
-  const [selfFetchedLocations, setSelfFetchedLocations] = useState<
-    DbLocation[]
-  >([])
-  //const [dbLocationsMapped, setDbLocationsMapped] = useState<Location[]>([])
-
-  // Fetch locations ourselves if not using prefetched data
-  useEffect(() => {
-    if (!usesPrefetchedData) {
-      const fetchLocations = async () => {
-        try {
-          const response = await fetch('/api/queries/locations')
-          const locations = await response.json()
-          setSelfFetchedLocations(locations)
-        } catch (error) {
-          console.error('Error fetching locations:', error)
-          setSelfFetchedLocations([])
-        }
-      }
-      fetchLocations()
-    }
-  }, [usesPrefetchedData])
-
-  // Use prefetched locations or self-fetched locations
-  const effectiveDbLocations = usesPrefetchedData
-    ? dbLocations
-    : selfFetchedLocations
-
-  // Map database locations to Location format using map_info when locations change
-  useEffect(() => {
-    const mappedLocations: Location[] = effectiveDbLocations
-      .filter((loc: DbLocation) => loc.map_info)
-      .map((loc: DbLocation) => {
-        const mapInfo = loc.map_info as unknown as MapInfo
-        return {
-          id: mapInfo.id || loc.id,
-          name: mapInfo.name || loc.name,
-          path: mapInfo.path || '',
-          center: mapInfo.center || [0, 0],
-          description: mapInfo.description || '',
-        }
-      })
-    onLocationsLoaded?.(mappedLocations)
-  }, [effectiveDbLocations, onLocationsLoaded])
-
   const getBuildingDisplayColor = (buildingId: string): BuildingColor => {
-    if (highlightBuilding) {
-      return highlightBuilding === buildingId ? 'green' : 'unassigned'
+    if (highlightBuilding && highlightBuilding === buildingId) {
+      return 'green'
     }
     if (showMegagame && showMegagameColor) {
       return buildingColors[buildingId]
@@ -785,7 +743,7 @@ export default function CampusMap({
             {/* Locations layer - renders on top of buildings */}
             {highlightLocation && (
               <g className="locations-layer">
-                {effectiveDbLocations
+                {dbLocations
                   .filter(
                     (dbLocation) =>
                       dbLocation.id === highlightLocation &&
