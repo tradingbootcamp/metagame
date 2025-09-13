@@ -7,7 +7,59 @@ import { sendAdminErrorEmail, sendTicketConfirmationEmail } from '@/lib/email'
 import { opennode } from '@/lib/opennode'
 
 export async function POST(req: NextRequest) {
-  const body: OpenNodeChargeWebhook = await req.json()
+  let body: OpenNodeChargeWebhook
+
+  try {
+    const rawBody = await req.text()
+
+    // Check if it looks like form data (contains = and &)
+    if (rawBody.includes('=') && !rawBody.trim().startsWith('{')) {
+      // Parse as URL-encoded form data
+      const params = new URLSearchParams(rawBody)
+
+      body = {
+        id: params.get('id') ?? '',
+        description: params.get('description') ?? '',
+        amount: params.get('amount') ? parseInt(params.get('amount')!, 10) : 0,
+        missing_amt: params.get('missing_amt')
+          ? parseInt(params.get('missing_amt')!, 10)
+          : 0,
+        status: params.get('status') ?? '',
+        fiat_value: params.get('fiat_value')
+          ? parseFloat(params.get('fiat_value')!)
+          : 0,
+        source_fiat_value: params.get('source_fiat_value')
+          ? parseFloat(params.get('source_fiat_value')!)
+          : 0,
+        currency: params.get('currency') ?? '',
+        created_at: params.get('created_at')
+          ? parseInt(params.get('created_at')!, 10)
+          : Date.now(),
+        order_id: params.get('order_id') ?? '',
+        address: params.get('address') ?? '',
+        expires_at: params.get('expires_at') || undefined,
+        auto_settle: params.get('auto_settle') === 'true',
+        hashed_order: params.get('hashed_order') ?? '',
+        // Optional fields - only include if present
+        ...(params.get('metadata') && {
+          metadata: JSON.parse(params.get('metadata')!),
+        }),
+        ...(params.get('chain_invoice') && {
+          chain_invoice: JSON.parse(params.get('chain_invoice')!),
+        }),
+        ...(params.get('transactions') && {
+          transactions: JSON.parse(params.get('transactions')!),
+        }),
+      }
+    } else {
+      // Parse as JSON
+      body = JSON.parse(rawBody)
+    }
+  } catch (error) {
+    console.error('Failed to parse OpenNode webhook body:', error)
+    return new NextResponse('Invalid request body', { status: 400 })
+  }
+
   console.log('opennode webhook', body)
   //Skip the hash check when testing webhooks locally
   const ok =
