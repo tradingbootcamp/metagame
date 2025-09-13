@@ -332,14 +332,12 @@ export default function PlayerCard({
                   <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
                 ))}
               <div className="relative size-full">
-                <Image
-                  id="player-picture"
-                  src={profile.profile_pictures_url ?? '/images/incognito.svg'}
-                  alt="Profile picture"
-                  fill
-                  style={{ borderRadius: 12 * scale }}
-                  className="z-2 object-cover"
-                />
+                <span
+                  style={{ fontSize: 225 * scale }}
+                  className="absolute inset-0 z-3 flex h-full w-full items-center justify-center text-celestial-gray"
+                >
+                  ?
+                </span>
                 {asCelestialCard && (
                   <div
                     style={{
