@@ -34,7 +34,7 @@ export const Card: React.FC<CardProps> = ({
     let angleDeg = (() => {
       const existing = el.style.getPropertyValue('--angle')
       const parsed = parseFloat(existing)
-      return Number.isFinite(parsed) ? parsed : 45
+      return Number.isFinite(parsed) ? parsed : Math.random() * 360
     })()
 
     const applyAngle = (deg: number) => {
