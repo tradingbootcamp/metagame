@@ -25,8 +25,9 @@ export default function Holoverlay({
     let ticking = false
     const setAngle = () => {
       const scrollY = window.scrollY || window.pageYOffset || 0
-      const angle = (scrollY * 0.15) % 360
+      const angle = (scrollY * 0.8) % 360
       el.style.setProperty('--angle', `${angle}deg`)
+      el.style.setProperty('--mouseAngle', `${angle}deg`)
     }
 
     const onScroll = () => {
