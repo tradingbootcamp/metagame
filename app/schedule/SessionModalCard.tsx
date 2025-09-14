@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
+import { FaFlagCheckered } from 'react-icons/fa'
 
 import DeclareWinnerButton from './DeclareWinningTeamButton'
 import { AddEventModal } from './EditEventModal'
@@ -18,7 +19,7 @@ import {
 } from 'lucide-react'
 
 import { dateUtils } from '@/utils/dateUtils'
-import { SESSION_AGES } from '@/utils/dbUtils'
+import { SESSION_AGES, teamColorToHex } from '@/utils/dbUtils'
 
 import AddToCalendar from '@/components/AddToCalendar'
 import { SessionTitle } from '@/components/SessionTitle'
@@ -179,8 +180,14 @@ export default function SessionDetailsCard({
                     </button>
                   )}
                 </div>
-                {canDeclareWinningTeam && (
-                  <DeclareWinnerButton sessionId={session.id!} />
+                {session.winning_team ? (
+                  <FaFlagCheckered
+                    style={{ color: teamColorToHex(session.winning_team) }}
+                  />
+                ) : (
+                  canDeclareWinningTeam && (
+                    <DeclareWinnerButton sessionId={session.id!} />
+                  )
                 )}
               </div>
             )}
