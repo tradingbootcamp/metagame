@@ -2,11 +2,15 @@ import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 import { getUserPublicProfileByPlayerId } from '@/app/actions/db/users'
 
+type SearchParams = Promise<{ celestial?: boolean }>
 export default async function ProfilePage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: SearchParams
 }) {
+  const { celestial = false } = await searchParams
   const { id } = await params
   let uuid: string | null
   if (id.length === 4) {
@@ -23,7 +27,7 @@ export default async function ProfilePage({
         userId={uuid}
         tiltFactor={2.5}
         gleamFollowsTilt
-        asCelestialCard={false}
+        asCelestialCard={celestial}
       />
     </div>
   )
