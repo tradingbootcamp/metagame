@@ -26,6 +26,7 @@ export default function CardPicker({
 }) {
   const [selectedCard, setSelectedCard] = useState<DbCelestialCard | null>(null)
   const [showConfirmation, setShowConfirmation] = useState(false)
+  const [open, setOpen] = useState(true)
   const router = useRouter()
 
   const { selectCard, isSelecting } = useCardSelection({
@@ -50,12 +51,12 @@ export default function CardPicker({
   const cards = unSortedCards.sort((a, b) => a.id - b.id)
   return (
     <>
-      <Dialog open={true} onOpenChange={() => {}}>
+      <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent
           className="w-[90%]] mx-4 flex max-w-4xl flex-col !p-1 pb-6 sm:!max-w-4xl"
           style={{ maxWidth: '896px', width: 'calc(100vw - 2rem)' }}
           id="card-picker"
-          showCloseButton={false}
+          showCloseButton={true}
         >
           <DialogTitle>Pick a Card</DialogTitle>
           <DialogDescription>
