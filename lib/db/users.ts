@@ -267,6 +267,14 @@ export const usersService = {
     }
     return data satisfies DbPublicProfile[]
   },
+  getAllUsersIds: async () => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.from('profiles').select('id')
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
   /** Get IDs and player IDs for users on a specific team */
   getUsersIdsByTeam: async ({ team }: { team: DbTeamColor }) => {
     const supabase = createServiceClient()

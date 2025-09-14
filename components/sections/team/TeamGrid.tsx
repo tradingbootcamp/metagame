@@ -50,10 +50,12 @@ export default function TeamGrid({ memberIds }: TeamGridProps) {
 
   // Shuffle the profiles client-side for randomization
   const shuffledProfiles = [...profiles].sort(() => Math.random() - 0.5)
-
+  const teamSorted = [...shuffledProfiles].sort((a, b) =>
+    a.team < b.team ? -1 : 1,
+  )
   return (
     <>
-      {shuffledProfiles.map((member) => (
+      {teamSorted.map((member) => (
         <div key={member.id} className="relative">
           <Link
             className="absolute inset-0 z-0"

@@ -1,15 +1,25 @@
 import { redirect } from 'next/navigation'
 
+import { TEAM_COLORS_ENUM } from '@/utils/dbUtils'
+import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
 import { createClient } from '@/utils/supabase/server'
 
 import TeamGrid from '@/components/sections/team/TeamGrid'
 
 import {
+  getAllUserPublicProfiles,
   getCurrentUserFullProfile,
-  getUsersIdsByTeam,
 } from '@/app/actions/db/users'
 
-export default async function TeamPage() {
+import { DbTeamColor } from '@/types/database/dbTypeAliases'
+
+type SearchParams = Promise<{ color?: string }>
+export default async function TeamPage({
+  searchParams,
+}: {
+  searchParams: SearchParams
+}) {
+  const { color } = await searchParams
   // Ensure the user is logged in; otherwise, send to login
   const supabase = await createClient()
   const {
@@ -19,10 +29,21 @@ export default async function TeamPage() {
   if (!user) {
     redirect('/login?next=/team')
   }
-
-  const profile = await getCurrentUserFullProfile()
-  const team = profile?.team
-
+  const validatedColor =
+    color &&
+    (color === 'all' || TEAM_COLORS_ENUM.includes(color as DbTeamColor))
+      ? (color as DbTeamColor | 'all')
+      : null
+  let team: DbTeamColor | 'all' | null = null
+  if (
+    (await getCurrentUserAuthRank()) >= authLevelsToRanks.GREEN &&
+    validatedColor
+  ) {
+    team = validatedColor
+  } else {
+    const profile = await getCurrentUserFullProfile()
+    team = profile?.team ?? null
+  }
   if (!team || team === 'unassigned') {
     return (
       <section className="mb-[40px] pt-10 text-center">
@@ -35,8 +56,12 @@ export default async function TeamPage() {
       </section>
     )
   }
+  const allProfiles = await getAllUserPublicProfiles()
 
-  const teamMembers = await getUsersIdsByTeam({ team })
+  const teamMembers =
+    team === 'all'
+      ? allProfiles.sort((a, b) => (a.team < b.team ? -1 : 1))
+      : allProfiles.filter((p) => p.team === team)
   const memberIds = teamMembers?.map((m) => m.id) || []
 
   return (
