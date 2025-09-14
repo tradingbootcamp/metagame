@@ -6,7 +6,8 @@
 }
 
 .shine {
-  --angle: 135deg;
+  --angle: 45deg;
+  --mouseAngle: 45deg;
   background: linear-gradient(
     var(--mouseAngle, var(--angle)),
     rgba(255, 0, 0, 0.6),
