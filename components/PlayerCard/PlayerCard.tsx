@@ -144,7 +144,7 @@ export default function PlayerCard({
         />
         {/* Frame Overlay */}
         <Image
-          src="/images/cards/celestial-frame-2x3.png"
+          src="/images/cards/celestial-frame-2x3-shortbanner.png"
           alt="Frame overlay"
           fill
           className="pointer-events-none z-3 object-cover"
