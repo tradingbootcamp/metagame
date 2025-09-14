@@ -80,7 +80,8 @@ export default function CardPicker({
     allCards.find((card) =>
       card.details.some((detail) => detail.loser_option),
     ) ?? allCards[0]
-  const cards = isWinner ? allCards : [loserOption]
+  const unSortedCards = isWinner ? allCards : [loserOption]
+  const cards = unSortedCards.sort((a, b) => a.id - b.id)
   return (
     <>
       <Dialog open={true} onOpenChange={() => {}}>
