@@ -19,7 +19,7 @@ import { downscaleAndUploadImage } from '@/lib/utils'
 
 import { URLS } from '@/utils/urls'
 
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 import { Button, buttonVariants } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'

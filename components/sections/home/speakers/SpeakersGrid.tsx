@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 import { usePublicProfiles } from '@/hooks/useProfiles'
 

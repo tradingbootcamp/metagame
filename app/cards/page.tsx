@@ -2,7 +2,7 @@
 
 import { celestialCardsService } from '@/lib/db/celestialCards'
 
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 export default async function CardsPage() {
   const allCards = await celestialCardsService.getAllCelestialCards()

@@ -1,4 +1,4 @@
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 import { getUserPublicProfileByPlayerId } from '@/app/actions/db/users'
 

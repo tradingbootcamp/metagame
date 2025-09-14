@@ -43,6 +43,7 @@ export const Card: React.FC<CardProps> = ({
 
       setProp('--dy', `${YAngle}deg`)
       setProp('--dx', `${XAngle}deg`)
+      setProp('--mouseAngle', `${Math.atan2(normY, normX)}rad`)
       setProp('--tx', `${normX}`)
       setProp('--ty', `${normY}`)
       const tiltMag = Math.min(1, Math.sqrt(normX * normX + normY * normY))

@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
-import PlayerCard from '@/components/PlayerCard'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 import { Button } from '@/components/ui/button'
 import {
   Dialog,

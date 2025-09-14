@@ -6,6 +6,7 @@ import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 
 import { Card } from '@/components/Card'
+import styles from '@/components/PlayerCard/holo.module.css'
 
 import { usePublicProfile } from '@/hooks/useProfiles'
 import {
@@ -170,12 +171,16 @@ export default function PlayerCard({
   return (
     <Card borderless padless tiltFactor={tiltFactor}>
       <div
-        className="group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell"
+        className={`group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell`}
         style={{
           width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
         }}
       >
+        <div
+          id="holo"
+          className={`z-4 ${styles.shine} ${styles.dice} absolute inset-0 z-3 size-full opacity-[.3] transition-opacity duration-300 hover:opacity-100`}
+        />
         {/* Background card image */}
         <Image
           src={washImageSrcs[profile.team || 'unassigned']}
