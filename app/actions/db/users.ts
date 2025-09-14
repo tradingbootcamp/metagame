@@ -31,6 +31,7 @@ export const getUserPublicProfileById = usersService.getUserPublicProfileById
 export const getUserPublicProfileByPlayerId =
   usersService.getPublicProfileByPlayerId
 export const getUsersIdsByTeam = usersService.getUsersIdsByTeam
+export const getAllUsersIds = usersService.getAllUsersIds
 export const getPublicProfilesByTeam = usersService.getPublicProfilesByTeam
 /* Mutations */
 export const updateCurrentUserProfile = currentUserWrapper(
