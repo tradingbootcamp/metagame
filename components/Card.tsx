@@ -28,6 +28,36 @@ export const Card: React.FC<CardProps> = ({
     const setProp = (prop: string, value: string) =>
       el.style.setProperty(prop, value)
 
+    // Unified angle: mouse sets absolute; scroll applies incremental delta
+    let ticking = false
+    let lastScrollY = window.scrollY || window.pageYOffset || 0
+    let angleDeg = (() => {
+      const existing = el.style.getPropertyValue('--angle')
+      const parsed = parseFloat(existing)
+      return Number.isFinite(parsed) ? parsed : 45
+    })()
+
+    const applyAngle = (deg: number) => {
+      // Normalize within 0..360
+      angleDeg = ((deg % 360) + 360) % 360
+      setProp('--angle', `${angleDeg}deg`)
+    }
+
+    const onScroll = () => {
+      const nowY = window.scrollY || window.pageYOffset || 0
+      const deltaY = nowY - lastScrollY
+      lastScrollY = nowY
+      if (deltaY === 0) return
+      const deltaAngle = deltaY * 0.8
+      if (ticking) return
+      ticking = true
+      requestAnimationFrame(() => {
+        applyAngle(angleDeg + deltaAngle)
+        ticking = false
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+
     const onMouseUpdate = (e: MouseEvent) => {
       const rect = el.getBoundingClientRect()
       const width = el.offsetWidth
@@ -43,7 +73,9 @@ export const Card: React.FC<CardProps> = ({
 
       setProp('--dy', `${YAngle}deg`)
       setProp('--dx', `${XAngle}deg`)
-      setProp('--mouseAngle', `${Math.atan2(normY, normX)}rad`)
+      const angleRad = Math.atan2(normY, normX)
+      const nextAngleDeg = (angleRad * 180) / Math.PI
+      applyAngle(nextAngleDeg)
       setProp('--tx', `${normX}`)
       setProp('--ty', `${normY}`)
       const tiltMag = Math.min(1, Math.sqrt(normX * normX + normY * normY))
@@ -68,6 +100,7 @@ export const Card: React.FC<CardProps> = ({
       el.removeEventListener('mousemove', onMouseUpdate)
       el.removeEventListener('mouseenter', onMouseUpdate)
       el.removeEventListener('mouseleave', resetProps)
+      window.removeEventListener('scroll', onScroll)
     }
   }, [])
 

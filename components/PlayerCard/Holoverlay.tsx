@@ -10,7 +10,7 @@ export type HoloEffect = 'dice' | 'lines' | 'wavy'
 export default function Holoverlay({
   effect,
   className,
-  scrollControlsAngle = true,
+  scrollControlsAngle = false,
 }: {
   effect: HoloEffect
   className?: string
@@ -27,7 +27,6 @@ export default function Holoverlay({
       const scrollY = window.scrollY || window.pageYOffset || 0
       const angle = (scrollY * 0.8) % 360
       el.style.setProperty('--angle', `${angle}deg`)
-      el.style.setProperty('--mouseAngle', `${angle}deg`)
     }
 
     const onScroll = () => {
