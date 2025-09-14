@@ -2,11 +2,11 @@
 
 import { FaDiscord } from 'react-icons/fa'
 
+import Holoverlay, { HoloEffect } from './Holoverlay'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
 
 import { Card } from '@/components/Card'
-import styles from '@/components/PlayerCard/holo.module.css'
 
 import { usePublicProfile } from '@/hooks/useProfiles'
 import {
@@ -65,6 +65,8 @@ export default function PlayerCard({
   showStatBoxes = false,
   asCelestialCard = false,
   overrideCelestialCard = null,
+  holoEffect = 'dice',
+  pictureEffect = null,
 }: {
   userId: string | null
   tiltFactor?: number
@@ -74,6 +76,8 @@ export default function PlayerCard({
   showStatBoxes?: boolean
   asCelestialCard?: boolean
   overrideCelestialCard?: DbCelestialCard | null
+  holoEffect?: HoloEffect | null
+  pictureEffect?: HoloEffect | null
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
@@ -177,10 +181,7 @@ export default function PlayerCard({
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
         }}
       >
-        <div
-          id="holo"
-          className={`z-4 ${styles.shine} ${styles.dice} absolute inset-0 z-3 size-full opacity-[.3] transition-opacity duration-300 hover:opacity-100`}
-        />
+        {holoEffect && <Holoverlay effect={holoEffect} />}
         {/* Background card image */}
         <Image
           src={washImageSrcs[profile.team || 'unassigned']}
@@ -374,14 +375,22 @@ export default function PlayerCard({
               )}
               <div className="relative size-full">
                 {profile.profile_pictures_url && (
-                  <Image
-                    id="player-picture"
-                    src={profile.profile_pictures_url}
-                    alt="Profile picture"
-                    fill
-                    style={{ borderRadius: 12 * scale }}
-                    className="z-2 object-cover"
-                  />
+                  <>
+                    <Image
+                      id="player-picture"
+                      src={profile.profile_pictures_url}
+                      alt="Profile picture"
+                      fill
+                      style={{ borderRadius: 12 * scale }}
+                      className="z-2 object-cover"
+                    />
+                    {pictureEffect && (
+                      <Holoverlay
+                        effect={pictureEffect}
+                        className="opacity-10 hover:opacity-10"
+                      />
+                    )}
+                  </>
                 )}
                 {asCelestialCard && (
                   <div
