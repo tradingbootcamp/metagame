@@ -19,7 +19,6 @@ export default async function CardsPage() {
               overrideCelestialCard={card}
               width={150}
               tiltFactor={0.5}
-              showStatBoxes={true}
             />
           </div>
         ))}

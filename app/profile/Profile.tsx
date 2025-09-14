@@ -250,7 +250,6 @@ export default function Profile() {
                   asCelestialCard={true}
                   tiltFactor={2.5}
                   gleamFollowsTilt
-                  showStatBoxes
                   width={350}
                 />
               )}
@@ -340,11 +339,10 @@ export default function Profile() {
             <span>Homepage Display View</span>
             <PlayerCard
               userId={currentUser.id}
-              asCelestialCard={true}
+              asCelestialCard={false}
               tiltFactor={2.5}
               gleamFollowsTilt
               width={150}
-              showStatBoxes={false}
             />
           </div>
         ) : (

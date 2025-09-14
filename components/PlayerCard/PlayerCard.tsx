@@ -62,7 +62,6 @@ export default function PlayerCard({
   gleamFollowsTilt = false,
   tiny = false,
   width = 300,
-  showStatBoxes = false,
   asCelestialCard = false,
   overrideCelestialCard = null,
   holoEffect = 'dice',
@@ -73,7 +72,6 @@ export default function PlayerCard({
   gleamFollowsTilt?: boolean
   tiny?: boolean
   width?: number
-  showStatBoxes?: boolean
   asCelestialCard?: boolean
   overrideCelestialCard?: DbCelestialCard | null
   holoEffect?: HoloEffect | null
@@ -92,13 +90,13 @@ export default function PlayerCard({
   const NAME_DIV_WIDTH =
     CARD_WIDTH -
     TIP_TOP_FRAME * 2 -
-    (showStatBoxes ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
+    (asCelestialCard ? CIRCLE_DIAMETER + CIRCLE_FROM_EDGE : 0) -
     (isTiny ? 0 : CIRCLE_DIAMETER) // ~estimates size of player_id, this could be its own placeholder prob
 
   const bioCharLimit = asCelestialCard
     ? BIO_CHAR_LIMIT
     : NO_ABILITY_BIO_CHAR_LIMIT
-  const oneLineNameLengthLimit = showStatBoxes ? 12 : 18
+  const oneLineNameLengthLimit = asCelestialCard ? 12 : 18
   const {
     data: profileData,
     isLoading: profileLoading,
@@ -201,7 +199,7 @@ export default function PlayerCard({
           className="pointer-events-none z-3 object-cover"
         />
         {/* Breath Square icon */}
-        {showStatBoxes && (
+        {asCelestialCard && (
           <>
             <div
               style={{
@@ -283,7 +281,7 @@ export default function PlayerCard({
         {/* Name */}
         <div
           style={{
-            left: showStatBoxes ? 210 * scale : 40 * scale,
+            left: asCelestialCard ? 210 * scale : 40 * scale,
             top: TIP_TOP_FRAME * scale,
             height: isTiny
               ? TALL_BANNER_HEIGHT * scale

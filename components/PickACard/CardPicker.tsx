@@ -123,7 +123,6 @@ export default function CardPicker({
                 asCelestialCard={true}
                 overrideCelestialCard={null}
                 width={150}
-                showStatBoxes={true}
               />
             </div>
             {cards
@@ -142,7 +141,6 @@ export default function CardPicker({
                     asCelestialCard={true}
                     overrideCelestialCard={card}
                     width={150}
-                    showStatBoxes={true}
                   />
                 </div>
               ))}
@@ -171,7 +169,6 @@ export default function CardPicker({
                 asCelestialCard={true}
                 overrideCelestialCard={null}
                 width={120}
-                showStatBoxes={true}
               />
             </div>
 
@@ -190,7 +187,6 @@ export default function CardPicker({
                 asCelestialCard={true}
                 overrideCelestialCard={selectedCard}
                 width={120}
-                showStatBoxes={true}
               />
             </div>
           </div>
