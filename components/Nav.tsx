@@ -89,12 +89,12 @@ export default function Nav() {
               <NavItem href="/#speakers" closeMenu={closeMenu}>
                 Speakers
               </NavItem>
-              <NavItem href="/#tickets" closeMenu={closeMenu}>
+              {/* <NavItem href="/#tickets" closeMenu={closeMenu}>
                 Tickets
-              </NavItem>
-              <NavItem href="/contribute" closeMenu={closeMenu}>
+              </NavItem> */}
+              {/* <NavItem href="/contribute" closeMenu={closeMenu}>
                 Get Involved
-              </NavItem>
+              </NavItem> */}
               <NavItem href="/schedule" closeMenu={closeMenu}>
                 Schedule
               </NavItem>

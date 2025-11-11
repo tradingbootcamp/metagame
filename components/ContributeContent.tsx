@@ -127,12 +127,6 @@ export default function ContributeContent() {
               </li>
             </ul>
           </div>
-
-          <div className="flex justify-center">
-            <Button link={URLS.NIGHT_MARKET_BOOTH}>
-              Apply for a Vendor Booth
-            </Button>
-          </div>
         </section>
       </div>
     </div>

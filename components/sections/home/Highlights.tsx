@@ -3,10 +3,7 @@
 import { MoonIcon } from 'lucide-react'
 import Link from 'next/link'
 
-import { URLS } from '@/utils/urls'
-
 import AddToCalendar from '@/components/AddToCalendar'
-import { Button } from '@/components/Button'
 import { Separator } from '@/components/ui/separator'
 
 import { getSessionById } from '@/app/actions/db/sessions'
@@ -122,12 +119,6 @@ export default async function Highlights() {
               </span>
             </li>
           </ul>
-          <Button
-            link={URLS.NIGHT_MARKET_BOOTH}
-            className="w-fit self-center text-center"
-          >
-            Apply for a Vendor Booth!
-          </Button>
         </div>
       </div>
     </section>

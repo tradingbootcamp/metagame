@@ -18,6 +18,8 @@ export const URLS = {
   NIGHT_MARKET_BOOTH:
     'https://airtable.com/appTvPARUssZp4qiB/pagWzXdF8eA6PfDXs/form',
   CAMPUS_GOOGLE_MAPS: 'https://maps.app.goo.gl/f64kWe8TACxtjm5G6',
+  METAGAME_2026_INTEREST:
+    'https://airtable.com/appTvPARUssZp4qiB/pagtwwDizijHH6FkB/form',
 } as const
 
 export const SOCIAL_LINKS = {
