@@ -1,6 +1,7 @@
 packages:
   - .
 onlyBuiltDependencies:
+  - '@jaredreisinger/react-crossword'
   - '@tailwindcss/oxide'
   - sharp
   - supabase
