@@ -3,7 +3,10 @@ import ScheduleProvider from '@/app/schedule/ScheduleProvider'
 
 export default function ScheduleSection() {
   return (
-    <section className="mb-10 flex h-fit w-full max-w-full flex-col justify-center gap-2 overflow-hidden">
+    <section
+      id="schedule"
+      className="mb-10 flex h-fit w-full max-w-full flex-col justify-center gap-2 overflow-hidden"
+    >
       <h2 className="mb-4 text-center text-3xl font-bold">Schedule</h2>
       <p className="mb-8 text-center text-primary-200">
         Times, locations, content, hosts, and the fundamental fabric of reality
