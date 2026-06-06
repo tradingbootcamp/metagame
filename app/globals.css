@@ -381,6 +381,11 @@
 }
 
 /* Only apply hero animation when body has hero-page class */
+html {
+  /* offset #anchor jumps so section headings clear the fixed navbar (~72px) */
+  scroll-padding-top: 5rem;
+}
+
 html::before {
   content: '';
   position: absolute;
