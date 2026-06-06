@@ -54,7 +54,7 @@ export const Hero: React.FC = () => {
         </p>
       </div>
 
-      <div className="bg-opacity-50 mt-14 flex flex-col items-center rounded-lg bg-black p-12">
+      <div className="bg-opacity-50 mt-4 flex flex-col items-center rounded-lg bg-black p-6 md:mt-14 md:p-12">
         <div
           className="w-full animate-pulse text-center font-mono text-6xl font-extrabold text-red-500 uppercase drop-shadow-md md:text-7xl"
           style={{
