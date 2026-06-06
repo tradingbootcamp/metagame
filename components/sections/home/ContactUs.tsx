@@ -12,8 +12,7 @@ export const ContactUs: React.FC = () => {
           <div className="flex h-full flex-col items-center justify-center p-4">
             <h3 className="text-2xl font-bold">Sound fun?</h3>
             <p className="mt-4 text-center">
-              Plans for Metagame 2026 are still in the works; fill out our
-              interest form here to get updates!
+              Metagame 2026 is happening! Sign up for updates here.
             </p>
             <Button
               className="mt-8 uppercase"

@@ -70,7 +70,7 @@ export const Hero: React.FC = () => {
         <Tooltip>
           <TooltipTrigger>
             <a
-              href={URLS.METAGAME_2026_INTEREST}
+              href={URLS.METAGAME_2026_SITE}
               rel="noopener noreferrer"
               target="_blank"
               className="animate-glitch inline-block rounded-lg bg-gray-950 px-8 py-3 font-mono text-lg font-bold text-green-300 shadow-lg ring-2 ring-green-400 transition-all hover:bg-green-600 hover:text-white focus:ring-4 focus:ring-green-300 focus:outline-none"
@@ -81,7 +81,7 @@ export const Hero: React.FC = () => {
             </a>
           </TooltipTrigger>
           <TooltipContent side="bottom">
-            <span>Metagame 2026 interest/updates form</span>
+            <span>Metagame 2026 site</span>
           </TooltipContent>
         </Tooltip>
       </div>

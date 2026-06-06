@@ -20,6 +20,7 @@ export const URLS = {
   CAMPUS_GOOGLE_MAPS: 'https://maps.app.goo.gl/f64kWe8TACxtjm5G6',
   METAGAME_2026_INTEREST:
     'https://airtable.com/appTvPARUssZp4qiB/pagtwwDizijHH6FkB/form',
+  METAGAME_2026_SITE: 'https://2026.metagame.games',
 } as const
 
 export const SOCIAL_LINKS = {
