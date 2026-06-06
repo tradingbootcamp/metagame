@@ -30,7 +30,7 @@ const gameNames = [
 export const Hero: React.FC = () => {
   return (
     <section
-      className="flex h-[80vh] flex-col items-center justify-center px-0 pb-2 md:px-12"
+      className="flex min-h-[80vh] flex-col items-center justify-center px-0 pb-2 md:px-12"
       id="hero"
     >
       <div className="flex max-w-prose flex-col items-center justify-center">
