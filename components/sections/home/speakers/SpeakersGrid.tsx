@@ -1,5 +1,7 @@
 'use client'
 
+import { useEffect, useState } from 'react'
+
 import Link from 'next/link'
 
 import PlayerCard from '@/components/PlayerCard/PlayerCard'
@@ -10,7 +12,21 @@ interface SpeakersGridProps {
   speakerIds: string[]
 }
 
+// Smaller cards on mobile so the grid fits 3 per row instead of 2; PlayerCard
+// scales everything off this width. Keyed to Tailwind's sm breakpoint.
+function useSpeakerCardWidth() {
+  const [width, setWidth] = useState(150)
+  useEffect(() => {
+    const update = () => setWidth(window.innerWidth < 640 ? 104 : 150)
+    update()
+    window.addEventListener('resize', update)
+    return () => window.removeEventListener('resize', update)
+  }, [])
+  return width
+}
+
 export default function SpeakersGrid({ speakerIds }: SpeakersGridProps) {
+  const cardWidth = useSpeakerCardWidth()
   const { profiles, profilesLoading, profilesError } = usePublicProfiles({
     userIds: speakerIds,
     includeFullProfiles: false,
@@ -60,7 +76,7 @@ export default function SpeakersGrid({ speakerIds }: SpeakersGridProps) {
               asCelestialCard={false}
               tiltFactor={1}
               gleamFollowsTilt
-              width={150}
+              width={cardWidth}
             />
           </div>
         </div>
