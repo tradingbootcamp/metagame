@@ -4,10 +4,12 @@ import { useEffect, useMemo, useState } from 'react'
 
 import { AddEventModal } from './EditEventModal'
 import { HostListLinks } from './HostListLinks'
+import { LocationFilterMenu } from './LocationFilterMenu'
 import { AttendanceDisplay } from './RSVPList'
 import SessionDetailsCard from './SessionModalCard'
 import { SessionTooltip } from './SessionTooltip'
 import { scheduleColors } from './scheduleColors'
+import { locationSlug } from './scheduleUtils'
 import {
   ArrowLeftIcon,
   ArrowRightIcon,
@@ -101,10 +103,12 @@ const getEventDurationMinutes = (session: DbFullSession) => {
 export default function Schedule({
   sessionId,
   dayIndex,
+  locationSlugs,
   editPermissions,
 }: {
   sessionId?: string
   dayIndex?: number
+  locationSlugs?: string[]
   editPermissions: Record<string, boolean>
 }) {
   const pathname = usePathname()
@@ -121,11 +125,50 @@ export default function Schedule({
   } = useScheduleStuff()
 
   // Filter and sort locations for schedule display
-  const scheduleLocations = useMemo(() => {
+  const allScheduleLocations = useMemo(() => {
     return locations
       .filter((location) => location.display_in_schedule) // Only show locations that should be displayed in schedule
       .sort((a, b) => a.schedule_display_order - b.schedule_display_order) // Sort by display order
   }, [locations])
+
+  // null = unfiltered (every location shown, no ?locations= in the URL)
+  const [locationFilter, setLocationFilter] = useState<string[] | null>(
+    locationSlugs ?? null,
+  )
+
+  const locationFilterOptions = useMemo(
+    () =>
+      allScheduleLocations.map((location) => ({
+        value: locationSlug(location.name),
+        label: location.name,
+      })),
+    [allScheduleLocations],
+  )
+
+  const selectedLocationSlugs =
+    locationFilter ?? locationFilterOptions.map((option) => option.value)
+
+  const scheduleLocations = useMemo(() => {
+    if (!locationFilter) return allScheduleLocations
+    return allScheduleLocations.filter((location) =>
+      locationFilter.includes(locationSlug(location.name)),
+    )
+  }, [allScheduleLocations, locationFilter])
+
+  const isLocationFiltered = locationFilter !== null
+
+  // repeat(0, ...) is invalid CSS — the browser drops the whole declaration and
+  // keeps the previous track list, leaving a full-width grid with no columns in it
+  const gridTemplateColumns = scheduleLocations.length
+    ? `60px repeat(${scheduleLocations.length}, minmax(180px, 360px))`
+    : '60px'
+
+  const handleLocationFilterChange = (slugs: string[]) => {
+    // Selecting everything is the same as no filter; collapse so the URL stays clean
+    setLocationFilter(
+      slugs.length === locationFilterOptions.length ? null : slugs,
+    )
+  }
 
   const [filterForUserEvents, setFilterForUserEvents] = useState(false)
 
@@ -210,12 +253,14 @@ export default function Schedule({
     if (currentDayIndex !== 0) params.set('day', currentDayIndex.toString())
     if (openedSessionId) params.set('session', openedSessionId)
     if (!openedSessionId) params.delete('session')
+    if (locationFilter?.length)
+      params.set('locations', locationFilter.join(','))
 
     const newUrl = params.toString()
       ? `?${params.toString()}`
       : window.location.pathname
     router.replace(newUrl, { scroll: false })
-  }, [currentDayIndex, openedSessionId, router])
+  }, [currentDayIndex, openedSessionId, locationFilter, router])
 
   const currentDay = days[currentDayIndex] || {
     date: '',
@@ -325,7 +370,7 @@ export default function Schedule({
   }, [])
 
   return (
-    <div className="flex flex-col rounded-2xl bg-dark-500 font-serif">
+    <div className="flex w-fit max-w-full flex-col rounded-2xl bg-dark-500 font-serif">
       <div className="grid grid-cols-[1fr_auto_1fr] items-center border-b border-secondary-300 bg-dark-600 p-4">
         <button
           onClick={prevDay}
@@ -375,17 +420,17 @@ export default function Schedule({
       </div>
 
       {/* Scrollable Schedule Content */}
-      <div className="no-scrollbar flex-1 overflow-x-auto overflow-y-hidden">
+      <div className="no-scrollbar max-w-full flex-1 overflow-x-auto overflow-y-hidden">
         <div className="h-fit min-w-fit">
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
-            className="grid bg-dark-400 lg:top-0 lg:z-30"
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
-            }}
+            className="grid w-fit bg-dark-400 lg:top-0 lg:z-30"
+            style={{ gridTemplateColumns }}
           >
-            <div className="sticky left-0 z-30 border border-secondary-300 bg-dark-600 p-3">
-              {/* Empty space above time column */}
+            <div
+              className={`sticky left-0 z-30 border border-b-0 border-secondary-300 bg-dark-600 p-3 ${isLocationFiltered ? 'animate-filter-active' : ''}`}
+            >
+              {/* Merged with the filter cell below it — both rows are location headers */}
             </div>
             {scheduleLocations.map((location) => (
               <div
@@ -393,14 +438,14 @@ export default function Schedule({
                 className="border border-secondary-300 bg-dark-600 p-3"
               >
                 {location.name === 'The Clocktower' ? (
-                  <BloodDrippingFrame className="z-1 h-24 w-full">
+                  <BloodDrippingFrame className="z-1 mx-auto h-24 w-fit">
                     {location.thumbnail_url ? (
                       <Image
                         src={location.thumbnail_url}
                         alt={location.name}
                         width={100}
                         height={100}
-                        className="h-24 w-full object-cover"
+                        className="h-24 w-auto max-w-full object-cover"
                       />
                     ) : (
                       <div className="h-24 w-full bg-dark-500" />
@@ -412,7 +457,7 @@ export default function Schedule({
                     alt={location.name}
                     width={100}
                     height={100}
-                    className="h-24 w-full object-cover"
+                    className="mx-auto h-24 w-auto max-w-full object-cover"
                   />
                 ) : (
                   <div className="h-24 w-full bg-dark-500" />
@@ -423,13 +468,18 @@ export default function Schedule({
 
           {/* Names Row - Always sticky, with day nav on mobile */}
           <div
-            className="sticky top-0 z-20 grid bg-dark-400"
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
-            }}
+            className="sticky top-0 z-20 grid w-fit bg-dark-400"
+            style={{ gridTemplateColumns }}
           >
-            <div className="sticky top-0 left-0 z-30 border border-b-2 border-secondary-300 bg-dark-600 p-3">
+            <div
+              className={`sticky top-0 left-0 z-30 border border-t-0 border-b-2 border-secondary-300 bg-dark-600 p-3 ${isLocationFiltered ? 'animate-filter-active' : ''}`}
+            >
               <div className="sticky flex size-full flex-col items-center justify-center gap-4 text-sm font-medium text-secondary-300">
+                <LocationFilterMenu
+                  options={locationFilterOptions}
+                  selected={selectedLocationSlugs}
+                  onChange={handleLocationFilterChange}
+                />
                 {currentUserProfile?.id && (
                   <Tooltip>
                     <TooltipTrigger asChild>
@@ -475,10 +525,8 @@ export default function Schedule({
 
           {/* Time Slots Grid */}
           <div
-            className="relative grid bg-dark-400"
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 1fr))`,
-            }}
+            className={`relative grid w-fit bg-dark-400 ${scheduleLocations.length === 0 ? 'hidden' : ''}`}
+            style={{ gridTemplateColumns }}
           >
             {generateTimeSlots(currentDayIndex).map((time) => (
               <div key={time} className="contents">
@@ -646,6 +694,12 @@ export default function Schedule({
           </div>
         </div>
       </div>
+
+      {scheduleLocations.length === 0 && (
+        <div className="w-full p-8 text-center text-sm text-secondary-300">
+          No locations selected — pick some from the filter menu.
+        </div>
+      )}
 
       {openedSession && (
         <Dialog
