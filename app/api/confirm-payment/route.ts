@@ -5,8 +5,19 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 import { apiError } from '@/lib/apiError'
+import { couponsService } from '@/lib/db/coupons'
 import { ticketsService } from '@/lib/db/tickets'
 import { sendTicketConfirmationEmail } from '@/lib/email'
+
+import { TICKET_TYPES_ENUM } from '@/utils/dbUtils'
+
+import { DbTicketType } from '@/types/database/dbTypeAliases'
+
+const asTicketType = (value: string | undefined): DbTicketType | null =>
+  TICKET_TYPES_ENUM.find((type) => type === value) ?? null
+
+const emailsMatch = (a: string, b: string) =>
+  a.trim().toLowerCase() === b.trim().toLowerCase()
 
 export async function POST(request: NextRequest) {
   try {
@@ -14,8 +25,7 @@ export async function POST(request: NextRequest) {
 
     // Validate input using Zod schema
     const validatedData = paymentConfirmationSchema.parse(body)
-    console.log('VALIDATEDDATA', validatedData)
-    const { paymentIntentId, name, email, ticketType } = validatedData
+    const { paymentIntentId } = validatedData
 
     // Retrieve payment intent from Stripe to check its status
     const paymentIntent = await stripe.paymentIntents.retrieve(
@@ -32,6 +42,74 @@ export async function POST(request: NextRequest) {
         success: false,
         error: `Payment not succeeded. Status: ${paymentIntent.status}`,
         paymentIntentId,
+      })
+    }
+
+    // The intent's metadata was written server-side at intent creation, so it —
+    // not the request body — decides what ticket is minted and who gets it. The
+    // body is only allowed to agree.
+    const ticketType = asTicketType(paymentIntent.metadata.ticketTypeId)
+    const email = paymentIntent.metadata.customerEmail
+    const name = paymentIntent.metadata.customerName
+    const expectedAmount = Number(paymentIntent.metadata.finalPrice)
+
+    if (!ticketType || !email || !name || !Number.isFinite(expectedAmount)) {
+      console.error(
+        'Payment intent is missing purchase metadata',
+        paymentIntentId,
+        paymentIntent.metadata,
+      )
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Payment intent is missing purchase details',
+        },
+        { status: 400 },
+      )
+    }
+
+    if (
+      ticketType !== validatedData.ticketType ||
+      !emailsMatch(email, validatedData.email)
+    ) {
+      console.error(
+        'Confirmation request does not match payment intent metadata',
+        paymentIntentId,
+      )
+      return NextResponse.json(
+        {
+          success: false,
+          error: 'Purchase details do not match the payment',
+        },
+        { status: 400 },
+      )
+    }
+
+    if (paymentIntent.amount !== expectedAmount) {
+      console.error(
+        'Payment intent amount does not match the quoted price',
+        paymentIntentId,
+        paymentIntent.amount,
+        expectedAmount,
+      )
+      return NextResponse.json(
+        { success: false, error: 'Payment amount mismatch' },
+        { status: 400 },
+      )
+    }
+
+    // Confirmation is replayable (retries, double submits, a hostile caller), so
+    // one payment intent must only ever produce one ticket.
+    const existingTicket = await ticketsService.getTicketByStripePaymentId({
+      stripePaymentId: paymentIntentId,
+    })
+    if (existingTicket) {
+      return NextResponse.json({
+        success: true,
+        paymentIntentId,
+        alreadyProcessed: true,
+        message:
+          'This payment has already been confirmed. Check your email for your ticket.',
       })
     }
 
@@ -100,19 +178,57 @@ export async function POST(request: NextRequest) {
 
     const airtableResult = await createTicketRecord(airtableRecord)
 
+    const couponCode = paymentIntent.metadata.couponCode
     const supabaseTicketRecord = {
       stripe_payment_id: paymentIntentId,
       purchaser_email: email,
       purchaser_name: name,
       ticket_type: ticketType,
       price_paid: price,
-      coupons_used: [paymentIntent.metadata.couponCode],
+      coupons_used: couponCode ? [couponCode] : [],
       is_test: process.env.STRIPE_SECRET_KEY?.startsWith('sk_test') ?? false,
     }
 
-    const createdTicket = await ticketsService.createTicket({
-      ticket: supabaseTicketRecord,
-    })
+    let createdTicket: Awaited<ReturnType<typeof ticketsService.createTicket>>
+    try {
+      createdTicket = await ticketsService.createTicket({
+        ticket: supabaseTicketRecord,
+      })
+    } catch (createError) {
+      // A concurrent confirmation may have won the race against the unique index
+      // on stripe_payment_id; that's the idempotent case, not a failure.
+      const raced = await ticketsService.getTicketByStripePaymentId({
+        stripePaymentId: paymentIntentId,
+      })
+      if (!raced) throw createError
+      return NextResponse.json({
+        success: true,
+        paymentIntentId,
+        alreadyProcessed: true,
+        message:
+          'This payment has already been confirmed. Check your email for your ticket.',
+      })
+    }
+
+    // Redeem the coupon only now that the payment succeeded and the ticket exists —
+    // an abandoned checkout must not burn a use.
+    const couponId = paymentIntent.metadata.couponId
+    if (couponId) {
+      try {
+        const redeemed = await couponsService.redeem({ id: couponId })
+        if (!redeemed) {
+          console.error(
+            'Coupon could not be redeemed after successful payment',
+            couponId,
+            paymentIntentId,
+          )
+        }
+      } catch (couponError) {
+        // The customer has already paid and holds a ticket; a bookkeeping failure
+        // must not fail the purchase.
+        console.error('Failed to redeem coupon:', couponError)
+      }
+    }
 
     // Send confirmation email
     try {

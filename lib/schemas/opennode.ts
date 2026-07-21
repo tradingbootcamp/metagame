@@ -4,7 +4,9 @@ import { TICKET_TYPES_ENUM } from '@/utils/dbUtils'
 
 export const ticketPurchaseDetailsSchema = z.object({
   ticketType: z.enum(TICKET_TYPES_ENUM),
-  isTest: z.boolean(),
+  /** Only honored for admins (the admin charge tool). For everyone else the
+   * server decides, so a real order can't disguise itself as test data. */
+  isTest: z.boolean().optional(),
   purchaserEmail: z.email(),
   purchaserName: z.string().optional(),
 })
@@ -12,7 +14,9 @@ export const ticketPurchaseDetailsSchema = z.object({
 export type TicketPurchaseDetails = z.infer<typeof ticketPurchaseDetailsSchema>
 
 export const opennodeChargeSchema = z.object({
-  amountBtc: z.number().positive(),
+  /** Only honored for the sliding-scale ticket type (or admins). Every other
+   * ticket type is charged its configured price, derived server-side. */
+  amountBtc: z.number().positive().optional(),
   ticketDetails: ticketPurchaseDetailsSchema,
 })
 

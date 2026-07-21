@@ -72,6 +72,20 @@ export const couponsService = {
     }
     return updated
   },
+  /** Atomically consume one use of a coupon. Returns the updated coupon, or null
+   * if the coupon is disabled or already at its max uses — the check and the
+   * increment happen in one statement so concurrent redemptions can't overrun it.
+   * Requires the `redeem_coupon` function (see supabase/migrations). */
+  redeem: async ({ id }: { id: string }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase.rpc('redeem_coupon', {
+      coupon_id: id,
+    })
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data?.[0] ?? null
+  },
   upsertByCode: async ({ coupon }: { coupon: DbCouponInsert }) => {
     const existing = await couponsService.getByCode({
       couponCode: coupon.coupon_code,

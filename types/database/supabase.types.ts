@@ -832,6 +832,20 @@ export type Database = {
         Args: Record<PropertyKey, never>
         Returns: number
       }
+      redeem_coupon: {
+        Args: { coupon_id: string }
+        Returns: {
+          coupon_code: string
+          created_at: string
+          description: string | null
+          discount_amount_cents: number
+          email_for: boolean
+          enabled: boolean
+          id: string
+          max_uses: number | null
+          used_count: number
+        }[]
+      }
     }
     Enums: {
       AGES: "ADULTS" | "KIDS" | "ALL"

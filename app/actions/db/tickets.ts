@@ -38,6 +38,12 @@ export const signupByTicketCode = async ({
   const supabase = createServiceClient()
   const existingUser = await usersService.getUserFullProfileByEmail({ email })
   if (existingUser) {
+    // Anyone can type in someone else's address, so attaching a ticket to an
+    // account that already exists requires proof the caller controls it.
+    const currentUser = await usersService.getCurrentUser()
+    if (!currentUser || currentUser.id !== existingUser.id) {
+      return { success: false, error: 'sign_in_required', ticket: null }
+    }
     userId = existingUser.id
     const userHasTicket = await ticketsService.getTicketsByOwnerId({
       ownerId: userId,
@@ -68,14 +74,20 @@ export const signupByTicketCode = async ({
     userId = user.id
   }
   await ticketsService.updateTicketOwner({ ticketCode, ownerId: userId })
-  await usersService.updateUserProfile({
-    userId,
-    data: {
-      team: [TEAM_COLORS.ORANGE, TEAM_COLORS.PURPLE][
-        Math.floor(Math.random() * 2)
-      ],
-    },
-  })
+  // Teams are assigned once. Claiming another ticket must not reroll the team of
+  // someone who already has one.
+  const profile =
+    existingUser ?? (await usersService.getUserFullProfile({ userId }))
+  if (!profile?.team || profile.team === TEAM_COLORS.UNASSIGNED) {
+    await usersService.updateUserProfile({
+      userId,
+      data: {
+        team: [TEAM_COLORS.ORANGE, TEAM_COLORS.PURPLE][
+          Math.floor(Math.random() * 2)
+        ],
+      },
+    })
+  }
   return { success: true, error: null, ticket: ticket }
 }
 export const volunteerGetAllFullTickets = async () => {

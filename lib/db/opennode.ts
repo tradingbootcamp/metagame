@@ -10,9 +10,12 @@ export const opennodeDbService = {
   createCharge: async ({
     charge,
     ticketDetails,
+    isTest,
   }: {
     charge: OpenNodeCharge
     ticketDetails: OpennodeChargeInput['ticketDetails']
+    /** Resolved by the route, not taken from ticketDetails — see the schema. */
+    isTest: boolean
   }) => {
     const supabase = createServiceClient()
     const { data, error } = await supabase.from('opennode_orders').insert({
@@ -23,7 +26,7 @@ export const opennodeDbService = {
       purchaser_email: ticketDetails.purchaserEmail,
       purchaser_name: ticketDetails.purchaserName,
       ticket_type: ticketDetails.ticketType,
-      is_test: ticketDetails.isTest,
+      is_test: isTest,
     })
     if (error) {
       throw new Error(

@@ -12,37 +12,74 @@ import {
 } from '@/lib/schemas/opennode'
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
-
-import { getCurrentUserAdminStatus } from '@/app/actions/db/users'
+import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
 
 import { btcSlidingScaleMinimum, ticketTypeDetails } from '@/config/tickets'
+import { DbTicketType } from '@/types/database/dbTypeAliases'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
+const SATOSHIS_PER_BTC = 100_000_000
+/** The one ticket type whose price the buyer picks. */
+const BTC_SLIDING_SCALE_TICKET_TYPE: DbTicketType = 'player'
+
+const btcToSatoshis = (btc: number) => Math.round(btc * SATOSHIS_PER_BTC)
+
 export async function POST(req: NextRequest) {
-  const { amountBtc, ticketDetails } = opennodeChargeSchema.parse(
-    await req.json(),
-  )
+  const parsed = opennodeChargeSchema.safeParse(await req.json())
+  if (!parsed.success) {
+    return NextResponse.json(
+      { error: 'Invalid charge request' },
+      { status: 400 },
+    )
+  }
+  const { amountBtc, ticketDetails } = parsed.data
   const metagameOrderId = uuidv4()
   const callback = `${getSiteUrl()}/api/checkout/opennode/webhook`
   const successUrl = `${getSiteUrl()}/checkout/status/${metagameOrderId}`
-
-  const amountSatoshis = Math.round(amountBtc * 100000000)
 
   const ticketType = ticketTypeDetails[ticketDetails.ticketType]
   const ticketTitle = ticketType?.title || 'Unknown'
   const ticketPriceBtc = ticketType?.priceBTC
 
-  // If the provided bitcoin price doesn't match the ticket price, only admins can proceed otherwise throw error
-  if (!ticketPriceBtc || ticketPriceBtc < btcSlidingScaleMinimum) {
-    const userIsAdmin = await getCurrentUserAdminStatus()
-    if (!userIsAdmin) {
+  const userIsAdmin =
+    (await getCurrentUserAuthRank()) >= authLevelsToRanks.ADMIN
+
+  // The charge amount is what the buyer actually has to pay for a real ticket, so
+  // it comes from config, not from the request. The only exception is the sliding
+  // scale type, where the buyer chooses — floored at the minimum.
+  let amountSatoshis: number
+  if (userIsAdmin) {
+    const adminAmountBtc = amountBtc ?? ticketPriceBtc
+    if (!adminAmountBtc) {
       return NextResponse.json(
-        { error: 'Invalid ticket price' },
+        { error: 'No amount provided for this ticket type' },
         { status: 400 },
       )
     }
+    amountSatoshis = btcToSatoshis(adminAmountBtc)
+  } else if (!ticketPriceBtc) {
+    return NextResponse.json(
+      { error: 'Bitcoin payment is not available for this ticket type' },
+      { status: 400 },
+    )
+  } else if (ticketDetails.ticketType === BTC_SLIDING_SCALE_TICKET_TYPE) {
+    const requestedBtc = amountBtc ?? ticketPriceBtc
+    if (requestedBtc < btcSlidingScaleMinimum) {
+      return NextResponse.json(
+        { error: 'Amount is below the sliding scale minimum' },
+        { status: 400 },
+      )
+    }
+    amountSatoshis = btcToSatoshis(requestedBtc)
+  } else {
+    amountSatoshis = btcToSatoshis(ticketPriceBtc)
   }
+
+  // Only admins get to label an order as test data.
+  const isTest = userIsAdmin
+    ? (ticketDetails.isTest ?? false)
+    : process.env.OPENNODE_ENV === 'dev'
 
   const charge = await createChargeRaw({
     amount: amountSatoshis,
@@ -54,7 +91,7 @@ export async function POST(req: NextRequest) {
     success_url: successUrl,
   })
 
-  await opennodeDbService.createCharge({ charge, ticketDetails })
+  await opennodeDbService.createCharge({ charge, ticketDetails, isTest })
 
   // Send email to purchaser with payment link
   try {
