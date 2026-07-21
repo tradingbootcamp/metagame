@@ -1,6 +1,6 @@
 import { Analytics } from '@vercel/analytics/react'
 import type { Metadata, Viewport } from 'next'
-import { Jura } from 'next/font/google'
+import { Cinzel, IM_Fell_English, Jura } from 'next/font/google'
 import { Toaster } from 'sonner'
 
 import { prefetchState } from '@/lib/prefetch'
@@ -13,9 +13,23 @@ import PickACardMetaProvider from '@/components/PickACard/PickACardMetaProvider'
 import '@/app/globals.css'
 import QueryProvider from '@/app/providers/QueryProvider'
 
+// Variables are named --ff-* rather than --font-* so they don't collide with
+// the Tailwind @theme font tokens in globals.css that reference them.
 const jura = Jura({
   subsets: ['latin'],
-  variable: '--font-jura',
+  variable: '--ff-jura',
+})
+
+const cinzel = Cinzel({
+  subsets: ['latin'],
+  variable: '--ff-cinzel',
+})
+
+const imFellEnglish = IM_Fell_English({
+  subsets: ['latin'],
+  weight: '400',
+  style: ['normal', 'italic'],
+  variable: '--ff-imfell',
 })
 
 export const metadata: Metadata = {
@@ -45,9 +59,9 @@ export const metadata: Metadata = {
     description: 'A conference for game design, strategy, narrative, and play',
     images: [
       {
-        url: 'https://metagame.games/images/proset_poster.png',
-        width: 1200,
-        height: 630,
+        url: 'https://metagame.games/images/proset-poster.png',
+        width: 2448,
+        height: 3168,
         alt: 'METAGAME 2025',
       },
     ],
@@ -58,7 +72,7 @@ export const metadata: Metadata = {
     creator: '@tradegal_',
     title: 'METAGAME 2025',
     description: 'A conference for game design, strategy, narrative, and play',
-    images: ['https://metagame.games/images/proset_poster.png'],
+    images: ['https://metagame.games/images/proset-poster.png'],
   },
   icons: {
     icon: '/dice/die3.svg',
@@ -81,12 +95,13 @@ export default async function RootLayout({
   return (
     <html
       lang="en"
-      className="bg-bg-primary text-text-primary"
+      // The font variables must land on <html>, not <body>: globals.css
+      // substitutes them into :root font tokens, which only resolves if they
+      // are declared on the same element.
+      className={`${jura.variable} ${cinzel.variable} ${imFellEnglish.variable} bg-bg-primary text-text-primary`}
       data-theme="synthwave"
     >
-      <body
-        className={`${jura.variable} relative flex min-h-screen flex-col overflow-x-hidden font-sans antialiased`}
-      >
+      <body className="relative flex min-h-screen flex-col overflow-x-hidden font-sans antialiased">
         <QueryProvider state={prefetchedState}>
           <PickACardMetaProvider />
           <KbarApp>

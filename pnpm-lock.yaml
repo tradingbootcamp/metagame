@@ -7,9 +7,6 @@ settings:
 importers:
   .:
     dependencies:
-      '@fontsource/jura':
-        specifier: ^5.2.6
-        version: 5.2.6
       '@jaredreisinger/react-crossword':
         specifier: github:briansmiley/react-crossword#dist
         version: https://codeload.github.com/briansmiley/react-crossword/tar.gz/c2955756b22b69b072c41e020568f433105bf6f9(@babel/core@7.28.0)(react-dom@19.1.0(react@19.1.0))(react-is@16.13.1)(react@19.1.0)
@@ -536,12 +533,6 @@ packages:
     resolution:
       {
         integrity: sha512-aGTxbpbg8/b5JfU1HXSrbH3wXZuLPJcNEcZQFMxLs3oSzgtVu6nFPkbbGGUvBcUjKV2YyB9Wxxabo+HEH9tcRQ==,
-      }
-
-  '@fontsource/jura@5.2.6':
-    resolution:
-      {
-        integrity: sha512-KbV5YDGe3E6l5Q3rdZNPFMqKh4PWFQPu0+DzZktG80N+wdfnQkXOM+RIkAj5+WBFOFGyiQG0HXl432dsB/zcyw==,
       }
 
   '@humanfs/core@0.19.1':
@@ -5780,8 +5771,6 @@ snapshots:
       react-dom: 19.1.0(react@19.1.0)
 
   '@floating-ui/utils@0.2.10': {}
-
-  '@fontsource/jura@5.2.6': {}
 
   '@humanfs/core@0.19.1': {}
 

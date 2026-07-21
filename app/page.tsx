@@ -16,7 +16,8 @@ import Speakers, { SpeakersLoading } from '@/components/sections/home/speakers'
 export default function Home() {
   return (
     <HomePageWrapper>
-      <main>
+      {/* outrun-bg-animated opts this page into the animated backdrop (globals.css) */}
+      <main className="outrun-bg-animated">
         <div className="container mx-auto flex flex-col gap-4 px-4">
           <Hero />
           <Calendar />

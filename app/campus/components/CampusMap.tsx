@@ -503,6 +503,9 @@ export default function CampusMap({
             src="/images/lighthaven.png"
             alt="Lighthaven Campus"
             fill
+            // Capped by the max-w-4xl wrapper, plus the 123% overscan the
+            // `cropped` variant applies.
+            sizes="(max-width: 896px) 100vw, 1100px"
             className="object-contain"
             priority
           />
