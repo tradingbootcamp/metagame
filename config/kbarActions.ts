@@ -54,15 +54,6 @@ const navigationActions: CustomAction[] = [
     perform: () => (window.location.pathname = '/'),
   },
   {
-    id: 'tickets',
-    name: 'Buy Tickets',
-    shortcut: ['t'],
-    keywords: 'purchase buy register',
-    section: 'Navigation',
-    icon: '🎫',
-    perform: () => (window.location.href = '/#tickets'),
-  },
-  {
     id: 'faq',
     name: 'FAQ',
     shortcut: ['q'],

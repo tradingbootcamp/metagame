@@ -61,9 +61,12 @@ export async function POST(req: NextRequest) {
   }
 
   console.log('opennode webhook', body)
-  //Skip the hash check when testing webhooks locally
-  const ok =
-    process.env.OPENNODE_ENV === 'dev' ? true : opennode.signatureIsValid(body) // HMAC check
+  // The HMAC check is what stops anyone from POSTing a forged `status: 'paid'`
+  // and minting a real ticket, so the local-testing bypass must never be
+  // reachable from a production deploy, whatever OPENNODE_ENV is set to.
+  const skipSignatureCheck =
+    process.env.NODE_ENV !== 'production' && process.env.OPENNODE_ENV === 'dev'
+  const ok = skipSignatureCheck || opennode.signatureIsValid(body)
   if (!ok) {
     console.error('invalid sig on opennode webhook', body)
     return new NextResponse('invalid sig', { status: 400 })
