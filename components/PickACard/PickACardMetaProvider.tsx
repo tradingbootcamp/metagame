@@ -1,5 +1,3 @@
-'use server'
-
 import PickACard from './PickACardProvider'
 
 import { currentUserLatestUnclaimedVictory } from '@/app/actions/db/users'

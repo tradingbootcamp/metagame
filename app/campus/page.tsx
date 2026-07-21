@@ -1,5 +1,3 @@
-'use server'
-
 //import { useState } from 'react'
 import CampusMap /*, { locations, megagameLocations }*/ from './components/CampusMap'
 

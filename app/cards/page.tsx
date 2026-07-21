@@ -1,5 +1,3 @@
-'use server'
-
 import { celestialCardsService } from '@/lib/db/celestialCards'
 
 import PlayerCard from '@/components/PlayerCard/PlayerCard'

@@ -1,5 +1,3 @@
-'use server'
-
 import CardPicker from './CardPicker'
 
 import { sessionsService } from '@/lib/db/sessions'
