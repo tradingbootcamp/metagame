@@ -1,8 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
-
-import Link from 'next/link'
+import { useEffect, useLayoutEffect, useState } from 'react'
 
 import PlayerCard, {
   PlayerCardSkeleton,
@@ -14,11 +12,17 @@ interface SpeakersGridProps {
   speakerIds: string[]
 }
 
+// useLayoutEffect warns during SSR; fall back to useEffect there
+const useIsomorphicLayoutEffect =
+  typeof window === 'undefined' ? useEffect : useLayoutEffect
+
 // Smaller cards on mobile so the grid fits 3 per row instead of 2; PlayerCard
 // scales everything off this width. Keyed to Tailwind's sm breakpoint.
+// Layout effect so the mobile width lands before first paint instead of
+// flashing 150px cards and shifting to 104px.
 function useSpeakerCardWidth() {
   const [width, setWidth] = useState(150)
-  useEffect(() => {
+  useIsomorphicLayoutEffect(() => {
     const update = () => setWidth(window.innerWidth < 640 ? 104 : 150)
     update()
     window.addEventListener('resize', update)
@@ -75,21 +79,15 @@ export default function SpeakersGrid({ speakerIds }: SpeakersGridProps) {
   return (
     <>
       {profiles.map((profile) => (
-        <div key={profile.id} className="relative">
-          <Link
-            className="absolute inset-0 z-0"
-            href={`/player/${profile.player_id}`}
-          />
-          <div className="pointer-events-none relative">
-            <PlayerCard
-              userId={profile.id}
-              asCelestialCard={false}
-              tiltFactor={1}
-              gleamFollowsTilt
-              width={cardWidth}
-            />
-          </div>
-        </div>
+        <PlayerCard
+          key={profile.id}
+          userId={profile.id}
+          asCelestialCard={false}
+          tiltFactor={1}
+          gleamFollowsTilt
+          width={cardWidth}
+          href={`/player/${profile.player_id}`}
+        />
       ))}
     </>
   )
