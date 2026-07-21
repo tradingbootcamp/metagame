@@ -6,7 +6,7 @@ import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 
-import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
+import { assertAuthLevel } from '@/utils/security'
 
 /* Queries */
 export const getCurrentUser = usersService.getCurrentUser
@@ -45,8 +45,7 @@ export const volunteerUpdateUserCheckin = async ({
   userId: string
   checked_in: boolean
 }) => {
-  if ((await getCurrentUserAuthRank()) < authLevelsToRanks.VOLUNTEER)
-    throw new Error('Unauthorized')
+  await assertAuthLevel({ authLevel: 'VOLUNTEER' })
   await usersService.updateUserProfile({ userId, data: { checked_in } })
 }
 export const deleteCurrentUserProfilePicture = async () =>

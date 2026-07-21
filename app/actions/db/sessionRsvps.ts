@@ -4,7 +4,7 @@ import { adminExportWrapper, currentUserWrapper } from './auth'
 
 import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
-import { currentUserHasAuthLevel } from '@/utils/security'
+import { assertAuthLevel } from '@/utils/security'
 
 export const getAllRsvps = sessionRsvpsService.getAllRsvps
 
@@ -40,9 +40,10 @@ export const greenUnRsvpUserFromSession = async ({
   sessionId: string
   userId: string
 }) => {
-  if (!currentUserHasAuthLevel({ authLevel: 'GREEN' })) {
-    throw new Error('Unauthorized user trying to un-RSVP a user')
-  }
+  await assertAuthLevel({
+    authLevel: 'GREEN',
+    message: 'Unauthorized user trying to un-RSVP a user',
+  })
   return sessionRsvpsService.unrsvpUserFromSession({ sessionId, userId })
 }
 export const adminRsvpUserToSession = adminExportWrapper(

@@ -45,20 +45,20 @@ export const getCurrentUserAuthLevel = async (): Promise<AuthLevel> => {
 export const getCurrentUserAuthRank = async (): Promise<number> => {
   return authLevelsToRanks[await getCurrentUserAuthLevel()]
 }
-/** Whether the current user has >= the specified auth level */
-export const currentUserHasAuthLevel = async ({
+/** Throws unless the current user has >= the specified auth level.
+ *
+ * Throw-on-fail rather than boolean-returning on purpose: an un-awaited async
+ * predicate is a truthy Promise, so `if (!hasAuthLevel(...))` silently passes. */
+export const assertAuthLevel = async ({
   authLevel = 'ADMIN',
-}: { authLevel?: AuthLevel } = {}) => {
-  return (await getCurrentUserAuthRank()) >= authLevelsToRanks[authLevel]
-}
-/** Whether the current user has >= the specified auth rank number */
-export const currentUserHasAuthRank = async ({
-  authRank = 3,
-}: { authRank?: number } = {}) => {
-  return (await getCurrentUserAuthRank()) >= authRank
+  message = 'Unauthorized',
+}: { authLevel?: AuthLevel; message?: string } = {}) => {
+  if ((await getCurrentUserAuthRank()) < authLevelsToRanks[authLevel]) {
+    throw new Error(message)
+  }
 }
 /** Whether the provided user profile has >= the specified auth rank number */
-export const profileHasAuthRank = async ({
+export const profileHasAuthRank = ({
   profile,
   authRank = 3,
 }: {
