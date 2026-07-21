@@ -88,7 +88,7 @@ export function AddEventModal({
     title: '',
     description: '',
     needs: '',
-    day: defaultDay || CONFERENCE_DAYS[0].date.getDate().toString(),
+    day: defaultDay || dateUtils.getPacificParts(CONFERENCE_DAYS[0].date).day,
     startTime: '09:00',
     endTime: '09:30',
     minCapacity: null,
@@ -606,14 +606,17 @@ export function AddEventModal({
                     <SelectValue placeholder="Select a day" />
                   </SelectTrigger>
                   <SelectContent className="z-[70]">
-                    {CONFERENCE_DAYS.map((day) => (
-                      <SelectItem
-                        key={day.date.getDate().toString()}
-                        value={day.date.getDate().toString()}
-                      >
-                        {day.name}
-                      </SelectItem>
-                    ))}
+                    {CONFERENCE_DAYS.map((day) => {
+                      // Pacific day-of-month, not local getDate(): a viewer in
+                      // a timezone west of Pacific would otherwise get the
+                      // previous calendar day
+                      const dayValue = dateUtils.getPacificParts(day.date).day
+                      return (
+                        <SelectItem key={dayValue} value={dayValue}>
+                          {day.name}
+                        </SelectItem>
+                      )
+                    })}
                   </SelectContent>
                 </Select>
               </div>

@@ -1,3 +1,45 @@
+// Hoisted formatters: constructing Intl.DateTimeFormat is expensive and these
+// run in render-hot paths (the schedule grid calls getPacificParts per session)
+const YMD_PACIFIC = new Intl.DateTimeFormat('en-CA', {
+  timeZone: 'America/Los_Angeles',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+})
+
+const PARTS_PACIFIC = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles',
+  year: 'numeric',
+  month: '2-digit',
+  day: '2-digit',
+  weekday: 'long',
+  hour: '2-digit',
+  minute: '2-digit',
+  hour12: false,
+})
+
+const LONG_DATE_PACIFIC = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles',
+  weekday: 'long',
+  month: 'long',
+  day: 'numeric',
+  year: 'numeric',
+})
+
+const OFFSET_PACIFIC = new Intl.DateTimeFormat('en-US', {
+  timeZone: 'America/Los_Angeles',
+  timeZoneName: 'longOffset',
+})
+
+/** Pacific UTC offset in whole hours (-7 during PDT, -8 during PST) at the given instant */
+const pacificOffsetHours = (date: Date) => {
+  const offsetName = OFFSET_PACIFIC.formatToParts(date).find(
+    (part) => part.type === 'timeZoneName',
+  )?.value // e.g. "GMT-07:00"
+  const match = offsetName?.match(/GMT([+-]\d{1,2})/)
+  return match ? Number(match[1]) : -8
+}
+
 export const dateUtils = {
   /** e.g. "2025-08-14T16:00:00.000Z" -> "2025-08-14T09:00:00.000Z" */
   stringTimestampToPSTString: (timestamp: string) => {
@@ -12,9 +54,9 @@ export const dateUtils = {
     const parts = dateUtils.getPacificParts(date)
     return Number(parts.hour) * 60 + Number(parts.minute)
   },
+  /** e.g. "Friday, September 12, 2025" */
   getStringDate: (timestamp: string) => {
-    const parts = dateUtils.getPacificParts(new Date(timestamp))
-    return `${parts.weekday}, ${parts.month} ${parts.day}, ${parts.year}`
+    return LONG_DATE_PACIFIC.format(new Date(timestamp))
   },
   getStringTime: (timestamp: string) => {
     const parts = dateUtils.getPacificParts(new Date(timestamp))
@@ -27,16 +69,7 @@ export const dateUtils = {
 
   /** e.g. day: "14", hour: "20", minute: "36", month: "08", weekday: "Thu", year: "2025" */
   getPacificParts: (date: Date) => {
-    const parts = new Intl.DateTimeFormat('en-US', {
-      timeZone: 'America/Los_Angeles',
-      year: 'numeric',
-      month: '2-digit',
-      day: '2-digit',
-      weekday: 'long',
-      hour: '2-digit',
-      minute: '2-digit',
-      hour12: false,
-    }).formatToParts(date)
+    const parts = PARTS_PACIFIC.formatToParts(date)
 
     // Turn into a simple object { year, month, day, weekday, hour, minute }
     return Object.fromEntries(
@@ -53,7 +86,7 @@ export const dateUtils = {
     minute?: number | string
     timezone?: number | string // hours from UTC, e.g. -7
   }) => {
-    const { year, month, day, time, hour, minute, timezone = -7 } = parts
+    const { year, month, day, time, hour, minute, timezone } = parts
 
     const [h, m] = time
       ? time.split(':').map(Number)
@@ -62,16 +95,18 @@ export const dateUtils = {
     const y = Number(year)
     const mo = Number(month) - 1 // Month is 0-indexed
     const d = Number(day)
-    const tz = Number(timezone)
-    console.log(tz)
+    // Derive the Pacific offset for the target date rather than hardcoding -7,
+    // which is only correct during PDT
+    const tz =
+      timezone !== undefined
+        ? Number(timezone)
+        : pacificOffsetHours(new Date(Date.UTC(y, mo, d, 12)))
     const tzString =
       tz >= 0
         ? `+${tz.toString().padStart(2, '0')}:00`
         : `-${Math.abs(tz).toString().padStart(2, '0')}:00`
     // Create a date string in ISO format
-    console.log('tzString', tzString)
     const dateString = `${y.toString().padStart(4, '0')}-${(mo + 1).toString().padStart(2, '0')}-${d.toString().padStart(2, '0')}T${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}${tzString}`
-    console.log('dateString', dateString)
     // Create a date and interpret it as Pacific time
     return new Date(dateString)
   },
@@ -118,10 +153,3 @@ export const dateUtils = {
     })
   },
 }
-
-const YMD_PACIFIC = new Intl.DateTimeFormat('en-CA', {
-  timeZone: 'America/Los_Angeles',
-  year: 'numeric',
-  month: '2-digit',
-  day: '2-digit',
-})

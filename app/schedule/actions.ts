@@ -5,7 +5,7 @@ import z from 'zod'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 
-import { SESSION_AGES } from '@/utils/dbUtils'
+import { SESSION_AGES, SESSION_CATEGORIES } from '@/utils/dbUtils'
 import { createClient } from '@/utils/supabase/server'
 
 import { DbSession, DbSessionUpdate } from '@/types/database/dbTypeAliases'
@@ -41,9 +41,11 @@ const sessionUpdateSchema = z.object({
   title: z.string().min(1).optional(),
   description: z.string().optional().nullable(),
   needs: z.string().optional().nullable(),
-  min_capacity: z.number().min(1).optional(),
-  max_capacity: z.number().min(1).optional(),
+  // nullish, not optional: the edit modal sends explicit nulls for unset capacities
+  min_capacity: z.number().min(1).nullish(),
+  max_capacity: z.number().min(1).nullish(),
   ages: z.enum(SESSION_AGES).optional(),
+  category: z.enum(SESSION_CATEGORIES).nullish(),
 })
 export async function userEditSession({
   sessionId,
