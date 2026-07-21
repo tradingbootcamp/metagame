@@ -4,7 +4,9 @@ import { useEffect, useState } from 'react'
 
 import Link from 'next/link'
 
-import PlayerCard from '@/components/PlayerCard/PlayerCard'
+import PlayerCard, {
+  PlayerCardSkeleton,
+} from '@/components/PlayerCard/PlayerCard'
 
 import { usePublicProfiles } from '@/hooks/useProfiles'
 
@@ -39,10 +41,18 @@ export default function SpeakersGrid({ speakerIds }: SpeakersGridProps) {
     )
   }
 
-  // Still loading profiles
+  // While the batch fetch is in flight, render one pending card frame per known
+  // speaker. This reserves the grid's real height so the #speakers anchor never
+  // briefly frames the Sponsors section, and the single batch request seeds each
+  // card's cache — so the real cards below render straight from cache, with no
+  // per-card re-fetch and no "loading→error" flash.
   if (profilesLoading) {
     return (
-      <div className="text-lg text-muted-foreground">Loading Speakers...</div>
+      <>
+        {speakerIds.map((id) => (
+          <PlayerCardSkeleton key={id} width={cardWidth} />
+        ))}
+      </>
     )
   }
 

@@ -56,6 +56,60 @@ const TALL_BANNER_HEIGHT = 203 // the inside height of the tall top banner (hold
 const TIP_TOP_FRAME = 6 // the width of the very outermost frame edge of the frame
 const NO_ABILITY_BIO_CHAR_LIMIT = 330 // different char limit for when we do not need space for abilities
 const PICTURE_HEIGHT = CARD_HEIGHT / 2 // height of framed profile picture
+// The gray-wash card frame shown while a profile loads (or, with state="error",
+// when its fetch fails). Exported so callers can lay out a full-size pending
+// grid before the data arrives without mounting data-fetching cards.
+export function PlayerCardSkeleton({
+  width = 300,
+  state = 'loading',
+}: {
+  width?: number
+  state?: 'loading' | 'error'
+}) {
+  const scale = width / CARD_WIDTH
+  return (
+    <div
+      className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell text-celestial-primary"
+      style={{
+        width: width,
+        aspectRatio: CARD_WIDTH / CARD_HEIGHT,
+        fontSize: 500 * scale,
+      }}
+    >
+      {/* Background card image - gray wash */}
+      <Image
+        src="/images/cards/fog.gif"
+        alt=""
+        fill
+        className="z-1 object-cover"
+      />
+      <Image
+        src="/images/cards/gray-wash.png"
+        alt=""
+        fill
+        className="z-2 object-cover opacity-50"
+      />
+      {/* Frame Overlay */}
+      <Image
+        src="/images/cards/celestial-frame-2x3-shortbanner.png"
+        alt=""
+        fill
+        className="pointer-events-none z-3 object-cover"
+      />
+
+      {/* Centered status glyph */}
+      <div className="absolute inset-0 z-2 flex items-center justify-center">
+        <div className="flex flex-col items-center text-celestial-gray">
+          <span>{state === 'error' ? 'X' : '?'}</span>
+          <span style={{ fontSize: 100 * scale }}>
+            {state === 'error' ? 'Error' : 'Loading...'}
+          </span>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function PlayerCard({
   userId,
   tiltFactor = 0,
@@ -116,56 +170,16 @@ export default function PlayerCard({
     (profile?.last_name?.length || 0) +
     ((!isTiny && profile?.pronouns?.length) || 0) +
     (profile?.minor ? 1 : 0)
-  // Loading state - show gray wash, question mark, and frame
+  // No profile to show yet. Only a genuine query error is "Error"; a still-
+  // fetching or enabled-but-not-yet-started tick (data momentarily undefined
+  // while isLoading is false) is treated as loading, so cards never flash
+  // "Error" just because data hasn't landed.
   if (profileLoading || profileError || !profile) {
     return (
-      <div
-        className="pointer-events-none relative max-w-full overflow-hidden rounded-[2px] font-imfell text-celestial-primary"
-        style={{
-          width: width,
-          aspectRatio: CARD_WIDTH / CARD_HEIGHT,
-          fontSize: 500 * scale,
-        }}
-      >
-        {/* Background card image - gray wash */}
-        <Image
-          src="/images/cards/fog.gif"
-          alt="Loading..."
-          fill
-          className="z-1 object-cover"
-        />
-        <Image
-          src="/images/cards/gray-wash.png"
-          alt="Loading..."
-          fill
-          className="z-2 object-cover opacity-50"
-        />
-        {/* Frame Overlay */}
-        <Image
-          src="/images/cards/celestial-frame-2x3-shortbanner.png"
-          alt="Frame overlay"
-          fill
-          className="pointer-events-none z-3 object-cover"
-        />
-
-        {/* Large question mark in center */}
-        <div
-          // style={{
-          //   width: INNER_WIDTH * scale,
-          //   height: PICTURE_HEIGHT * scale,
-          //   top: TOP_FROM_TOP * scale,
-          //   left: FRAME_FROM_EDGE * scale,
-          // }}
-          className="absolute inset-0 z-2 flex items-center justify-center"
-        >
-          <div className="flex flex-col items-center text-celestial-gray">
-            <span>{profileLoading ? '?' : 'X'}</span>
-            <span style={{ fontSize: 100 * scale }}>
-              {profileLoading ? 'Loading...' : 'Error'}
-            </span>
-          </div>
-        </div>
-      </div>
+      <PlayerCardSkeleton
+        width={width}
+        state={profileError ? 'error' : 'loading'}
+      />
     )
   }
   const celestialCard = overrideCelestialCard ?? profile?.celestial_card ?? null
