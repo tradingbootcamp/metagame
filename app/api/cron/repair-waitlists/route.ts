@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { apiError } from '@/lib/apiError'
 import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
 export async function POST(request: NextRequest) {
@@ -35,13 +36,6 @@ export async function POST(request: NextRequest) {
       })),
     })
   } catch (error) {
-    console.error('Waitlist repair cron job failed:', error)
-    return NextResponse.json(
-      {
-        error: 'Failed to repair waitlists',
-        message: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to repair waitlists')
   }
 }

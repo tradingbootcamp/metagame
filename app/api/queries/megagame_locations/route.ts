@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import { apiError } from '@/lib/apiError'
+
 import { getAllMegagameLocations } from '@/app/actions/db/locations'
 
 import { DbMegagameLocation } from '@/types/database/dbTypeAliases'
@@ -13,21 +15,6 @@ export async function GET() {
       locations satisfies ApiAllMegagameLocationsResponse,
     )
   } catch (error) {
-    console.error('Error fetching megagame locations:', error)
-
-    // Return more detailed error information
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    const errorDetails = error instanceof Error ? error.stack : undefined
-
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch megagame locations',
-        message: errorMessage,
-        details: errorDetails,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to fetch megagame locations')
   }
 }

@@ -4,6 +4,7 @@ import { stripe } from '../../../lib/stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
+import { apiError } from '@/lib/apiError'
 import { ticketsService } from '@/lib/db/tickets'
 import { sendTicketConfirmationEmail } from '@/lib/email'
 
@@ -138,8 +139,6 @@ export async function POST(request: NextRequest) {
         'Payment successful! Your ticket has been purchased. Check your email for confirmation.',
     })
   } catch (error) {
-    console.error('Error in confirm-payment:', error)
-
     // Handle Zod validation errors
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -151,12 +150,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      {
-        success: false,
-        error: error instanceof Error ? error.message : 'Internal server error',
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Payment confirmation failed')
   }
 }

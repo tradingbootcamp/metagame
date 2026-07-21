@@ -19,7 +19,8 @@ const handleApiError = async (
   let errorDetails = defaultMessage
   try {
     const errorData = await response.json()
-    errorDetails = errorData.message || errorData.error || errorDetails
+    errorDetails = errorData.error || errorDetails
+    // Only populated outside production; see lib/apiError
     if (errorData.details) {
       console.error('API Error Details:', errorData.details)
     }

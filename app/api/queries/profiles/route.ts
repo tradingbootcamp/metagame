@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 
+import { apiError } from '@/lib/apiError'
+
 import {
   adminGetAllFullProfiles,
   adminGetUsersFullProfiles,
@@ -14,22 +16,7 @@ export async function GET() {
 
     return NextResponse.json(profiles satisfies ApiAllFullProfilesResponse)
   } catch (error) {
-    console.error('Error fetching profiles:', error)
-
-    // Return more detailed error information
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    const errorDetails = error instanceof Error ? error.stack : undefined
-
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch profiles',
-        message: errorMessage,
-        details: errorDetails,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to fetch profiles')
   }
 }
 
@@ -41,21 +28,6 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json(profiles satisfies ApiUsersFullProfilesResponse)
   } catch (error) {
-    console.error('Error fetching profiles:', error)
-
-    // Return more detailed error information
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    const errorDetails = error instanceof Error ? error.stack : undefined
-
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch profiles',
-        message: errorMessage,
-        details: errorDetails,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to fetch profiles')
   }
 }
