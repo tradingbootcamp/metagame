@@ -1,28 +1,30 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { stripPrivateProfileFields } from '@/lib/profiles'
 
 import {
   getAllUserPublicProfiles,
   getUsersPublicProfiles,
 } from '@/app/actions/db/users'
+import { getApiUser, unauthorizedResponse } from '@/app/api/apiAuth'
 
 import { DbPublicProfile } from '@/types/database/dbTypeAliases'
 
 export type ApiAllPublicProfilesResponse = DbPublicProfile[]
 export async function GET() {
   try {
+    // The whole attendee roster is attendees-only
+    const user = await getApiUser()
+    if (!user) return unauthorizedResponse()
+
     const profiles = await getAllUserPublicProfiles()
 
     const response = NextResponse.json(
       profiles satisfies ApiAllPublicProfilesResponse,
     )
 
-    // Add cache headers - profiles don't change often
-    response.headers.set(
-      'Cache-Control',
-      'public, s-maxage=300, stale-while-revalidate=86400',
-    )
+    response.headers.set('Cache-Control', 'private, no-store')
 
     return response
   } catch (error) {
@@ -33,18 +35,22 @@ export async function GET() {
 export type ApiUsersPublicProfilesResponse = DbPublicProfile[]
 export async function POST(request: NextRequest) {
   try {
+    // Anonymous callers get these (speaker and team card grids), minus the
+    // fields only attendees may see
+    const user = await getApiUser()
+
     const { userIds } = (await request.json()) as { userIds: string[] }
     const profiles = await getUsersPublicProfiles({ userIds })
+    const visibleProfiles = user
+      ? profiles
+      : profiles.map(stripPrivateProfileFields)
 
     const response = NextResponse.json(
-      profiles satisfies ApiUsersPublicProfilesResponse,
+      visibleProfiles satisfies ApiUsersPublicProfilesResponse,
     )
 
-    // Add cache headers - profiles don't change often
-    response.headers.set(
-      'Cache-Control',
-      'public, s-maxage=300, stale-while-revalidate=86400',
-    )
+    // Varies by session, so it can't sit in a shared cache
+    response.headers.set('Cache-Control', 'private, no-store')
 
     return response
   } catch (error) {

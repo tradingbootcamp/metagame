@@ -47,26 +47,30 @@ export type DbPublicProfileKeys =
   | 'first_name'
   | 'last_name'
   | 'team'
-  | 'discord_handle'
   | 'opted_in_to_homepage_display'
   | 'bio'
-  | 'is_admin'
   | 'homepage_order'
   | 'site_name'
   | 'site_url'
   | 'site_name_2'
   | 'site_url_2'
   | 'dismissed_info_request'
-  | 'minor'
   | 'profile_pictures_url'
   | 'player_id'
   | 'pronouns'
   | 'volunteer'
-  | 'checked_in'
   | 'celestial_card_id'
-export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys> & {
-  celestial_card: DbCelestialCard | null
-}
+/** Fields of the public profile projection that only signed-in callers get: the
+ * API strips them for anonymous requests, so they are optional on every reader. */
+export type DbPrivateProfileKeys =
+  | 'discord_handle'
+  | 'is_admin'
+  | 'minor'
+  | 'checked_in'
+export type DbPublicProfile = Pick<DbFullProfile, DbPublicProfileKeys> &
+  Partial<Pick<DbFullProfile, DbPrivateProfileKeys>> & {
+    celestial_card: DbCelestialCard | null
+  }
 export type DbProfileInsert = TablesInsert<'profiles'>
 export type DbProfileUpdate = TablesUpdate<'profiles'>
 export type DbTeamColor = Enums<'TEAM_COLORS'>
