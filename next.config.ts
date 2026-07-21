@@ -3,7 +3,10 @@ import type { NextConfig } from 'next'
 const nextConfig: NextConfig = {
   reactStrictMode: true,
   images: {
-    domains: ['metagame.games', 'fkarmpoupazxnshofaeg.supabase.co'],
+    remotePatterns: [
+      { protocol: 'https', hostname: 'metagame.games' },
+      { protocol: 'https', hostname: 'fkarmpoupazxnshofaeg.supabase.co' },
+    ],
   },
   webpack: (config) => {
     config.resolve.alias = {

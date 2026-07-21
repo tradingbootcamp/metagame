@@ -34,7 +34,6 @@
     ]
   },
   "dependencies": {
-    "@fontsource/jura": "^5.2.6",
     "@jaredreisinger/react-crossword": "github:briansmiley/react-crossword#dist",
     "@nanostores/react": "^1.0.0",
     "@radix-ui/react-checkbox": "^1.3.3",

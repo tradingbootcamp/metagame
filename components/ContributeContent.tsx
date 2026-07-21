@@ -41,6 +41,7 @@ export default function ContributeContent() {
           src="/game_pieces_2_cropped.jpg"
           alt="Game pieces"
           fill
+          sizes="100vw"
           className="object-cover"
           priority
         />
