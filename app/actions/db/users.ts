@@ -5,6 +5,10 @@ import { adminExportWrapper, currentUserWrapper } from './auth'
 import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
+import {
+  SelfEditableProfileData,
+  selfEditableProfileSchema,
+} from '@/lib/schemas/profile'
 
 import { assertAuthLevel } from '@/utils/security'
 
@@ -34,8 +38,23 @@ export const getUsersIdsByTeam = usersService.getUsersIdsByTeam
 export const getAllUsersIds = usersService.getAllUsersIds
 export const getPublicProfilesByTeam = usersService.getPublicProfilesByTeam
 /* Mutations */
+/** Self-service profile update. The payload is parsed against an allowlist before it
+ * reaches the DB: forwarding a raw `TablesUpdate<'profiles'>` here would let any
+ * logged-in user set their own `is_admin`, `team`, `checked_in` or `player_id`. */
 export const updateCurrentUserProfile = currentUserWrapper(
-  usersService.updateUserProfile,
+  async ({
+    userId,
+    data,
+  }: {
+    userId: string
+    data: SelfEditableProfileData
+  }) => {
+    const allowedData = selfEditableProfileSchema.parse(data)
+    if (Object.keys(allowedData).length === 0) {
+      throw new Error('No self-editable profile fields supplied')
+    }
+    return usersService.updateUserProfile({ userId, data: allowedData })
+  },
 )
 /** Updates a user's checked in status if the current user has any admin privileges */
 export const volunteerUpdateUserCheckin = async ({
