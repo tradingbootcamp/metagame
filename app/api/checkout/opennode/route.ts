@@ -12,7 +12,7 @@ import {
 } from '@/lib/schemas/opennode'
 
 import { getHostedCheckoutUrl } from '@/utils/opennode'
-import { currentUserHasAuthLevel } from '@/utils/security'
+import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
 
 import { btcSlidingScaleMinimum, ticketTypeDetails } from '@/config/tickets'
 import { DbTicketType } from '@/types/database/dbTypeAliases'
@@ -42,7 +42,8 @@ export async function POST(req: NextRequest) {
   const ticketTitle = ticketType?.title || 'Unknown'
   const ticketPriceBtc = ticketType?.priceBTC
 
-  const userIsAdmin = await currentUserHasAuthLevel({ authLevel: 'ADMIN' })
+  const userIsAdmin =
+    (await getCurrentUserAuthRank()) >= authLevelsToRanks.ADMIN
 
   // The charge amount is what the buyer actually has to pay for a real ticket, so
   // it comes from config, not from the request. The only exception is the sliding
