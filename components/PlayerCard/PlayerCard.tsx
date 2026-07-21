@@ -160,6 +160,10 @@ export default function PlayerCard({
     borderRadius: PICTURE_RADIUS * scale,
   }
 
+  const frameSrc = isTiny
+    ? '/images/cards/celestial-frame-2x3-tallbanner.png'
+    : '/images/cards/celestial-frame-2x3-shortbanner.png'
+
   const NAME_DIV_WIDTH =
     CARD_WIDTH -
     TIP_TOP_FRAME * 2 -
@@ -234,8 +238,19 @@ export default function PlayerCard({
           />
         )}
         {holoEffect && <Holoverlay effect={holoEffect} />}
-        {/* Profile picture again, over the holo, so the face reads through the
-            pattern. Without a holo a 50% ghost would only muddy the original. */}
+        {/* The frame and the picture again, over the holo, so both read through
+            the pattern. DOM order keeps the picture copy above the frame copy,
+            matching the originals. Without a holo a 50% ghost would only muddy
+            what it sits on. */}
+        {holoEffect && (
+          <Image
+            src={frameSrc}
+            alt=""
+            fill
+            sizes={`${width}px`}
+            className="pointer-events-none z-7 object-cover opacity-50"
+          />
+        )}
         {holoEffect && profile.profile_pictures_url && (
           <div
             style={pictureBox}
@@ -260,11 +275,7 @@ export default function PlayerCard({
         />
         {/* Frame Overlay */}
         <Image
-          src={
-            isTiny
-              ? '/images/cards/celestial-frame-2x3-tallbanner.png'
-              : '/images/cards/celestial-frame-2x3-shortbanner.png'
-          }
+          src={frameSrc}
           alt="Frame overlay"
           fill
           sizes={`${width}px`}
@@ -286,7 +297,7 @@ export default function PlayerCard({
                 )`,
                 backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-5 overflow-hidden bg-cover"
+              className="absolute z-7 overflow-hidden bg-cover"
             >
               <Image
                 src="/images/cards/celestial-square-section.png"
@@ -313,7 +324,7 @@ export default function PlayerCard({
                 left: CIRCLE_FROM_EDGE * scale,
                 backgroundImage: `url('/images/cards/fog.gif')`,
               }}
-              className="absolute z-5 overflow-hidden rounded-full bg-cover"
+              className="absolute z-7 overflow-hidden rounded-full bg-cover"
             >
               <Image
                 src="/images/cards/celestial-circle-cost.png"
