@@ -1,5 +1,3 @@
-'use server'
-
 import { volunteerGetAllFullTickets } from '../actions/db/tickets'
 import CheckinTable from './CheckinTable'
 

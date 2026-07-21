@@ -1,5 +1,3 @@
-'use server'
-
 import { redirectIfNotAuthed } from '@/utils/security'
 
 export default async function CheckinLayout({

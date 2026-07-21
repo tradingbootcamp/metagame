@@ -1,5 +1,3 @@
-'use server'
-
 import { MoonIcon } from 'lucide-react'
 import Link from 'next/link'
 
@@ -9,10 +7,11 @@ import { Separator } from '@/components/ui/separator'
 import { getSessionById } from '@/app/actions/db/sessions'
 
 const nightMarketSessionId = 'e0dfc2cf-b2b0-46c4-8a27-dc14d551be17'
-const nightMarketSession = await getSessionById({
-  sessionId: nightMarketSessionId,
-})
+
 export default async function Highlights() {
+  const nightMarketSession = await getSessionById({
+    sessionId: nightMarketSessionId,
+  })
   return (
     <section className="flex flex-col rounded-xl border border-border-accent p-4">
       <div className="mb-4 self-center text-2xl font-bold text-secondary-200">
