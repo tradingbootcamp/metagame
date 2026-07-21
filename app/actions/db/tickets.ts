@@ -6,7 +6,7 @@ import { ticketsService } from '@/lib/db/tickets'
 import { usersService } from '@/lib/db/users'
 
 import { TEAM_COLORS } from '@/utils/dbUtils'
-import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
+import { assertAuthLevel } from '@/utils/security'
 import { createServiceClient } from '@/utils/supabase/service'
 
 import { DbTicket } from '@/types/database/dbTypeAliases'
@@ -79,7 +79,6 @@ export const signupByTicketCode = async ({
   return { success: true, error: null, ticket: ticket }
 }
 export const volunteerGetAllFullTickets = async () => {
-  if ((await getCurrentUserAuthRank()) < authLevelsToRanks.VOLUNTEER)
-    throw new Error('Unauthorized')
+  await assertAuthLevel({ authLevel: 'VOLUNTEER' })
   return await ticketsService.getAllFullTickets()
 }
