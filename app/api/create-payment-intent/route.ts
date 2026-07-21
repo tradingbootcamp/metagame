@@ -5,7 +5,6 @@ import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
 import { apiError } from '@/lib/apiError'
-import { couponsService } from '@/lib/db/coupons'
 
 import { ticketTypeDetails, usdSlidingScaleMinimum } from '@/config/tickets'
 
@@ -72,13 +71,18 @@ export async function POST(request: NextRequest) {
         { status: 400 },
       )
     }
-    // Create payment intent
+    // Create payment intent. This metadata is what confirm-payment trusts when it
+    // mints the ticket, so everything that decides *what* the customer receives
+    // has to be recorded here, server-side.
     const metadata = {
       ticketType: ticketType.title,
+      ticketTypeId,
       customerName: name,
       customerEmail: email,
       originalPrice: originalPriceInCents.toString(),
+      finalPrice: finalPriceInCents.toString(),
       couponCode: coupon?.code || '',
+      couponId: coupon?.id || '',
       discountAmount: coupon ? coupon.discountAmountCents.toString() : '0',
     }
     let clientSecret: string
@@ -91,14 +95,9 @@ export async function POST(request: NextRequest) {
     } catch (error) {
       return apiError(error, 'Failed to create payment intent')
     }
-    if (coupon) {
-      couponsService.update({
-        id: coupon.id,
-        data: {
-          used_count: coupon.usedCount + 1,
-        },
-      })
-    }
+    // The coupon is deliberately *not* consumed here — an intent is only a quote,
+    // and abandoning checkout shouldn't burn a use. confirm-payment redeems it
+    // atomically once the payment has succeeded.
     return NextResponse.json({
       clientSecret,
       paymentIntentId,

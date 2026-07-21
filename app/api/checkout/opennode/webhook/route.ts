@@ -76,13 +76,37 @@ export async function POST(req: NextRequest) {
   })
 
   if (body.status === 'paid') {
+    // OpenNode retries callbacks, so a ticket must only be minted once per order.
+    const existingTicket = await ticketsService.getTicketByOpennodeOrder({
+      orderId: dbCharge.id,
+    })
+    if (existingTicket) {
+      console.log('opennode order already has a ticket', dbCharge.id)
+      return NextResponse.json({ received: true })
+    }
+
+    // Never issue a ticket for less than the charge was created for.
+    const satoshisPaid = body.amount - (body.missing_amt ?? 0)
+    if (satoshisPaid < dbCharge.satoshis) {
+      console.error(
+        'opennode charge marked paid for less than the charge amount',
+        dbCharge.id,
+        satoshisPaid,
+        dbCharge.satoshis,
+      )
+      await sendAdminErrorEmail(
+        `Underpaid opennode charge marked paid; no ticket issued: ${JSON.stringify(dbCharge)}`,
+      )
+      return NextResponse.json({ received: true })
+    }
+
     const newTicket = {
       opennode_order: dbCharge.id,
       ticket_type: dbCharge.ticket_type!,
       purchaser_email: dbCharge.purchaser_email,
       purchaser_name: dbCharge.purchaser_name || '',
       is_test: dbCharge.is_test,
-      satoshis_paid: body.amount,
+      satoshis_paid: satoshisPaid,
     }
     await ticketsService.createTicket({ ticket: newTicket })
 

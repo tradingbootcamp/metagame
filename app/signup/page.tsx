@@ -97,6 +97,18 @@ function SignupForm() {
         })
         return
       }
+      if (res.error === 'sign_in_required') {
+        setErrors({
+          submit:
+            'An account already exists for this email. Please log in first, then claim your ticket.',
+        })
+        setShowResetPasswordLink(true)
+        return
+      }
+      if (!res.success) {
+        setErrors({ submit: res.error ?? 'Signup failed' })
+        return
+      }
 
       router.push(`/signup/success?email=${validatedData.email}`)
     } catch (error) {

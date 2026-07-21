@@ -1,3 +1,5 @@
+import { randomInt } from 'crypto'
+
 import { createServiceClient } from '@/utils/supabase/service'
 
 import { DbFullTicket, DbTicketInsert } from '@/types/database/dbTypeAliases'
@@ -6,6 +8,16 @@ const ticketsSelectIncludes = `
   *,
   owner:profiles!tickets_owner_id_fkey(*, celestial_card:celestial_cards!profiles_celestial_card_id_fkey(*))
 `
+
+const TICKET_CODE_ALPHABET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'
+const TICKET_CODE_LENGTH = 8
+
+/** Ticket codes are bearer credentials for claiming a ticket, so they must not
+ * be guessable from other codes — Math.random() is not a CSPRNG. */
+const generateTicketCode = () =>
+  Array.from({ length: TICKET_CODE_LENGTH }, () =>
+    TICKET_CODE_ALPHABET.charAt(randomInt(TICKET_CODE_ALPHABET.length)),
+  ).join('')
 export const ticketsService = {
   getAllTickets: async () => {
     const supabase = createServiceClient()
@@ -35,18 +47,12 @@ export const ticketsService = {
     ticket: Omit<DbTicketInsert, 'ticket_code'>
   }) => {
     const supabase = createServiceClient()
-    const generatedTicketCode = Array.from({ length: 8 }, () =>
-      'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789'.charAt(
-        Math.floor(Math.random() * 36),
-      ),
-    ).join('')
-    console.log(ticket)
     const { data, error } = await supabase
       .from('tickets')
       .insert({
         ...ticket,
         owner_id: ticket.owner_id || null,
-        ticket_code: generatedTicketCode,
+        ticket_code: generateTicketCode(),
       })
       .select()
       .single()
@@ -61,7 +67,35 @@ export const ticketsService = {
       .from('tickets')
       .select('*')
       .eq('ticket_code', code)
-      .single()
+      .maybeSingle()
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
+  getTicketByStripePaymentId: async ({
+    stripePaymentId,
+  }: {
+    stripePaymentId: string
+  }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .eq('stripe_payment_id', stripePaymentId)
+      .maybeSingle()
+    if (error) {
+      throw new Error(error.message)
+    }
+    return data
+  },
+  getTicketByOpennodeOrder: async ({ orderId }: { orderId: string }) => {
+    const supabase = createServiceClient()
+    const { data, error } = await supabase
+      .from('tickets')
+      .select('*')
+      .eq('opennode_order', orderId)
+      .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
