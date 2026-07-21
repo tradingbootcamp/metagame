@@ -26,6 +26,13 @@ const BTC_SLIDING_SCALE_TICKET_TYPE: DbTicketType = 'player'
 const btcToSatoshis = (btc: number) => Math.round(btc * SATOSHIS_PER_BTC)
 
 export async function POST(req: NextRequest) {
+  // Public checkout is retired, so the admin charge tool is the only caller left
+  const userIsAdmin =
+    (await getCurrentUserAuthRank()) >= authLevelsToRanks.ADMIN
+  if (!userIsAdmin) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  }
+
   const parsed = opennodeChargeSchema.safeParse(await req.json())
   if (!parsed.success) {
     return NextResponse.json(
@@ -41,9 +48,6 @@ export async function POST(req: NextRequest) {
   const ticketType = ticketTypeDetails[ticketDetails.ticketType]
   const ticketTitle = ticketType?.title || 'Unknown'
   const ticketPriceBtc = ticketType?.priceBTC
-
-  const userIsAdmin =
-    (await getCurrentUserAuthRank()) >= authLevelsToRanks.ADMIN
 
   // The charge amount is what the buyer actually has to pay for a real ticket, so
   // it comes from config, not from the request. The only exception is the sliding
