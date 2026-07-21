@@ -64,23 +64,6 @@ export const sessionsService = {
     }
     return data satisfies DbFullSession | null
   },
-  /** Check if a session is full */
-  sessionIsFull: async ({ sessionId }: { sessionId: string }) => {
-    const supabase = createServiceClient()
-    const { data: session, error: sessionError } = await supabase
-      .from('sessions')
-      .select('max_capacity, session_rsvps(count)')
-      .eq('id', sessionId)
-      .single()
-    if (sessionError) {
-      throw new Error(sessionError.message)
-    }
-    return (
-      session.max_capacity !== null &&
-      (session.session_rsvps[0].count || 0) >= session.max_capacity
-    )
-  },
-
   getAllSessions: async () => {
     const supabase = createServiceClient()
     const { data, error } = await supabase

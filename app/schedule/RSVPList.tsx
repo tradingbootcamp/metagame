@@ -27,6 +27,7 @@ export const AttendanceDisplay = ({
   const teamCap = session.max_capacity
     ? Math.floor(session.max_capacity / 2)
     : undefined
+  const goingRsvps = session.rsvps.filter((rsvp) => !rsvp.on_waitlist)
   const standardRsvpDisplay = () => {
     if (!userLoggedIn) {
       return (
@@ -43,14 +44,14 @@ export const AttendanceDisplay = ({
     return (
       <span>
         {session.max_capacity
-          ? `${session.rsvps.length} / ${session.max_capacity}`
-          : `${session.rsvps.length}`}
+          ? `${goingRsvps.length} / ${session.max_capacity}`
+          : `${goingRsvps.length}`}
       </span>
     )
   }
   const megagameRsvpDisplay = () => {
-    // For megagames, we need the team breakdown from client-side RSVP data (once we implement teams)
-    const teamCounts = countRsvpsByTeamColor(session.rsvps)
+    // Team breakdown counts only confirmed attendees, not the waitlist
+    const teamCounts = countRsvpsByTeamColor(goingRsvps)
     return (
       <div className="flex items-center gap-1 font-sans text-xs">
         <div className="rounded-md bg-gray-200 px-1 py-0.5">

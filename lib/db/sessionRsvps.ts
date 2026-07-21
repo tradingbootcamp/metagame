@@ -1,5 +1,3 @@
-import { sessionsService } from './sessions'
-
 import { usersService } from '@/lib/db/users'
 
 import { createServiceClient } from '@/utils/supabase/service'
@@ -78,17 +76,6 @@ export const sessionRsvpsService = {
     }
     return data satisfies DbFullSessionRsvp[]
   },
-  getSingleSessionRsvps: async ({ sessionId }: { sessionId: string }) => {
-    const supabase = createServiceClient()
-    const { data, error } = await supabase
-      .from('session_rsvps')
-      .select(sessionRsvpsSelectIncludes)
-      .eq('session_id', sessionId)
-    if (error) {
-      throw new Error(error.message)
-    }
-    return data satisfies DbFullSessionRsvp[]
-  },
   /**
    * Pop earliest waitlisted users, optionally filtered by team, up to `limit`.
    * Returns array of userIds popped. No-op (empty array) if none.
@@ -104,7 +91,7 @@ export const sessionRsvpsService = {
   }) => {
     const supabase = createServiceClient()
 
-    let query = supabase
+    const { data, error } = await supabase
       .from('session_rsvps')
       .select(
         'user_id, user:profiles!session_rsvps_user_id_fkey ( team ), created_at',
@@ -112,19 +99,19 @@ export const sessionRsvpsService = {
       .eq('session_id', sessionId)
       .eq('on_waitlist', true)
       .order('created_at', { ascending: true })
-      .limit(limit)
-    if (team) {
-      // Filter by team of the joined profile
-      query = query.eq('user.team', team)
-    }
-    const { data, error } = await query
     if (error) {
       throw new Error(error.message)
     }
-    if (!data || data.length === 0) {
+    // Filter by team in JS (as countGoingForTeam does): a PostgREST .eq() on an
+    // embedded resource nulls the embed on non-matching rows instead of
+    // filtering parent rows, so `limit` must also apply after the filter.
+    const candidates = (
+      team ? data.filter((row) => row.user.team === team) : data
+    ).slice(0, limit)
+    if (candidates.length === 0) {
       return [] as string[]
     }
-    const userIds = data.map((row) => row.user_id)
+    const userIds = candidates.map((row) => row.user_id)
     const { error: updateError } = await supabase
       .from('session_rsvps')
       .update({ on_waitlist: false })
@@ -240,7 +227,13 @@ export const sessionRsvpsService = {
     return await sessionRsvpsService.rsvpUserToSession({ sessionId, userId })
   },
 
-  /** RSVP a user to a session. For megagame sessions, enforce per-team caps (half of max). Put on waitlist when team side is full. No-op if already RSVPd. */
+  /**
+   * RSVP a user to a session. For megagame sessions, enforce per-team caps (half of max). Put on waitlist when team side is full. No-op if already RSVPd.
+   *
+   * Known limitation (META-404): the capacity check is read-then-insert with no
+   * DB-side guard, so two concurrent RSVPs can both take the last seat. A real
+   * fix needs the count-and-insert pushed into Postgres (function or trigger).
+   */
   rsvpUserToSession: async ({
     sessionId,
     userId,
@@ -261,8 +254,13 @@ export const sessionRsvpsService = {
 
     let on_waitlist = false
     if (!megagame) {
-      const sessionFull = await sessionsService.sessionIsFull({ sessionId })
-      on_waitlist = sessionFull
+      // "Full" means going (non-waitlisted) count >= capacity — the same
+      // predicate the promotion paths use, so waitlisting only happens when
+      // there is genuinely no open seat.
+      if (max_capacity && max_capacity > 0) {
+        const goingCount = await countGoing({ sessionId })
+        on_waitlist = goingCount >= max_capacity
+      }
     } else {
       const userTeam = (
         await usersService.getUserPublicProfileById({

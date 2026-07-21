@@ -12,7 +12,7 @@ export const getUserRsvps = sessionRsvpsService.getUserRsvps
 
 export const getAllSessionRsvpCounts =
   sessionRsvpsService.getAllSessionRsvpCounts
-export const getSingleSessionRsvps = sessionRsvpsService.getSingleSessionRsvps
+export const getSingleSessionRsvps = sessionRsvpsService.getSessionRsvps
 export const getCurrentUserRsvps = async () => {
   try {
     return await currentUserWrapper(sessionRsvpsService.getUserRsvps)({})
