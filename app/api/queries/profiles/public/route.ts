@@ -1,12 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { usersService } from '@/lib/db/users'
 import { stripPrivateProfileFields } from '@/lib/profiles'
 
-import {
-  getAllUserPublicProfiles,
-  getUsersPublicProfiles,
-} from '@/app/actions/db/users'
 import { getApiUser, unauthorizedResponse } from '@/app/api/apiAuth'
 
 import { DbPublicProfile } from '@/types/database/dbTypeAliases'
@@ -18,7 +15,7 @@ export async function GET() {
     const user = await getApiUser()
     if (!user) return unauthorizedResponse()
 
-    const profiles = await getAllUserPublicProfiles()
+    const profiles = await usersService.getAllUserPublicProfiles()
 
     const response = NextResponse.json(
       profiles satisfies ApiAllPublicProfilesResponse,
@@ -40,7 +37,7 @@ export async function POST(request: NextRequest) {
     const user = await getApiUser()
 
     const { userIds } = (await request.json()) as { userIds: string[] }
-    const profiles = await getUsersPublicProfiles({ userIds })
+    const profiles = await usersService.getUsersPublicProfiles({ userIds })
     const visibleProfiles = user
       ? profiles
       : profiles.map(stripPrivateProfileFields)

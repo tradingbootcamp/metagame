@@ -6,13 +6,6 @@ import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
 import { assertAuthLevel } from '@/utils/security'
 
-export const getAllRsvps = sessionRsvpsService.getAllRsvps
-
-export const getUserRsvps = sessionRsvpsService.getUserRsvps
-
-export const getAllSessionRsvpCounts =
-  sessionRsvpsService.getAllSessionRsvpCounts
-export const getSingleSessionRsvps = sessionRsvpsService.getSessionRsvps
 export const getCurrentUserRsvps = async () => {
   try {
     return await currentUserWrapper(sessionRsvpsService.getUserRsvps)({})

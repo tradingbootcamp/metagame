@@ -25,6 +25,24 @@ const eslintConfig = [
       ],
     },
   },
+  {
+    // Server-action modules ('use server') compile every export into a
+    // POST-callable public endpoint, so a bare `export const x = service.y`
+    // bypasses the auth wrappers entirely. Wrap the function (see
+    // app/actions/db/auth.ts) or move it out of the actions module.
+    files: ['app/actions/**', 'app/**/actions.ts', 'app/**/actions/**'],
+    rules: {
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector:
+            "ExportNamedDeclaration > VariableDeclaration > VariableDeclarator[init.type='MemberExpression']",
+          message:
+            "Bare re-exports in a 'use server' module become publicly callable endpoints. Wrap the function in an auth wrapper from app/actions/db/auth.ts, or move it out of the actions module.",
+        },
+      ],
+    },
+  },
   { ignores: ['dist/**/*', 'node_modules/**/*', '.next/**/*'] },
 ]
 

@@ -3,6 +3,8 @@
 import { opennodeDbService } from '@/lib/db/opennode'
 import { opennode } from '@/lib/opennode'
 
+/** Deliberately public: the checkout status page polls this before the
+ * purchaser has an account, and the unguessable orderId scopes the lookup. */
 export async function getOrderStatus({ orderId }: { orderId: string }) {
   // Get our internal DB record for this order
   const dbCharge = await opennodeDbService.getChargeByOrderId({ orderId })

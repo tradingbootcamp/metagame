@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { sessionBookmarkService } from '@/lib/db/sessionBookmarks'
 
-import { getUserSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 import { getApiUser, unauthorizedResponse } from '@/app/api/apiAuth'
 
 import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
@@ -18,7 +18,9 @@ export async function GET(
     if (!user) return unauthorizedResponse()
 
     const { userId } = await params
-    const bookmarks = await getUserSessionBookmarks({ userId })
+    const bookmarks = await sessionBookmarkService.getUserSessionBookmarks({
+      userId,
+    })
 
     return NextResponse.json(
       bookmarks satisfies ApiUserSessionBookmarksResponse,

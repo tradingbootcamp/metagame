@@ -1,6 +1,6 @@
-import PlayerCard from '@/components/PlayerCard/PlayerCard'
+import { usersService } from '@/lib/db/users'
 
-import { getUserPublicProfileByPlayerId } from '@/app/actions/db/users'
+import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 type SearchParams = Promise<{ celestial?: string }>
 export default async function ProfilePage({
@@ -20,7 +20,7 @@ export default async function ProfilePage({
     const playerId = parseInt(id, 10)
     const profile = Number.isNaN(playerId)
       ? null
-      : await getUserPublicProfileByPlayerId({ playerId })
+      : await usersService.getPublicProfileByPlayerId({ playerId })
     uuid = profile?.id ?? null
   } else {
     uuid = id

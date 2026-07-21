@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { sessionsService } from '@/lib/db/sessions'
 
 import { sessionWithoutAttendees } from '@/utils/dbUtils'
 
-import { getAllSessions } from '@/app/actions/db/sessions'
 import { getApiUser } from '@/app/api/apiAuth'
 
 import { DbFullSession } from '@/types/database/dbTypeAliases'
@@ -15,7 +15,7 @@ export async function GET() {
     // The schedule itself is public; who is going to each session is not
     const user = await getApiUser()
 
-    const sessions = await getAllSessions()
+    const sessions = await sessionsService.getAllSessions()
     const visibleSessions = user
       ? sessions
       : sessions.map(sessionWithoutAttendees)

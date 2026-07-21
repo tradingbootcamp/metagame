@@ -1,16 +1,16 @@
 import { MoonIcon } from 'lucide-react'
 import Link from 'next/link'
 
+import { sessionsService } from '@/lib/db/sessions'
+
 import AddToCalendar from '@/components/AddToCalendar'
 import { Separator } from '@/components/ui/separator'
-
-import { getSessionById } from '@/app/actions/db/sessions'
 
 const nightMarketSessionId = 'e0dfc2cf-b2b0-46c4-8a27-dc14d551be17'
 export default async function Highlights() {
   // Fetched per request (not at module scope) so calendar links stay current;
   // on failure just omit the Add to Calendar button instead of erroring the page
-  const nightMarketSession = await getSessionById({
+  const nightMarketSession = await sessionsService.getSessionById({
     sessionId: nightMarketSessionId,
   }).catch(() => null)
   return (
