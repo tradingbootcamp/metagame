@@ -2,7 +2,7 @@ import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
 import { getUserPublicProfileByPlayerId } from '@/app/actions/db/users'
 
-type SearchParams = Promise<{ celestial?: boolean }>
+type SearchParams = Promise<{ celestial?: string }>
 export default async function ProfilePage({
   params,
   searchParams,
@@ -10,13 +10,17 @@ export default async function ProfilePage({
   params: Promise<{ id: string }>
   searchParams: SearchParams
 }) {
-  const { celestial = false } = await searchParams
+  // Search params are always strings, so compare against 'true' rather than
+  // treating any present value (including 'false') as truthy
+  const { celestial } = await searchParams
+  const asCelestialCard = celestial === 'true'
   const { id } = await params
   let uuid: string | null
   if (id.length === 4) {
-    const profile = await getUserPublicProfileByPlayerId({
-      playerId: parseInt(id),
-    })
+    const playerId = parseInt(id, 10)
+    const profile = Number.isNaN(playerId)
+      ? null
+      : await getUserPublicProfileByPlayerId({ playerId })
     uuid = profile?.id ?? null
   } else {
     uuid = id
@@ -27,7 +31,7 @@ export default async function ProfilePage({
         userId={uuid}
         tiltFactor={2.5}
         gleamFollowsTilt
-        asCelestialCard={celestial}
+        asCelestialCard={asCelestialCard}
       />
     </div>
   )
