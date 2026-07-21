@@ -59,6 +59,8 @@ const TALL_BANNER_HEIGHT = 203 // the inside height of the tall top banner (hold
 const TIP_TOP_FRAME = 6 // the width of the very outermost frame edge of the frame
 const NO_ABILITY_BIO_CHAR_LIMIT = 330 // different char limit for when we do not need space for abilities
 const PICTURE_HEIGHT = CARD_HEIGHT / 2 // height of framed profile picture
+const PICTURE_PADDING = 16 // inset of the gradient frame around the profile picture
+const PICTURE_RADIUS = 12 // corner radius of the profile picture inside that frame
 // The gray-wash card frame shown while a profile loads (or, with state="error",
 // when its fetch fails). Exported so callers can lay out a full-size pending
 // grid before the data arrives without mounting data-fetching cards.
@@ -147,6 +149,17 @@ export default function PlayerCard({
   // derive calculate inner height inside the frame based on which banner we use
   const INNER_HEIGHT = CARD_HEIGHT - TOP_FROM_TOP - FRAME_FROM_EDGE
 
+  // Profile picture box measured from the card's top-left corner. The real
+  // picture sits inside the `relative z-4` content block, whose stacking context
+  // no z-index escapes, so the copy over the z-6 holo must be a root sibling.
+  const pictureBox = {
+    top: (TOP_FROM_TOP + PICTURE_PADDING) * scale,
+    left: (FRAME_FROM_EDGE + PICTURE_PADDING) * scale,
+    width: (INNER_WIDTH - PICTURE_PADDING * 2) * scale,
+    height: (PICTURE_HEIGHT - PICTURE_PADDING * 2) * scale,
+    borderRadius: PICTURE_RADIUS * scale,
+  }
+
   const NAME_DIV_WIDTH =
     CARD_WIDTH -
     TIP_TOP_FRAME * 2 -
@@ -221,6 +234,22 @@ export default function PlayerCard({
           />
         )}
         {holoEffect && <Holoverlay effect={holoEffect} />}
+        {/* Profile picture again, over the holo, so the face reads through the
+            pattern. Without a holo a 50% ghost would only muddy the original. */}
+        {holoEffect && profile.profile_pictures_url && (
+          <div
+            style={pictureBox}
+            className="pointer-events-none absolute z-7 overflow-hidden opacity-50"
+          >
+            <Image
+              src={profile.profile_pictures_url}
+              alt=""
+              fill
+              sizes={`${Math.round(INNER_WIDTH * scale)}px`}
+              className="object-cover"
+            />
+          </div>
+        )}
         {/* Background card image */}
         <Image
           src={washImageSrcs[profile.team || 'unassigned']}
@@ -314,7 +343,7 @@ export default function PlayerCard({
               fontSize: 50 * scale,
               height: SHORT_BANNER_HEIGHT * scale,
             }}
-            className="absolute z-4 flex -translate-y-1/2 items-center"
+            className="absolute z-7 flex -translate-y-1/2 items-center"
           >
             <span className="text-opacity-50 font-cinzel leading-none text-gray-400">
               #{profile.player_id}
@@ -332,7 +361,7 @@ export default function PlayerCard({
             width: NAME_DIV_WIDTH * scale,
             fontSize: isTiny ? 75 * scale : 50 * scale,
           }}
-          className="absolute z-3 flex items-center font-cinzel leading-none text-celestial-primary"
+          className="absolute z-7 flex items-center font-cinzel leading-none text-celestial-primary"
         >
           <strong className="flex items-center justify-start gap-1">
             {playerNameLength > oneLineNameLengthLimit ? (
@@ -376,7 +405,7 @@ export default function PlayerCard({
             className="relative w-full overflow-hidden"
           >
             <div
-              style={{ padding: 16 * scale }}
+              style={{ padding: PICTURE_PADDING * scale }}
               className="relative size-full overflow-hidden rounded-b-xs bg-gradient-to-br from-stone-400 via-stone-700 to-stone-400"
             >
               {/* Gray border */}
@@ -423,7 +452,7 @@ export default function PlayerCard({
                     alt="Profile picture"
                     fill
                     sizes={`${Math.round(INNER_WIDTH * scale)}px`}
-                    style={{ borderRadius: 12 * scale }}
+                    style={{ borderRadius: PICTURE_RADIUS * scale }}
                     className="z-2 object-cover"
                   />
                 )}
