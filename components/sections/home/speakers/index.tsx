@@ -1,5 +1,7 @@
 import SpeakersGrid from './SpeakersGrid'
 
+import { PlayerCardSkeleton } from '@/components/PlayerCard/PlayerCard'
+
 import { getSpeakerIds } from '@/app/actions/db/users'
 
 export default async function Speakers() {
@@ -25,11 +27,11 @@ export function SpeakersLoading() {
         <h2 className="mb-8 text-center text-3xl font-bold">Speakers</h2>
 
         <div className="max-w-8xl mx-auto flex flex-wrap justify-center gap-2 sm:gap-4 md:gap-6">
-          <div className="flex items-center justify-center p-8">
-            <div className="text-lg text-muted-foreground">
-              Loading Speakers...
-            </div>
-          </div>
+          {/* Pending card frames reserve vertical space before the speaker IDs
+              resolve, so the #speakers anchor doesn't briefly frame Sponsors. */}
+          {Array.from({ length: 12 }).map((_, i) => (
+            <PlayerCardSkeleton key={i} width={150} />
+          ))}
         </div>
       </div>
     </section>
