@@ -240,21 +240,21 @@ export default function PlayerCard({
         {holoEffect && <Holoverlay effect={holoEffect} />}
         {/* The frame and the picture again, over the holo, so both read through
             the pattern. DOM order keeps the picture copy above the frame copy,
-            matching the originals. Without a holo a 50% ghost would only muddy
-            what it sits on. */}
+            matching the originals. Without a holo they would only muddy
+            what they sit on. */}
         {holoEffect && (
           <Image
             src={frameSrc}
             alt=""
             fill
             sizes={`${width}px`}
-            className="pointer-events-none z-7 object-cover opacity-50"
+            className="pointer-events-none z-7 object-cover opacity-80"
           />
         )}
         {holoEffect && profile.profile_pictures_url && (
           <div
             style={pictureBox}
-            className="pointer-events-none absolute z-7 overflow-hidden opacity-50"
+            className="pointer-events-none absolute z-7 overflow-hidden opacity-80"
           >
             <Image
               src={profile.profile_pictures_url}
