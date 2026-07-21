@@ -10,6 +10,7 @@ import {
   dehydrate,
 } from '@tanstack/react-query'
 
+import { sessionWithoutAttendees } from '@/utils/dbUtils'
 import { createClient } from '@/utils/supabase/server'
 
 import { currentUserGetSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
@@ -51,7 +52,12 @@ export default async function ScheduleProvider({
     () =>
       queryClient.prefetchQuery({
         queryKey: ['sessions'],
-        queryFn: getAllSessions,
+        // The cache is dehydrated into the public HTML, so strip attendee
+        // lists for anonymous visitors — same rule as /api/queries/sessions
+        queryFn: async () => {
+          const sessions = await getAllSessions()
+          return user ? sessions : sessions.map(sessionWithoutAttendees)
+        },
       }),
     () =>
       queryClient.prefetchQuery({
