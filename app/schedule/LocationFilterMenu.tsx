@@ -1,5 +1,7 @@
 'use client'
 
+import { useState } from 'react'
+
 import { CheckIcon, FilterIcon, MinusIcon } from 'lucide-react'
 
 import {
@@ -25,6 +27,8 @@ export function LocationFilterMenu({
   selected: string[]
   onChange: (values: string[]) => void
 }) {
+  const [open, setOpen] = useState(false)
+
   const allSelected = selected.length === options.length
   const noneSelected = selected.length === 0
   const isFiltering = !allSelected
@@ -45,7 +49,7 @@ export function LocationFilterMenu({
   const itemClass = 'cursor-pointer focus:bg-dark-400 focus:text-secondary-100'
 
   return (
-    <DropdownMenu>
+    <DropdownMenu open={open} onOpenChange={setOpen}>
       <Tooltip>
         <TooltipTrigger asChild>
           <DropdownMenuTrigger
@@ -67,7 +71,8 @@ export function LocationFilterMenu({
       >
         <DropdownMenuItem
           onSelect={(e) => {
-            e.preventDefault()
+            // Clearing is usually a prelude to picking a few, so stay open for it
+            if (allSelected) e.preventDefault()
             toggleAll()
           }}
           className={`${itemClass} relative pl-8`}
@@ -98,6 +103,7 @@ export function LocationFilterMenu({
                 e.preventDefault()
                 e.stopPropagation()
                 onChange([option.value])
+                setOpen(false)
               }}
               className="rounded-sm px-1 text-xs text-secondary-400 opacity-0 group-hover:opacity-100 hover:bg-dark-300 hover:text-secondary-100"
             >

@@ -157,6 +157,12 @@ export default function Schedule({
 
   const isLocationFiltered = locationFilter !== null
 
+  // repeat(0, ...) is invalid CSS — the browser drops the whole declaration and
+  // keeps the previous track list, leaving a full-width grid with no columns in it
+  const gridTemplateColumns = scheduleLocations.length
+    ? `60px repeat(${scheduleLocations.length}, minmax(180px, 360px))`
+    : '60px'
+
   const handleLocationFilterChange = (slugs: string[]) => {
     // Selecting everything is the same as no filter; collapse so the URL stays clean
     setLocationFilter(
@@ -419,9 +425,7 @@ export default function Schedule({
           {/* Images Row - Scrollable on mobile, sticky on large */}
           <div
             className="grid w-fit bg-dark-400 lg:top-0 lg:z-30"
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 360px))`,
-            }}
+            style={{ gridTemplateColumns }}
           >
             <div
               className={`sticky left-0 z-30 border border-b-0 border-secondary-300 bg-dark-600 p-3 ${isLocationFiltered ? 'animate-filter-active' : ''}`}
@@ -465,9 +469,7 @@ export default function Schedule({
           {/* Names Row - Always sticky, with day nav on mobile */}
           <div
             className="sticky top-0 z-20 grid w-fit bg-dark-400"
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 360px))`,
-            }}
+            style={{ gridTemplateColumns }}
           >
             <div
               className={`sticky top-0 left-0 z-30 border border-t-0 border-b-2 border-secondary-300 bg-dark-600 p-3 ${isLocationFiltered ? 'animate-filter-active' : ''}`}
@@ -521,18 +523,10 @@ export default function Schedule({
             ))}
           </div>
 
-          {scheduleLocations.length === 0 && (
-            <div className="p-8 text-center text-sm text-secondary-300">
-              No locations selected — pick some from the filter menu.
-            </div>
-          )}
-
           {/* Time Slots Grid */}
           <div
             className={`relative grid w-fit bg-dark-400 ${scheduleLocations.length === 0 ? 'hidden' : ''}`}
-            style={{
-              gridTemplateColumns: `60px repeat(${scheduleLocations.length}, minmax(180px, 360px))`,
-            }}
+            style={{ gridTemplateColumns }}
           >
             {generateTimeSlots(currentDayIndex).map((time) => (
               <div key={time} className="contents">
@@ -700,6 +694,12 @@ export default function Schedule({
           </div>
         </div>
       </div>
+
+      {scheduleLocations.length === 0 && (
+        <div className="w-full p-8 text-center text-sm text-secondary-300">
+          No locations selected — pick some from the filter menu.
+        </div>
+      )}
 
       {openedSession && (
         <Dialog
