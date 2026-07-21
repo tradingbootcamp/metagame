@@ -25,6 +25,23 @@ export const profileFormSchema = z.object({
 
 export type ProfileFormData = z.infer<typeof profileFormSchema>
 
+/**
+ * The complete set of profile columns a user may write to their *own* profile.
+ * Anything outside this list (is_admin, team, checked_in, player_id, email,
+ * volunteer, homepage_order, celestial_card_id) is stripped server-side, so a new
+ * self-service field must be added here as well as to the form schema above.
+ */
+export const selfEditableProfileSchema = profileFormSchema
+  .extend({
+    // Written outside the form: picture upload and the "stop prompting me" button.
+    profile_pictures_url: z.string().nullable(),
+    dismissed_info_request: z.boolean(),
+  })
+  .partial()
+
+/** Shape accepted by `updateCurrentUserProfile` (pre-parse). */
+export type SelfEditableProfileData = z.input<typeof selfEditableProfileSchema>
+
 export const initialProfileFormData: ProfileFormData = {
   first_name: '',
   last_name: '',

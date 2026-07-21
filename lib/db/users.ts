@@ -155,7 +155,8 @@ export const usersService = {
     }
     return data satisfies DbFullProfile[]
   },
-  /** Update a user's profile */
+  /** Update a user's profile. Accepts any column, so callers reachable from the
+   * client must allowlist `data` first (see `selfEditableProfileSchema`). */
   updateUserProfile: async ({
     userId,
     data,
