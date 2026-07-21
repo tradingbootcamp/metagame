@@ -105,14 +105,34 @@
   --font-imfell: 'IM Fell English', ui-serif, serif, 'Apple Color Emoji';
   --font-cinzel: 'Cinzel', ui-serif, serif, 'Apple Color Emoji';
   --font-mulish:
-    'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
-    /* Keyframes */ --animate-coin-pop: coin-pop 0.6s ease-out;
+    'Mulish', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji';
+
+  /* Keyframes */
+  --animate-coin-pop: coin-pop 0.6s ease-out;
   --animate-fade-in: fade-in 0.5s ease-in forwards;
   --animate-fade-out: fade-out 0.5s linear forwards;
   --animate-flash: flash 2s linear infinite;
+  --animate-filter-active: filter-active 3.5s ease-in-out infinite;
 }
 
 /* Keyframe definitions */
+@keyframes filter-active {
+  0%,
+  100% {
+    background-color: color-mix(
+      in oklab,
+      var(--color-sky-300) 10%,
+      transparent
+    );
+  }
+  50% {
+    background-color: color-mix(
+      in oklab,
+      var(--color-sky-300) 30%,
+      transparent
+    );
+  }
+}
 @keyframes coin-pop {
   0% {
     transform: translateY(0) translateX(-50%) scale(0.5);

@@ -3,6 +3,7 @@ import { getAllSessions } from '../actions/db/sessions'
 import { getCurrentUserFullProfile } from '../actions/db/users'
 import Schedule from './Schedule'
 import { getUserEditPermissionsForSessions } from './actions'
+import { locationSlug } from './scheduleUtils'
 import {
   HydrationBoundary,
   QueryClient,
@@ -13,16 +14,18 @@ import { createClient } from '@/utils/supabase/server'
 
 import { currentUserGetSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
-import { DbFullSession } from '@/types/database/dbTypeAliases'
+import { DbFullSession, DbLocation } from '@/types/database/dbTypeAliases'
 
 // import { fetchSessions, fetchCurrentUserRsvps, fetchLocations } from "./queries"
 
 export default async function ScheduleProvider({
   sessionId,
   dayIndex,
+  locationSlugs,
 }: {
   sessionId?: string
   dayIndex?: number
+  locationSlugs?: string[]
 }) {
   const queryClient = new QueryClient()
   // Get current user for edit permissions
@@ -61,6 +64,15 @@ export default async function ScheduleProvider({
     await Promise.all(userPrefetchQueries.map((query) => query()))
   }
 
+  // Drop ?locations= slugs that match nothing, so a stale link renders the full schedule
+  // rather than an empty grid
+  const knownLocationSlugs = (
+    queryClient.getQueryData<DbLocation[]>(['locations']) ?? []
+  ).map((location) => locationSlug(location.name))
+  const validLocationSlugs = locationSlugs?.filter((slug) =>
+    knownLocationSlugs.includes(slug),
+  )
+
   // Fetch edit permissions if user is logged in
   let editPermissions: Record<string, boolean> = {}
   if (user?.id) {
@@ -79,6 +91,9 @@ export default async function ScheduleProvider({
       <Schedule
         sessionId={sessionId}
         dayIndex={dayIndex}
+        locationSlugs={
+          validLocationSlugs?.length ? validLocationSlugs : undefined
+        }
         editPermissions={editPermissions}
       />
     </HydrationBoundary>

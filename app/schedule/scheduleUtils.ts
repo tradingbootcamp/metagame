@@ -36,3 +36,10 @@ export const gCalLinkFromSession = (session: DbFullSession) => {
 export const sessionLink = (sessionId: string) => {
   return `${process.env.NEXT_PUBLIC_SITE_URL}/schedule?session=${sessionId}`
 }
+
+// Locations have no slug column, so shareable ?locations= links key off the name
+export const locationSlug = (locationName: string) =>
+  locationName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/^-|-$/g, '')
