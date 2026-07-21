@@ -2,7 +2,7 @@
 
 import React, { useEffect, useRef } from 'react'
 
-import { cn } from '@/utils/cn'
+import { cn } from '@/lib/utils'
 
 interface CardProps {
   className?: string
@@ -10,6 +10,55 @@ interface CardProps {
   padless?: boolean
   children: React.ReactNode
   tiltFactor?: number
+}
+
+// One shared scroll listener writing --angle on :root, ref-counted across
+// mounted cards — a per-card listener would repaint every card's PNG-masked
+// shine gradient on each scroll frame. Hovered cards shadow this with an
+// element-level --angle (removed again on pointer leave).
+let scrollAngleUsers = 0
+let stopScrollAngle: (() => void) | null = null
+
+function startScrollAngle() {
+  const root = document.documentElement
+  let lastScrollY = window.scrollY
+  let angleDeg = Math.random() * 360
+  let ticking = false
+  const apply = () => root.style.setProperty('--angle', `${angleDeg}deg`)
+
+  const onScroll = () => {
+    if (ticking) return
+    ticking = true
+    requestAnimationFrame(() => {
+      // Read scrollY inside the frame so fast scrolls between frames
+      // accumulate instead of dropping deltas
+      const nowY = window.scrollY
+      const deltaY = nowY - lastScrollY
+      lastScrollY = nowY
+      if (deltaY !== 0) {
+        angleDeg = (((angleDeg + deltaY * 0.8) % 360) + 360) % 360
+        apply()
+      }
+      ticking = false
+    })
+  }
+
+  apply()
+  window.addEventListener('scroll', onScroll, { passive: true })
+  return () => {
+    window.removeEventListener('scroll', onScroll)
+    root.style.removeProperty('--angle')
+  }
+}
+
+function acquireScrollAngle() {
+  if (scrollAngleUsers++ === 0) stopScrollAngle = startScrollAngle()
+  return () => {
+    if (--scrollAngleUsers === 0) {
+      stopScrollAngle?.()
+      stopScrollAngle = null
+    }
+  }
 }
 
 export const Card: React.FC<CardProps> = ({
@@ -24,41 +73,17 @@ export const Card: React.FC<CardProps> = ({
   useEffect(() => {
     const el = cardRef.current
     if (!el) return
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
+
+    const releaseScrollAngle = acquireScrollAngle()
 
     const setProp = (prop: string, value: string) =>
       el.style.setProperty(prop, value)
 
-    // Unified angle: mouse sets absolute; scroll applies incremental delta
-    let ticking = false
-    let lastScrollY = window.scrollY || window.pageYOffset || 0
-    let angleDeg = (() => {
-      const existing = el.style.getPropertyValue('--angle')
-      const parsed = parseFloat(existing)
-      return Number.isFinite(parsed) ? parsed : Math.random() * 360
-    })()
-
-    const applyAngle = (deg: number) => {
-      // Normalize within 0..360
-      angleDeg = ((deg % 360) + 360) % 360
-      setProp('--angle', `${angleDeg}deg`)
-    }
-
-    const onScroll = () => {
-      const nowY = window.scrollY || window.pageYOffset || 0
-      const deltaY = nowY - lastScrollY
-      lastScrollY = nowY
-      if (deltaY === 0) return
-      const deltaAngle = deltaY * 0.8
-      if (ticking) return
-      ticking = true
-      requestAnimationFrame(() => {
-        applyAngle(angleDeg + deltaAngle)
-        ticking = false
-      })
-    }
-    window.addEventListener('scroll', onScroll, { passive: true })
-
-    const onMouseUpdate = (e: MouseEvent) => {
+    const onPointerUpdate = (e: PointerEvent) => {
+      // Touch has no hover: a tap would set tilt props with no event to ever
+      // reset them, leaving the card frozen mid-tilt
+      if (e.pointerType !== 'mouse') return
       const rect = el.getBoundingClientRect()
       const width = el.offsetWidth
       const height = el.offsetHeight
@@ -74,8 +99,8 @@ export const Card: React.FC<CardProps> = ({
       setProp('--dy', `${YAngle}deg`)
       setProp('--dx', `${XAngle}deg`)
       const angleRad = Math.atan2(normY, normX)
-      const nextAngleDeg = (angleRad * 180) / Math.PI
-      applyAngle(nextAngleDeg)
+      const angleDeg = ((((angleRad * 180) / Math.PI) % 360) + 360) % 360
+      setProp('--angle', `${angleDeg}deg`)
       setProp('--tx', `${normX}`)
       setProp('--ty', `${normY}`)
       const tiltMag = Math.min(1, Math.sqrt(normX * normX + normY * normY))
@@ -90,19 +115,24 @@ export const Card: React.FC<CardProps> = ({
       setProp('--ty', '0')
       setProp('--tilt', '0')
       setProp('--hover', '0')
+      // Drop the hover-set angle so the card falls back to the shared
+      // scroll-driven --angle on :root
+      el.style.removeProperty('--angle')
     }
 
-    el.addEventListener('mousemove', onMouseUpdate)
-    el.addEventListener('mouseenter', onMouseUpdate)
-    el.addEventListener('mouseleave', resetProps)
+    el.addEventListener('pointermove', onPointerUpdate)
+    el.addEventListener('pointerenter', onPointerUpdate)
+    el.addEventListener('pointerleave', resetProps)
+    el.addEventListener('pointercancel', resetProps)
 
     return () => {
-      el.removeEventListener('mousemove', onMouseUpdate)
-      el.removeEventListener('mouseenter', onMouseUpdate)
-      el.removeEventListener('mouseleave', resetProps)
-      window.removeEventListener('scroll', onScroll)
+      el.removeEventListener('pointermove', onPointerUpdate)
+      el.removeEventListener('pointerenter', onPointerUpdate)
+      el.removeEventListener('pointerleave', resetProps)
+      el.removeEventListener('pointercancel', resetProps)
+      releaseScrollAngle()
     }
-  }, [])
+  }, [tiltFactor])
 
   return (
     <div

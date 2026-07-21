@@ -1,6 +1,6 @@
 'use client'
 
-import Link from 'next/link'
+import { useMemo } from 'react'
 
 import PlayerCard from '@/components/PlayerCard/PlayerCard'
 
@@ -15,6 +15,18 @@ export default function TeamGrid({ memberIds }: TeamGridProps) {
     userIds: memberIds,
     includeFullProfiles: false,
   })
+
+  // Shuffle within each team, memoized so cards don't reorder on refetches
+  const teamSorted = useMemo(() => {
+    if (!profiles) return []
+    const shuffled = [...profiles]
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    // Stable sort keeps the shuffled order within each team
+    return shuffled.sort((a, b) => a.team.localeCompare(b.team))
+  }, [profiles])
 
   // If no member IDs provided, show message immediately
   if (memberIds.length === 0) {
@@ -42,35 +54,24 @@ export default function TeamGrid({ memberIds }: TeamGridProps) {
   }
 
   // Query succeeded but no profiles returned (shouldn't happen if memberIds exist)
-  if (!profiles || profiles.length === 0) {
+  if (teamSorted.length === 0) {
     return (
       <div className="text-lg text-muted-foreground">No team members found</div>
     )
   }
 
-  // Shuffle the profiles client-side for randomization
-  const shuffledProfiles = [...profiles].sort(() => Math.random() - 0.5)
-  const teamSorted = [...shuffledProfiles].sort((a, b) =>
-    a.team < b.team ? -1 : 1,
-  )
   return (
     <>
       {teamSorted.map((member) => (
-        <div key={member.id} className="relative">
-          <Link
-            className="absolute inset-0 z-0"
-            href={`/player/${member.player_id}`}
-          />
-          <div className="pointer-events-none relative">
-            <PlayerCard
-              userId={member.id}
-              asCelestialCard={true}
-              tiltFactor={1}
-              gleamFollowsTilt
-              width={150}
-            />
-          </div>
-        </div>
+        <PlayerCard
+          key={member.id}
+          userId={member.id}
+          asCelestialCard={true}
+          tiltFactor={1}
+          gleamFollowsTilt
+          width={150}
+          href={`/player/${member.player_id}`}
+        />
       ))}
     </>
   )

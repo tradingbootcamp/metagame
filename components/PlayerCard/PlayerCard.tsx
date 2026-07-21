@@ -5,6 +5,9 @@ import { FaDiscord } from 'react-icons/fa'
 import Holoverlay, { HoloEffect } from './Holoverlay'
 import { GlobeIcon } from 'lucide-react'
 import Image from 'next/image'
+import Link from 'next/link'
+
+import { cn } from '@/lib/utils'
 
 import { Card } from '@/components/Card'
 
@@ -81,12 +84,14 @@ export function PlayerCardSkeleton({
         src="/images/cards/fog.gif"
         alt=""
         fill
+        sizes={`${width}px`}
         className="z-1 object-cover"
       />
       <Image
         src="/images/cards/gray-wash.png"
         alt=""
         fill
+        sizes={`${width}px`}
         className="z-2 object-cover opacity-50"
       />
       {/* Frame Overlay */}
@@ -94,6 +99,7 @@ export function PlayerCardSkeleton({
         src="/images/cards/celestial-frame-2x3-shortbanner.png"
         alt=""
         fill
+        sizes={`${width}px`}
         className="pointer-events-none z-3 object-cover"
       />
 
@@ -119,7 +125,7 @@ export default function PlayerCard({
   asCelestialCard = false,
   overrideCelestialCard = null,
   holoEffect = 'dice',
-  pictureEffect = null,
+  href = null,
 }: {
   userId: string | null
   tiltFactor?: number
@@ -129,7 +135,7 @@ export default function PlayerCard({
   asCelestialCard?: boolean
   overrideCelestialCard?: DbCelestialCard | null
   holoEffect?: HoloEffect | null
-  pictureEffect?: HoloEffect | null
+  href?: string | null
 }) {
   const scale = width / CARD_WIDTH
   const isTiny = tiny || width < 200
@@ -186,19 +192,41 @@ export default function PlayerCard({
 
   return (
     <Card borderless padless tiltFactor={tiltFactor}>
+      {/* With href, the card body goes pointer-events-none so hovers and
+          clicks land on the overlay Link below — it lives INSIDE the tilted
+          element, so its events still bubble to Card's tilt handlers and
+          `group` still matches :hover. An outer <Link> wrapper would nest
+          <a> tags (the footer site link); an outer overlay would swallow
+          the tilt events entirely. */}
       <div
-        className={`group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell`}
+        className={cn(
+          'group relative max-w-full overflow-hidden rounded-[2px] text-left font-imfell',
+          href && 'pointer-events-none',
+        )}
         style={{
           width: width,
           aspectRatio: CARD_WIDTH / CARD_HEIGHT,
         }}
       >
+        {href && (
+          <Link
+            href={href}
+            aria-label={
+              `${profile.first_name ?? ''} ${profile.last_name ?? ''}`.trim() ||
+              'Player card'
+            }
+            // z-2 keeps it under the z-4 content block, whose own
+            // pointer-events-auto footer link must win hit-testing in its box
+            className="pointer-events-auto absolute inset-0 z-2"
+          />
+        )}
         {holoEffect && <Holoverlay effect={holoEffect} />}
         {/* Background card image */}
         <Image
           src={washImageSrcs[profile.team || 'unassigned']}
           alt="Celestial Base Color"
           fill
+          sizes={`${width}px`}
           className="z-1 object-cover"
         />
         {/* Frame Overlay */}
@@ -210,6 +238,7 @@ export default function PlayerCard({
           }
           alt="Frame overlay"
           fill
+          sizes={`${width}px`}
           className="pointer-events-none z-3 object-cover"
         />
         {/* Breath Square icon */}
@@ -234,8 +263,8 @@ export default function PlayerCard({
                 src="/images/cards/celestial-square-section.png"
                 alt="Points"
                 fill
-                objectFit="cover"
-                className="z-2"
+                sizes={`${Math.floor(SQUARE_SIZE * scale)}px`}
+                className="z-2 object-cover"
               />
               {asCelestialCard && (
                 <span
@@ -261,8 +290,8 @@ export default function PlayerCard({
                 src="/images/cards/celestial-circle-cost.png"
                 alt="Breath"
                 fill
-                objectFit="cover"
-                className="z-2"
+                sizes={`${Math.floor(CIRCLE_DIAMETER * scale)}px`}
+                className="z-2 object-cover"
               />
 
               {asCelestialCard && (
@@ -355,6 +384,7 @@ export default function PlayerCard({
                 src={washImageSrcs.unassigned}
                 alt="border"
                 fill
+                sizes={`${Math.round(INNER_WIDTH * scale)}px`}
                 className="z-1 object-cover"
               />
               {/* Tilt-reactive spotlight (shows on hover), and flash bar fallback (shows when not hovered) */}
@@ -372,10 +402,10 @@ export default function PlayerCard({
                       }}
                     />
                     {/* Flash bar (hide on hover) */}
-                    <div className="absolute inset-0 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent group-hover:hidden" />
+                    <div className="absolute inset-0 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent group-hover:hidden motion-reduce:hidden" />
                   </div>
                 ) : (
-                  <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent"></div>
+                  <div className="absolute inset-0 z-1 h-[200%] w-[20%] animate-flash bg-gradient-to-r from-transparent via-gray-300 to-transparent motion-reduce:hidden"></div>
                 )
               ) : (
                 <span
@@ -387,22 +417,15 @@ export default function PlayerCard({
               )}
               <div className="relative size-full">
                 {profile.profile_pictures_url && (
-                  <>
-                    <Image
-                      id="player-picture"
-                      src={profile.profile_pictures_url}
-                      alt="Profile picture"
-                      fill
-                      style={{ borderRadius: 12 * scale }}
-                      className="z-2 object-cover"
-                    />
-                    {pictureEffect && (
-                      <Holoverlay
-                        effect={pictureEffect}
-                        className="opacity-10 hover:opacity-10"
-                      />
-                    )}
-                  </>
+                  <Image
+                    id="player-picture"
+                    src={profile.profile_pictures_url}
+                    alt="Profile picture"
+                    fill
+                    sizes={`${Math.round(INNER_WIDTH * scale)}px`}
+                    style={{ borderRadius: 12 * scale }}
+                    className="z-2 object-cover"
+                  />
                 )}
                 {asCelestialCard && (
                   <div
