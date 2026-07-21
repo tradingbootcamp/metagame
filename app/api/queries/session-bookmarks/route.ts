@@ -1,5 +1,7 @@
 import { NextResponse } from 'next/server'
 
+import { apiError } from '@/lib/apiError'
+
 import { getAllSessionBookmarks } from '@/app/actions/db/sessionBookmarks'
 
 import { DbSessionBookmark } from '@/types/database/dbTypeAliases'
@@ -12,21 +14,6 @@ export async function GET() {
 
     return NextResponse.json(bookmarks satisfies ApiAllSessionBookmarksResponse)
   } catch (error) {
-    console.error('Error fetching all session bookmarks:', error)
-
-    // Return more detailed error information
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    const errorDetails = error instanceof Error ? error.stack : undefined
-
-    return NextResponse.json(
-      {
-        error: 'Failed to fetch all session bookmarks',
-        message: errorMessage,
-        details: errorDetails,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to fetch all session bookmarks')
   }
 }

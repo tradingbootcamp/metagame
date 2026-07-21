@@ -4,6 +4,7 @@ import { createPaymentIntent } from '../../../lib/stripe'
 import { NextRequest, NextResponse } from 'next/server'
 import { ZodError } from 'zod'
 
+import { apiError } from '@/lib/apiError'
 import { couponsService } from '@/lib/db/coupons'
 
 import { ticketTypeDetails, usdSlidingScaleMinimum } from '@/config/tickets'
@@ -88,11 +89,7 @@ export async function POST(request: NextRequest) {
       clientSecret = secret
       paymentIntentId = intentId
     } catch (error) {
-      console.error('Error creating payment intent:', error)
-      return NextResponse.json(
-        { error: `Failed to create payment intent: ${error}` },
-        { status: 500 },
-      )
+      return apiError(error, 'Failed to create payment intent')
     }
     if (coupon) {
       couponsService.update({
@@ -116,8 +113,6 @@ export async function POST(request: NextRequest) {
         : null,
     })
   } catch (error) {
-    console.error('Error in create-payment-intent:', error)
-
     // Handle Zod validation errors
     if (error instanceof ZodError) {
       return NextResponse.json(
@@ -128,12 +123,6 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    return NextResponse.json(
-      {
-        error: 'Internal server error',
-        details: error instanceof Error ? error.message : 'Unknown error',
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Internal server error')
   }
 }

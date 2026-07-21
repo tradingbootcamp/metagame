@@ -1,4 +1,6 @@
-import { NextRequest, NextResponse } from 'next/server'
+import { NextRequest } from 'next/server'
+
+import { apiError } from '@/lib/apiError'
 
 import { getSessionById } from '@/app/actions/db/sessions'
 import {
@@ -42,22 +44,7 @@ END:VCALENDAR`
       },
     })
   } catch (error) {
-    console.error('Error getting calendar event for session:', error)
-
-    // Return more detailed error information
-    const errorMessage =
-      error instanceof Error ? error.message : 'Unknown error'
-    const errorDetails = error instanceof Error ? error.stack : undefined
-
-    return NextResponse.json(
-      {
-        error: 'Failed to get calendar event for session',
-        message: errorMessage,
-        details: errorDetails,
-        timestamp: new Date().toISOString(),
-      },
-      { status: 500 },
-    )
+    return apiError(error, 'Failed to get calendar event for session')
   }
 }
 
