@@ -73,6 +73,16 @@ export const SESSION_CATEGORIES_ENUM = Object.values(
   SESSION_CATEGORIES,
 ) as DbSessionCategory[]
 
+/** A session with the attendee lists removed. RSVP rows carry attendee names and
+ * user ids and bookmarks carry user ids, so anonymous callers get neither. */
+export const sessionWithoutAttendees = (
+  session: DbFullSession,
+): DbFullSession => ({
+  ...session,
+  rsvps: [],
+  bookmarks: [],
+})
+
 export const countRsvpsByTeamColor = (
   rsvps: Pick<DbFullSessionRsvp, 'user'>[],
 ) => {
