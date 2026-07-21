@@ -40,8 +40,10 @@ import { useScheduleStuff } from '@/hooks/schedule/useScheduleStuff'
 import { useUser } from '@/hooks/useUser'
 import { DbFullSession } from '@/types/database/dbTypeAliases'
 
-const SCHEDULE_START_TIMES = [14, 9, 9]
-const SCHEDULE_END_TIMES = [22, 22, 22]
+// Baseline display window per day; extended when sessions fall outside it
+const DEFAULT_START_HOURS = [14, 9, 9]
+const DEFAULT_END_HOURS = [22, 22, 22]
+const MINUTES_PER_DAY = 24 * 60
 // Fixed conference days - create Date objects representing midnight in Pacific Time
 export const CONFERENCE_DAYS = [
   { date: new Date('2025-09-12T00:00:00-07:00'), name: 'Friday' },
@@ -49,55 +51,38 @@ export const CONFERENCE_DAYS = [
   { date: new Date('2025-09-14T00:00:00-07:00'), name: 'Sunday' },
 ]
 
-// Generate time slots from 9:00 to 22:00 in 30-minute intervals
-const generateTimeSlots = (dayIndex: number) => {
-  const slots = []
-  for (
-    let hour = SCHEDULE_START_TIMES[dayIndex];
-    hour <= SCHEDULE_END_TIMES[dayIndex];
-    hour++
-  ) {
+// A session placed on the grid, with its Pacific-midnight-relative position
+// computed once instead of per slot x location render
+type PlacedSession = {
+  session: DbFullSession
+  startMinutes: number
+  durationMinutes: number
+}
+
+// Generate 30-minute slots covering [startHour, endHour]
+const generateTimeSlots = (startHour: number, endHour: number) => {
+  const slots: string[] = []
+  for (let hour = startHour; hour <= endHour; hour++) {
     slots.push(`${hour.toString().padStart(2, '0')}:00`)
-    if (hour < SCHEDULE_END_TIMES[dayIndex]) {
+    if (hour < endHour) {
       slots.push(`${hour.toString().padStart(2, '0')}:30`)
     }
   }
   return slots
 }
 
-// Updated slot checking - PST based
-const eventStartsInSlot = (session: DbFullSession, slotTime: string) => {
-  if (!session.start_time) return false
+const slotForMinutes = (minutes: number) => {
+  const hour = Math.floor(minutes / 60)
+  return `${hour.toString().padStart(2, '0')}:${minutes % 60 >= 30 ? '30' : '00'}`
+}
 
-  const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
-  const [slotHour, slotMinute] = slotTime.split(':').map(Number)
-  const slotStartMinutes = slotHour * 60 + slotMinute
-  const slotEndMinutes = slotStartMinutes + 30
-
-  return (
-    sessionStartMinutes >= slotStartMinutes &&
-    sessionStartMinutes < slotEndMinutes
+// Default to the conference day in progress (Pacific) when there is one
+const getDefaultDayIndex = () => {
+  const todayKey = dateUtils.getYYYYMMDD(new Date())
+  const todayIndex = CONFERENCE_DAYS.findIndex(
+    (day) => dateUtils.getYYYYMMDD(day.date) === todayKey,
   )
-}
-
-// Updated offset calculation - PST based
-const getEventOffsetMinutes = (session: DbFullSession, slotTime: string) => {
-  if (!session.start_time) return 0
-
-  const sessionStartMinutes = dateUtils.getPSTMinutes(session.start_time)
-  const [slotHour, slotMinute] = slotTime.split(':').map(Number)
-  const slotStartMinutes = slotHour * 60 + slotMinute
-
-  return Math.max(0, sessionStartMinutes - slotStartMinutes)
-}
-
-// Updated duration calculation - PST based
-const getEventDurationMinutes = (session: DbFullSession) => {
-  if (!session.start_time || !session.end_time) return 30
-
-  const startMinutes = dateUtils.getPSTMinutes(session.start_time)
-  const endMinutes = dateUtils.getPSTMinutes(session.end_time)
-  return endMinutes - startMinutes
+  return todayIndex >= 0 ? todayIndex : 0
 }
 
 export default function Schedule({
@@ -174,11 +159,13 @@ export default function Schedule({
 
   // Group sessions by the 3 fixed conference days
   const days = useMemo(() => {
-    const dayEvents = [
-      [], // Day 0: Friday 9/12
-      [], // Day 1: Saturday 9/13
-      [], // Day 2: Sunday 9/14
-    ] as DbFullSession[][]
+    // Compare full Pacific dates, not just day-of-month, so a stray
+    // out-of-September session can't land on the wrong day
+    const dayKeys = CONFERENCE_DAYS.map((day) => dateUtils.getYYYYMMDD(day.date))
+    const schedulableLocationIds = new Set(
+      allScheduleLocations.map((location) => location.id),
+    )
+    const dayEvents = CONFERENCE_DAYS.map(() => [] as DbFullSession[])
 
     const userRsvpOrHostingSession = (session: DbFullSession) => {
       if (!currentUserProfile) return true
@@ -200,38 +187,88 @@ export default function Schedule({
         )
       : sessions
     filteredSessions.forEach((session) => {
-      const [sessionStart, sessionEnd] = [
-        session.start_time,
-        session.end_time,
-      ].filter(Boolean)
-      if (!sessionStart || !sessionEnd || !session.title) return
+      if (!session.start_time || !session.end_time || !session.title) return
 
-      const dayIndex = CONFERENCE_DAYS.findIndex((day) => {
-        if (
-          dateUtils.getPacificParts(day.date).day ===
-          dateUtils.getPacificParts(new Date(sessionStart)).day
-        ) {
-          return true
-        }
-        return false
-      })
+      const dayIndex = dayKeys.indexOf(
+        dateUtils.getYYYYMMDD(new Date(session.start_time)),
+      )
       if (dayIndex >= 0) {
         dayEvents[dayIndex].push(session)
+      } else {
+        console.warn(
+          `Session "${session.title}" (${session.id}) starts at ${session.start_time}, outside the conference days — not displayed`,
+        )
       }
     })
 
     // Create the final days array
-    return CONFERENCE_DAYS.map((confDay, index) => ({
-      date: confDay.date,
-      displayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date)})`,
-      shortDateDisplayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date).slice(5)})`,
-      shortName: confDay.name,
-      events: dayEvents[index].sort((a, b) =>
+    return CONFERENCE_DAYS.map((confDay, index) => {
+      const events = dayEvents[index].sort((a, b) =>
         (a.start_time || '').localeCompare(b.start_time || ''),
-      ),
-    }))
-  }, [sessions, filterForUserEvents, bookmarks])
-  const [currentDayIndex, setCurrentDayIndex] = useState(dayIndex ?? 2)
+      )
+
+      // Derive the day's window from its sessions so nothing falls off the
+      // grid, keeping the default window as a floor
+      let startHour = DEFAULT_START_HOURS[index]
+      let endHour = DEFAULT_END_HOURS[index]
+      const placed: PlacedSession[] = []
+      const unscheduled: DbFullSession[] = []
+
+      events.forEach((session) => {
+        if (
+          !session.location_id ||
+          !schedulableLocationIds.has(session.location_id)
+        ) {
+          unscheduled.push(session)
+          return
+        }
+        const startMinutes = dateUtils.getPSTMinutes(session.start_time!)
+        const trueDurationMinutes =
+          (new Date(session.end_time!).getTime() -
+            new Date(session.start_time!).getTime()) /
+          60000
+        // Clamp: at least 15 so the block stays clickable, and cut off at the
+        // day's midnight since each grid only spans one day
+        const durationMinutes = Math.max(
+          15,
+          Math.min(trueDurationMinutes, MINUTES_PER_DAY - startMinutes),
+        )
+        startHour = Math.min(startHour, Math.floor(startMinutes / 60))
+        endHour = Math.max(
+          endHour,
+          Math.min(24, Math.ceil((startMinutes + durationMinutes) / 60)),
+        )
+        placed.push({ session, startMinutes, durationMinutes })
+      })
+
+      // Bucket once per day instead of filtering every slot x location on render
+      const grid = new Map<string, Map<string, PlacedSession[]>>()
+      placed.forEach((entry) => {
+        const locationId = entry.session.location_id!
+        const slot = slotForMinutes(entry.startMinutes)
+        const locationSlots =
+          grid.get(locationId) ?? new Map<string, PlacedSession[]>()
+        locationSlots.set(slot, [...(locationSlots.get(slot) ?? []), entry])
+        grid.set(locationId, locationSlots)
+      })
+
+      return {
+        date: confDay.date,
+        displayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date)})`,
+        shortDateDisplayName: `${confDay.name} (${dateUtils.getYYYYMMDD(confDay.date).slice(5)})`,
+        shortName: confDay.name,
+        events,
+        startHour,
+        endHour,
+        slots: generateTimeSlots(startHour, endHour),
+        grid,
+        unscheduled,
+      }
+    })
+  }, [sessions, filterForUserEvents, bookmarks, allScheduleLocations])
+  const [currentDayIndex, setCurrentDayIndex] = useState(
+    () => dayIndex ?? getDefaultDayIndex(),
+  )
   const [openedSessionId, setOpenedSessionId] = useState<
     DbFullSession['id'] | null
   >(sessionId ?? null)
@@ -246,27 +283,20 @@ export default function Schedule({
     return sessions.find((s) => s.id === openedSessionId) ?? null
   }, [sessions, openedSessionId])
 
-  // Sync URL parameters with state changes
+  // Sync URL parameters with state changes. Always write `day` — a guard like
+  // "skip the default" makes links to the default day not survive a reload
   useEffect(() => {
     if (!pathname.startsWith('/schedule')) return
     const params = new URLSearchParams()
-    if (currentDayIndex !== 0) params.set('day', currentDayIndex.toString())
+    params.set('day', currentDayIndex.toString())
     if (openedSessionId) params.set('session', openedSessionId)
-    if (!openedSessionId) params.delete('session')
     if (locationFilter?.length)
       params.set('locations', locationFilter.join(','))
 
-    const newUrl = params.toString()
-      ? `?${params.toString()}`
-      : window.location.pathname
-    router.replace(newUrl, { scroll: false })
-  }, [currentDayIndex, openedSessionId, locationFilter, router])
+    router.replace(`?${params.toString()}`, { scroll: false })
+  }, [currentDayIndex, openedSessionId, locationFilter, router, pathname])
 
-  const currentDay = days[currentDayIndex] || {
-    date: '',
-    displayName: 'No Events',
-    events: [],
-  }
+  const currentDay = days[currentDayIndex] || days[0]
 
   const nextDay = () => {
     setCurrentDayIndex((prev) => Math.min(days.length - 1, prev + 1))
@@ -329,23 +359,17 @@ export default function Schedule({
   // Calculate current time position for the red line
   const getCurrentTimePosition = () => {
     const now = new Date()
-    const currentDay = CONFERENCE_DAYS[currentDayIndex]
 
     // Check if current day matches the selected day
-    const todayParts = dateUtils.getPacificParts(now)
-    const selectedDayParts = dateUtils.getPacificParts(currentDay.date)
-
     if (
-      todayParts.day !== selectedDayParts.day ||
-      todayParts.month !== selectedDayParts.month ||
-      todayParts.year !== selectedDayParts.year
+      dateUtils.getYYYYMMDD(now) !== dateUtils.getYYYYMMDD(currentDay.date)
     ) {
       return null // Not today, don't show the line
     }
 
     const currentMinutes = dateUtils.getPSTMinutes(now.toISOString())
-    const startMinutes = SCHEDULE_START_TIMES[currentDayIndex] * 60
-    const endMinutes = SCHEDULE_END_TIMES[currentDayIndex] * 60
+    const startMinutes = currentDay.startHour * 60
+    const endMinutes = currentDay.endHour * 60
 
     // Only show if within schedule hours
     if (currentMinutes < startMinutes || currentMinutes > endMinutes) {
@@ -528,7 +552,7 @@ export default function Schedule({
             className={`relative grid w-fit bg-dark-400 ${scheduleLocations.length === 0 ? 'hidden' : ''}`}
             style={{ gridTemplateColumns }}
           >
-            {generateTimeSlots(currentDayIndex).map((time) => (
+            {currentDay.slots.map((time) => (
               <div key={time} className="contents">
                 {/* Time Cell - Sticky Left */}
                 <div className="sticky top-0 left-0 z-sticky flex w-full justify-center border border-dark-400 border-r-secondary-300 bg-dark-500">
@@ -539,17 +563,15 @@ export default function Schedule({
 
                 {/* Venue Cells */}
                 {scheduleLocations.map((venue) => {
-                  const eventsInSlot = currentDay.events.filter(
-                    (session) =>
-                      session.location_id === venue.id &&
-                      eventStartsInSlot(session, time),
-                  )
+                  const eventsInSlot =
+                    currentDay.grid.get(venue.id)?.get(time) ?? []
                   return (
                     <div
                       key={venue.id}
                       className="relative min-h-[60px] overflow-visible border border-dark-400 bg-dark-500"
                     >
-                      {eventsInSlot.map((session) => (
+                      {eventsInSlot.map(
+                        ({ session, startMinutes, durationMinutes }, index) => (
                         <SessionTooltip
                           key={session.id}
                           tooltip={
@@ -564,10 +586,12 @@ export default function Schedule({
                             onClick={() => handleOpenSessionModal(session.id!)}
                             className={`group absolute z-content m-0.5 cursor-pointer rounded-md border-2 p-1 ${getEventColor(session)} font-semibold text-black`}
                             style={{
-                              top: `${getEventOffsetMinutes(session, time) * 2}px`, // 2px per minute
-                              height: `${getEventDurationMinutes(session) * 2}px`, // 2px per minute
-                              left: '0px',
-                              right: '0px',
+                              top: `${(startMinutes % 30) * 2}px`, // 2px per minute
+                              height: `${durationMinutes * 2}px`, // 2px per minute
+                              // Double-booked slots share the cell side by side
+                              // instead of stacking invisibly on top of each other
+                              left: `${(index * 100) / eventsInSlot.length}%`,
+                              width: `calc(${100 / eventsInSlot.length}% - 4px)`,
                               boxShadow: isUserRsvpd(session.id!)
                                 ? '0 0 0 3px #ff33be'
                                 : undefined,
@@ -682,12 +706,7 @@ export default function Schedule({
               >
                 {/* Time label on the left */}
                 <div className="absolute top-[-12px] left-2 rounded bg-red-600 px-1 py-0.5 text-xs font-medium text-white shadow-lg">
-                  {new Intl.DateTimeFormat('en-US', {
-                    timeZone: 'America/Los_Angeles',
-                    hour: '2-digit',
-                    minute: '2-digit',
-                    hour12: false,
-                  }).format(new Date())}
+                  {dateUtils.getStringTime(new Date().toISOString())}
                 </div>
               </div>
             )}
@@ -698,6 +717,32 @@ export default function Schedule({
       {scheduleLocations.length === 0 && (
         <div className="w-full p-8 text-center text-sm text-secondary-300">
           No locations selected — pick some from the filter menu.
+        </div>
+      )}
+
+      {/* Sessions this day that have no schedulable location — surfaced here
+          instead of silently dropped from the grid */}
+      {currentDay.unscheduled.length > 0 && (
+        <div className="w-full border-t border-secondary-300 p-4">
+          <h3 className="mb-2 text-sm font-semibold text-secondary-300">
+            Location TBD
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {currentDay.unscheduled.map((session) => (
+              <button
+                key={session.id}
+                onClick={() => handleOpenSessionModal(session.id!)}
+                className={`cursor-pointer rounded-md border-2 p-2 text-left text-sm font-semibold text-black ${getEventColor(session)}`}
+              >
+                <SessionTitle title={session.title} />
+                <div className="font-sans text-xs font-normal">
+                  {dateUtils.getStringTime(session.start_time!)}
+                  {session.end_time &&
+                    ` - ${dateUtils.getStringTime(session.end_time)}`}
+                </div>
+              </button>
+            ))}
+          </div>
         </div>
       )}
 
