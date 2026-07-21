@@ -1,6 +1,10 @@
 'use server'
 
-import { adminExportWrapper, currentUserWrapper } from './auth'
+import {
+  adminExportWrapper,
+  authedExportWrapper,
+  currentUserWrapper,
+} from './auth'
 
 import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
@@ -13,7 +17,9 @@ import {
 import { assertAuthLevel } from '@/utils/security'
 
 /* Queries */
-export const getCurrentUser = usersService.getCurrentUser
+// Deliberately public: reads the caller's own session cookie, so it can only
+// ever return the caller's own user (or null)
+export const getCurrentUser = async () => usersService.getCurrentUser()
 export const getCurrentUserFullProfile = async () =>
   currentUserWrapper(usersService.getUserFullProfile)({})
 export const getCurrentUserAdminStatus = async () =>
@@ -29,14 +35,11 @@ export const adminGetUserFullProfileById = adminExportWrapper(
 )
 
 export const adminGetUser = adminExportWrapper(usersService.getUser)
-export const getSpeakerIds = usersService.getSpeakerIds
-export const getAllUserPublicProfiles = usersService.getAllUserPublicProfiles
-export const getUserPublicProfileById = usersService.getUserPublicProfileById
-export const getUserPublicProfileByPlayerId =
-  usersService.getPublicProfileByPlayerId
-export const getUsersIdsByTeam = usersService.getUsersIdsByTeam
-export const getAllUsersIds = usersService.getAllUsersIds
-export const getPublicProfilesByTeam = usersService.getPublicProfilesByTeam
+/** Signed-in only: the unstripped public projection carries fields anonymous
+ * callers must not see (the anonymous path is the API route, which redacts) */
+export const getUserPublicProfileById = authedExportWrapper(
+  usersService.getUserPublicProfileById,
+)
 /* Mutations */
 /** Self-service profile update. The payload is parsed against an allowlist before it
  * reaches the DB: forwarding a raw `TablesUpdate<'profiles'>` here would let any
@@ -82,7 +85,6 @@ export const adminUpdateUserProfile = adminExportWrapper(
   usersService.updateUserProfile,
 )
 
-export const getUsersPublicProfiles = usersService.getUsersPublicProfiles
 export const adminGetUsersFullProfiles = adminExportWrapper(
   usersService.getUsersFullProfiles,
 )

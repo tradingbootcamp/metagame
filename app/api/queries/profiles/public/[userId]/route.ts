@@ -1,9 +1,9 @@
 import { NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { usersService } from '@/lib/db/users'
 import { stripPrivateProfileFields } from '@/lib/profiles'
 
-import { getUserPublicProfileById } from '@/app/actions/db/users'
 import { getApiUser } from '@/app/api/apiAuth'
 
 import { DbPublicProfile } from '@/types/database/dbTypeAliases'
@@ -20,7 +20,7 @@ export async function GET(
 
     const { userId } = await params
 
-    const profile = await getUserPublicProfileById({ userId })
+    const profile = await usersService.getUserPublicProfileById({ userId })
     const visibleProfile =
       profile && !user ? stripPrivateProfileFields(profile) : profile
 

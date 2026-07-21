@@ -1,5 +1,3 @@
-import { getAllLocations } from '../actions/db/locations'
-import { getAllSessions } from '../actions/db/sessions'
 import { getCurrentUserFullProfile } from '../actions/db/users'
 import Schedule from './Schedule'
 import { getUserEditPermissionsForSessions } from './actions'
@@ -9,6 +7,9 @@ import {
   QueryClient,
   dehydrate,
 } from '@tanstack/react-query'
+
+import { locationsService } from '@/lib/db/locations'
+import { sessionsService } from '@/lib/db/sessions'
 
 import { sessionWithoutAttendees } from '@/utils/dbUtils'
 import { createClient } from '@/utils/supabase/server'
@@ -55,14 +56,14 @@ export default async function ScheduleProvider({
         // The cache is dehydrated into the public HTML, so strip attendee
         // lists for anonymous visitors — same rule as /api/queries/sessions
         queryFn: async () => {
-          const sessions = await getAllSessions()
+          const sessions = await sessionsService.getAllSessions()
           return user ? sessions : sessions.map(sessionWithoutAttendees)
         },
       }),
     () =>
       queryClient.prefetchQuery({
         queryKey: ['locations'],
-        queryFn: getAllLocations,
+        queryFn: locationsService.getAllLocations,
       }),
   ]
   await Promise.all(generalPrefetchQueries.map((query) => query()))

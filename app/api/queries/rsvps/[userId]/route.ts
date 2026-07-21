@@ -1,8 +1,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
+import { sessionRsvpsService } from '@/lib/db/sessionRsvps'
 
-import { getUserRsvps } from '@/app/actions/db/sessionRsvps'
 import { getApiUser, unauthorizedResponse } from '@/app/api/apiAuth'
 
 import { DbSessionRsvp } from '@/types/database/dbTypeAliases'
@@ -20,7 +20,7 @@ export async function GET(
 
     const { userId } = await params
 
-    const rsvps = await getUserRsvps({ userId })
+    const rsvps = await sessionRsvpsService.getUserRsvps({ userId })
 
     return NextResponse.json(rsvps satisfies ApiUserRsvpsResponse)
   } catch (error) {

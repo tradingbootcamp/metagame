@@ -56,10 +56,6 @@ export const authedDeclareWinningTeam = async ({
 }
 
 /* Queries */
-export const getAllSessions = sessionsService.getAllSessions
-export const getSessionById = sessionsService.getSessionById
-
 export const getCurrentUserHostedSessions = currentUserWrapper(
   sessionsService.getSessionsHostedByUser,
 )
-export const getSessionsHostedByUser = sessionsService.getSessionsHostedByUser

@@ -2,7 +2,8 @@ import { NextRequest } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
 
-import { getSessionById } from '@/app/actions/db/sessions'
+import { sessionsService } from '@/lib/db/sessions'
+
 import {
   sessionCalendarDateString,
   sessionCalendarDescription,
@@ -13,7 +14,9 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> },
 ) {
   try {
-    const session = await getSessionById({ sessionId: (await params).id })
+    const session = await sessionsService.getSessionById({
+      sessionId: (await params).id,
+    })
     if (!session) {
       return new Response('Session not found', { status: 404 })
     }

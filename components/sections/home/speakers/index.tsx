@@ -1,11 +1,11 @@
 import SpeakersGrid from './SpeakersGrid'
 
+import { usersService } from '@/lib/db/users'
+
 import { PlayerCardSkeleton } from '@/components/PlayerCard/PlayerCard'
 
-import { getSpeakerIds } from '@/app/actions/db/users'
-
 export default async function Speakers() {
-  const speakers = await getSpeakerIds()
+  const speakers = await usersService.getSpeakerIds()
   const speakerIds = speakers?.map((s) => s.id) || []
 
   return (

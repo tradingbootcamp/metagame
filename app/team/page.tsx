@@ -1,15 +1,14 @@
 import { redirect } from 'next/navigation'
 
+import { usersService } from '@/lib/db/users'
+
 import { TEAM_COLORS_ENUM } from '@/utils/dbUtils'
 import { authLevelsToRanks, getCurrentUserAuthRank } from '@/utils/security'
 import { createClient } from '@/utils/supabase/server'
 
 import TeamGrid from '@/components/sections/team/TeamGrid'
 
-import {
-  getAllUserPublicProfiles,
-  getCurrentUserFullProfile,
-} from '@/app/actions/db/users'
+import { getCurrentUserFullProfile } from '@/app/actions/db/users'
 
 import { DbTeamColor } from '@/types/database/dbTypeAliases'
 
@@ -56,7 +55,7 @@ export default async function TeamPage({
       </section>
     )
   }
-  const allProfiles = await getAllUserPublicProfiles()
+  const allProfiles = await usersService.getAllUserPublicProfiles()
 
   const teamMembers =
     team === 'all'

@@ -1,15 +1,14 @@
 import { NextResponse } from 'next/server'
 
 import { apiError } from '@/lib/apiError'
-
-import { getAllMegagameLocations } from '@/app/actions/db/locations'
+import { locationsService } from '@/lib/db/locations'
 
 import { DbMegagameLocation } from '@/types/database/dbTypeAliases'
 
 export type ApiAllMegagameLocationsResponse = DbMegagameLocation[]
 export async function GET() {
   try {
-    const locations = await getAllMegagameLocations()
+    const locations = await locationsService.getAllMegagameLocations()
 
     return NextResponse.json(
       locations satisfies ApiAllMegagameLocationsResponse,
