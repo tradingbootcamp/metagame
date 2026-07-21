@@ -72,11 +72,16 @@ export function ProfileInfoModal({
         <div className="space-y-4">
           {/* Name Fields */}
           <div>
-            <label className="mb-2 block text-sm font-medium">
+            <label
+              className="mb-2 block text-sm font-medium"
+              htmlFor="profile-modal-first-name"
+            >
               Name<span className="text-lg text-red-500">*</span>
             </label>
             <div className="grid grid-cols-2 gap-2">
               <Input
+                id="profile-modal-first-name"
+                aria-label="First name (required)"
                 placeholder="First (required)"
                 value={formData.first_name ?? ''}
                 onChange={(e) =>
@@ -87,6 +92,8 @@ export function ProfileInfoModal({
                 }
               />
               <Input
+                id="profile-modal-last-name"
+                aria-label="Last name"
                 placeholder="Last"
                 value={formData.last_name ?? ''}
                 onChange={(e) =>
@@ -99,10 +106,11 @@ export function ProfileInfoModal({
             </div>
           </div>
           <div className="flex flex-col gap-2">
-            <Label className="label">
+            <Label className="label" htmlFor="profile-modal-bio">
               <span className="label-text">Bio</span>
             </Label>
             <Textarea
+              id="profile-modal-bio"
               placeholder="Bio"
               value={formData.bio ?? ''}
               onChange={(e) =>
@@ -116,11 +124,15 @@ export function ProfileInfoModal({
 
           {/* Homepage Display Radio Group */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium">
+            <span
+              id="profile-modal-homepage-label"
+              className="block text-sm font-medium"
+            >
               Allow your profile card to be displayed on the homepage attendee
               list? (opt-in)<span className="text-lg text-red-500">*</span>
-            </label>
+            </span>
             <RadioGroup
+              aria-labelledby="profile-modal-homepage-label"
               value={
                 formData.opted_in_to_homepage_display === null
                   ? ''
@@ -155,11 +167,15 @@ export function ProfileInfoModal({
 
           {/* Minor Checkbox */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium">
+            <span
+              id="profile-modal-age-label"
+              className="block text-sm font-medium"
+            >
               Are you 18 or older?
               <span className="text-lg text-red-500">*</span>
-            </label>
+            </span>
             <RadioGroup
+              aria-labelledby="profile-modal-age-label"
               value={
                 formData.minor === null ? '' : formData.minor ? 'no' : 'yes'
               }
@@ -187,11 +203,15 @@ export function ProfileInfoModal({
 
           {/* Kids Radio Group */}
           <div className="space-y-3">
-            <label className="block text-sm font-medium">
+            <span
+              id="profile-modal-kids-label"
+              className="block text-sm font-medium"
+            >
               Are you bringing any children?
               <span className="text-lg text-red-500">*</span>
-            </label>
+            </span>
             <RadioGroup
+              aria-labelledby="profile-modal-kids-label"
               value={
                 formData.bringing_kids === null
                   ? ''

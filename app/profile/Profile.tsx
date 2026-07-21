@@ -406,11 +406,13 @@ export default function Profile() {
                 {/* Full Name */}
                 <div className="flex flex-col gap-2 sm:flex-row sm:gap-6">
                   <div>
-                    <label className="label">
+                    <label className="label" htmlFor="profile-first-name">
                       <span className="label-text">Name</span>
                     </label>
                     <div className="grid grid-cols-2 gap-2">
                       <Input
+                        id="profile-first-name"
+                        aria-label="First name"
                         placeholder="First name"
                         value={formData.first_name ?? ''}
                         onChange={(e) =>
@@ -421,6 +423,8 @@ export default function Profile() {
                         }
                       />
                       <Input
+                        id="profile-last-name"
+                        aria-label="Last name"
                         placeholder="Last name"
                         value={formData.last_name ?? ''}
                         onChange={(e) =>
@@ -434,11 +438,11 @@ export default function Profile() {
                   </div>
                   {/* Pronouns */}
                   <div>
-                    <label className="label">
+                    <label className="label" htmlFor="profile-pronouns">
                       <span className="label-text">Pronouns</span>
                     </label>
                     <Input
-                      placeholder=""
+                      id="profile-pronouns"
                       className="w-16"
                       value={formData.pronouns ?? ''}
                       onChange={(e) =>
@@ -452,10 +456,11 @@ export default function Profile() {
                 </div>
                 {/* Bio */}
                 <div>
-                  <label className="label">
+                  <label className="label" htmlFor="profile-bio">
                     <span className="label-text">Bio</span>
                   </label>
                   <Textarea
+                    id="profile-bio"
                     placeholder="Bio"
                     value={formData.bio ?? ''}
                     onChange={(e) =>
@@ -468,10 +473,11 @@ export default function Profile() {
                 </div>
                 {/* Discord Handle */}
                 <div>
-                  <label className="label">
+                  <label className="label" htmlFor="profile-discord-handle">
                     <span className="label-text">Discord Handle</span>
                   </label>
                   <Input
+                    id="profile-discord-handle"
                     placeholder="Your Discord handle"
                     value={formData.discord_handle ?? ''}
                     onChange={(e) =>
@@ -485,11 +491,13 @@ export default function Profile() {
 
                 {/* Website */}
                 <div>
-                  <label className="label">
+                  <label className="label" htmlFor="profile-site-name">
                     <span className="label-text">Website</span>
                   </label>
                   <div className="space-y-2">
                     <Input
+                      id="profile-site-name"
+                      aria-label="Website name"
                       placeholder="Website name"
                       value={formData.site_name ?? ''}
                       onChange={(e) =>
@@ -500,6 +508,8 @@ export default function Profile() {
                       }
                     />
                     <Input
+                      id="profile-site-url"
+                      aria-label="Website URL"
                       placeholder="Website URL"
                       value={formData.site_url ?? ''}
                       onChange={(e) =>
@@ -535,9 +545,12 @@ export default function Profile() {
                   {/* Homepage Display */}
                   <div className="flex items-center gap-2">
                     <span className="flex items-center gap-1">
-                      <label className="block text-sm font-medium">
+                      <span
+                        id="profile-homepage-label"
+                        className="block text-sm font-medium"
+                      >
                         Show on Homepage?
-                      </label>
+                      </span>
                       <Tooltip clickable>
                         <TooltipTrigger>
                           <InfoIcon className="size-3" />
@@ -549,6 +562,7 @@ export default function Profile() {
                       </Tooltip>
                     </span>
                     <RadioGroup
+                      aria-labelledby="profile-homepage-label"
                       value={
                         formData.opted_in_to_homepage_display === null
                           ? ''
@@ -583,8 +597,14 @@ export default function Profile() {
 
                   {/* Age Status */}
                   <div className="flex items-center gap-2">
-                    <label className="block text-sm font-medium">18+?</label>
+                    <span
+                      id="profile-age-label"
+                      className="block text-sm font-medium"
+                    >
+                      18+?
+                    </span>
                     <RadioGroup
+                      aria-labelledby="profile-age-label"
                       value={
                         formData.minor === null
                           ? ''
@@ -617,10 +637,14 @@ export default function Profile() {
                   {/* Bringing Kids */}
                   <div className="flex flex-col gap-2">
                     <div className="flex items-center gap-2">
-                      <label className="block text-sm font-medium">
+                      <span
+                        id="profile-kids-label"
+                        className="block text-sm font-medium"
+                      >
                         Bringing Kids?
-                      </label>
+                      </span>
                       <RadioGroup
+                        aria-labelledby="profile-kids-label"
                         value={
                           formData.bringing_kids === null
                             ? 'null'

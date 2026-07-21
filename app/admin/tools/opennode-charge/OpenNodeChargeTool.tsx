@@ -206,7 +206,12 @@ export default function OpenNodeChargeTool({}: {
 
       {success && (
         <div className="rounded-md border border-green-500/20 bg-green-500/10 p-4">
-          <Textarea className="text-green-400" value={success} readOnly />
+          <Textarea
+            aria-label="Charge result"
+            className="text-green-400"
+            value={success}
+            readOnly
+          />
         </div>
       )}
     </div>

@@ -79,10 +79,21 @@ export default function CardPicker({
           </DialogDescription>
           <div className="grid max-h-[70vh] grid-cols-2 gap-4 self-center overflow-y-auto sm:grid-cols-4">
             <div
-              className="flex w-fit cursor-pointer flex-col items-center justify-center bg-celestial-gold p-2 transition-colors hover:bg-celestial-gold/80"
+              role="button"
+              tabIndex={0}
+              aria-label="Keep your current card"
+              className="flex w-fit cursor-pointer flex-col items-center justify-center bg-celestial-gold p-2 transition-colors hover:bg-celestial-gold/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
               onClick={() => {
                 setSelectedCard(null)
                 setShowConfirmation(true)
+              }}
+              onKeyDown={(e) => {
+                if (e.target !== e.currentTarget) return
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault()
+                  setSelectedCard(null)
+                  setShowConfirmation(true)
+                }
               }}
             >
               <span className="text-sm text-celestial-primary sm:text-xl">
@@ -98,10 +109,21 @@ export default function CardPicker({
             {cards.map((card) => (
               <div
                 key={card.id}
-                className="cursor-pointer transition-transform hover:scale-105"
+                role="button"
+                tabIndex={0}
+                aria-label={`Transform your card into ${card.name}`}
+                className="cursor-pointer transition-transform hover:scale-105 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                 onClick={() => {
                   setSelectedCard(card)
                   setShowConfirmation(true)
+                }}
+                onKeyDown={(e) => {
+                  if (e.target !== e.currentTarget) return
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setSelectedCard(card)
+                    setShowConfirmation(true)
+                  }
                 }}
               >
                 <PlayerCard

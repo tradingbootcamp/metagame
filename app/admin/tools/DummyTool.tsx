@@ -64,8 +64,9 @@ export function DummyTool({}: {
         </div>
 
         <div className="space-y-2">
-          <Label>Toast Type</Label>
+          <Label id="toastTypeLabel">Toast Type</Label>
           <RadioGroup
+            aria-labelledby="toastTypeLabel"
             defaultValue="success"
             onValueChange={(value) => {
               const message = toastMessageInput || `${value} toast`

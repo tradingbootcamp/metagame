@@ -583,8 +583,20 @@ export default function Schedule({
                           }
                         >
                           <div
+                            role="button"
+                            tabIndex={0}
+                            aria-label={`Open details for ${session.title || 'session'}`}
                             onClick={() => handleOpenSessionModal(session.id!)}
-                            className={`group absolute z-content m-0.5 cursor-pointer rounded-md border-2 p-1 ${getEventColor(session)} font-semibold text-black`}
+                            onKeyDown={(e) => {
+                              // Ignore keys bubbling up from the nested RSVP /
+                              // bookmark buttons and host links.
+                              if (e.target !== e.currentTarget) return
+                              if (e.key === 'Enter' || e.key === ' ') {
+                                e.preventDefault()
+                                handleOpenSessionModal(session.id!)
+                              }
+                            }}
+                            className={`group absolute z-content m-0.5 cursor-pointer rounded-md border-2 p-1 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${getEventColor(session)} font-semibold text-black`}
                             style={{
                               top: `${(startMinutes % 30) * 2}px`, // 2px per minute
                               height: `${durationMinutes * 2}px`, // 2px per minute
@@ -680,15 +692,17 @@ export default function Schedule({
                       {/* Clickable empty slot for admins */}
                       {currentUserProfile?.is_admin &&
                         eventsInSlot.length === 0 && (
-                          <div
+                          <button
+                            type="button"
                             onClick={() => handleEmptySlotClick(time, venue.id)}
-                            className="hover:bg-opacity-20 group absolute inset-0 cursor-pointer transition-colors duration-200 hover:bg-dark-400"
+                            className="hover:bg-opacity-20 group absolute inset-0 cursor-pointer transition-colors duration-200 hover:bg-dark-400 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
                             title={`Add event at ${time} in ${venue.name}`}
+                            aria-label={`Add event at ${time} in ${venue.name}`}
                           >
                             <div className="hidden h-full items-center justify-center text-xs text-secondary-400 group-hover:flex">
                               <PlusIcon className="size-6" />
                             </div>
-                          </div>
+                          </button>
                         )}
                     </div>
                   )

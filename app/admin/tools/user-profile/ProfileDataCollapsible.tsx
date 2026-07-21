@@ -42,6 +42,7 @@ export function ProfileDataCollapsible({
         </CollapsibleTrigger>
         <CollapsibleContent className="px-3 pb-3">
           <Textarea
+            aria-label="Raw profile data"
             value={JSON.stringify(combinedData, null, 2)}
             readOnly
             className="min-h-64 font-mono text-xs"

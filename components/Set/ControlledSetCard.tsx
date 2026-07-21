@@ -84,9 +84,15 @@ export default function ControlledSetCard() {
         </select>
       </div>
 
-      <div onClick={() => setSelected(!selected)}>
+      <button
+        type="button"
+        aria-pressed={selected}
+        aria-label="Toggle card selection"
+        className="cursor-pointer focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+        onClick={() => setSelected(!selected)}
+      >
         <SetCard card={card} size={size} selected={selected} />
-      </div>
+      </button>
     </div>
   )
 }
