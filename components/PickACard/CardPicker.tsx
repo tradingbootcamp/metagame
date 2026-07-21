@@ -1,6 +1,6 @@
 'use client'
 
-import { useState } from 'react'
+import { useMemo, useState } from 'react'
 
 import { useRouter } from 'next/navigation'
 
@@ -40,15 +40,23 @@ export default function CardPicker({
     },
   })
 
-  const winningTeam = session.winning_team
-  const allCards = session.card_rewards
-  const isWinner = user.team === winningTeam
-  const loserOption =
-    allCards.find((card) =>
-      card.details.some((detail) => detail.loser_option),
-    ) ?? allCards[0]
-  const unSortedCards = isWinner ? allCards : [loserOption]
-  const cards = unSortedCards.sort((a, b) => a.id - b.id)
+  // Shuffle a copy once (never session.card_rewards in place, and never during
+  // render) so the grid doesn't reorder under the cursor on every state change
+  const cards = useMemo(() => {
+    const allCards = session.card_rewards
+    const loserOption =
+      allCards.find((card) =>
+        card.details.some((detail) => detail.loser_option),
+      ) ?? allCards[0]
+    const shuffled =
+      user.team === session.winning_team ? [...allCards] : [loserOption]
+    // Fisher–Yates
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1))
+      ;[shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]]
+    }
+    return shuffled
+  }, [session.card_rewards, session.winning_team, user.team])
   return (
     <>
       <Dialog open={open} onOpenChange={setOpen}>
@@ -87,25 +95,23 @@ export default function CardPicker({
                 width={150}
               />
             </div>
-            {cards
-              .sort(() => Math.random() - 0.5)
-              .map((card) => (
-                <div
-                  key={card.id}
-                  className="cursor-pointer transition-transform hover:scale-105"
-                  onClick={() => {
-                    setSelectedCard(card)
-                    setShowConfirmation(true)
-                  }}
-                >
-                  <PlayerCard
-                    userId={user.id}
-                    asCelestialCard={true}
-                    overrideCelestialCard={card}
-                    width={150}
-                  />
-                </div>
-              ))}
+            {cards.map((card) => (
+              <div
+                key={card.id}
+                className="cursor-pointer transition-transform hover:scale-105"
+                onClick={() => {
+                  setSelectedCard(card)
+                  setShowConfirmation(true)
+                }}
+              >
+                <PlayerCard
+                  userId={user.id}
+                  asCelestialCard={true}
+                  overrideCelestialCard={card}
+                  width={150}
+                />
+              </div>
+            ))}
           </div>
         </DialogContent>
       </Dialog>

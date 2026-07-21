@@ -81,7 +81,7 @@ export const profileHasAuthLevel = ({
 }
 export const redirectIfNotAuthed = async ({
   authLevel = 'ADMIN',
-  redirectTo = '/not-authorized',
+  redirectTo = '/unauthorized',
 }: { authLevel?: AuthLevel; redirectTo?: string } = {}) => {
   const currentUserAuthRank = await getCurrentUserAuthRank()
   const requiredAuthRank = authLevelsToRanks[authLevel]

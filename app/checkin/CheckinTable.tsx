@@ -6,6 +6,7 @@ import { useCheckin } from './useCheckin'
 import { CheckIcon } from 'lucide-react'
 import Image from 'next/image'
 
+import { dateUtils } from '@/utils/dateUtils'
 import { teamColorToBadgeClass } from '@/utils/dbUtils'
 
 import { Button } from '@/components/ui/button'
@@ -252,12 +253,20 @@ export default function CheckinTable({ tickets }: { tickets: DbFullTicket[] }) {
       id: 'created_at',
       header: 'Purchased',
       render: (ticket) => (
+        // Fixed timezone so SSR (UTC on Vercel) and the browser render the
+        // same string — device-local formatting caused hydration mismatches
         <Tooltip>
           <TooltipTrigger>
-            <span>{new Date(ticket.created_at).toLocaleDateString()}</span>
+            <span>
+              {dateUtils.formatPST(new Date(ticket.created_at), {
+                year: 'numeric',
+                month: 'numeric',
+                day: 'numeric',
+              })}
+            </span>
           </TooltipTrigger>
           <TooltipContent>
-            {new Date(ticket.created_at).toLocaleString()}
+            {dateUtils.formatPST(new Date(ticket.created_at))}
           </TooltipContent>
         </Tooltip>
       ),

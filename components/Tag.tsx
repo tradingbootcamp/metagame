@@ -29,11 +29,11 @@ export default function Tag({
   const mouseRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
   const overlayRef = useRef<HTMLDivElement | null>(null)
   const overlayMoveHandlerRef = useRef<((e: MouseEvent) => void) | null>(null)
-  const isCaughtRef = useRef(isCaught)
-
-  useEffect(() => {
-    isCaughtRef.current = isCaught
-  }, [isCaught])
+  // Kept in sync synchronously (not via an effect) so handleCaught's re-entry
+  // guard holds even when it's hit twice before a re-render
+  const isCaughtRef = useRef(false)
+  const positionRef = useRef<{ x: number; y: number }>({ x: 0, y: 0 })
+  const resetTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   // Track mouse position without causing re-renders
   useEffect(() => {
@@ -46,11 +46,16 @@ export default function Tag({
   }, [])
 
   const resetCursor = () => {
+    if (resetTimeoutRef.current) {
+      clearTimeout(resetTimeoutRef.current)
+      resetTimeoutRef.current = null
+    }
     if (overlayMoveHandlerRef.current) {
       window.removeEventListener('mousemove', overlayMoveHandlerRef.current)
       overlayMoveHandlerRef.current = null
     }
     document.body.style.cursor = 'default'
+    isCaughtRef.current = false
     setIsCaught(false)
     setHasEntered(false)
     setIsChasing(false)
@@ -58,6 +63,7 @@ export default function Tag({
 
   const handleCaught = () => {
     if (isCaughtRef.current) return
+    isCaughtRef.current = true
     setIsCaught(true)
     setIsChasing(false)
 
@@ -81,7 +87,7 @@ export default function Tag({
     window.addEventListener('mousemove', updateOverlayPosition)
     overlayMoveHandlerRef.current = updateOverlayPosition
 
-    setTimeout(() => {
+    resetTimeoutRef.current = setTimeout(() => {
       resetCursor()
     }, IT_DURATION)
   }
@@ -91,21 +97,22 @@ export default function Tag({
 
     const animate = () => {
       const { x: mx, y: my } = mouseRef.current
-      setTextPosition((prev) => {
-        const dx = mx - prev.x
-        const dy = my - prev.y
-        const distance = Math.hypot(dx, dy)
+      // Catch detection happens out here, not inside the setState updater —
+      // updaters must be pure (StrictMode double-invokes them, which used to
+      // leak a second mousemove listener and an uncancelled timeout per catch)
+      const prev = positionRef.current
+      const dx = mx - prev.x
+      const dy = my - prev.y
+      const distance = Math.hypot(dx, dy)
 
-        if (distance < catchDistance) {
-          handleCaught()
-          return prev
-        }
-        return { x: prev.x + dx * speed * 3, y: prev.y + dy * speed * 3 }
-      })
-
-      if (!isCaughtRef.current) {
-        frameRef.current = requestAnimationFrame(animate)
+      if (distance < catchDistance) {
+        handleCaught()
+        return
       }
+      const next = { x: prev.x + dx * speed * 3, y: prev.y + dy * speed * 3 }
+      positionRef.current = next
+      setTextPosition(next)
+      frameRef.current = requestAnimationFrame(animate)
     }
 
     frameRef.current = requestAnimationFrame(animate)
@@ -129,6 +136,7 @@ export default function Tag({
     if (!isChasing) {
       const rect = tagRef.current?.getBoundingClientRect()
       if (rect) {
+        positionRef.current = { x: rect.left, y: rect.top }
         setTextPosition({ x: rect.left, y: rect.top })
       }
       debouncedSetIsChasing()
