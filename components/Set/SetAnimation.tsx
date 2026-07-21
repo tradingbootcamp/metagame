@@ -75,9 +75,12 @@ export default function SetAnimation() {
     <div className="flex flex-col items-center gap-3 py-4" ref={containerRef}>
       <div className="grid w-full auto-rows-fr grid-cols-6 gap-1 md:grid-cols-12 md:gap-2">
         {setBoard.map((card, index) => (
-          <div
+          <button
             key={`${card.shape}-${card.color}-${card.fill}-${card.number}-${index}`}
-            className={`opacity-0 ${visible ? 'animate-fade-in' : ''} ${isExiting && selectedCards.includes(index) ? 'animate-fade-out' : ''} `}
+            type="button"
+            aria-pressed={selectedCards.includes(index)}
+            aria-label={`${card.number} ${card.color} ${card.fill} ${card.shape}`}
+            className={`block w-full cursor-pointer opacity-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white ${visible ? 'animate-fade-in' : ''} ${isExiting && selectedCards.includes(index) ? 'animate-fade-out' : ''} `}
             style={{
               animationDelay:
                 isExiting || foundSets > 0 ? '0ms' : `${index * 100}ms`,
@@ -90,7 +93,7 @@ export default function SetAnimation() {
               selected={selectedCards.includes(index)}
               responsive
             />
-          </div>
+          </button>
         ))}
       </div>
       {foundSets > 0 && (

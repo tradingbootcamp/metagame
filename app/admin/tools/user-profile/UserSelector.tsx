@@ -41,10 +41,12 @@ export function UserSelector({ users, selectedUserId }: UserSelectorProps) {
 
   return (
     <div>
-      <label className="mb-2 block text-sm font-medium">Select User</label>
+      <label className="mb-2 block text-sm font-medium" htmlFor="user-selector">
+        Select User
+      </label>
       <div className="flex items-center gap-2">
         <Select value={selectedUserId || ''} onValueChange={handleUserSelect}>
-          <SelectTrigger className="flex-1">
+          <SelectTrigger id="user-selector" className="flex-1">
             <SelectValue placeholder="Choose a user to view their profile" />
           </SelectTrigger>
           <SelectContent>

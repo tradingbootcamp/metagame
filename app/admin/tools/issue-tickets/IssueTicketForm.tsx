@@ -167,7 +167,7 @@ export function IssueTicketForm({}: {
               })
             }
           >
-            <SelectTrigger className="mt-1">
+            <SelectTrigger id="ticketType" className="mt-1">
               <SelectValue placeholder="Select ticket type" />
             </SelectTrigger>
             <SelectContent>
@@ -181,8 +181,9 @@ export function IssueTicketForm({}: {
         </div>
 
         <div className="flex flex-col gap-2">
-          <Label>Issue to *</Label>
+          <Label id="issueToLabel">Issue to *</Label>
           <RadioGroup
+            aria-labelledby="issueToLabel"
             value={forExistingUser ? 'existing' : 'new'}
             onValueChange={(value) => {
               setForExistingUser(value === 'existing')
@@ -218,7 +219,7 @@ export function IssueTicketForm({}: {
                 })
               }}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger id="ownerId" className="mt-1">
                 <SelectValue
                   placeholder={
                     loadingUsers ? 'Loading users...' : 'Select existing user'
@@ -417,7 +418,12 @@ export function IssueTicketForm({}: {
 
       {success && (
         <div className="rounded-md border border-green-500/20 bg-green-500/10 p-4">
-          <Textarea className="text-green-400" value={success} readOnly />
+          <Textarea
+            aria-label="Ticket issue result"
+            className="text-green-400"
+            value={success}
+            readOnly
+          />
         </div>
       )}
     </div>

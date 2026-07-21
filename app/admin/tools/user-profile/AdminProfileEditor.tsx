@@ -344,12 +344,14 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
         <div className="flex-1 space-y-6">
           {/* Name */}
           <div>
-            <label className="label">
+            <label className="label" htmlFor="admin-profile-first-name">
               <span className="label-text">Name</span>
             </label>
             {isEditMode ? (
               <div className="grid grid-cols-2 gap-2">
                 <Input
+                  id="admin-profile-first-name"
+                  aria-label="First name"
                   placeholder="First name"
                   value={formData.first_name ?? ''}
                   onChange={(e) =>
@@ -360,6 +362,8 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
                   }
                 />
                 <Input
+                  id="admin-profile-last-name"
+                  aria-label="Last name"
                   placeholder="Last name"
                   value={formData.last_name ?? ''}
                   onChange={(e) =>
@@ -376,11 +380,12 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
           </div>
           {/* Bio under Name */}
           <div>
-            <label className="label">
+            <label className="label" htmlFor="admin-profile-bio">
               <span className="label-text">Bio</span>
             </label>
             {isEditMode ? (
               <Textarea
+                id="admin-profile-bio"
                 placeholder="Bio"
                 value={formData.bio ?? ''}
                 onChange={(e) =>
@@ -412,11 +417,12 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
 
           {/* Discord */}
           <div>
-            <label className="label">
+            <label className="label" htmlFor="admin-profile-discord-handle">
               <span className="label-text">Discord Handle</span>
             </label>
             {isEditMode ? (
               <Input
+                id="admin-profile-discord-handle"
                 placeholder="Discord handle"
                 value={formData.discord_handle ?? ''}
                 onChange={(e) =>
@@ -436,12 +442,14 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
             <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
               {/* Website 1 */}
               <div>
-                <label className="label">
+                <label className="label" htmlFor="admin-profile-site-name">
                   <span className="label-text">Website 1</span>
                 </label>
                 {isEditMode ? (
                   <div className="space-y-2">
                     <Input
+                      id="admin-profile-site-name"
+                      aria-label="Website 1 name"
                       placeholder="Website name"
                       value={formData.site_name ?? ''}
                       onChange={(e) =>
@@ -452,6 +460,8 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
                       }
                     />
                     <Input
+                      id="admin-profile-site-url"
+                      aria-label="Website 1 URL"
                       placeholder="Website URL"
                       value={formData.site_url ?? ''}
                       onChange={(e) =>
@@ -485,12 +495,14 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
               {/* Website 2 */}
               {(isEditMode || current.site_name_2 || current.site_url_2) && (
                 <div>
-                  <label className="label">
+                  <label className="label" htmlFor="admin-profile-site-name-2">
                     <span className="label-text">Website 2</span>
                   </label>
                   {isEditMode ? (
                     <div className="space-y-2">
                       <Input
+                        id="admin-profile-site-name-2"
+                        aria-label="Website 2 name"
                         placeholder="Website name"
                         value={formData.site_name_2 ?? ''}
                         onChange={(e) =>
@@ -501,6 +513,8 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
                         }
                       />
                       <Input
+                        id="admin-profile-site-url-2"
+                        aria-label="Website 2 URL"
                         placeholder="Website URL"
                         value={formData.site_url_2 ?? ''}
                         onChange={(e) =>
@@ -541,11 +555,15 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
           <div className={`flex gap-4 ${isEditMode ? 'flex-col' : ''}`}>
             {/* Homepage Display */}
             <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">
+              <span
+                id="admin-profile-homepage-label"
+                className="block text-sm font-medium"
+              >
                 Show on Homepage?
-              </label>
+              </span>
               {isEditMode ? (
                 <RadioGroup
+                  aria-labelledby="admin-profile-homepage-label"
                   value={
                     formData.opted_in_to_homepage_display === null
                       ? ''
@@ -583,9 +601,15 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
 
             {/* 18+? maps to minor field */}
             <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">18+?</label>
+              <span
+                id="admin-profile-age-label"
+                className="block text-sm font-medium"
+              >
+                18+?
+              </span>
               {isEditMode ? (
                 <RadioGroup
+                  aria-labelledby="admin-profile-age-label"
                   value={
                     formData.minor === null ? '' : formData.minor ? 'no' : 'yes'
                   }
@@ -616,11 +640,15 @@ export default function AdminProfileEditor({ profile, tickets }: Props) {
 
             {/* Bringing kids */}
             <div className="flex items-center gap-2">
-              <label className="block text-sm font-medium">
+              <span
+                id="admin-profile-kids-label"
+                className="block text-sm font-medium"
+              >
                 Bringing Kids?
-              </label>
+              </span>
               {isEditMode ? (
                 <RadioGroup
+                  aria-labelledby="admin-profile-kids-label"
                   value={
                     formData.bringing_kids === null
                       ? ''

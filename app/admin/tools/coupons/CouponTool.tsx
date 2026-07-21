@@ -309,6 +309,8 @@ export default function CouponTool({}: {
             <div className="space-y-4">
               <div className="flex flex-col gap-2 md:flex-row">
                 <Input
+                  id="couponEmail"
+                  aria-label="Email to authorize"
                   placeholder="email@example.com"
                   type="email"
                   value={newEmail}
@@ -316,6 +318,8 @@ export default function CouponTool({}: {
                   className="md:w-1/2"
                 />
                 <Input
+                  id="couponEmailMaxUses"
+                  aria-label="Max uses for this email"
                   placeholder="Max uses"
                   type="number"
                   min="1"

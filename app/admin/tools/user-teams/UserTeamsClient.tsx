@@ -172,12 +172,14 @@ export default function UserTeamsClient() {
       <div className="flex flex-col gap-3 md:flex-row md:items-end md:justify-between">
         <div className="flex items-center gap-3">
           <div className="w-56">
-            <label className="text-sm font-medium">Filter by team</label>
+            <label className="text-sm font-medium" htmlFor="team-filter">
+              Filter by team
+            </label>
             <Select
               value={filterTeam}
               onValueChange={(v) => setFilterTeam(v as DbTeamColor | 'all')}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger id="team-filter" className="mt-1">
                 <SelectValue placeholder="All teams" />
               </SelectTrigger>
               <SelectContent>
@@ -194,12 +196,14 @@ export default function UserTeamsClient() {
 
         <div className="flex items-end gap-3">
           <div className="w-56">
-            <label className="text-sm font-medium">Assign team</label>
+            <label className="text-sm font-medium" htmlFor="bulk-team">
+              Assign team
+            </label>
             <Select
               value={bulkTeam}
               onValueChange={(v) => setBulkTeam(v as DbTeamColor | '')}
             >
-              <SelectTrigger className="mt-1">
+              <SelectTrigger id="bulk-team" className="mt-1">
                 <SelectValue placeholder="Select team" />
               </SelectTrigger>
               <SelectContent>
@@ -232,6 +236,7 @@ export default function UserTeamsClient() {
                   <CheckboxPrimitive.Root
                     checked={headerState}
                     onCheckedChange={handleHeaderToggle}
+                    aria-label="Select all visible users"
                     className="peer size-4 shrink-0 rounded-[4px] border border-input shadow-xs transition-shadow outline-none focus-visible:border-ring focus-visible:ring-[3px] focus-visible:ring-ring/50 disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:border-destructive aria-invalid:ring-destructive/20 data-[state=checked]:border-primary data-[state=checked]:bg-primary data-[state=checked]:text-primary-foreground dark:bg-input/30 dark:aria-invalid:ring-destructive/40 dark:data-[state=checked]:bg-primary"
                   >
                     <CheckboxPrimitive.Indicator className="flex items-center justify-center text-current transition-none">
@@ -256,6 +261,7 @@ export default function UserTeamsClient() {
                   <Checkbox
                     checked={selectedIds.has(p.id)}
                     onCheckedChange={(c) => toggleSelect(p.id, c)}
+                    aria-label={`Select ${p.email ?? p.id}`}
                   />
                 </TableCell>
                 <TableCell className="whitespace-nowrap">
@@ -271,7 +277,7 @@ export default function UserTeamsClient() {
                       }
                       disabled={busy}
                     >
-                      <SelectTrigger>
+                      <SelectTrigger aria-label={`Team for ${p.email ?? p.id}`}>
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
