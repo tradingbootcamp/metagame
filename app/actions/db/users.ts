@@ -160,11 +160,17 @@ export const currentUserSelectCardReward = currentUserWrapper(
         'The selected card is not available as a reward for this session.',
       )
     }
-    return playerCardClaimsService.makePlayerCardClaim({
+    const claim = await playerCardClaimsService.makePlayerCardClaim({
       userId,
       sessionId,
       newCardId: celestialCardId,
     })
+    if (!claim) {
+      throw new Error(
+        'You have already claimed a card reward for this session.',
+      )
+    }
+    return claim
   },
 )
 
