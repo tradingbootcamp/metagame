@@ -1,4 +1,4 @@
-import { OpenNodeCharge, OpenNodeChargeWebhook } from 'opennode/dist/types/v1'
+import { OpenNodeCharge } from 'opennode/dist/types/v1'
 
 import { OpennodeChargeInput } from '@/lib/schemas/opennode'
 
@@ -42,9 +42,28 @@ export const opennodeDbService = {
   }: {
     metagameOrderId: string
     status: DbOpendnodeOrder['status']
-    charge?: OpenNodeChargeWebhook
+    charge?: OpenNodeCharge
   }) => {
     const supabase = createServiceClient()
+    if (charge) {
+      // Checked before the write, not after: an order whose row belongs to a
+      // different charge must not have its status flipped at all.
+      const { data: existing, error: existingError } = await supabase
+        .from('opennode_orders')
+        .select('opennode_order_id')
+        .eq('id', metagameOrderId)
+        .single()
+      if (existingError) {
+        throw new Error(
+          `Error reading opennode order before status update: ${existingError.message}`,
+        )
+      }
+      if (existing.opennode_order_id !== charge.id) {
+        throw new Error(
+          `Opennode order ${metagameOrderId} belongs to charge ${existing.opennode_order_id}, not ${charge.id}`,
+        )
+      }
+    }
     const { data, error } = await supabase
       .from('opennode_orders')
       .update({ status })
@@ -53,15 +72,6 @@ export const opennodeDbService = {
       .single()
     if (error) {
       throw new Error(`Error updating opennode order status: ${error.message}`)
-    }
-    if (data && charge) {
-      if (data.opennode_order_id !== charge.id) {
-        console.error(
-          "Charge's OpenNode charge id didn't match db charge id",
-          data.opennode_order_id,
-          charge.id,
-        )
-      }
     }
     return data
   },

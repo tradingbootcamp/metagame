@@ -41,6 +41,30 @@ export async function sendTicketConfirmationEmail({
     const discordUrl = SOCIAL_LINKS.DISCORD
     const testSubject = test ? 'TEST: ' : ''
     const siteUrl = getSiteUrl()
+    const pricePaid = isBtc
+      ? `₿${btcPaid?.toFixed(6)}`
+      : `$${usdPaid?.toFixed(2)}`
+    const paymentIdLine = isBtc
+      ? `- OpenNode Charge ID: ${opennodeChargeId}`
+      : `- Stripe Payment ID: ${paymentIntentId}`
+    const ticketCodeLine = `- Your Ticket Code: ${ticketCode} (you will need this to create your account and associate the ticket)`
+    // Built as lines rather than inline conditionals so an omitted detail
+    // doesn't leave a blank line (or a stray `false`) in the plaintext part.
+    const textTicketDetails = [
+      `- Ticket Type: ${ticketTypeDetails[ticketType].title}`,
+      ...(adminIssued ? [] : [`- Price Paid: ${pricePaid}`]),
+      ...(forExistingUser ? [] : [ticketCodeLine]),
+      ...(adminIssued ? [] : [paymentIdLine]),
+    ].join('\n')
+    const textNextSteps = forExistingUser
+      ? `Your account already exists and now has an associated ticket. If you haven't logged in before, you can set your password at ${siteUrl}/login/reset?email=${encodeURIComponent(to)}&firstLogin=true`
+      : `Next Steps:
+1. Go to ${siteUrl}/signup?email=${encodeURIComponent(to)}&ticketCode=${ticketCode}
+2. Your email and ticket code will be pre-filled
+3. Create your account and set up your profile (badge name, Discord, etc.)
+4. Confirm your account by clicking the verification link sent to your email (required so ticket codes can be used with a different email if needed)
+
+Note: The Ticket Code above allows you to create an account/register for the event. It can be used with any email address and name. To sign up with a different email address than this one, or to transfer this ticket to someone else, go to ${siteUrl}/signup?ticketCode=${ticketCode} and enter the appropriate details with your ticket code.`
     const { data, error } = await resend.emails.send({
       from: 'Metagame 2025 <tickets@mail.metagame.games>',
       to,
@@ -107,23 +131,14 @@ export async function sendTicketConfirmationEmail({
       text: `
 ${adminIssued ? 'Your ticket has been issued, please complete registration' : 'Claim your ticket and complete registration'}
 
-Hi ${purchaserName},
+Hi ${purchaserName || 'there'},
 
-'Your Metagame 2025 ticket is confirmed.'} NEXT: claim your ticket and create your account so we can associate the ticket with your profile and keep you in the loop.
+Your Metagame 2025 ticket is confirmed. NEXT: claim your ticket and create your account so we can associate the ticket with your profile and keep you in the loop.
 
 Ticket Details:
-- Ticket Type: ${ticketType}
-${!adminIssued && `<p><strong>Price Paid:</strong> ${isBtc ? `₿${btcPaid?.toFixed(6)}` : `$${usdPaid?.toFixed(2)}`}</p>`}
-- Your Ticket Code: ${ticketCode} (you will need this to create your account and associate the ticket)
-${!adminIssued && isBtc ? `- OpenNode Charge ID: ${opennodeChargeId}` : `- Stripe Payment ID: ${paymentIntentId}`}
+${textTicketDetails}
 
-Next Steps:
-1. Go to ${siteUrl}/signup?email=${encodeURIComponent(to)}&ticketCode=${ticketCode}
-2. Your email and ticket code will be pre-filled
-3. Create your account and set up your profile (badge name, Discord, etc.)
-4. Confirm your account by clicking the verification link sent to your email (required so ticket codes can be used with a different email if needed)
-
-Note: The Ticket Code above allows you to create an account/register for the event. It can be used with any email address and name. To sign up with a different email address than this one, or to transfer this ticket to someone else, go to ${siteUrl}/signup?ticketCode=${ticketCode} and enter the appropriate details with your ticket code.
+${textNextSteps}
 
 Please join the Discord, where all future communication will take place: ${discordUrl}
 Housing at and near the venue can be booked via: https://www.havenbookings.space/events/metagame. Coordinate with others in the #housing Discord channel.
@@ -156,10 +171,16 @@ This is not a puzzle.
 
 /** Method so we can get notified of backend failures */
 export const sendAdminErrorEmail = async (errorMessage: string) => {
-  await resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: 'Metagame 2025 <tickets@mail.metagame.games>',
     to: ['team@metagame.games'],
     subject: '**URGENT** METAGAME Admin Error',
     html: `<p>An error occurred: ${errorMessage}</p>`,
   })
+  // Deliberately doesn't throw — callers reach for this while already handling
+  // a failure, and the alerting path shouldn't become a second failure mode.
+  if (error) {
+    console.error('Failed to send admin error email:', error, errorMessage)
+  }
+  return { success: !error, data }
 }
