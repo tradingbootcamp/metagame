@@ -87,7 +87,6 @@ export default async function ScheduleProvider({
     const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
     if (sessions) {
       editPermissions = await getUserEditPermissionsForSessions({
-        userId: user.id,
         sessionIds: sessions.map((s) => s.id),
       })
     }
