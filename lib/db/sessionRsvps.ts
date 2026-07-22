@@ -4,6 +4,11 @@ import { createServiceClient } from '@/utils/supabase/service'
 
 import { DbFullSessionRsvp, DbTeamColor } from '@/types/database/dbTypeAliases'
 
+// Extra promotion passes allowed beyond `limit` when rows keep getting claimed
+// out from under us. Bounds the retry loop so it can never spin on a session
+// that is being continuously re-waitlisted.
+const MAX_LOST_PASSES = 5
+
 const sessionRsvpsSelectIncludes = `
         *,
         user:profiles!session_rsvps_user_id_fkey (
@@ -78,7 +83,13 @@ export const sessionRsvpsService = {
   },
   /**
    * Pop earliest waitlisted users, optionally filtered by team, up to `limit`.
-   * Returns array of userIds popped. No-op (empty array) if none.
+   * Returns array of userIds actually popped. No-op (empty array) if none.
+   *
+   * The promotion is a compare-and-swap rather than a blind write: only rows
+   * that are still `on_waitlist` are claimed, and the rows PostgREST returns
+   * are exactly the ones this caller won. Losing a row to a concurrent
+   * promoter therefore re-reads the waitlist and tries the next person instead
+   * of silently stranding the freed seat (META-427).
    */
   popSessionWaitlist: async ({
     sessionId,
@@ -91,36 +102,59 @@ export const sessionRsvpsService = {
   }) => {
     const supabase = createServiceClient()
 
-    const { data, error } = await supabase
-      .from('session_rsvps')
-      .select(
-        'user_id, user:profiles!session_rsvps_user_id_fkey ( team ), created_at',
-      )
-      .eq('session_id', sessionId)
-      .eq('on_waitlist', true)
-      .order('created_at', { ascending: true })
-    if (error) {
-      throw new Error(error.message)
+    const promoted: string[] = []
+    // Rows a concurrent promoter took from under us. They are no longer
+    // waitlisted, so re-attempting them can never succeed.
+    const lost = new Set<string>()
+
+    let passes = 0
+    while (promoted.length < limit && passes < limit + MAX_LOST_PASSES) {
+      passes++
+      const { data, error } = await supabase
+        .from('session_rsvps')
+        .select(
+          'user_id, user:profiles!session_rsvps_user_id_fkey ( team ), created_at',
+        )
+        .eq('session_id', sessionId)
+        .eq('on_waitlist', true)
+        .order('created_at', { ascending: true })
+      if (error) {
+        throw new Error(error.message)
+      }
+      // Filter by team in JS (as countGoingForTeam does): a PostgREST .eq() on
+      // an embedded resource nulls the embed on non-matching rows instead of
+      // filtering parent rows, so `limit` must also apply after the filter.
+      const candidates = data
+        .filter((row) => !lost.has(row.user_id))
+        .filter((row) => !team || row.user.team === team)
+        .slice(0, limit - promoted.length)
+      if (candidates.length === 0) {
+        break
+      }
+
+      const userIds = candidates.map((row) => row.user_id)
+      const { data: claimed, error: updateError } = await supabase
+        .from('session_rsvps')
+        .update({ on_waitlist: false })
+        .in('user_id', userIds)
+        .eq('session_id', sessionId)
+        .eq('on_waitlist', true)
+        .select('user_id')
+      if (updateError) {
+        throw new Error(updateError.message)
+      }
+
+      const claimedIds = new Set(claimed.map((row) => row.user_id))
+      for (const userId of userIds) {
+        if (claimedIds.has(userId)) {
+          promoted.push(userId)
+        } else {
+          lost.add(userId)
+        }
+      }
     }
-    // Filter by team in JS (as countGoingForTeam does): a PostgREST .eq() on an
-    // embedded resource nulls the embed on non-matching rows instead of
-    // filtering parent rows, so `limit` must also apply after the filter.
-    const candidates = (
-      team ? data.filter((row) => row.user.team === team) : data
-    ).slice(0, limit)
-    if (candidates.length === 0) {
-      return [] as string[]
-    }
-    const userIds = candidates.map((row) => row.user_id)
-    const { error: updateError } = await supabase
-      .from('session_rsvps')
-      .update({ on_waitlist: false })
-      .in('user_id', userIds)
-      .eq('session_id', sessionId)
-    if (updateError) {
-      throw new Error(updateError.message)
-    }
-    return userIds
+
+    return promoted
   },
   /** Un-RSVP a user from a session. If they were not on the waitlist, tries to pop the earlier waitlist user off waitlist. */
   unrsvpUserFromSession: async ({
