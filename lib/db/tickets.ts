@@ -123,6 +123,9 @@ export const ticketsService = {
     }
     return data
   },
+  /** Claims an unowned ticket. Returns null if someone else already owns it: a
+   * forwarded code can be redeemed by two people at once, and without the
+   * compare-and-swap the last writer wins and both are told they succeeded. */
   updateTicketOwner: async ({
     ticketCode,
     ownerId,
@@ -135,8 +138,9 @@ export const ticketsService = {
       .from('tickets')
       .update({ owner_id: ownerId })
       .eq('ticket_code', ticketCode)
+      .is('owner_id', null)
       .select()
-      .single()
+      .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
