@@ -113,7 +113,9 @@ export const usersService = {
       .from('profiles')
       .select('is_admin')
       .eq('id', userId)
-      .single() // Error if we dont find the user because why not
+      // maybeSingle, not single: throwing only for ids that don't exist turns
+      // this into a user-existence oracle
+      .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
@@ -188,17 +190,6 @@ export const usersService = {
     return data satisfies DbFullProfile | null
   },
 
-  /** Get a signed URL for uploading a user's profile picture */
-  getProfilePictureUploadUrl: async ({ userId }: { userId: string }) => {
-    const bucket = 'public-assets'
-    const path = `profile_pictures/${userId}`
-    const signedUrl = await storageService.getSignedUploadUrl(
-      bucket,
-      path,
-      'image/*',
-    )
-    return signedUrl
-  },
   deleteProfilePicture: async ({ userId }: { userId: string }) => {
     await storageService.deleteUserProfilePicture({ userId })
     await usersService.updateUserProfile({

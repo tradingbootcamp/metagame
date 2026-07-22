@@ -33,6 +33,14 @@ import { ApiAllFullProfilesResponse } from '@/app/api/queries/profiles/route'
 
 import { DbTeamColor } from '@/types/database/dbTypeAliases'
 
+/** Green doubles as the staff team in utils/security.ts, so putting someone on
+ * it also hands them check-in and the ticket roster. Nothing about a team
+ * dropdown says that, hence the interstitial. */
+const confirmGreenAssignment = (userCount: number) =>
+  confirm(
+    `Green is the staff team. Assigning it grants check-in access, the full ticket roster including purchaser emails, the ability to un-RSVP any attendee, and declaring megagame winners.\n\nAssign green to ${userCount} user${userCount === 1 ? '' : 's'}?`,
+  )
+
 export default function UserTeamsClient() {
   const queryClient = useQueryClient()
   const { data: profiles = [], isLoading } = useQuery({
@@ -103,6 +111,14 @@ export default function UserTeamsClient() {
     }
   }
 
+  // This table reads ['profiles']; useProfiles caches team badges elsewhere
+  // under ['users', 'profiles', ...]
+  const invalidateProfiles = () =>
+    Promise.all([
+      queryClient.invalidateQueries({ queryKey: ['profiles'] }),
+      queryClient.invalidateQueries({ queryKey: ['users', 'profiles'] }),
+    ])
+
   const updateOne = useMutation({
     mutationFn: async ({
       userId,
@@ -111,15 +127,11 @@ export default function UserTeamsClient() {
       userId: string
       team: DbTeamColor
     }) => adminUpdateUserProfile({ userId, data: { team } }),
-    onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({
-        queryKey: ['users', 'profiles', variables.userId],
-        exact: false,
-      })
-    },
+    onSuccess: invalidateProfiles,
   })
 
   const handleSetTeam = async (userId: string, team: DbTeamColor) => {
+    if (team === 'green' && !confirmGreenAssignment(1)) return
     setBusy(true)
     try {
       await updateOne.mutateAsync({ userId, team })
@@ -138,6 +150,7 @@ export default function UserTeamsClient() {
     if (bulkTeam === '') return
     const ids = Array.from(selectedIds)
     if (ids.length === 0) return
+    if (bulkTeam === 'green' && !confirmGreenAssignment(ids.length)) return
     setBusy(true)
     try {
       await Promise.all(
@@ -145,13 +158,17 @@ export default function UserTeamsClient() {
           adminUpdateUserProfile({ userId, data: { team: bulkTeam } }),
         ),
       )
-      await queryClient.invalidateQueries({
-        queryKey: ['users', 'profiles'],
-        exact: false,
-      })
       setSelectedIds(new Set())
       setBulkTeam('')
+      toast.success(`Assigned ${ids.length} users to ${bulkTeam}`)
+    } catch {
+      // Promise.all rejects on the first failure while the rest may still have
+      // landed, so keep the selection and let the refetch show what stuck
+      toast.error(
+        `Failed to assign some of the ${ids.length} selected users to ${bulkTeam}`,
+      )
     } finally {
+      await invalidateProfiles()
       setBusy(false)
     }
   }
@@ -209,7 +226,7 @@ export default function UserTeamsClient() {
               <SelectContent>
                 {TEAM_COLORS_ENUM.map((t) => (
                   <SelectItem key={t} value={t}>
-                    {t}
+                    {t === 'green' ? 'green (staff access)' : t}
                   </SelectItem>
                 ))}
               </SelectContent>

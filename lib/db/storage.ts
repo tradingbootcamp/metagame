@@ -1,13 +1,28 @@
 import { createServiceClient } from '@/utils/supabase/service'
 
+const ALLOWED_UPLOAD_CONTENT_TYPES = [
+  'image/gif',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+]
+
 export const storageService = {
-  /** Get a signed URL for uploading a file */
+  /** Get a signed URL for uploading a file.
+   *
+   * fileType gates whether a URL is issued at all. It can't constrain the
+   * Content-Type the client eventually PUTs — supabase-js signed upload URLs
+   * only carry the path and the upsert flag — so the bucket's
+   * allowed_mime_types is the only real write-time enforcement. Keep the set
+   * of signable paths fixed rather than trusting either. */
   getSignedUploadUrl: async (
     bucket: string,
     path: string,
     fileType: string,
   ) => {
-    console.log('getSignedUploadUrl', bucket, path, fileType)
+    if (!ALLOWED_UPLOAD_CONTENT_TYPES.includes(fileType)) {
+      throw new Error(`Unsupported upload content type: ${fileType}`)
+    }
     const supabase = createServiceClient()
     const { data, error } = await supabase.storage
       .from(bucket)
@@ -35,17 +50,16 @@ export const storageService = {
     const { data } = supabase.storage.from(bucket).getPublicUrl(path)
     return data.publicUrl
   },
-  getUserProfilePictureUploadUrl: async ({
-    userId,
-    fileExtension,
-  }: {
-    userId: string
-    fileExtension?: string
-  }) => {
+  getUserProfilePictureUploadUrl: async ({ userId }: { userId: string }) => {
     const bucket = 'public-assets'
-    const extension = fileExtension ? `.${fileExtension}` : ''
-    const path = `profile_pictures/${userId}${extension}`
-    const url = await storageService.getSignedUploadUrl(bucket, path, 'image/*')
+    // Fixed, extensionless key: the caller gets no say in what it can write to,
+    // and canonicalUserProfilePictureUrl() in lib/utils reconstructs this path.
+    const path = `profile_pictures/${userId}`
+    const url = await storageService.getSignedUploadUrl(
+      bucket,
+      path,
+      'image/webp',
+    )
     return {
       signedUrl: url.signedUrl,
       storageUrl:

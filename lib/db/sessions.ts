@@ -8,6 +8,9 @@ import {
   DbTeamColor,
 } from '@/types/database/dbTypeAliases'
 
+const UUID_PATTERN =
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i
+
 const sessionsSelectIncludes = `
 *,
 host_1:profiles!sessions_host_1_id_fkey (
@@ -77,6 +80,12 @@ export const sessionsService = {
 
   /** Get all sessions hosted by a user */
   getSessionsHostedByUser: async ({ userId }: { userId: string }) => {
+    // The .or() below interpolates userId into raw PostgREST filter syntax on a
+    // service-role client, so anything but a literal uuid would let the caller
+    // append filters of their own.
+    if (!UUID_PATTERN.test(userId)) {
+      throw new Error('Invalid user id')
+    }
     const supabase = createServiceClient()
     const { data, error } = await supabase
       .from('sessions')
