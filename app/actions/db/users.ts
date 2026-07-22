@@ -6,7 +6,10 @@ import {
   currentUserWrapper,
 } from './auth'
 
-import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
+import {
+  CARD_CLAIM_WINDOW_MS,
+  playerCardClaimsService,
+} from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 import {
@@ -131,6 +134,10 @@ export const currentUserSelectCardReward = currentUserWrapper(
         'You have already claimed a card reward for this session.',
       )
     }
+    const claimAge = Date.now() - new Date(userCardClaim.created_at).getTime()
+    if (claimAge > CARD_CLAIM_WINDOW_MS) {
+      throw new Error('The window to claim this card reward has closed.')
+    }
     // The set of rewards depends on the team: winners choose from all of the
     // session's cards; losers only from the one flagged `loser_option` (mirrors
     // the restriction CardPicker applies in the UI). Either team may instead
@@ -161,11 +168,7 @@ export const currentUserSelectCardReward = currentUserWrapper(
   },
 )
 
-export const currentUserLatestUnclaimedVictory = async ({
-  timeWindow,
-}: {
-  timeWindow: number
-}) => {
+export const currentUserLatestUnclaimedVictory = async () => {
   const user = await usersService.getCurrentUser()
   if (!user) {
     return null
@@ -173,7 +176,7 @@ export const currentUserLatestUnclaimedVictory = async ({
   const playerCardClaims =
     await playerCardClaimsService.getOpenPlayerCardClaimsByPlayerId({
       userId: user.id,
-      timeWindow,
+      timeWindow: CARD_CLAIM_WINDOW_MS,
     })
   if (playerCardClaims.length === 0) {
     return null

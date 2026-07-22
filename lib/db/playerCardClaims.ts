@@ -1,5 +1,9 @@
 import { createServiceClient } from '@/utils/supabase/service'
 
+/** How long after a win a player has to redeem their card reward. Server-owned:
+ * it used to arrive as a caller-supplied argument. */
+export const CARD_CLAIM_WINDOW_MS = 1000 * 60 * 60 * 24 * 5
+
 export const playerCardClaimsService = {
   getPlayerCardClaims: async ({ userId }: { userId: string }) => {
     const supabase = createServiceClient()

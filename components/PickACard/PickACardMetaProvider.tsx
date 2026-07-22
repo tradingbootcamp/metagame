@@ -3,9 +3,7 @@ import PickACard from './PickACardProvider'
 import { currentUserLatestUnclaimedVictory } from '@/app/actions/db/users'
 
 export default async function PickACardMetaProvider() {
-  const unclaimedVictory = await currentUserLatestUnclaimedVictory({
-    timeWindow: 1000 * 60 * 60 * 24 * 5,
-  })
+  const unclaimedVictory = await currentUserLatestUnclaimedVictory()
   if (!unclaimedVictory) {
     return null
   }
