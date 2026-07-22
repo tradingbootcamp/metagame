@@ -104,7 +104,6 @@ export const currentUserSelectCardReward = currentUserWrapper(
     celestialCardId: number
     sessionId: string
   }) => {
-    // look up which team won session and check that user is on that team and rsvpd to that session
     const session = await sessionsService.getSessionById({ sessionId })
     if (!session) {
       throw new Error('Session not found. Please refresh and try again.')
@@ -132,10 +131,22 @@ export const currentUserSelectCardReward = currentUserWrapper(
         'You have already claimed a card reward for this session.',
       )
     }
-    const cardRewards = session.card_rewards
-    // verify that the card is in the list of allowed card rewards or the user is keeping their current celestial card
+    // The set of rewards depends on the team: winners choose from all of the
+    // session's cards; losers only from the one flagged `loser_option` (mirrors
+    // the restriction CardPicker applies in the UI). Either team may instead
+    // keep the card they already have.
+    const isWinner = userProfile.team === winningTeam
+    const loserOption =
+      session.card_rewards.find((card) =>
+        card.details.some((detail) => detail.loser_option),
+      ) ?? session.card_rewards[0]
+    const availableCards = isWinner
+      ? session.card_rewards
+      : loserOption
+        ? [loserOption]
+        : []
     if (
-      !cardRewards.map((card) => card.id).includes(celestialCardId) &&
+      !availableCards.some((card) => card.id === celestialCardId) &&
       !(celestialCardId == userProfile.celestial_card_id)
     ) {
       throw new Error(
