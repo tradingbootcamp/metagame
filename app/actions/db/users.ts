@@ -6,7 +6,10 @@ import {
   currentUserWrapper,
 } from './auth'
 
-import { playerCardClaimsService } from '@/lib/db/playerCardClaims'
+import {
+  CARD_CLAIM_WINDOW_MS,
+  playerCardClaimsService,
+} from '@/lib/db/playerCardClaims'
 import { sessionsService } from '@/lib/db/sessions'
 import { usersService } from '@/lib/db/users'
 import {
@@ -104,7 +107,6 @@ export const currentUserSelectCardReward = currentUserWrapper(
     celestialCardId: number
     sessionId: string
   }) => {
-    // look up which team won session and check that user is on that team and rsvpd to that session
     const session = await sessionsService.getSessionById({ sessionId })
     if (!session) {
       throw new Error('Session not found. Please refresh and try again.')
@@ -119,6 +121,11 @@ export const currentUserSelectCardReward = currentUserWrapper(
     if (!userProfile) {
       throw new Error('User profile not found. Please refresh and try again.')
     }
+    if (userProfile.team !== winningTeam) {
+      throw new Error(
+        'Card rewards for this session are only available to the winning team.',
+      )
+    }
     const userCardClaim =
       await playerCardClaimsService.getPlayerCardClaimsByUserIdAndSessionId({
         userId,
@@ -132,29 +139,37 @@ export const currentUserSelectCardReward = currentUserWrapper(
         'You have already claimed a card reward for this session.',
       )
     }
-    const cardRewards = session.card_rewards
-    // verify that the card is in the list of allowed card rewards or the user is keeping their current celestial card
+    const claimAge = Date.now() - new Date(userCardClaim.created_at).getTime()
+    if (claimAge > CARD_CLAIM_WINDOW_MS) {
+      throw new Error('The window to claim this card reward has closed.')
+    }
+    // The card must be one this session offers, or the one the user already has
+    const keepingCurrentCard =
+      userProfile.celestial_card_id !== null &&
+      celestialCardId === userProfile.celestial_card_id
     if (
-      !cardRewards.map((card) => card.id).includes(celestialCardId) &&
-      !(celestialCardId == userProfile.celestial_card_id)
+      !keepingCurrentCard &&
+      !session.card_rewards.some((card) => card.id === celestialCardId)
     ) {
       throw new Error(
         'The selected card is not available as a reward for this session.',
       )
     }
-    return playerCardClaimsService.makePlayerCardClaim({
+    const claim = await playerCardClaimsService.makePlayerCardClaim({
       userId,
       sessionId,
       newCardId: celestialCardId,
     })
+    if (!claim) {
+      throw new Error(
+        'You have already claimed a card reward for this session.',
+      )
+    }
+    return claim
   },
 )
 
-export const currentUserLatestUnclaimedVictory = async ({
-  timeWindow,
-}: {
-  timeWindow: number
-}) => {
+export const currentUserLatestUnclaimedVictory = async () => {
   const user = await usersService.getCurrentUser()
   if (!user) {
     return null
@@ -162,7 +177,7 @@ export const currentUserLatestUnclaimedVictory = async ({
   const playerCardClaims =
     await playerCardClaimsService.getOpenPlayerCardClaimsByPlayerId({
       userId: user.id,
-      timeWindow,
+      timeWindow: CARD_CLAIM_WINDOW_MS,
     })
   if (playerCardClaims.length === 0) {
     return null

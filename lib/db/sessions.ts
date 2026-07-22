@@ -164,7 +164,7 @@ export const sessionsService = {
 
     const { data: session, error } = await supabase
       .from('sessions')
-      .select('megagame, winning_team, megagame_location')
+      .select('megagame, megagame_location')
       .eq('id', sessionId)
       .single()
     if (error) {
@@ -173,10 +173,27 @@ export const sessionsService = {
     if (!session.megagame) {
       throw new Error('Session is not a megagame')
     }
-    if (session.winning_team) {
-      throw new Error('Winning team already declared')
+
+    /* Compare-and-swap on winning_team: a read-then-write guard lets two hosts
+     * (or one double-tap) both declare and mint duplicate card claims. */
+    const { data, error: updateError } = await supabase
+      .from('sessions')
+      .update({
+        winning_team: winningTeam,
+        win_timestamp: new Date().toISOString(),
+      })
+      .eq('id', sessionId)
+      .is('winning_team', null)
+      .select()
+      .maybeSingle()
+    if (updateError) {
+      throw new Error(updateError.message)
+    }
+    if (!data) {
+      return null
     }
 
+    // Only once the session row is ours, so the map can't contradict it
     if (session.megagame_location) {
       const { error: locationError } = await supabase
         .from('megagame_locations')
@@ -189,18 +206,6 @@ export const sessionsService = {
       }
     }
 
-    const { data, error: updateError } = await supabase
-      .from('sessions')
-      .update({
-        winning_team: winningTeam,
-        win_timestamp: new Date().toISOString(),
-      })
-      .eq('id', sessionId)
-      .select()
-      .single()
-    if (updateError) {
-      throw new Error(updateError.message)
-    }
     return data
   },
   /** Get a list of sessions whose victory timesamps are within the specified timewindow */

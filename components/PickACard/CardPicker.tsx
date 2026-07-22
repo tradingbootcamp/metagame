@@ -28,6 +28,10 @@ export default function CardPicker({
   const [showConfirmation, setShowConfirmation] = useState(false)
   const [open, setOpen] = useState(true)
   const router = useRouter()
+  /* Redeeming a claim means recording the chosen card id, so "keep current" is
+   * only offerable to someone who already has a card to keep. */
+  const canKeepCurrentCard = user.celestial_card_id !== null
+  const cardIdToClaim = selectedCard?.id ?? user.celestial_card_id
 
   const { selectCard, isSelecting } = useCardSelection({
     userId: user.id,
@@ -78,34 +82,36 @@ export default function CardPicker({
             </div>
           </DialogDescription>
           <div className="grid max-h-[70vh] grid-cols-2 gap-4 self-center overflow-y-auto sm:grid-cols-4">
-            <div
-              role="button"
-              tabIndex={0}
-              aria-label="Keep your current card"
-              className="flex w-fit cursor-pointer flex-col items-center justify-center bg-celestial-gold p-2 transition-colors hover:bg-celestial-gold/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
-              onClick={() => {
-                setSelectedCard(null)
-                setShowConfirmation(true)
-              }}
-              onKeyDown={(e) => {
-                if (e.target !== e.currentTarget) return
-                if (e.key === 'Enter' || e.key === ' ') {
-                  e.preventDefault()
+            {canKeepCurrentCard && (
+              <div
+                role="button"
+                tabIndex={0}
+                aria-label="Keep your current card"
+                className="flex w-fit cursor-pointer flex-col items-center justify-center bg-celestial-gold p-2 transition-colors hover:bg-celestial-gold/80 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+                onClick={() => {
                   setSelectedCard(null)
                   setShowConfirmation(true)
-                }
-              }}
-            >
-              <span className="text-sm text-celestial-primary sm:text-xl">
-                Keep Current
-              </span>
-              <PlayerCard
-                userId={user.id}
-                asCelestialCard={true}
-                overrideCelestialCard={null}
-                width={150}
-              />
-            </div>
+                }}
+                onKeyDown={(e) => {
+                  if (e.target !== e.currentTarget) return
+                  if (e.key === 'Enter' || e.key === ' ') {
+                    e.preventDefault()
+                    setSelectedCard(null)
+                    setShowConfirmation(true)
+                  }
+                }}
+              >
+                <span className="text-sm text-celestial-primary sm:text-xl">
+                  Keep Current
+                </span>
+                <PlayerCard
+                  userId={user.id}
+                  asCelestialCard={true}
+                  overrideCelestialCard={null}
+                  width={150}
+                />
+              </div>
+            )}
             {cards.map((card) => (
               <div
                 key={card.id}
@@ -190,22 +196,13 @@ export default function CardPicker({
             </Button>
             <Button
               onClick={() => {
-                if (selectedCard) {
-                  selectCard({
-                    sessionId: session.id,
-                    celestialCardId: selectedCard.id,
-                  })
-                } else {
-                  selectCard({
-                    sessionId: session.id,
-                    celestialCardId:
-                      user.celestial_card_id == null
-                        ? 9999
-                        : user.celestial_card_id,
-                  })
-                }
+                if (cardIdToClaim === null) return
+                selectCard({
+                  sessionId: session.id,
+                  celestialCardId: cardIdToClaim,
+                })
               }}
-              disabled={isSelecting}
+              disabled={isSelecting || cardIdToClaim === null}
             >
               {isSelecting ? 'Selecting...' : 'Confirm'}
             </Button>
