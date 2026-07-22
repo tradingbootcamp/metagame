@@ -12,14 +12,6 @@ export type SolveSudokuResponse = {
   sudoku: Pick<DbSudoku, 'title' | 'solved_orange' | 'solved_purple'>
 }
 export const sudokuService = {
-  getSudokuSolutions: async () => {
-    const supabase = createServiceClient()
-    const { data, error } = await supabase.from('sudoku').select('*')
-    if (error) {
-      throw new Error(error.message)
-    }
-    return data
-  },
   getSudokus: async () => {
     const supabase = createServiceClient()
     const { data, error } = await supabase
@@ -63,48 +55,56 @@ export const sudokuService = {
     solution: string
     team: DbTeamColor | null
   }): Promise<SolveSudokuResponse> => {
-    const supabase = createServiceClient()
     const sudoku = await sudokuService.getSudokuByTitle(title)
     if (!sudoku) {
       throw new Error('Sudoku not found')
     }
-    if (sudoku.solution !== solution) {
-      return {
-        solved: false,
-        isFirstSolve: false,
-        sudoku: {
-          title: sudoku.title,
-          solved_orange: sudoku.solved_orange,
-          solved_purple: sudoku.solved_purple,
-        },
-      }
+    const currentFlags = {
+      title: sudoku.title,
+      solved_orange: sudoku.solved_orange,
+      solved_purple: sudoku.solved_purple,
     }
-    const newSolvedOrange = sudoku.solved_orange || team === 'orange'
-    const newSolvedPurple = sudoku.solved_purple || team === 'purple'
-    const isFirstSolve =
-      (team === 'orange' && !sudoku.solved_orange) ||
-      (team === 'purple' && !sudoku.solved_purple)
-    const { data, error } = await supabase
-      .from('sudoku')
-      .update({
-        solution,
-        solved_orange: newSolvedOrange,
-        solved_purple: newSolvedPurple,
-      })
+    if (sudoku.solution !== solution) {
+      return { solved: false, isFirstSolve: false, sudoku: currentFlags }
+    }
+    if (team !== 'orange' && team !== 'purple') {
+      // Correct, but there is no territory for this team to claim.
+      return { solved: true, isFirstSolve: false, sudoku: currentFlags }
+    }
+
+    // Compare-and-swap: flip only this team's flag, and only while it is still
+    // false. Writing the single column instead of the whole row read a moment
+    // ago is what stops one team's solve from erasing the other's, and a
+    // returned row means this request is the one that flipped it (META-428).
+    const table = createServiceClient().from('sudoku')
+    const claim =
+      team === 'orange'
+        ? table.update({ solved_orange: true }).eq('solved_orange', false)
+        : table.update({ solved_purple: true }).eq('solved_purple', false)
+    const { data, error } = await claim
       .eq('title', title)
-      .select()
-      .single()
+      .select('title, solved_orange, solved_purple')
+      .maybeSingle()
     if (error) {
       throw new Error(error.message)
     }
+    if (data) {
+      return { solved: true, isFirstSolve: true, sudoku: data }
+    }
+
+    // Someone on this team already claimed it — re-read so the caller sees the
+    // other team's flag as of now rather than as of our stale read.
+    const settled = await sudokuService.getSudokuByTitle(title)
     return {
       solved: true,
-      isFirstSolve,
-      sudoku: {
-        title: data.title,
-        solved_orange: data.solved_orange,
-        solved_purple: data.solved_purple,
-      },
+      isFirstSolve: false,
+      sudoku: settled
+        ? {
+            title: settled.title,
+            solved_orange: settled.solved_orange,
+            solved_purple: settled.solved_purple,
+          }
+        : currentFlags,
     }
   },
 }
