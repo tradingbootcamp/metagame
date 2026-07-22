@@ -1,4 +1,5 @@
 import {
+  DbCalendarSession,
   DbFullSession,
   DbFullSessionRsvp,
   DbSessionAges,
@@ -7,7 +8,9 @@ import {
   DbTicketType,
 } from '@/types/database/dbTypeAliases'
 
-export const dbGetHostsFromSession = (session: DbFullSession) => {
+export const dbGetHostsFromSession = (
+  session: Pick<DbFullSession, 'host_1' | 'host_2' | 'host_3'>,
+) => {
   const host1Name = !session.host_1?.first_name
     ? ''
     : (session.host_1.first_name ?? '') + ' ' + (session.host_1.last_name ?? '')
@@ -81,6 +84,22 @@ export const sessionWithoutAttendees = (
   ...session,
   rsvps: [],
   bookmarks: [],
+})
+
+/** Narrow a session down to what the calendar links need, so a server component
+ * can render <AddToCalendar> without serializing the roster into the HTML. */
+export const sessionCalendarFields = (
+  session: DbFullSession,
+): DbCalendarSession => ({
+  id: session.id,
+  title: session.title,
+  description: session.description,
+  start_time: session.start_time,
+  end_time: session.end_time,
+  host_1: session.host_1,
+  host_2: session.host_2,
+  host_3: session.host_3,
+  location: session.location && { name: session.location.name },
 })
 
 export const countRsvpsByTeamColor = (

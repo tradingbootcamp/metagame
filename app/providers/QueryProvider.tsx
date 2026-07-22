@@ -2,7 +2,7 @@
 
 import { useState } from 'react'
 
-import { createAsyncStoragePersister } from '@tanstack/query-async-storage-persister'
+import { PERSISTABLE_QUERY_KEYS, getQueryPersister } from './queryPersister'
 import {
   DehydratedState,
   HydrationBoundary,
@@ -39,16 +39,18 @@ export default function QueryProvider({
   // the entire app subtree right after hydration. createAsyncStoragePersister
   // documents `storage: undefined` for SSR (it returns a no-op persister), and
   // restore only runs in a client mount effect, so this is hydration-safe.
-  const [persister] = useState(() =>
-    createAsyncStoragePersister({
-      storage: typeof window === 'undefined' ? undefined : window.localStorage,
-    }),
-  )
+  const [persister] = useState(getQueryPersister)
 
   return (
     <PersistQueryClientProvider
       client={queryClient}
-      persistOptions={{ persister }}
+      persistOptions={{
+        persister,
+        dehydrateOptions: {
+          shouldDehydrateQuery: (query) =>
+            PERSISTABLE_QUERY_KEYS.includes(String(query.queryKey[0])),
+        },
+      }}
     >
       <HydrationBoundary state={state}>{children}</HydrationBoundary>
       {process.env.NODE_ENV === 'development' && (

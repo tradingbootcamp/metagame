@@ -22,6 +22,21 @@ export type DbFullSession = Tables<'sessions'> & {
   megagame_location: Pick<DbMegagameLocation, 'id' | 'name'> | null
 }
 
+/** The session fields the calendar links read — notably no `rsvps`/`bookmarks`.
+ * Server components must narrow to this before handing a session to a client
+ * component, or React serializes the attendee roster into the public HTML. */
+export type DbCalendarSession = Pick<
+  DbFullSession,
+  | 'id'
+  | 'title'
+  | 'description'
+  | 'start_time'
+  | 'end_time'
+  | 'host_1'
+  | 'host_2'
+  | 'host_3'
+> & { location: Pick<DbLocation, 'name'> | null }
+
 export type DbSessionCategory = Enums<'SESSION_CATEGORY'>
 export type DbSessionAges = Enums<'AGES'>
 export type DbTicketType = Enums<'ticket_type'>

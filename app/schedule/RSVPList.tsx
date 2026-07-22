@@ -1,5 +1,6 @@
 import { useMutation, useQueryClient } from '@tanstack/react-query'
 import { UserIcon, XIcon } from 'lucide-react'
+import Link from 'next/link'
 import { toast } from 'sonner'
 
 import { countRsvpsByTeamColor } from '@/utils/dbUtils'
@@ -28,17 +29,20 @@ export const AttendanceDisplay = ({
     ? Math.floor(session.max_capacity / 2)
     : undefined
   const goingRsvps = session.rsvps.filter((rsvp) => !rsvp.on_waitlist)
+  // Anonymous callers get `rsvps: []` from the API, so any count we rendered for
+  // them would read as a real zero. Show the advertised capacity instead.
+  const capacityRangeDisplay = () => (
+    <div>
+      {session.min_capacity && session.max_capacity
+        ? session.min_capacity === session.max_capacity
+          ? `${session.min_capacity}`
+          : `${session.min_capacity} - ${session.max_capacity}`
+        : null}
+    </div>
+  )
   const standardRsvpDisplay = () => {
     if (!userLoggedIn) {
-      return (
-        <div>
-          {session.min_capacity && session.max_capacity
-            ? session.min_capacity === session.max_capacity
-              ? `${session.min_capacity}`
-              : `${session.min_capacity} - ${session.max_capacity}`
-            : null}
-        </div>
-      )
+      return capacityRangeDisplay()
     }
 
     return (
@@ -50,6 +54,9 @@ export const AttendanceDisplay = ({
     )
   }
   const megagameRsvpDisplay = () => {
+    if (!userLoggedIn) {
+      return capacityRangeDisplay()
+    }
     // Team breakdown counts only confirmed attendees, not the waitlist
     const teamCounts = countRsvpsByTeamColor(goingRsvps)
     return (
@@ -75,12 +82,18 @@ export const AttendanceDisplay = ({
         {session.megagame ? megagameRsvpDisplay() : standardRsvpDisplay()}
       </TooltipTrigger>
       <TooltipContent className="">
-        <RSVPListModal session={session} />
+        <RSVPListModal session={session} userLoggedIn={userLoggedIn} />
       </TooltipContent>
     </Tooltip>
   )
 }
-const RSVPListModal = ({ session }: { session: DbFullSession }) => {
+const RSVPListModal = ({
+  session,
+  userLoggedIn,
+}: {
+  session: DbFullSession
+  userLoggedIn: boolean
+}) => {
   const { currentUserProfile } = useUser()
   const queryClient = useQueryClient()
   const unrsvpUserMutation = useMutation({
@@ -123,6 +136,24 @@ const RSVPListModal = ({ session }: { session: DbFullSession }) => {
       queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
     },
   })
+  // `rsvps` is empty for anonymous visitors, so rendering the list would show a
+  // fabricated "Going (0/N)" on every session
+  if (!userLoggedIn) {
+    const capacityText = session.max_capacity
+      ? session.min_capacity && session.min_capacity !== session.max_capacity
+        ? `Capacity: ${session.min_capacity} - ${session.max_capacity}`
+        : `Capacity: ${session.max_capacity}`
+      : null
+    return (
+      <div className="flex flex-col items-start gap-1">
+        {capacityText && <span className="font-bold">{capacityText}</span>}
+        <Link className="link" href="/login">
+          Sign in to see who&apos;s going
+        </Link>
+      </div>
+    )
+  }
+
   const rsvps = session.rsvps
   const teamsToBgColors: Record<DbTeamColor, string> = {
     orange: 'text-orange-600',
