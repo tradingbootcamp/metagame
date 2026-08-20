@@ -73,7 +73,25 @@ export const signupByTicketCode = async ({
     }
     userId = user.id
   }
-  await ticketsService.updateTicketOwner({ ticketCode, ownerId: userId })
+  const claimedTicket = await ticketsService.updateTicketOwner({
+    ticketCode,
+    ownerId: userId,
+  })
+  if (!claimedTicket) {
+    if (!existingUser) {
+      /* We only signed this account up to hold the ticket, so losing the race
+       * would otherwise strand an account with no ticket behind it. */
+      try {
+        await usersService.fullDeleteUser({ userId })
+      } catch (cleanupError) {
+        console.error(
+          'Failed to remove signup after a lost ticket claim',
+          cleanupError,
+        )
+      }
+    }
+    return { success: false, error: 'claimed', ticket: null }
+  }
   // Teams are assigned once. Claiming another ticket must not reroll the team of
   // someone who already has one.
   const profile =
@@ -88,7 +106,7 @@ export const signupByTicketCode = async ({
       },
     })
   }
-  return { success: true, error: null, ticket: ticket }
+  return { success: true, error: null, ticket: claimedTicket }
 }
 export const volunteerGetAllFullTickets = async () => {
   await assertAuthLevel({ authLevel: 'VOLUNTEER' })
