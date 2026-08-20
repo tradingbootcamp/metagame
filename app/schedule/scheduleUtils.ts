@@ -1,6 +1,6 @@
 import { dbGetHostsFromSession } from '@/utils/dbUtils'
 
-import { DbFullSession } from '@/types/database/dbTypeAliases'
+import { DbCalendarSession } from '@/types/database/dbTypeAliases'
 
 export const sessionCalendarDateString = (date: Date) => {
   const year = date.getUTCFullYear().toString().padStart(4, '0')
@@ -11,7 +11,7 @@ export const sessionCalendarDateString = (date: Date) => {
   const seconds = date.getUTCSeconds().toString().padStart(2, '0')
   return `${year}${month}${day}T${hours}${minutes}${seconds}Z`
 }
-export const sessionCalendarDescription = (session: DbFullSession) => {
+export const sessionCalendarDescription = (session: DbCalendarSession) => {
   const locationString = session.location?.name
     ? `Location: ${session.location.name}`
     : ''
@@ -19,7 +19,7 @@ export const sessionCalendarDescription = (session: DbFullSession) => {
   const detailsString = `${locationString}\nHosts: ${hostsString}\n\n=================\n\n${session.description + '\n\n=================\n\n' || ''}<a href=${sessionLink(session.id)}>${sessionLink(session.id)}</a>`
   return detailsString
 }
-export const gCalLinkFromSession = (session: DbFullSession) => {
+export const gCalLinkFromSession = (session: DbCalendarSession) => {
   const addressString = '2740 Telegraph Ave, Berkeley, CA 94705'
   const title = `Metagame: ${session.title || 'Untitled Session'}`
   const detailsString = sessionCalendarDescription(session)

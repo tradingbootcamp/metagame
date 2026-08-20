@@ -3,6 +3,8 @@ import Link from 'next/link'
 
 import { sessionsService } from '@/lib/db/sessions'
 
+import { sessionCalendarFields } from '@/utils/dbUtils'
+
 import AddToCalendar from '@/components/AddToCalendar'
 import { Separator } from '@/components/ui/separator'
 
@@ -50,7 +52,9 @@ export default async function Highlights() {
             <div className="flex gap-4">
               <span className="text-lg">7-10 PM Friday night</span>
               {nightMarketSession && (
-                <AddToCalendar session={nightMarketSession} />
+                <AddToCalendar
+                  session={sessionCalendarFields(nightMarketSession)}
+                />
               )}
             </div>
           </div>

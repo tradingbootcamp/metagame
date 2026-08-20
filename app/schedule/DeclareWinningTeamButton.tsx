@@ -4,6 +4,8 @@ import { useState } from 'react'
 import { FaFlag, FaFlagCheckered } from 'react-icons/fa'
 
 import { authedDeclareWinningTeam } from '../actions/db/sessions'
+import { useMutation, useQueryClient } from '@tanstack/react-query'
+import { toast } from 'sonner'
 
 import { Button, buttonVariants } from '@/components/ui/button'
 import {
@@ -21,23 +23,41 @@ import {
 } from '@/components/ui/popover'
 
 export function DeclareWinnerButton({ sessionId }: { sessionId: string }) {
+  const queryClient = useQueryClient()
   const [confirmDialog, setConfirmDialog] = useState<{
     open: boolean
     team: 'orange' | 'purple' | null
   }>({ open: false, team: null })
+
+  // The action throws on several distinct conditions (missing session, no user,
+  // not authorized, write failure); without this every one of them looked
+  // exactly like success, as did success itself
+  const declareWinnerMutation = useMutation({
+    mutationFn: authedDeclareWinningTeam,
+    onSuccess: (_result, variables) => {
+      toast.success(
+        `${variables.winningTeam.toUpperCase()} team declared the winner`,
+      )
+      setConfirmDialog({ open: false, team: null })
+    },
+    onError: (err) => {
+      toast.error(`Failed to declare winner: ${err.message}`)
+    },
+    onSettled: () => {
+      queryClient.invalidateQueries({ queryKey: ['sessions'], exact: false })
+    },
+  })
 
   const handleTeamSelect = (team: 'orange' | 'purple') => {
     setConfirmDialog({ open: true, team })
   }
 
   const handleConfirm = () => {
-    if (confirmDialog.team) {
-      authedDeclareWinningTeam({
-        sessionId: sessionId,
-        winningTeam: confirmDialog.team,
-      })
-    }
-    setConfirmDialog({ open: false, team: null })
+    if (!confirmDialog.team) return
+    declareWinnerMutation.mutate({
+      sessionId: sessionId,
+      winningTeam: confirmDialog.team,
+    })
   }
 
   const handleCancel = () => {
@@ -79,7 +99,9 @@ export function DeclareWinnerButton({ sessionId }: { sessionId: string }) {
 
       <Dialog
         open={confirmDialog.open}
-        onOpenChange={(open) => !open && handleCancel()}
+        onOpenChange={(open) =>
+          !open && !declareWinnerMutation.isPending && handleCancel()
+        }
       >
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
@@ -113,18 +135,25 @@ export function DeclareWinnerButton({ sessionId }: { sessionId: string }) {
           </div>
 
           <DialogFooter className="flex gap-2">
-            <Button variant="outline" onClick={handleCancel}>
+            <Button
+              variant="outline"
+              onClick={handleCancel}
+              disabled={declareWinnerMutation.isPending}
+            >
               Cancel
             </Button>
             <Button
               onClick={handleConfirm}
+              disabled={declareWinnerMutation.isPending}
               className={
                 confirmDialog.team === 'orange'
                   ? 'bg-orange-500 text-white hover:bg-orange-600'
                   : 'bg-purple-500 text-white hover:bg-purple-600'
               }
             >
-              Confirm {confirmDialog.team?.toUpperCase()} Wins
+              {declareWinnerMutation.isPending
+                ? 'Declaring…'
+                : `Confirm ${confirmDialog.team?.toUpperCase()} Wins`}
             </Button>
           </DialogFooter>
         </DialogContent>

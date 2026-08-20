@@ -172,19 +172,11 @@ export function useScheduleStuff() {
         return { previousSessions, aborted: true as const }
       }
 
-      // Optimistically add RSVP (simplified - no waitlist logic)
-      // Determine optimistic waitlist based on megagame team caps
       const sessions = queryClient.getQueryData<DbFullSession[]>(['sessions'])
       const session = sessions?.find((s) => s.id === sessionId)
-      const userTeam = currentUserProfile?.team || 'unassigned'
-      let optimisticWaitlist = false
-      if (session?.megagame && session.max_capacity) {
-        const teamCap = Math.floor(session.max_capacity / 2)
-        const currentTeamGoing = (session.rsvps || []).filter(
-          (r) => r.user.team === userTeam && !r.on_waitlist,
-        ).length
-        optimisticWaitlist = currentTeamGoing >= teamCap
-      }
+      // Full regular sessions waitlist you too, so ask the same predicate the
+      // RSVP button uses rather than optimistically claiming a spot
+      const optimisticWaitlist = isSessionFull(sessionId)
 
       const newRsvp: DbFullSessionRsvp = {
         session_id: sessionId,
@@ -271,7 +263,7 @@ export function useScheduleStuff() {
       await queryClient.cancelQueries({
         queryKey: ['bookmarks', 'current'],
       })
-      const previousBookmarks = queryClient.getQueryData([
+      const previousBookmarks = queryClient.getQueryData<DbSessionBookmark[]>([
         'bookmarks',
         'current',
       ])
@@ -302,7 +294,14 @@ export function useScheduleStuff() {
         toast.success('Bookmarked')
       }
     },
-    onError: (err) => {
+    onError: (err, _variables, context) => {
+      // Rollback on error
+      if (context?.previousBookmarks) {
+        queryClient.setQueryData<DbSessionBookmark[]>(
+          ['bookmarks', 'current'],
+          context.previousBookmarks,
+        )
+      }
       toast.error(err.message)
     },
     onSettled: () => {

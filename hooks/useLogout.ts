@@ -6,6 +6,7 @@ import { useQueryClient } from '@tanstack/react-query'
 import { useRouter } from 'next/navigation'
 
 import { logout } from '@/app/actions/auth/logout'
+import { getQueryPersister } from '@/app/providers/queryPersister'
 
 export function useLogout() {
   const queryClient = useQueryClient()
@@ -16,20 +17,18 @@ export function useLogout() {
     try {
       setIsLoggingOut(true)
 
-      // Clear all user-related queries immediately
-      queryClient.removeQueries({ queryKey: ['users'] })
-
       // Call server action to logout
       await logout(redirectTo)
-
-      // After logout, invalidate all queries to ensure fresh data
-      await queryClient.invalidateQueries()
     } catch (error) {
       console.error('Logout failed:', error)
-      // If logout fails, still clear cache and redirect
-      queryClient.clear()
       router.push(redirectTo)
     } finally {
+      // Drop the cache whether or not the server call succeeded. `clear()` and
+      // `removeClient()` both matter: invalidateQueries only marks queries
+      // stale, and the persisted copy in localStorage outlives the tab.
+      queryClient.clear()
+      await getQueryPersister().removeClient()
+
       // Reset the logging out state after a small delay to ensure UI updates
       setTimeout(() => setIsLoggingOut(false), 100)
     }

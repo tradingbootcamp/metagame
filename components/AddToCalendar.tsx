@@ -12,9 +12,9 @@ import {
 
 import { gCalLinkFromSession } from '@/app/schedule/scheduleUtils'
 
-import { DbFullSession } from '@/types/database/dbTypeAliases'
+import { DbCalendarSession } from '@/types/database/dbTypeAliases'
 
-export function AddToCalendar({ session }: { session: DbFullSession }) {
+export function AddToCalendar({ session }: { session: DbCalendarSession }) {
   return (
     <Popover>
       <PopoverTrigger

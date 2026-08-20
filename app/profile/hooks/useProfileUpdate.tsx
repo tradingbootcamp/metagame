@@ -24,11 +24,15 @@ export function useProfileUpdate({
     mutationFn: updateCurrentUserProfile,
     onMutate: (data) => {
       const oldData = queryClient.getQueryData<DbFullProfile>(profileQueryKey)
-      const newData = {
-        ...oldData,
-        ...data.data,
+      // Only write optimistically when there's something to roll back to — a
+      // cold cache would otherwise be seeded with a partial profile that the
+      // error path (gated on `oldData`) never reverts
+      if (oldData) {
+        queryClient.setQueryData(profileQueryKey, {
+          ...oldData,
+          ...data.data,
+        })
       }
-      queryClient.setQueryData(profileQueryKey, newData)
       return { oldData }
     },
     onSuccess: () => {
