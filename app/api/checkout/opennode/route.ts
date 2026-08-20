@@ -108,7 +108,7 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ charge })
 }
 
-function sendChargeCreationEmail(
+async function sendChargeCreationEmail(
   charge: OpenNodeCharge,
   ticketDetails: TicketPurchaseDetails,
 ) {
@@ -116,7 +116,7 @@ function sendChargeCreationEmail(
   const amountBtc = (charge.amount / 100000000).toFixed(6)
   const hostedUrl = getHostedCheckoutUrl(charge.id)
 
-  return resend.emails.send({
+  const { data, error } = await resend.emails.send({
     from: 'Metagame 2025 <tickets@mail.metagame.games>',
     to: ticketDetails.purchaserEmail,
     bcc: ['team@metagame.games'],
@@ -175,4 +175,10 @@ See you at Metagame 2025!
 This is not a puzzle.
     `.trim(),
   })
+
+  // Resend reports API-level failures in the payload, not by rejecting.
+  if (error) {
+    throw error
+  }
+  return data
 }

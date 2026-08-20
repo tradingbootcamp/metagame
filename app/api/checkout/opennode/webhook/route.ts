@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { OpenNodeChargeWebhook } from 'opennode/dist/types/v1'
+import { OpenNodeCharge, OpenNodeChargeWebhook } from 'opennode/dist/types/v1'
 
 import { opennodeDbService } from '@/lib/db/opennode'
 import { ticketsService } from '@/lib/db/tickets'
@@ -72,13 +72,29 @@ export async function POST(req: NextRequest) {
     return new NextResponse('invalid sig', { status: 400 })
   }
 
+  // signatureIsValid HMACs charge.id and nothing else, so status, amount and
+  // order_id stay attacker-controlled even when the signature checks out.
+  // Re-fetch the charge and act on OpenNode's copy rather than the body.
+  let charge: OpenNodeCharge
+  try {
+    charge = await opennode.chargeInfo(body.id)
+  } catch (error) {
+    console.error('failed to fetch opennode charge', body.id, error)
+    if (!skipSignatureCheck) {
+      // 5xx so OpenNode retries; nothing has been written yet.
+      return new NextResponse('could not fetch charge', { status: 502 })
+    }
+    // Local testing posts synthetic bodies for charges OpenNode never saw.
+    charge = body
+  }
+
   const dbCharge = await opennodeDbService.updateChargeStatus({
-    metagameOrderId: body.order_id,
-    status: body.status,
-    charge: body,
+    metagameOrderId: charge.order_id,
+    status: charge.status,
+    charge,
   })
 
-  if (body.status === 'paid') {
+  if (charge.status === 'paid') {
     // OpenNode retries callbacks, so a ticket must only be minted once per order.
     const existingTicket = await ticketsService.getTicketByOpennodeOrder({
       orderId: dbCharge.id,
@@ -89,7 +105,7 @@ export async function POST(req: NextRequest) {
     }
 
     // Never issue a ticket for less than the charge was created for.
-    const satoshisPaid = body.amount - (body.missing_amt ?? 0)
+    const satoshisPaid = charge.amount - (charge.missing_amt ?? 0)
     if (satoshisPaid < dbCharge.satoshis) {
       console.error(
         'opennode charge marked paid for less than the charge amount',
@@ -111,7 +127,7 @@ export async function POST(req: NextRequest) {
       is_test: dbCharge.is_test,
       satoshis_paid: satoshisPaid,
     }
-    await ticketsService.createTicket({ ticket: newTicket })
+    const dbTicket = await ticketsService.createTicket({ ticket: newTicket })
 
     if (!dbCharge.purchaser_email) {
       console.error('no purchaser email on opennode charge', dbCharge)
@@ -121,18 +137,27 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ received: true })
     }
 
-    await sendTicketConfirmationEmail({
-      to: dbCharge.purchaser_email,
-      purchaserName: dbCharge.purchaser_name || '',
-      ticketType: dbCharge.ticket_type!,
-      ticketCode: dbCharge.id,
-      isBtc: true,
-      btcPaid: body.amount / 100_000_000,
-      opennodeChargeId: dbCharge.id,
-      adminIssued: false,
-      forExistingUser: false,
-      test: dbCharge.is_test,
-    })
+    // The ticket row is already written, so a retry short-circuits on the
+    // idempotency guard above and never re-sends. Alert instead of 500ing.
+    try {
+      await sendTicketConfirmationEmail({
+        to: dbCharge.purchaser_email,
+        purchaserName: dbCharge.purchaser_name || '',
+        ticketType: dbCharge.ticket_type!,
+        ticketCode: dbTicket.ticket_code,
+        isBtc: true,
+        btcPaid: satoshisPaid / 100_000_000,
+        opennodeChargeId: charge.id,
+        adminIssued: false,
+        forExistingUser: false,
+        test: dbCharge.is_test,
+      })
+    } catch (error) {
+      console.error('failed to send ticket confirmation email', error)
+      await sendAdminErrorEmail(
+        `Ticket ${dbTicket.ticket_code} was issued for opennode order ${dbCharge.id} but the confirmation email failed to send: ${error instanceof Error ? error.message : String(error)}`,
+      )
+    }
   }
 
   return NextResponse.json({ received: true })
