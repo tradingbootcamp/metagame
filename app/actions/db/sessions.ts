@@ -45,12 +45,18 @@ export const authedDeclareWinningTeam = async ({
   if (!authed) {
     throw new Error('You are not authorized to declare the winning team')
   }
-  const winnerUserIds = session.rsvps
+  const declaredSession = await sessionsService.declareWinningTeam({
+    sessionId,
+    winningTeam,
+  })
+  if (!declaredSession) {
+    throw new Error('A winning team has already been declared for this session')
+  }
+  const attendeeUserIds = session.rsvps
     .filter((rsvp) => !rsvp.on_waitlist)
     .map((rsvp) => rsvp.user_id)
-  await sessionsService.declareWinningTeam({ sessionId, winningTeam })
   await playerCardClaimsService.createOpenPlayerCardClaims({
-    userIds: winnerUserIds,
+    userIds: attendeeUserIds,
     sessionId,
   })
 }
