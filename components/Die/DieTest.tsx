@@ -1,10 +1,12 @@
 'use client'
 
 import { useEffect, useState } from 'react'
+import { FaDice } from 'react-icons/fa'
 
 import { CustomDie } from './CustomDie'
-import type { Face } from './DiceUtils'
+import { type Face, generateRandomDieIdentifier } from './DiceUtils'
 
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { Switch } from '@/components/ui/switch'
@@ -45,8 +47,24 @@ export function DieTest() {
     }
   }
 
+  const randomize = () => {
+    setIsAutoCycle(false)
+    setCurrentNumbers(generateRandomDieIdentifier())
+  }
+
   return (
-    <div className="flex flex-col items-center gap-6 rounded-xl border border-border-muted bg-bg-secondary/90 px-8 py-6 shadow-lg backdrop-blur-sm">
+    <div className="relative flex flex-col items-center gap-6 rounded-xl border border-border-muted bg-bg-secondary/90 px-8 py-6 shadow-lg backdrop-blur-sm">
+      <Button
+        variant="outline"
+        size="icon"
+        onClick={randomize}
+        title="Randomize"
+        aria-label="Randomize"
+        className="absolute top-3 right-3"
+      >
+        <FaDice />
+      </Button>
+
       <CustomDie
         dieIdentifier={currentNumbers}
         size={200}
