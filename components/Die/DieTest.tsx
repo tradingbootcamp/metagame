@@ -5,6 +5,12 @@ import { useEffect, useState } from 'react'
 import { CustomDie } from './CustomDie'
 import type { Face } from './DiceUtils'
 
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Switch } from '@/components/ui/switch'
+
+const FACES: Face[] = ['left', 'top', 'right']
+
 export function DieTest() {
   const [isAutoCycle, setIsAutoCycle] = useState(true)
   const [colors, setColors] = useState({
@@ -35,90 +41,91 @@ export function DieTest() {
   const handleNumberChange = (face: Face, value: string) => {
     const numValue = parseInt(value)
     if (numValue >= 0 && numValue <= 6) {
-      setCurrentNumbers((prev) => ({
-        ...prev,
-        [face]: numValue,
-      }))
+      setCurrentNumbers((prev) => ({ ...prev, [face]: numValue }))
     }
   }
 
   return (
-    <div
-      style={{
-        display: 'flex',
-        gap: '1rem',
-        flexDirection: 'column',
-        alignItems: 'center',
-      }}
-    >
+    <div className="flex w-full max-w-lg flex-col items-center gap-8 rounded-xl border border-border-muted bg-bg-secondary/90 p-8 shadow-lg backdrop-blur-sm">
       <CustomDie
         dieIdentifier={currentNumbers}
         size={200}
         fill={colors.fill}
         stroke={colors.stroke}
-        showDownloadButton={true}
+        showDownloadButton
         strokeWidth={strokeWidth}
       />
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        <label>
-          <input
-            type="checkbox"
+      <div className="grid w-full grid-cols-2 gap-x-6 gap-y-4">
+        <Label htmlFor="auto-cycle" className="justify-between">
+          Auto cycle
+          <Switch
+            id="auto-cycle"
             checked={isAutoCycle}
-            onChange={(e) => setIsAutoCycle(e.target.checked)}
+            onCheckedChange={setIsAutoCycle}
           />
-          Auto Cycle
-        </label>
+        </Label>
 
-        <label>
-          Fill:
+        <Label
+          htmlFor="stroke-width"
+          className="justify-between whitespace-nowrap"
+        >
+          Stroke width
+          <Input
+            id="stroke-width"
+            type="number"
+            step={0.5}
+            value={strokeWidth}
+            onChange={(e) => setStrokeWidth(Number(e.target.value))}
+            className="w-24"
+          />
+        </Label>
+
+        <Label htmlFor="fill" className="justify-between">
+          Fill
           <input
+            id="fill"
             type="color"
             value={colors.fill}
             onChange={(e) =>
               setColors((prev) => ({ ...prev, fill: e.target.value }))
             }
-            style={{ marginLeft: '0.5rem' }}
+            className="h-9 w-12 cursor-pointer rounded-md border border-input bg-transparent"
           />
-        </label>
+        </Label>
 
-        <label>
-          Stroke:
+        <Label htmlFor="stroke" className="justify-between">
+          Stroke
           <input
+            id="stroke"
             type="color"
             value={colors.stroke}
             onChange={(e) =>
               setColors((prev) => ({ ...prev, stroke: e.target.value }))
             }
-            style={{ marginLeft: '0.5rem' }}
+            className="h-9 w-12 cursor-pointer rounded-md border border-input bg-transparent"
           />
-        </label>
-
-        <label>
-          Stroke Width:
-          <input
-            type="number"
-            value={strokeWidth}
-            onChange={(e) => setStrokeWidth(Number(e.target.value))}
-            style={{ marginLeft: '0.5rem' }}
-          />
-        </label>
+        </Label>
       </div>
 
-      <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-        {(['left', 'top', 'right'] as const).map((face) => (
-          <label key={face}>
-            {face}:
-            <input
+      <div className="grid w-full grid-cols-3 gap-4">
+        {FACES.map((face) => (
+          <Label
+            key={face}
+            htmlFor={`face-${face}`}
+            className="flex-col items-start gap-1.5 capitalize"
+          >
+            {face}
+            <Input
+              id={`face-${face}`}
               type="number"
               min={0}
               max={6}
               value={currentNumbers[face]}
               onChange={(e) => handleNumberChange(face, e.target.value)}
               disabled={isAutoCycle}
-              style={{ width: '60px', marginLeft: '0.5rem' }}
             />
-          </label>
+          </Label>
         ))}
       </div>
     </div>

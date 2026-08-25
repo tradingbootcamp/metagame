@@ -2,6 +2,9 @@ import React, { forwardRef, useRef } from 'react'
 
 import { pipPaths } from './DiceUtils'
 import type { Face } from './DiceUtils'
+import { Download } from 'lucide-react'
+
+import { Button } from '@/components/ui/button'
 
 interface CustomDieProps {
   dieIdentifier?: Record<Face, number>
@@ -127,13 +130,16 @@ export const CustomDie = forwardRef<SVGSVGElement, CustomDieProps>(
         </svg>
 
         {showDownloadButton && (
-          <button
+          <Button
+            variant="outline"
+            size="icon"
             onClick={downloadSVG}
-            className="bg-opacity-70 hover:bg-opacity-90 rounded bg-black p-2 text-white transition-opacity"
             title="Download SVG"
+            aria-label="Download SVG"
+            className="absolute -right-2 -bottom-2"
           >
-            ⬇️
-          </button>
+            <Download />
+          </Button>
         )}
       </div>
     )
