@@ -1,11 +1,11 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FaDice } from 'react-icons/fa'
 
 import { CustomDie } from './CustomDie'
 import { type Face, generateRandomDieIdentifier } from './DiceUtils'
-import { Ellipsis } from 'lucide-react'
+import { Download, Ellipsis } from 'lucide-react'
 
 import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -54,6 +54,21 @@ export function DieTest() {
     }
   }
 
+  const svgRef = useRef<SVGSVGElement>(null)
+
+  const downloadSVG = () => {
+    if (!svgRef.current) return
+    const svgData = new XMLSerializer().serializeToString(svgRef.current)
+    const url = URL.createObjectURL(
+      new Blob([svgData], { type: 'image/svg+xml;charset=utf-8' }),
+    )
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `custom-die-${currentNumbers.left}-${currentNumbers.top}-${currentNumbers.right}.svg`
+    link.click()
+    URL.revokeObjectURL(url)
+  }
+
   const [realDice, setRealDice] = useState(true)
   const [noRepeats, setNoRepeats] = useState(true)
 
@@ -69,7 +84,19 @@ export function DieTest() {
 
   return (
     <div className="relative flex flex-col items-center gap-6 rounded-xl border border-border-muted bg-bg-secondary/90 px-8 py-6 shadow-lg backdrop-blur-sm">
-      <div className="absolute top-3 right-3 flex flex-col rounded-md border border-border-secondary bg-bg-secondary">
+      <div className="absolute top-3 left-3 flex rounded-md border border-border-secondary bg-bg-secondary">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={downloadSVG}
+          title="Download SVG"
+          aria-label="Download SVG"
+        >
+          <Download />
+        </Button>
+      </div>
+
+      <div className="absolute top-3 right-3 flex rounded-md border border-border-secondary bg-bg-secondary">
         <Button
           variant="ghost"
           size="icon"
@@ -113,11 +140,11 @@ export function DieTest() {
       </div>
 
       <CustomDie
+        ref={svgRef}
         dieIdentifier={currentNumbers}
         size={200}
         fill={colors.fill}
         stroke={colors.stroke}
-        showDownloadButton
         strokeWidth={strokeWidth}
       />
 
@@ -135,30 +162,31 @@ export function DieTest() {
           />
         </Label>
 
-        <Label htmlFor="stroke">
-          Stroke
-          <input
-            id="stroke"
-            type="color"
-            value={colors.stroke}
-            onChange={(e) =>
-              setColors((prev) => ({ ...prev, stroke: e.target.value }))
-            }
-            className="size-8 cursor-pointer rounded-md bg-transparent"
-          />
-        </Label>
-
-        <Label htmlFor="stroke-width">
-          Width
-          <Input
-            id="stroke-width"
-            type="number"
-            step={0.5}
-            value={strokeWidth}
-            onChange={(e) => setStrokeWidth(Number(e.target.value))}
-            className="h-8 w-20"
-          />
-        </Label>
+        <div className="flex items-center gap-3 rounded-md border border-border-secondary px-3 py-1.5">
+          <Label htmlFor="stroke">
+            Stroke
+            <input
+              id="stroke"
+              type="color"
+              value={colors.stroke}
+              onChange={(e) =>
+                setColors((prev) => ({ ...prev, stroke: e.target.value }))
+              }
+              className="size-8 cursor-pointer rounded-md bg-transparent"
+            />
+          </Label>
+          <Label htmlFor="stroke-width">
+            Width
+            <Input
+              id="stroke-width"
+              type="number"
+              step={0.5}
+              value={strokeWidth}
+              onChange={(e) => setStrokeWidth(Number(e.target.value))}
+              className="h-8 w-20"
+            />
+          </Label>
+        </div>
       </div>
 
       <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">

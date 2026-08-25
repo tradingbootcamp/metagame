@@ -112,12 +112,7 @@ export default function AnimatedCustomDie({
           : {}
       }
     >
-      <CustomDie
-        ref={svgRef}
-        dieIdentifier={dieIdentifier}
-        size={40}
-        showDownloadButton={false}
-      />
+      <CustomDie ref={svgRef} dieIdentifier={dieIdentifier} size={40} />
     </button>
   )
 }

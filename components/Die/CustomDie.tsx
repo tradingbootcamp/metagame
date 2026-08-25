@@ -1,17 +1,13 @@
-import React, { forwardRef, useRef } from 'react'
+import React, { forwardRef } from 'react'
 
 import { pipPaths } from './DiceUtils'
 import type { Face } from './DiceUtils'
-import { Download } from 'lucide-react'
-
-import { Button } from '@/components/ui/button'
 
 interface CustomDieProps {
   dieIdentifier?: Record<Face, number>
   fill?: string
   stroke?: string
   size?: number
-  showDownloadButton?: boolean
   strokeWidth?: number
 }
 
@@ -34,33 +30,10 @@ export const CustomDie = forwardRef<SVGSVGElement, CustomDieProps>(
       fill = '#ff57ff',
       stroke = '#aa33ff',
       size = 512,
-      showDownloadButton = false,
       strokeWidth,
     }: CustomDieProps,
     ref,
   ) {
-    const svgRef = useRef<SVGSVGElement>(null)
-    const downloadSVG = () => {
-      const actualRef = ref || svgRef
-      const svgElement = typeof actualRef === 'object' && actualRef?.current
-
-      if (svgElement) {
-        const clonedSvg = svgElement.cloneNode(true) as SVGSVGElement
-        const svgData = new XMLSerializer().serializeToString(clonedSvg)
-        const svgBlob = new Blob([svgData], {
-          type: 'image/svg+xml;charset=utf-8',
-        })
-        const svgUrl = URL.createObjectURL(svgBlob)
-
-        const downloadLink = document.createElement('a')
-        downloadLink.href = svgUrl
-        downloadLink.download = `custom-die-${dieIdentifier.left}-${dieIdentifier.top}-${dieIdentifier.right}.svg`
-        downloadLink.click()
-
-        URL.revokeObjectURL(svgUrl)
-      }
-    }
-
     const renderFacePips = (face: Face) => {
       const pipNumber = dieIdentifier[face]
       const paths = pipPaths[face][pipNumber]
@@ -72,7 +45,7 @@ export const CustomDie = forwardRef<SVGSVGElement, CustomDieProps>(
     return (
       <div className="relative inline-block">
         <svg
-          ref={ref || svgRef}
+          ref={ref}
           height={size}
           width={size}
           version="1.1"
@@ -103,19 +76,6 @@ export const CustomDie = forwardRef<SVGSVGElement, CustomDieProps>(
             {renderFacePips('right')}
           </g>
         </svg>
-
-        {showDownloadButton && (
-          <Button
-            variant="outline"
-            size="icon"
-            onClick={downloadSVG}
-            title="Download SVG"
-            aria-label="Download SVG"
-            className="absolute -right-2 -bottom-2"
-          >
-            <Download />
-          </Button>
-        )}
       </div>
     )
   },
