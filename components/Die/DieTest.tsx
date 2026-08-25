@@ -131,7 +131,7 @@ export function DieTest() {
             onChange={(e) =>
               setColors((prev) => ({ ...prev, fill: e.target.value }))
             }
-            className="size-8 cursor-pointer rounded-md border border-input bg-transparent"
+            className="size-8 cursor-pointer rounded-md bg-transparent"
           />
         </Label>
 
@@ -144,7 +144,7 @@ export function DieTest() {
             onChange={(e) =>
               setColors((prev) => ({ ...prev, stroke: e.target.value }))
             }
-            className="size-8 cursor-pointer rounded-md border border-input bg-transparent"
+            className="size-8 cursor-pointer rounded-md bg-transparent"
           />
         </Label>
 
