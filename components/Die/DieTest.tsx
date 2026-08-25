@@ -46,7 +46,7 @@ export function DieTest() {
   }
 
   return (
-    <div className="flex w-full max-w-lg flex-col items-center gap-8 rounded-xl border border-border-muted bg-bg-secondary/90 p-8 shadow-lg backdrop-blur-sm">
+    <div className="flex flex-col items-center gap-6 rounded-xl border border-border-muted bg-bg-secondary/90 px-8 py-6 shadow-lg backdrop-blur-sm">
       <CustomDie
         dieIdentifier={currentNumbers}
         size={200}
@@ -56,32 +56,8 @@ export function DieTest() {
         strokeWidth={strokeWidth}
       />
 
-      <div className="grid w-full grid-cols-2 gap-x-6 gap-y-4">
-        <Label htmlFor="auto-cycle" className="justify-between">
-          Auto cycle
-          <Switch
-            id="auto-cycle"
-            checked={isAutoCycle}
-            onCheckedChange={setIsAutoCycle}
-          />
-        </Label>
-
-        <Label
-          htmlFor="stroke-width"
-          className="justify-between whitespace-nowrap"
-        >
-          Stroke width
-          <Input
-            id="stroke-width"
-            type="number"
-            step={0.5}
-            value={strokeWidth}
-            onChange={(e) => setStrokeWidth(Number(e.target.value))}
-            className="w-24"
-          />
-        </Label>
-
-        <Label htmlFor="fill" className="justify-between">
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+        <Label htmlFor="fill">
           Fill
           <input
             id="fill"
@@ -90,11 +66,11 @@ export function DieTest() {
             onChange={(e) =>
               setColors((prev) => ({ ...prev, fill: e.target.value }))
             }
-            className="h-9 w-12 cursor-pointer rounded-md border border-input bg-transparent"
+            className="size-8 cursor-pointer rounded-md border border-input bg-transparent"
           />
         </Label>
 
-        <Label htmlFor="stroke" className="justify-between">
+        <Label htmlFor="stroke">
           Stroke
           <input
             id="stroke"
@@ -103,18 +79,35 @@ export function DieTest() {
             onChange={(e) =>
               setColors((prev) => ({ ...prev, stroke: e.target.value }))
             }
-            className="h-9 w-12 cursor-pointer rounded-md border border-input bg-transparent"
+            className="size-8 cursor-pointer rounded-md border border-input bg-transparent"
+          />
+        </Label>
+
+        <Label htmlFor="stroke-width">
+          Width
+          <Input
+            id="stroke-width"
+            type="number"
+            step={0.5}
+            value={strokeWidth}
+            onChange={(e) => setStrokeWidth(Number(e.target.value))}
+            className="h-8 w-20"
           />
         </Label>
       </div>
 
-      <div className="grid w-full grid-cols-3 gap-4">
+      <div className="flex flex-wrap items-center justify-center gap-x-5 gap-y-3">
+        <Label htmlFor="auto-cycle">
+          Auto cycle
+          <Switch
+            id="auto-cycle"
+            checked={isAutoCycle}
+            onCheckedChange={setIsAutoCycle}
+          />
+        </Label>
+
         {FACES.map((face) => (
-          <Label
-            key={face}
-            htmlFor={`face-${face}`}
-            className="flex-col items-start gap-1.5 capitalize"
-          >
+          <Label key={face} htmlFor={`face-${face}`} className="capitalize">
             {face}
             <Input
               id={`face-${face}`}
@@ -124,6 +117,7 @@ export function DieTest() {
               value={currentNumbers[face]}
               onChange={(e) => handleNumberChange(face, e.target.value)}
               disabled={isAutoCycle}
+              className="h-8 w-14"
             />
           </Label>
         ))}
