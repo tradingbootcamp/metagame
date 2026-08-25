@@ -69,9 +69,9 @@ export function DieTest() {
 
   return (
     <div className="relative flex flex-col items-center gap-6 rounded-xl border border-border-muted bg-bg-secondary/90 px-8 py-6 shadow-lg backdrop-blur-sm">
-      <div className="absolute top-3 right-3 flex flex-col gap-2">
+      <div className="absolute top-3 right-3 flex flex-col rounded-md border border-border-secondary bg-bg-secondary">
         <Button
-          variant="outline"
+          variant="ghost"
           size="icon"
           onClick={randomize}
           title="Randomize"
@@ -82,7 +82,7 @@ export function DieTest() {
         <Popover>
           <PopoverTrigger asChild>
             <Button
-              variant="outline"
+              variant="ghost"
               size="icon"
               title="Randomize options"
               aria-label="Randomize options"
